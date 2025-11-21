@@ -63,18 +63,25 @@ This is a **software engineering design pattern** that enables code to evaluate 
 ## Pattern Flow
 
 1. **Test**: Execute current implementation with test data
-2. **Evaluate**: LLM supervisor analyzes results for quality
-3. **Decide**: Determine if improvements are needed
-4. **Checkpoint**: Create git safety point
-5. **Improve**: LLM engineer modifies implementation code
-6. **Repeat**: Continue until satisfactory results or max iterations
+2. **QA Review**: Grok analyzes extracted data for quality issues
+3. **Supervisor Decision**: Grok determines if improvements are needed based on QA findings
+4. **Checkpoint**: Create git safety point before any changes
+5. **Engineer**: Claude implements specific code improvements
+6. **Repeat**: Continue until Grok QA approves the data quality
 
 ## LLM Roles
 
-### Supervisor LLM (Grok 4.1 Fast)
-- **Role**: Evaluates results and makes decisions
-- **Expertise**: Financial analysis, data quality assessment
-- **Output**: Evaluation scores and improvement directions
+### Supervisor + QA LLM (Grok 4.1 Fast)
+- **Dual Role**: Process supervisor AND quality assurance analyst
+- **Supervisor Duties**: Orchestrates improvement iterations, makes go/no-go decisions
+- **QA Duties**: Validates data quality, identifies extraction errors, sets quality standards
+- **Expertise**: Financial analysis, executive compensation patterns, data validation
+- **QA Capabilities**:
+  - Detects fake/hallucinated names
+  - Validates compensation amounts against market norms
+  - Identifies parsing errors and data corruption
+  - Ensures completeness (missing executives, incomplete data)
+- **Output**: Quality scores, specific issues found, improvement directions
 
 ### Engineer LLM (Claude 3.5 Sonnet)
 - **Role**: Implements code improvements

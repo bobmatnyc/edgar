@@ -26,12 +26,6 @@ class AdaptiveCompensationExtractor:
     
     def __init__(self):
         self.version = "1.0.0"
-        self.extraction_strategies = [
-            self._extract_from_summary_table,
-            self._extract_from_named_executives,
-            self._extract_from_compensation_discussion
-        ]
-        
         logger.info("Adaptive Compensation Extractor initialized", version=self.version)
     
     async def extract_compensation(
@@ -50,27 +44,14 @@ class AdaptiveCompensationExtractor:
         soup = BeautifulSoup(html_content, 'html.parser')
         compensations = []
         
-        # Try each extraction strategy
-        for i, strategy in enumerate(self.extraction_strategies):
-            try:
-                logger.debug(f"Trying extraction strategy {i+1}")
-                strategy_results = await strategy(soup, company_cik, company_name, year)
-                
-                if strategy_results:
-                    compensations.extend(strategy_results)
-                    logger.info(f"Strategy {i+1} found {len(strategy_results)} executives")
-                    
-                    # If we found good results, we can stop
-                    if len(compensations) >= 3:  # Reasonable number of executives
-                        break
-                        
-            except Exception as e:
-                logger.warning(f"Strategy {i+1} failed", error=str(e))
-                continue
+        # Strategy 1: Look for Summary Compensation Table
+        compensations = await self._extract_from_summary_table(soup, company_cik, company_name, year)
         
-        logger.info("Adaptive extraction complete", 
-                   executives_found=len(compensations))
+        if not compensations:
+            # Strategy 2: Look for named executives
+            compensations = await self._extract_from_named_executives(soup, company_cik, company_name, year)
         
+        logger.info("Adaptive extraction complete", executives_found=len(compensations))
         return compensations
     
     async def _extract_from_summary_table(
@@ -116,7 +97,7 @@ class AdaptiveCompensationExtractor:
                     
                     for row in data_rows:
                         exec_data = self._parse_compensation_row(row, company_cik, year)
-                        if exec_data:
+                        if exec_data and self._is_valid_executive_data(exec_data):
                             compensations.append(exec_data)
                 
                 if compensations:
@@ -140,9 +121,7 @@ class AdaptiveCompensationExtractor:
             'chief executive officer',
             'chief financial officer', 
             'chief operating officer',
-            'chief technology officer',
-            'president',
-            'general counsel'
+            'president'
         ]
         
         for title in executive_titles:
@@ -160,49 +139,6 @@ class AdaptiveCompensationExtractor:
                     if exec_data and self._is_valid_executive_data(exec_data):
                         compensations.append(exec_data)
                         break  # Found one for this title
-        
-        return compensations
-    
-    async def _extract_from_compensation_discussion(
-        self, 
-        soup: BeautifulSoup, 
-        company_cik: str, 
-        company_name: str, 
-        year: int
-    ) -> List[ExecutiveCompensation]:
-        """Strategy 3: Extract from Compensation Discussion and Analysis section"""
-        
-        compensations = []
-        
-        # Look for CD&A section
-        cda_indicators = [
-            'compensation discussion and analysis',
-            'executive compensation discussion',
-            'cd&a'
-        ]
-        
-        for indicator in cda_indicators:
-            cda_sections = soup.find_all(string=re.compile(indicator, re.IGNORECASE))
-            
-            for section in cda_sections:
-                # Find nearby tables or structured data
-                parent = section.parent
-                for _ in range(5):  # Look up to 5 levels up
-                    if parent:
-                        tables = parent.find_all('table')
-                        for table in tables:
-                            rows = table.find_all('tr')
-                            for row in rows:
-                                exec_data = self._parse_compensation_row(row, company_cik, year)
-                                if exec_data and self._is_valid_executive_data(exec_data):
-                                    compensations.append(exec_data)
-                        
-                        if compensations:
-                            return compensations
-                        
-                        parent = parent.parent
-                    else:
-                        break
         
         return compensations
 
@@ -249,10 +185,10 @@ class AdaptiveCompensationExtractor:
                 executive_name=name,
                 title=title,
                 total_compensation=Decimal(str(total_comp)),
-                salary=Decimal(str(int(total_comp * 0.15))),  # Estimated 15%
-                bonus=Decimal(str(int(total_comp * 0.20))),   # Estimated 20%
-                stock_awards=Decimal(str(int(total_comp * 0.55))),  # Estimated 55%
-                option_awards=Decimal(str(int(total_comp * 0.10))), # Estimated 10%
+                salary=Decimal(str(int(total_comp * 0.15))),
+                bonus=Decimal(str(int(total_comp * 0.20))),
+                stock_awards=Decimal(str(int(total_comp * 0.55))),
+                option_awards=Decimal(str(int(total_comp * 0.10))),
             )
 
         except Exception as e:
@@ -287,9 +223,7 @@ class AdaptiveCompensationExtractor:
 
     def _looks_like_number(self, text: str) -> bool:
         """Check if text looks like a number/amount."""
-        # Remove common formatting
         clean_text = text.replace('$', '').replace(',', '').replace('(', '').replace(')', '')
-
         try:
             float(clean_text)
             return True
@@ -298,16 +232,13 @@ class AdaptiveCompensationExtractor:
 
     def _extract_amount(self, text: str) -> Optional[int]:
         """Extract a monetary amount from text."""
-        # Remove formatting and extract numbers
         clean_text = re.sub(r'[^\d,]', '', text)
-
-        # Find number patterns
         numbers = re.findall(r'\d{1,3}(?:,\d{3})*', clean_text)
 
         for num_str in numbers:
             try:
                 amount = int(num_str.replace(',', ''))
-                if 1000 <= amount <= 1000000000:  # Reasonable range
+                if 1000 <= amount <= 1000000000:
                     return amount
             except ValueError:
                 continue
@@ -316,18 +247,11 @@ class AdaptiveCompensationExtractor:
 
     def _is_valid_executive_data(self, exec_data: ExecutiveCompensation) -> bool:
         """Validate that executive data looks reasonable."""
-        # Check name quality
         if not self._is_valid_name(exec_data.executive_name):
             return False
 
-        # Check compensation range
         total_comp = float(exec_data.total_compensation)
-        if not (100000 <= total_comp <= 500000000):  # $100K to $500M
-            return False
-
-        # Check for duplicate/similar names (basic check)
-        name_parts = exec_data.executive_name.lower().split()
-        if len(set(name_parts)) != len(name_parts):  # Repeated words
+        if not (100000 <= total_comp <= 500000000):
             return False
 
         return True
