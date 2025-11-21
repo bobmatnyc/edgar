@@ -52,7 +52,7 @@ dev = [
 ]
 
 [project.scripts]
-edgar-analyzer = "edgar_analyzer.cli.main:main"
+edgar-analyzer = "edgar_analyzer.main_cli:main"
 
 [project.urls]
 Homepage = "https://github.com/example/edgar-analyzer"

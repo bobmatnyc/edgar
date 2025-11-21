@@ -290,10 +290,14 @@ def create_integrated_cli():
     return cli
 
 
-if __name__ == "__main__":
-    # Create integrated CLI and run
+def main():
+    """Main entry point for the edgar-analyzer command."""
     integrated_cli = create_integrated_cli()
     integrated_cli()
+
+
+if __name__ == "__main__":
+    main()
 else:
     # For module import
     cli = create_integrated_cli()

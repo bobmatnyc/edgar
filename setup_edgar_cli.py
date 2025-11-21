@@ -136,6 +136,18 @@ class EdgarCLISetup:
                 print("   Continuing with other packages...")
         
         print("✅ Dependencies installation complete")
+
+        # Install the package in development mode to create the binary
+        print("\n🔧 Installing EDGAR CLI package...")
+        try:
+            subprocess.run([
+                str(self.get_venv_pip()), "install", "-e", "."
+            ], check=True, cwd=self.project_root)
+            print("✅ EDGAR CLI package installed in development mode")
+            print("   🎯 edgar-analyzer binary created in venv/bin/")
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Failed to install package: {e}")
+            print("   ⚠️  Continuing with module-based execution")
     
     def create_environment_config(self):
         """Create environment configuration file."""
@@ -179,7 +191,7 @@ class EdgarCLISetup:
 
 cd "{self.project_root}"
 source venv/bin/activate
-python -m edgar_analyzer "$@"
+edgar-analyzer "$@"
 """
         
         with open(launcher_sh, 'w') as f:
@@ -196,7 +208,7 @@ REM Starts interactive mode by default
 
 cd /d "{self.project_root}"
 call venv\\Scripts\\activate.bat
-python -m edgar_analyzer %*
+edgar-analyzer %*
 """
         
         with open(launcher_bat, 'w') as f:

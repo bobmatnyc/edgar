@@ -5,4 +5,4 @@
 
 cd "/Users/masa/Clients/Zach/projects/edgar"
 source venv/bin/activate
-python -m edgar_analyzer "$@"
+edgar-analyzer "$@"
