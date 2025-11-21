@@ -4,10 +4,10 @@ import json
 import os
 from typing import Dict, List, Optional, Any
 import structlog
-from openai import OpenAI
 from dotenv import load_dotenv
 
 from edgar_analyzer.models.company import ExecutiveCompensation
+from .openrouter_service import OpenRouterService
 
 # Load environment variables
 load_dotenv('.env.local')
@@ -19,25 +19,16 @@ class LLMService:
     """Service for LLM-powered financial data analysis."""
     
     def __init__(self):
-        """Initialize LLM service with OpenRouter."""
-        self.api_key = os.getenv('OPENROUTER_API_KEY')
-        self.base_url = os.getenv('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1')
-        
-        if not self.api_key:
-            raise ValueError("OPENROUTER_API_KEY not found in environment variables")
-        
-        self.client = OpenAI(
-            api_key=self.api_key,
-            base_url=self.base_url
-        )
-        
-        # Use Grok 4.1 Fast for financial analysis - excellent for agentic tasks with 2M context
-        # Perfect for large proxy filings and free to use
-        self.primary_model = "x-ai/grok-4.1-fast:free"       # Grok 4.1 Fast (free, 2M context)
-        self.fallback_model = "anthropic/claude-3.5-sonnet"  # Claude 3.5 Sonnet fallback
-        self.tertiary_model = "anthropic/claude-3-sonnet"    # Claude 3 Sonnet as final fallback
+        """Initialize LLM service with centralized OpenRouter service."""
+        # Initialize centralized OpenRouter service
+        self.openrouter = OpenRouterService()
+
+        # Model configuration from environment
+        self.primary_model = os.getenv("PRIMARY_MODEL", "x-ai/grok-4.1-fast:free")
+        self.fallback_model = os.getenv("FALLBACK_MODEL", "anthropic/claude-3.5-sonnet")
+        self.tertiary_model = os.getenv("TERTIARY_MODEL", "anthropic/claude-3-sonnet")
         self.model = self.primary_model
-        
+
         logger.info("LLM service initialized",
                    primary_model=self.primary_model,
                    fallback_model=self.fallback_model,
@@ -52,95 +43,37 @@ class LLMService:
         web_search_params: Optional[Dict[str, Any]] = None
     ):
         """
-        Make LLM request with three-tier fallback model support and optional web search.
+        Make LLM request using centralized OpenRouter service with fallback support.
 
-        WHY: Enables real-time information access for controllers and engineers
-        HOW: Uses OpenRouter's web search standard when enabled
-        WHEN: Created 2025-11-21 to add web search capabilities
+        WHY: Centralized API handling with model-independent interface
+        HOW: Uses OpenRouterService for all API interactions
+        WHEN: Refactored 2025-11-21 for centralized service architecture
 
         Args:
             messages: Chat messages for the LLM
             temperature: Sampling temperature (0.0-1.0)
             max_tokens: Maximum response tokens
             enable_web_search: Whether to enable web search capabilities
-            web_search_params: Additional parameters for web search
+            web_search_params: Additional parameters for web search (deprecated)
 
         Returns:
             LLM response content as string
         """
-        # Prepare request parameters
-        request_params = {
-            "model": self.primary_model,
-            "messages": messages,
-            "temperature": temperature,
-            "max_tokens": max_tokens
-        }
-
-        # Add web search parameters if enabled
-        if enable_web_search:
-            # OpenRouter web search standard
-            request_params["tools"] = [{
-                "type": "function",
-                "function": {
-                    "name": "web_search",
-                    "description": "Search the web for real-time information",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "query": {
-                                "type": "string",
-                                "description": "Search query"
-                            }
-                        },
-                        "required": ["query"]
-                    }
-                }
-            }]
-
-            # Enable tool choice for web search
-            request_params["tool_choice"] = "auto"
-
-            logger.debug("Web search enabled for LLM request",
-                        model=self.primary_model,
-                        tools_enabled=True)
-
-        # Try primary model first (Grok 4.1 Fast)
+        # Use centralized OpenRouter service with fallback
         try:
-            logger.debug(f"Making LLM request with primary model: {self.primary_model}")
-            response = self.client.chat.completions.create(**request_params)
-            content = response.choices[0].message.content.strip()
-            logger.debug(f"Primary model response length: {len(content)}, preview: {content[:100]}...")
-            return content
+            return await self.openrouter.chat_completion_with_fallback(
+                messages=messages,
+                primary_model=self.primary_model,
+                fallback_models=[self.fallback_model, self.tertiary_model],
+                temperature=temperature,
+                max_tokens=max_tokens,
+                enable_web_search=enable_web_search
+            )
         except Exception as e:
-            logger.warning(f"Primary model {self.primary_model} failed, trying fallback", error=str(e))
+            logger.error("All models failed in centralized service", error=str(e))
+            raise
 
-            # Try fallback model (Claude 3.5 Sonnet)
-            try:
-                logger.debug(f"Trying fallback model: {self.fallback_model}")
-                fallback_params = request_params.copy()
-                fallback_params["model"] = self.fallback_model
-                response = self.client.chat.completions.create(**fallback_params)
-                content = response.choices[0].message.content.strip()
-                logger.debug(f"Fallback response length: {len(content)}, preview: {content[:100]}...")
-                return content
-            except Exception as fallback_error:
-                logger.warning(f"Fallback model {self.fallback_model} failed, trying tertiary", error=str(fallback_error))
 
-                # Try tertiary model (Claude 3 Sonnet)
-                try:
-                    logger.debug(f"Trying tertiary model: {self.tertiary_model}")
-                    tertiary_params = request_params.copy()
-                    tertiary_params["model"] = self.tertiary_model
-                    response = self.client.chat.completions.create(**tertiary_params)
-                    content = response.choices[0].message.content.strip()
-                    logger.debug(f"Tertiary response length: {len(content)}, preview: {content[:100]}...")
-                    return content
-                except Exception as tertiary_error:
-                    logger.error(f"All models failed",
-                               primary_error=str(e),
-                               fallback_error=str(fallback_error),
-                               tertiary_error=str(tertiary_error))
-                    raise tertiary_error
 
     async def web_search_request(
         self,
