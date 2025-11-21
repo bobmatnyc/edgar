@@ -35,11 +35,12 @@ load_dotenv()
 
 
 @click.group()
-@click.option('--mode', type=click.Choice(['auto', 'chatbot', 'traditional']), 
+@click.option('--mode', type=click.Choice(['auto', 'chatbot', 'traditional']),
               default='auto', help='CLI interface mode')
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
+@click.option('--enable-web-search', is_flag=True, help='Enable web search capabilities')
 @click.pass_context
-def cli(ctx, mode, verbose):
+def cli(ctx, mode, verbose, enable_web_search):
     """
     EDGAR Analyzer - Intelligent Executive Compensation Analysis
     
@@ -56,9 +57,12 @@ def cli(ctx, mode, verbose):
     ctx.ensure_object(dict)
     ctx.obj['mode'] = mode
     ctx.obj['verbose'] = verbose
-    
+    ctx.obj['enable_web_search'] = enable_web_search
+
     if verbose:
         click.echo(f"🔧 EDGAR CLI starting in {mode} mode")
+        if enable_web_search:
+            click.echo("🔍 Web search capabilities enabled")
 
 
 @cli.command()
@@ -69,6 +73,7 @@ def interactive(ctx):
     async def start_interactive():
         mode = ctx.obj.get('mode', 'auto')
         verbose = ctx.obj.get('verbose', False)
+        enable_web_search = ctx.obj.get('enable_web_search', False)
         
         if verbose:
             click.echo("🚀 Starting interactive mode...")
@@ -81,6 +86,12 @@ def interactive(ctx):
                 return await llm_service._make_llm_request(
                     messages, temperature=0.7, max_tokens=2000
                 )
+
+            # Web search client if enabled
+            web_search_client = None
+            if enable_web_search:
+                async def web_search_client(query, context=None):
+                    return await llm_service.web_search_request(query, context)
             
             # Get application root
             app_root = str(Path(__file__).parent.parent.parent)
@@ -90,7 +101,9 @@ def interactive(ctx):
                 controller = ChatbotController(
                     llm_client=llm_client,
                     application_root=app_root,
-                    scripting_enabled=True
+                    scripting_enabled=True,
+                    web_search_enabled=enable_web_search,
+                    web_search_client=web_search_client
                 )
                 await controller.start_conversation()
                 
@@ -104,7 +117,9 @@ def interactive(ctx):
                     llm_client=llm_client,
                     application_root=app_root,
                     test_llm=True,
-                    scripting_enabled=True
+                    scripting_enabled=True,
+                    web_search_enabled=enable_web_search,
+                    web_search_client=web_search_client
                 )
                 
                 if controller:

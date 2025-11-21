@@ -6,7 +6,7 @@ code generation and modification.
 """
 
 import json
-from typing import Dict, Any, Callable
+from typing import Dict, Any, Callable, List
 import structlog
 
 from ..core.interfaces import EngineerLLM
@@ -23,20 +23,28 @@ class LLMEngineer(EngineerLLM):
     """
     
     def __init__(
-        self, 
+        self,
         llm_client: Callable,
         model_name: str = "claude-3.5-sonnet",
         programming_language: str = "Python",
-        coding_standards: Dict[str, Any] = None
+        coding_standards: Dict[str, Any] = None,
+        enable_web_search: bool = False,
+        web_search_client: Callable = None
     ):
         """
         Initialize LLM Engineer.
-        
+
+        WHY: Provides intelligent code improvement with optional web search
+        HOW: Uses LLM for code generation with real-time best practices
+        WHEN: Enhanced 2025-11-21 to add web search capabilities
+
         Args:
             llm_client: Function that takes messages and returns LLM response
             model_name: Name of the model for logging
             programming_language: Primary programming language
             coding_standards: Custom coding standards dict
+            enable_web_search: Whether to enable web search for best practices
+            web_search_client: Function for web search requests
         """
         self.llm_client = llm_client
         self.model_name = model_name
@@ -47,6 +55,8 @@ class LLMEngineer(EngineerLLM):
             "require_docstrings": True,
             "follow_pep8": True
         }
+        self.enable_web_search = enable_web_search
+        self.web_search_client = web_search_client
         
         logger.info("LLM Engineer initialized", 
                    model=model_name, 
@@ -57,20 +67,77 @@ class LLMEngineer(EngineerLLM):
         evaluation: Dict[str, Any],
         test_results: Dict[str, Any],
         current_code: Dict[str, str],
-        context: Dict[str, Any]
+        context: Dict[str, Any],
+        enable_search_for_best_practices: bool = False
     ) -> Dict[str, Any]:
-        """Implement code improvements based on supervisor evaluation."""
+        """
+        Implement code improvements based on supervisor evaluation with optional web search.
+
+        WHY: Provides intelligent code improvements with current best practices
+        HOW: Uses LLM analysis enhanced with web search for latest standards
+        WHEN: Enhanced 2025-11-21 to add web search for best practices
+
+        Args:
+            evaluation: Supervisor evaluation results
+            test_results: Test results to improve
+            current_code: Current code to modify
+            context: Improvement context
+            enable_search_for_best_practices: Whether to search for current best practices
+
+        Returns:
+            Implementation results with code changes
+        """
         
         # Build context-aware prompt
         domain_context = context.get('domain', 'software development')
         requirements = context.get('requirements', 'general improvements')
+
+        # Perform web search for best practices if enabled
+        best_practices_context = ""
+        if (enable_search_for_best_practices and
+            self.enable_web_search and
+            self.web_search_client):
+
+            try:
+                # Generate search queries for best practices
+                search_queries = self._generate_best_practices_queries(
+                    evaluation, domain_context, self.programming_language
+                )
+
+                if search_queries:
+                    logger.info("Searching for current best practices",
+                               queries=search_queries)
+
+                    search_results = []
+                    for query in search_queries[:2]:  # Limit to 2 searches
+                        try:
+                            result = await self.web_search_client(
+                                query=query,
+                                context=f"Finding best practices for {domain_context}"
+                            )
+                            search_results.append(f"Query: {query}\nBest Practices: {result}\n")
+                        except Exception as e:
+                            logger.warning("Best practices search failed",
+                                         query=query, error=str(e))
+
+                    if search_results:
+                        best_practices_context = f"""
+CURRENT BEST PRACTICES (from web search):
+{''.join(search_results)}
+
+Apply these current best practices and standards to your code improvements.
+"""
+            except Exception as e:
+                logger.warning("Best practices search failed", error=str(e))
         
-        prompt = f"""You are the ENGINEER in a self-improving code system.
+        prompt = f"""You are the ENGINEER in a self-improving code system with access to current best practices.
 
 PROGRAMMING LANGUAGE: {self.programming_language}
 MODEL: {self.model_name}
 DOMAIN: {domain_context}
 REQUIREMENTS: {requirements}
+
+{best_practices_context}
 
 SUPERVISOR EVALUATION:
 {json.dumps(evaluation, indent=2)}
@@ -164,3 +231,60 @@ If no improvements can be made, return changes_made: false with explanation."""
         except json.JSONDecodeError as e:
             logger.warning("Failed to parse JSON response", error=str(e), response=response[:200])
             raise
+
+    def _generate_best_practices_queries(
+        self,
+        evaluation: Dict[str, Any],
+        domain_context: str,
+        programming_language: str
+    ) -> List[str]:
+        """
+        Generate web search queries for current best practices.
+
+        WHY: Finds latest best practices and standards for code improvements
+        HOW: Analyzes evaluation issues to generate targeted search queries
+        WHEN: Created 2025-11-21 for web search best practices
+
+        Args:
+            evaluation: Supervisor evaluation with issues found
+            domain_context: Domain context for targeted searches
+            programming_language: Programming language for specific practices
+
+        Returns:
+            List of search queries for best practices
+        """
+        queries = []
+
+        # Extract issues from evaluation
+        issues = evaluation.get('issues_found', [])
+        improvement_directions = evaluation.get('improvement_directions', [])
+
+        # Generate queries based on specific issues
+        for issue in issues[:3]:  # Limit to top 3 issues
+            if 'performance' in issue.lower():
+                queries.append(f"{programming_language} performance optimization best practices 2024")
+            elif 'security' in issue.lower():
+                queries.append(f"{programming_language} security best practices 2024")
+            elif 'error handling' in issue.lower():
+                queries.append(f"{programming_language} error handling best practices 2024")
+            elif 'testing' in issue.lower():
+                queries.append(f"{programming_language} testing best practices 2024")
+            elif 'documentation' in issue.lower():
+                queries.append(f"{programming_language} documentation standards 2024")
+
+        # Generate queries based on improvement directions
+        for direction in improvement_directions[:2]:  # Limit to top 2 directions
+            if 'refactor' in direction.lower():
+                queries.append(f"{programming_language} refactoring best practices 2024")
+            elif 'optimize' in direction.lower():
+                queries.append(f"{programming_language} code optimization techniques 2024")
+
+        # Add domain-specific queries
+        if domain_context and domain_context != 'software development':
+            queries.append(f"{domain_context} {programming_language} best practices 2024")
+
+        # Add general best practices query
+        queries.append(f"{programming_language} coding standards best practices 2024")
+
+        # Remove duplicates and limit
+        return list(dict.fromkeys(queries))[:4]

@@ -43,47 +43,96 @@ class LLMService:
                    fallback_model=self.fallback_model,
                    tertiary_model=self.tertiary_model)
 
-    async def _make_llm_request(self, messages: list, temperature: float = 0.1, max_tokens: int = 4000):
-        """Make LLM request with three-tier fallback model support."""
-        # Try primary model first (Claude Sonnet 4.5)
+    async def _make_llm_request(
+        self,
+        messages: list,
+        temperature: float = 0.1,
+        max_tokens: int = 4000,
+        enable_web_search: bool = False,
+        web_search_params: Optional[Dict[str, Any]] = None
+    ):
+        """
+        Make LLM request with three-tier fallback model support and optional web search.
+
+        WHY: Enables real-time information access for controllers and engineers
+        HOW: Uses OpenRouter's web search standard when enabled
+        WHEN: Created 2025-11-21 to add web search capabilities
+
+        Args:
+            messages: Chat messages for the LLM
+            temperature: Sampling temperature (0.0-1.0)
+            max_tokens: Maximum response tokens
+            enable_web_search: Whether to enable web search capabilities
+            web_search_params: Additional parameters for web search
+
+        Returns:
+            LLM response content as string
+        """
+        # Prepare request parameters
+        request_params = {
+            "model": self.primary_model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens
+        }
+
+        # Add web search parameters if enabled
+        if enable_web_search:
+            # OpenRouter web search standard
+            request_params["tools"] = [{
+                "type": "function",
+                "function": {
+                    "name": "web_search",
+                    "description": "Search the web for real-time information",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {
+                                "type": "string",
+                                "description": "Search query"
+                            }
+                        },
+                        "required": ["query"]
+                    }
+                }
+            }]
+
+            # Add web search configuration
+            if web_search_params:
+                request_params.update(web_search_params)
+
+            logger.debug("Web search enabled for LLM request",
+                        model=self.primary_model,
+                        search_params=web_search_params)
+
+        # Try primary model first (Grok 4.1 Fast)
         try:
             logger.debug(f"Making LLM request with primary model: {self.primary_model}")
-            response = self.client.chat.completions.create(
-                model=self.primary_model,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens
-            )
+            response = self.client.chat.completions.create(**request_params)
             content = response.choices[0].message.content.strip()
             logger.debug(f"Primary model response length: {len(content)}, preview: {content[:100]}...")
             return content
         except Exception as e:
             logger.warning(f"Primary model {self.primary_model} failed, trying fallback", error=str(e))
 
-            # Try fallback model (Claude Sonnet 4)
+            # Try fallback model (Claude 3.5 Sonnet)
             try:
                 logger.debug(f"Trying fallback model: {self.fallback_model}")
-                response = self.client.chat.completions.create(
-                    model=self.fallback_model,
-                    messages=messages,
-                    temperature=temperature,
-                    max_tokens=max_tokens
-                )
+                fallback_params = request_params.copy()
+                fallback_params["model"] = self.fallback_model
+                response = self.client.chat.completions.create(**fallback_params)
                 content = response.choices[0].message.content.strip()
                 logger.debug(f"Fallback response length: {len(content)}, preview: {content[:100]}...")
                 return content
             except Exception as fallback_error:
                 logger.warning(f"Fallback model {self.fallback_model} failed, trying tertiary", error=str(fallback_error))
 
-                # Try tertiary model (Claude 3.5 Sonnet)
+                # Try tertiary model (Claude 3 Sonnet)
                 try:
                     logger.debug(f"Trying tertiary model: {self.tertiary_model}")
-                    response = self.client.chat.completions.create(
-                        model=self.tertiary_model,
-                        messages=messages,
-                        temperature=temperature,
-                        max_tokens=max_tokens
-                    )
+                    tertiary_params = request_params.copy()
+                    tertiary_params["model"] = self.tertiary_model
+                    response = self.client.chat.completions.create(**tertiary_params)
                     content = response.choices[0].message.content.strip()
                     logger.debug(f"Tertiary response length: {len(content)}, preview: {content[:100]}...")
                     return content
@@ -93,7 +142,167 @@ class LLMService:
                                fallback_error=str(fallback_error),
                                tertiary_error=str(tertiary_error))
                     raise tertiary_error
-    
+
+    async def web_search_request(
+        self,
+        query: str,
+        context: Optional[str] = None,
+        max_results: int = 5,
+        temperature: float = 0.3
+    ) -> str:
+        """
+        Perform web search using LLM with OpenRouter web search capabilities.
+
+        WHY: Enables real-time information access for analysis and validation
+        HOW: Uses OpenRouter's web search tools with structured queries
+        WHEN: Created 2025-11-21 for enhanced information gathering
+
+        Args:
+            query: Search query string
+            context: Optional context to guide the search
+            max_results: Maximum number of search results to consider
+            temperature: Sampling temperature for response generation
+
+        Returns:
+            Formatted search results and analysis
+        """
+        messages = [
+            {
+                "role": "system",
+                "content": f"""You are an intelligent web search assistant with access to real-time information.
+
+Your task is to search for information and provide a comprehensive, accurate response.
+
+Search Guidelines:
+- Use web search to find current, factual information
+- Prioritize authoritative sources (SEC filings, company websites, financial news)
+- Cross-reference multiple sources when possible
+- Clearly indicate when information is from web search vs. your training data
+- Focus on factual, verifiable information
+
+Context: {context if context else 'General information search'}
+Maximum results to consider: {max_results}
+
+Please search for the requested information and provide a well-structured response."""
+            },
+            {
+                "role": "user",
+                "content": f"Search for: {query}"
+            }
+        ]
+
+        try:
+            response = await self._make_llm_request(
+                messages=messages,
+                temperature=temperature,
+                max_tokens=2000,
+                enable_web_search=True,
+                web_search_params={
+                    "max_search_results": max_results
+                }
+            )
+
+            logger.info("Web search completed",
+                       query=query,
+                       response_length=len(response))
+
+            return response
+
+        except Exception as e:
+            logger.error("Web search failed", query=query, error=str(e))
+            return f"Web search failed for query '{query}': {str(e)}"
+
+    async def enhanced_analysis_with_search(
+        self,
+        primary_content: str,
+        search_queries: List[str],
+        analysis_prompt: str,
+        context: Optional[str] = None
+    ) -> str:
+        """
+        Perform enhanced analysis combining primary content with web search results.
+
+        WHY: Combines static content analysis with real-time information
+        HOW: Executes multiple searches and synthesizes with primary analysis
+        WHEN: Created 2025-11-21 for comprehensive analysis capabilities
+
+        Args:
+            primary_content: Main content to analyze
+            search_queries: List of search queries for additional information
+            analysis_prompt: Analysis instructions for the LLM
+            context: Optional context for the analysis
+
+        Returns:
+            Comprehensive analysis combining all sources
+        """
+        # Perform web searches
+        search_results = []
+        for query in search_queries:
+            try:
+                result = await self.web_search_request(
+                    query=query,
+                    context=context,
+                    max_results=3
+                )
+                search_results.append(f"Search: {query}\nResults: {result}\n")
+            except Exception as e:
+                logger.warning("Search query failed", query=query, error=str(e))
+                search_results.append(f"Search: {query}\nError: {str(e)}\n")
+
+        # Combine all information for analysis
+        combined_content = f"""
+PRIMARY CONTENT:
+{primary_content}
+
+WEB SEARCH RESULTS:
+{''.join(search_results)}
+
+ANALYSIS CONTEXT:
+{context if context else 'Comprehensive analysis requested'}
+"""
+
+        messages = [
+            {
+                "role": "system",
+                "content": f"""You are an expert analyst with access to both provided content and real-time web search results.
+
+Your task is to provide comprehensive analysis by combining:
+1. The primary content provided
+2. Real-time information from web searches
+3. Your analytical expertise
+
+Analysis Guidelines:
+- Clearly distinguish between sources (primary content vs. web search)
+- Cross-reference information for accuracy
+- Highlight any discrepancies or contradictions
+- Provide evidence-based conclusions
+- Note limitations or areas needing further investigation
+
+{analysis_prompt}"""
+            },
+            {
+                "role": "user",
+                "content": combined_content
+            }
+        ]
+
+        try:
+            response = await self._make_llm_request(
+                messages=messages,
+                temperature=0.2,
+                max_tokens=3000
+            )
+
+            logger.info("Enhanced analysis completed",
+                       search_queries=len(search_queries),
+                       response_length=len(response))
+
+            return response
+
+        except Exception as e:
+            logger.error("Enhanced analysis failed", error=str(e))
+            return f"Enhanced analysis failed: {str(e)}"
+
     async def parse_proxy_compensation_table(
         self, 
         html_content: str, 

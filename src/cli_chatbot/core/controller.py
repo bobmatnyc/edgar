@@ -42,6 +42,7 @@ IDENTITY & AWARENESS:
 CAPABILITIES:
 - Dynamic context injection from live codebase analysis
 - Real-time script generation and execution with safety validation
+- Web search for current information and best practices (when enabled)
 - Conversational interface for complex operations
 - Memory of previous interactions and learning from them
 - Input/output modification through dependency injection
@@ -158,11 +159,17 @@ class ChatbotController:
         script_executor: Optional[ScriptExecutor] = None,
         memory: Optional[ConversationMemory] = None,
         personality: Optional[ChatbotPersonality] = None,
-        scripting_enabled: bool = True
+        scripting_enabled: bool = True,
+        web_search_enabled: bool = False,
+        web_search_client: Optional[callable] = None
     ):
         """
         Initialize the CLI Chatbot Controller.
-        
+
+        WHY: Provides intelligent conversational interface with optional web search
+        HOW: Integrates LLM, context injection, scripting, and web search capabilities
+        WHEN: Enhanced 2025-11-21 to add web search capabilities
+
         Args:
             llm_client: Function to call LLM
             application_root: Root directory of the application
@@ -171,10 +178,14 @@ class ChatbotController:
             memory: Conversation memory manager
             personality: Chatbot personality and behavior
             scripting_enabled: Whether to enable dynamic scripting
+            web_search_enabled: Whether to enable web search capabilities
+            web_search_client: Function for web search requests
         """
         self.llm_client = llm_client
         self.application_root = application_root
         self.scripting_enabled = scripting_enabled
+        self.web_search_enabled = web_search_enabled
+        self.web_search_client = web_search_client
         
         # Initialize components with defaults if not provided
         self.context_provider = context_provider or DynamicContextInjector(
@@ -190,7 +201,8 @@ class ChatbotController:
         
         logger.info("CLI Chatbot Controller initialized",
                    application_root=application_root,
-                   scripting_enabled=scripting_enabled)
+                   scripting_enabled=scripting_enabled,
+                   web_search_enabled=web_search_enabled)
 
     @staticmethod
     async def test_llm_availability(llm_client: LLMClient, timeout: float = 10.0) -> bool:
