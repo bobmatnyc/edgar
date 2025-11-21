@@ -97,13 +97,12 @@ class LLMService:
                 }
             }]
 
-            # Add web search configuration
-            if web_search_params:
-                request_params.update(web_search_params)
+            # Enable tool choice for web search
+            request_params["tool_choice"] = "auto"
 
             logger.debug("Web search enabled for LLM request",
                         model=self.primary_model,
-                        search_params=web_search_params)
+                        tools_enabled=True)
 
         # Try primary model first (Grok 4.1 Fast)
         try:
@@ -196,10 +195,7 @@ Please search for the requested information and provide a well-structured respon
                 messages=messages,
                 temperature=temperature,
                 max_tokens=2000,
-                enable_web_search=True,
-                web_search_params={
-                    "max_search_results": max_results
-                }
+                enable_web_search=True
             )
 
             logger.info("Web search completed",
