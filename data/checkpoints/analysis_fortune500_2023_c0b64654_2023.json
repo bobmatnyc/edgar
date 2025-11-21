@@ -1,0 +1,74 @@
+{
+  "analysis_id": "fortune500_2023_c0b64654",
+  "target_year": 2023,
+  "analysis_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "total_companies": 3,
+  "created_at": "2025-11-21T13:45:11.008322",
+  "last_updated": "2025-11-21T13:45:12.913143",
+  "completed_companies": 3,
+  "failed_companies": 0,
+  "config": {
+    "limit": 3,
+    "save_frequency": 5
+  },
+  "companies": [
+    {
+      "cik": "0000066740",
+      "name": "Walmart Inc.",
+      "ticker": "WMT",
+      "fortune_rank": 1,
+      "sector": "Consumer Staples",
+      "industry": "Retail - General Merchandise",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T13:45:11.008800",
+      "extraction_end_time": "2025-11-21T13:45:11.663245",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {},
+      "compensation_data": {},
+      "total_compensation_by_year": {},
+      "compensation_vs_tax_ratios": {}
+    },
+    {
+      "cik": "0001018724",
+      "name": "Amazon.com Inc.",
+      "ticker": "AMZN",
+      "fortune_rank": 2,
+      "sector": "Consumer Discretionary",
+      "industry": "E-commerce & Cloud Computing",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T13:45:11.663580",
+      "extraction_end_time": "2025-11-21T13:45:12.277439",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {},
+      "compensation_data": {},
+      "total_compensation_by_year": {},
+      "compensation_vs_tax_ratios": {}
+    },
+    {
+      "cik": "0000320193",
+      "name": "Apple Inc.",
+      "ticker": "AAPL",
+      "fortune_rank": 3,
+      "sector": "Technology",
+      "industry": "Technology Hardware",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T13:45:12.277694",
+      "extraction_end_time": "2025-11-21T13:45:12.911852",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {},
+      "compensation_data": {},
+      "total_compensation_by_year": {},
+      "compensation_vs_tax_ratios": {}
+    }
+  ],
+  "global_errors": []
+}

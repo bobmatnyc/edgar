@@ -1,0 +1,3185 @@
+{
+  "analysis_id": "fortune500_2023_22d943ec",
+  "target_year": 2023,
+  "analysis_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "total_companies": 10,
+  "created_at": "2025-11-21T14:29:59.134976",
+  "last_updated": "2025-11-21T14:30:08.851427",
+  "completed_companies": 10,
+  "failed_companies": 0,
+  "config": {
+    "limit": 10,
+    "save_frequency": 5
+  },
+  "companies": [
+    {
+      "cik": "0000066740",
+      "name": "Walmart Inc.",
+      "ticker": "WMT",
+      "fortune_rank": 1,
+      "sector": "Consumer Staples",
+      "industry": "Retail - General Merchandise",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T14:29:59.135539",
+      "extraction_end_time": "2025-11-21T14:29:59.808794",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {
+        "2019": {
+          "total_tax_expense": 2679000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2019,
+          "filing_date": "2020-02-06T00:00:00"
+        },
+        "2020": {
+          "total_tax_expense": 1637000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2020,
+          "filing_date": "2021-02-04T00:00:00"
+        },
+        "2021": {
+          "total_tax_expense": 1114000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2021,
+          "filing_date": "2022-02-09T00:00:00"
+        },
+        "2022": {
+          "total_tax_expense": 1337000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2022,
+          "filing_date": "2023-02-08T00:00:00"
+        },
+        "2023": {
+          "total_tax_expense": 1285000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2023,
+          "filing_date": "2024-02-07T00:00:00"
+        }
+      },
+      "compensation_data": {
+        "2019": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 31489045.0,
+            "salary": 8700849.0,
+            "bonus": 4186901.0,
+            "stock_awards": 10293827.0,
+            "option_awards": 8307465.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 18333113.0,
+            "salary": 6245204.0,
+            "bonus": 2716975.0,
+            "stock_awards": 7367875.0,
+            "option_awards": 2003057.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 12847219.0,
+            "salary": 4090313.0,
+            "bonus": 2240392.0,
+            "stock_awards": 6306631.0,
+            "option_awards": 642360.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 17329127.0,
+            "salary": 5603493.0,
+            "bonus": 1983852.0,
+            "stock_awards": 8184413.0,
+            "option_awards": 1557366.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 8949690.0,
+            "salary": 2395684.0,
+            "bonus": 2174567.0,
+            "stock_awards": 3554024.0,
+            "option_awards": 825414.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          }
+        ],
+        "2020": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 50907194.0,
+            "salary": 9763559.0,
+            "bonus": 6570940.0,
+            "stock_awards": 21315352.0,
+            "option_awards": 13257340.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 20784443.0,
+            "salary": 6474957.0,
+            "bonus": 2187662.0,
+            "stock_awards": 7122214.0,
+            "option_awards": 4999608.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 18651829.0,
+            "salary": 4926662.0,
+            "bonus": 2843999.0,
+            "stock_awards": 5683244.0,
+            "option_awards": 5197922.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 15190827.0,
+            "salary": 3609542.0,
+            "bonus": 1669281.0,
+            "stock_awards": 4756270.0,
+            "option_awards": 5155732.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 20847152.0,
+            "salary": 3242962.0,
+            "bonus": 3673489.0,
+            "stock_awards": 10097872.0,
+            "option_awards": 3832827.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          }
+        ],
+        "2021": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 45414510.0,
+            "salary": 7902051.0,
+            "bonus": 5050464.0,
+            "stock_awards": 14661989.0,
+            "option_awards": 17800004.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 24304824.0,
+            "salary": 6196111.0,
+            "bonus": 3145797.0,
+            "stock_awards": 9124910.0,
+            "option_awards": 5838003.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 22749856.0,
+            "salary": 3425940.0,
+            "bonus": 3230946.0,
+            "stock_awards": 9048956.0,
+            "option_awards": 7044012.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 21391128.0,
+            "salary": 7294940.0,
+            "bonus": 4844850.0,
+            "stock_awards": 7531879.0,
+            "option_awards": 1719457.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 14421051.0,
+            "salary": 2209498.0,
+            "bonus": 3086145.0,
+            "stock_awards": 5449374.0,
+            "option_awards": 3676032.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          }
+        ],
+        "2022": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 41861133.0,
+            "salary": 8609610.0,
+            "bonus": 7241286.0,
+            "stock_awards": 14990120.0,
+            "option_awards": 11020115.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 22543076.0,
+            "salary": 7364859.0,
+            "bonus": 2717748.0,
+            "stock_awards": 10284575.0,
+            "option_awards": 2175892.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 14807408.0,
+            "salary": 4127745.0,
+            "bonus": 3413443.0,
+            "stock_awards": 6355105.0,
+            "option_awards": 911113.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 13033287.0,
+            "salary": 2139730.0,
+            "bonus": 1389839.0,
+            "stock_awards": 5831470.0,
+            "option_awards": 3672247.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 12973506.0,
+            "salary": 2310056.0,
+            "bonus": 2289121.0,
+            "stock_awards": 4232714.0,
+            "option_awards": 4141612.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          }
+        ],
+        "2023": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 49106773.0,
+            "salary": 15006024.0,
+            "bonus": 5470820.0,
+            "stock_awards": 22063466.0,
+            "option_awards": 6566461.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 19729672.0,
+            "salary": 5090987.0,
+            "bonus": 3648097.0,
+            "stock_awards": 8197455.0,
+            "option_awards": 2793131.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 26067680.0,
+            "salary": 4032361.0,
+            "bonus": 2951288.0,
+            "stock_awards": 9902464.0,
+            "option_awards": 9181564.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 15552641.0,
+            "salary": 3000741.0,
+            "bonus": 1874361.0,
+            "stock_awards": 6780874.0,
+            "option_awards": 3896663.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 16836523.0,
+            "salary": 2655369.0,
+            "bonus": 3451600.0,
+            "stock_awards": 5141580.0,
+            "option_awards": 5587972.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          }
+        ]
+      },
+      "total_compensation_by_year": {
+        "2019": 88948194.0,
+        "2020": 126381445.0,
+        "2021": 128281369.0,
+        "2022": 105218410.0,
+        "2023": 127293289.0
+      },
+      "compensation_vs_tax_ratios": {
+        "2019": 0.033202013437849946,
+        "2020": 0.07720308185705559,
+        "2021": 0.11515383213644524,
+        "2022": 0.07869738967838444,
+        "2023": 0.09906092529182879
+      }
+    },
+    {
+      "cik": "0001018724",
+      "name": "Amazon.com Inc.",
+      "ticker": "AMZN",
+      "fortune_rank": 2,
+      "sector": "Consumer Discretionary",
+      "industry": "E-commerce & Cloud Computing",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T14:29:59.809296",
+      "extraction_end_time": "2025-11-21T14:30:00.457082",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {
+        "2019": {
+          "total_tax_expense": 769000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2019,
+          "filing_date": "2020-01-31T00:00:00"
+        },
+        "2020": {
+          "total_tax_expense": 1197000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2020,
+          "filing_date": "2021-02-03T00:00:00"
+        },
+        "2021": {
+          "total_tax_expense": 2374000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2021,
+          "filing_date": "2022-02-04T00:00:00"
+        },
+        "2022": {
+          "total_tax_expense": 2863000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2022,
+          "filing_date": "2023-02-03T00:00:00"
+        },
+        "2023": {
+          "total_tax_expense": 4791000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2023,
+          "filing_date": "2024-02-02T00:00:00"
+        }
+      },
+      "compensation_data": {
+        "2020": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 44639449.0,
+            "salary": 13203614.0,
+            "bonus": 6243315.0,
+            "stock_awards": 20083065.0,
+            "option_awards": 5109454.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 29226388.0,
+            "salary": 6934407.0,
+            "bonus": 5464451.0,
+            "stock_awards": 9165945.0,
+            "option_awards": 7661582.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 17511579.0,
+            "salary": 6064012.0,
+            "bonus": 2800246.0,
+            "stock_awards": 8598847.0,
+            "option_awards": 875578.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 14716910.0,
+            "salary": 2364650.0,
+            "bonus": 3570845.0,
+            "stock_awards": 6997346.0,
+            "option_awards": 1784067.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 15944880.0,
+            "salary": 4736529.0,
+            "bonus": 2186722.0,
+            "stock_awards": 7032578.0,
+            "option_awards": 1989049.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          }
+        ],
+        "2021": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 34247125.0,
+            "salary": 9300096.0,
+            "bonus": 4240027.0,
+            "stock_awards": 13543741.0,
+            "option_awards": 7163259.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 14558190.0,
+            "salary": 3092202.0,
+            "bonus": 3038159.0,
+            "stock_awards": 7180976.0,
+            "option_awards": 1246852.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 12244331.0,
+            "salary": 2665840.0,
+            "bonus": 1452668.0,
+            "stock_awards": 3771400.0,
+            "option_awards": 4354421.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 15779491.0,
+            "salary": 4944107.0,
+            "bonus": 2599679.0,
+            "stock_awards": 5998064.0,
+            "option_awards": 2237639.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 13619126.0,
+            "salary": 4258174.0,
+            "bonus": 2014635.0,
+            "stock_awards": 4353215.0,
+            "option_awards": 2993100.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          }
+        ],
+        "2022": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 21498080.0,
+            "salary": 5440395.0,
+            "bonus": 3773456.0,
+            "stock_awards": 6885530.0,
+            "option_awards": 5398697.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 10446160.0,
+            "salary": 1999254.0,
+            "bonus": 2499076.0,
+            "stock_awards": 3580167.0,
+            "option_awards": 2367661.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 11843765.0,
+            "salary": 2047256.0,
+            "bonus": 2611750.0,
+            "stock_awards": 5140701.0,
+            "option_awards": 2044055.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 7260325.0,
+            "salary": 1905128.0,
+            "bonus": 1013808.0,
+            "stock_awards": 2727139.0,
+            "option_awards": 1614248.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 6728906.0,
+            "salary": 1289995.0,
+            "bonus": 1147676.0,
+            "stock_awards": 2041509.0,
+            "option_awards": 2249723.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          }
+        ],
+        "2023": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 16013270.0,
+            "salary": 3385249.0,
+            "bonus": 3976062.0,
+            "stock_awards": 5103527.0,
+            "option_awards": 3548431.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 10550565.0,
+            "salary": 3469440.0,
+            "bonus": 1250354.0,
+            "stock_awards": 4426751.0,
+            "option_awards": 1404018.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 9924700.0,
+            "salary": 3198312.0,
+            "bonus": 1008015.0,
+            "stock_awards": 3679827.0,
+            "option_awards": 2038544.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 7274087.0,
+            "salary": 1317545.0,
+            "bonus": 1315612.0,
+            "stock_awards": 3138696.0,
+            "option_awards": 1502232.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 7310012.0,
+            "salary": 1676432.0,
+            "bonus": 780861.0,
+            "stock_awards": 2665224.0,
+            "option_awards": 2187492.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          }
+        ]
+      },
+      "total_compensation_by_year": {
+        "2020": 122039206.0,
+        "2021": 90448263.0,
+        "2022": 57777236.0,
+        "2023": 51072634.0
+      },
+      "compensation_vs_tax_ratios": {
+        "2019": 0.0,
+        "2020": 0.10195422389306599,
+        "2021": 0.03809952106149958,
+        "2022": 0.020180662242403075,
+        "2023": 0.010660119807973283
+      }
+    },
+    {
+      "cik": "0000320193",
+      "name": "Apple Inc.",
+      "ticker": "AAPL",
+      "fortune_rank": 3,
+      "sector": "Technology",
+      "industry": "Technology Hardware",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T14:30:00.457427",
+      "extraction_end_time": "2025-11-21T14:30:01.087241",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {
+        "2019": {
+          "total_tax_expense": 15738000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2019,
+          "filing_date": "2019-10-31T00:00:00"
+        },
+        "2020": {
+          "total_tax_expense": 13372000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2020,
+          "filing_date": "2020-10-30T00:00:00"
+        },
+        "2021": {
+          "total_tax_expense": 10481000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2021,
+          "filing_date": "2021-10-29T00:00:00"
+        },
+        "2022": {
+          "total_tax_expense": 9680000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2022,
+          "filing_date": "2022-10-28T00:00:00"
+        },
+        "2023": {
+          "total_tax_expense": 14527000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2023,
+          "filing_date": "2023-11-03T00:00:00"
+        }
+      },
+      "compensation_data": {
+        "2019": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 36715963.0,
+            "salary": 11910953.0,
+            "bonus": 5202950.0,
+            "stock_awards": 11040100.0,
+            "option_awards": 8561958.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 16827229.0,
+            "salary": 2683540.0,
+            "bonus": 2508194.0,
+            "stock_awards": 8394666.0,
+            "option_awards": 3240827.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 18200655.0,
+            "salary": 3513915.0,
+            "bonus": 1964887.0,
+            "stock_awards": 6764353.0,
+            "option_awards": 5957498.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 9948107.0,
+            "salary": 2968896.0,
+            "bonus": 2129714.0,
+            "stock_awards": 4945845.0,
+            "option_awards": 497405.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 11683733.0,
+            "salary": 3515930.0,
+            "bonus": 2761953.0,
+            "stock_awards": 4085879.0,
+            "option_awards": 1319969.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          }
+        ],
+        "2020": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 52114279.0,
+            "salary": 8623863.0,
+            "bonus": 9900840.0,
+            "stock_awards": 21220179.0,
+            "option_awards": 12369395.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 35839894.0,
+            "salary": 12395247.0,
+            "bonus": 6765790.0,
+            "stock_awards": 12328502.0,
+            "option_awards": 4350353.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 23164668.0,
+            "salary": 3477942.0,
+            "bonus": 5106871.0,
+            "stock_awards": 7793069.0,
+            "option_awards": 6786784.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 20686002.0,
+            "salary": 6291854.0,
+            "bonus": 3136816.0,
+            "stock_awards": 9432787.0,
+            "option_awards": 1824544.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 19635284.0,
+            "salary": 5641255.0,
+            "bonus": 3914374.0,
+            "stock_awards": 7891972.0,
+            "option_awards": 2187681.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          }
+        ],
+        "2021": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 32271454.0,
+            "salary": 5949670.0,
+            "bonus": 5645187.0,
+            "stock_awards": 9866165.0,
+            "option_awards": 10810430.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 20498558.0,
+            "salary": 5299328.0,
+            "bonus": 4782668.0,
+            "stock_awards": 10039202.0,
+            "option_awards": 1024927.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 13834964.0,
+            "salary": 2681671.0,
+            "bonus": 1712443.0,
+            "stock_awards": 4306616.0,
+            "option_awards": 5134232.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 15697932.0,
+            "salary": 3113203.0,
+            "bonus": 1662275.0,
+            "stock_awards": 6089428.0,
+            "option_awards": 4833024.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 12348981.0,
+            "salary": 2140170.0,
+            "bonus": 2317705.0,
+            "stock_awards": 4840757.0,
+            "option_awards": 3050347.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          }
+        ],
+        "2022": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 42658558.0,
+            "salary": 13767632.0,
+            "bonus": 8157347.0,
+            "stock_awards": 14377749.0,
+            "option_awards": 6355827.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 20077336.0,
+            "salary": 3359611.0,
+            "bonus": 2819480.0,
+            "stock_awards": 6551114.0,
+            "option_awards": 7347129.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 22403503.0,
+            "salary": 5973939.0,
+            "bonus": 3309818.0,
+            "stock_awards": 10916854.0,
+            "option_awards": 2202890.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 12386989.0,
+            "salary": 2465641.0,
+            "bonus": 2675767.0,
+            "stock_awards": 4262385.0,
+            "option_awards": 2983194.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 13532015.0,
+            "salary": 2449656.0,
+            "bonus": 1756544.0,
+            "stock_awards": 4103304.0,
+            "option_awards": 5222510.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          }
+        ],
+        "2023": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 38627170.0,
+            "salary": 6550589.0,
+            "bonus": 6001588.0,
+            "stock_awards": 14680827.0,
+            "option_awards": 11394163.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 21940732.0,
+            "salary": 5552401.0,
+            "bonus": 4742955.0,
+            "stock_awards": 7841956.0,
+            "option_awards": 3803417.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 19216662.0,
+            "salary": 3937653.0,
+            "bonus": 4695545.0,
+            "stock_awards": 9163758.0,
+            "option_awards": 1419703.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 14020624.0,
+            "salary": 2902466.0,
+            "bonus": 2285805.0,
+            "stock_awards": 6956837.0,
+            "option_awards": 1875513.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 12255533.0,
+            "salary": 3704001.0,
+            "bonus": 2222829.0,
+            "stock_awards": 4977142.0,
+            "option_awards": 1351559.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          }
+        ]
+      },
+      "total_compensation_by_year": {
+        "2019": 93375687.0,
+        "2020": 151440127.0,
+        "2021": 94651889.0,
+        "2022": 111058401.0,
+        "2023": 106060721.0
+      },
+      "compensation_vs_tax_ratios": {
+        "2019": 0.005933135531833778,
+        "2020": 0.011325166542028118,
+        "2021": 0.009030807079477149,
+        "2022": 0.011472975309917356,
+        "2023": 0.007300937633372341
+      }
+    },
+    {
+      "cik": "0000064803",
+      "name": "CVS Health Corporation",
+      "ticker": "CVS",
+      "fortune_rank": 4,
+      "sector": "Healthcare",
+      "industry": "Healthcare Services",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T14:30:01.087548",
+      "extraction_end_time": "2025-11-21T14:30:01.718109",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {
+        "2019": {
+          "total_tax_expense": 1637000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2019,
+          "filing_date": "2020-02-18T00:00:00"
+        },
+        "2020": {
+          "total_tax_expense": 2002000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2020,
+          "filing_date": "2021-02-16T00:00:00"
+        },
+        "2021": {
+          "total_tax_expense": 2366000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2021,
+          "filing_date": "2022-02-09T00:00:00"
+        },
+        "2022": {
+          "total_tax_expense": 2569000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2022,
+          "filing_date": "2023-02-08T00:00:00"
+        },
+        "2023": {
+          "total_tax_expense": 2548000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2023,
+          "filing_date": "2024-02-07T00:00:00"
+        }
+      },
+      "compensation_data": {
+        "2019": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 50430068.0,
+            "salary": 15028214.0,
+            "bonus": 6521730.0,
+            "stock_awards": 22648873.0,
+            "option_awards": 6231249.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 24593672.0,
+            "salary": 5916191.0,
+            "bonus": 5686979.0,
+            "stock_awards": 12292419.0,
+            "option_awards": 1229683.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 30909494.0,
+            "salary": 6381055.0,
+            "bonus": 3706163.0,
+            "stock_awards": 14690688.0,
+            "option_awards": 6131586.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 26990724.0,
+            "salary": 4815980.0,
+            "bonus": 4810993.0,
+            "stock_awards": 11550225.0,
+            "option_awards": 5813524.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 25104628.0,
+            "salary": 8367542.0,
+            "bonus": 2538150.0,
+            "stock_awards": 8215939.0,
+            "option_awards": 5982995.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          }
+        ],
+        "2020": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 42253235.0,
+            "salary": 13259179.0,
+            "bonus": 7565236.0,
+            "stock_awards": 16601278.0,
+            "option_awards": 4827540.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 16607323.0,
+            "salary": 5171519.0,
+            "bonus": 2885583.0,
+            "stock_awards": 5150844.0,
+            "option_awards": 3399375.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 25285208.0,
+            "salary": 7897767.0,
+            "bonus": 3521515.0,
+            "stock_awards": 12563011.0,
+            "option_awards": 1302913.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 19346213.0,
+            "salary": 3169521.0,
+            "bonus": 3378583.0,
+            "stock_awards": 8749912.0,
+            "option_awards": 4048195.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 19964868.0,
+            "salary": 4304596.0,
+            "bonus": 3293034.0,
+            "stock_awards": 8323559.0,
+            "option_awards": 4043677.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          }
+        ],
+        "2021": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 33062958.0,
+            "salary": 7576903.0,
+            "bonus": 8049120.0,
+            "stock_awards": 13359464.0,
+            "option_awards": 4077468.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 15290029.0,
+            "salary": 3082981.0,
+            "bonus": 2804870.0,
+            "stock_awards": 5308675.0,
+            "option_awards": 4093501.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 13797615.0,
+            "salary": 4020123.0,
+            "bonus": 3035910.0,
+            "stock_awards": 4572232.0,
+            "option_awards": 2169348.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 14830773.0,
+            "salary": 3672068.0,
+            "bonus": 2607191.0,
+            "stock_awards": 7084940.0,
+            "option_awards": 1466573.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 16234735.0,
+            "salary": 4390478.0,
+            "bonus": 3271983.0,
+            "stock_awards": 6259870.0,
+            "option_awards": 2312402.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          }
+        ],
+        "2022": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 21120401.0,
+            "salary": 4181420.0,
+            "bonus": 2137097.0,
+            "stock_awards": 9319179.0,
+            "option_awards": 5482703.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 11371033.0,
+            "salary": 2916387.0,
+            "bonus": 2344436.0,
+            "stock_awards": 5573423.0,
+            "option_awards": 568551.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 12151331.0,
+            "salary": 2057685.0,
+            "bonus": 2683832.0,
+            "stock_awards": 5680403.0,
+            "option_awards": 1729408.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 8113402.0,
+            "salary": 1576278.0,
+            "bonus": 1817716.0,
+            "stock_awards": 3994855.0,
+            "option_awards": 724551.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 10103334.0,
+            "salary": 2521495.0,
+            "bonus": 1282291.0,
+            "stock_awards": 5011436.0,
+            "option_awards": 1288110.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          }
+        ],
+        "2023": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 21043742.0,
+            "salary": 7085822.0,
+            "bonus": 2997352.0,
+            "stock_awards": 8261697.0,
+            "option_awards": 2698870.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 12624602.0,
+            "salary": 3511578.0,
+            "bonus": 3077113.0,
+            "stock_awards": 4329819.0,
+            "option_awards": 1706090.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 9793851.0,
+            "salary": 2096561.0,
+            "bonus": 2108274.0,
+            "stock_awards": 3521686.0,
+            "option_awards": 2067328.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 11296095.0,
+            "salary": 3755688.0,
+            "bonus": 2666315.0,
+            "stock_awards": 4092067.0,
+            "option_awards": 782024.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 11490681.0,
+            "salary": 1817656.0,
+            "bonus": 2074801.0,
+            "stock_awards": 5625866.0,
+            "option_awards": 1972356.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          }
+        ]
+      },
+      "total_compensation_by_year": {
+        "2019": 158028586.0,
+        "2020": 123456847.0,
+        "2021": 93216110.0,
+        "2022": 62859501.0,
+        "2023": 66248971.0
+      },
+      "compensation_vs_tax_ratios": {
+        "2019": 0.09653548320097739,
+        "2020": 0.061666756743256744,
+        "2021": 0.03939818681318681,
+        "2022": 0.024468470611132737,
+        "2023": 0.02600038108320251
+      }
+    },
+    {
+      "cik": "0000731766",
+      "name": "UnitedHealth Group Incorporated",
+      "ticker": "UNH",
+      "fortune_rank": 5,
+      "sector": "Healthcare",
+      "industry": "Healthcare Insurance",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T14:30:01.718426",
+      "extraction_end_time": "2025-11-21T14:30:02.356311",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {
+        "2019": {
+          "total_tax_expense": 3200000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2019,
+          "filing_date": "2020-02-14T00:00:00"
+        },
+        "2020": {
+          "total_tax_expense": 3562000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2020,
+          "filing_date": "2021-03-01T00:00:00"
+        },
+        "2021": {
+          "total_tax_expense": 3742000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2021,
+          "filing_date": "2022-02-15T00:00:00"
+        },
+        "2022": {
+          "total_tax_expense": 4973000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2022,
+          "filing_date": "2023-02-24T00:00:00"
+        },
+        "2023": {
+          "total_tax_expense": 4578000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2023,
+          "filing_date": "2024-02-28T00:00:00"
+        }
+      },
+      "compensation_data": {
+        "2020": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 25934906.0,
+            "salary": 8276886.0,
+            "bonus": 2787695.0,
+            "stock_awards": 11479329.0,
+            "option_awards": 3390993.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 10526257.0,
+            "salary": 2131891.0,
+            "bonus": 1759349.0,
+            "stock_awards": 5239215.0,
+            "option_awards": 1395799.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 18696315.0,
+            "salary": 3331194.0,
+            "bonus": 4623542.0,
+            "stock_awards": 7017982.0,
+            "option_awards": 3723595.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 7107811.0,
+            "salary": 1711354.0,
+            "bonus": 1541711.0,
+            "stock_awards": 2380315.0,
+            "option_awards": 1474428.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 11057606.0,
+            "salary": 2905792.0,
+            "bonus": 1685466.0,
+            "stock_awards": 4291476.0,
+            "option_awards": 2174870.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          }
+        ],
+        "2021": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 41520642.0,
+            "salary": 11469765.0,
+            "bonus": 6241263.0,
+            "stock_awards": 16383915.0,
+            "option_awards": 7425698.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 23819895.0,
+            "salary": 7250292.0,
+            "bonus": 4149513.0,
+            "stock_awards": 9037422.0,
+            "option_awards": 3382666.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 22246726.0,
+            "salary": 5852449.0,
+            "bonus": 2285259.0,
+            "stock_awards": 9871747.0,
+            "option_awards": 4237269.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 14932413.0,
+            "salary": 4372650.0,
+            "bonus": 2821966.0,
+            "stock_awards": 6427091.0,
+            "option_awards": 1310704.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 11108477.0,
+            "salary": 3098724.0,
+            "bonus": 2282110.0,
+            "stock_awards": 5141692.0,
+            "option_awards": 585949.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          }
+        ],
+        "2022": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 20886959.0,
+            "salary": 3582976.0,
+            "bonus": 3620129.0,
+            "stock_awards": 7728513.0,
+            "option_awards": 5955339.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 8828600.0,
+            "salary": 1880766.0,
+            "bonus": 1279247.0,
+            "stock_awards": 3546988.0,
+            "option_awards": 2121596.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 12525838.0,
+            "salary": 2128007.0,
+            "bonus": 1587481.0,
+            "stock_awards": 4484605.0,
+            "option_awards": 4325742.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 9486251.0,
+            "salary": 1441666.0,
+            "bonus": 1534750.0,
+            "stock_awards": 3212557.0,
+            "option_awards": 3297276.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 8957694.0,
+            "salary": 2328938.0,
+            "bonus": 1826289.0,
+            "stock_awards": 3382767.0,
+            "option_awards": 1419698.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          }
+        ],
+        "2023": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 25444334.0,
+            "salary": 7060698.0,
+            "bonus": 3484603.0,
+            "stock_awards": 9367375.0,
+            "option_awards": 5531655.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 16495776.0,
+            "salary": 3013937.0,
+            "bonus": 3866919.0,
+            "stock_awards": 5224534.0,
+            "option_awards": 4390384.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 14224255.0,
+            "salary": 2434526.0,
+            "bonus": 3536109.0,
+            "stock_awards": 4441386.0,
+            "option_awards": 3812231.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 12332871.0,
+            "salary": 2521730.0,
+            "bonus": 2421391.0,
+            "stock_awards": 4267634.0,
+            "option_awards": 3122114.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 7612046.0,
+            "salary": 1876097.0,
+            "bonus": 1096725.0,
+            "stock_awards": 2928092.0,
+            "option_awards": 1711130.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          }
+        ]
+      },
+      "total_compensation_by_year": {
+        "2020": 73322895.0,
+        "2021": 113628153.0,
+        "2022": 60685342.0,
+        "2023": 76109282.0
+      },
+      "compensation_vs_tax_ratios": {
+        "2019": 0.0,
+        "2020": 0.02058475435148793,
+        "2021": 0.030365620791020845,
+        "2022": 0.01220296440780213,
+        "2023": 0.016625006989951945
+      }
+    },
+    {
+      "cik": "0000034088",
+      "name": "Exxon Mobil Corporation",
+      "ticker": "XOM",
+      "fortune_rank": 6,
+      "sector": "Energy",
+      "industry": "Oil & Gas",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T14:30:02.359681",
+      "extraction_end_time": "2025-11-21T14:30:03.563079",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {
+        "2019": {
+          "total_tax_expense": -1174000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2019,
+          "filing_date": "2020-02-26T00:00:00"
+        },
+        "2020": {
+          "total_tax_expense": 9532000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2020,
+          "filing_date": "2021-02-24T00:00:00"
+        },
+        "2021": {
+          "total_tax_expense": 5282000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2021,
+          "filing_date": "2022-02-23T00:00:00"
+        },
+        "2022": {
+          "total_tax_expense": -5632000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2022,
+          "filing_date": "2023-02-22T00:00:00"
+        },
+        "2023": {
+          "total_tax_expense": 7636000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2023,
+          "filing_date": "2024-02-28T00:00:00"
+        }
+      },
+      "compensation_data": {
+        "2019": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 17181114.0,
+            "salary": 4878806.0,
+            "bonus": 3404817.0,
+            "stock_awards": 6768068.0,
+            "option_awards": 2129421.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 9277311.0,
+            "salary": 1486996.0,
+            "bonus": 2045287.0,
+            "stock_awards": 3842726.0,
+            "option_awards": 1902300.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 7276428.0,
+            "salary": 1519429.0,
+            "bonus": 1779835.0,
+            "stock_awards": 3567674.0,
+            "option_awards": 409487.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 6049044.0,
+            "salary": 2004621.0,
+            "bonus": 1107891.0,
+            "stock_awards": 2830725.0,
+            "option_awards": 302452.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 8034569.0,
+            "salary": 1661836.0,
+            "bonus": 1658027.0,
+            "stock_awards": 3372510.0,
+            "option_awards": 1342193.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          }
+        ],
+        "2020": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 34568307.0,
+            "salary": 5243056.0,
+            "bonus": 5286490.0,
+            "stock_awards": 11326042.0,
+            "option_awards": 12712716.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 18432269.0,
+            "salary": 4855032.0,
+            "bonus": 3601439.0,
+            "stock_awards": 8322310.0,
+            "option_awards": 1653486.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 14550828.0,
+            "salary": 4619554.0,
+            "bonus": 2868909.0,
+            "stock_awards": 4503237.0,
+            "option_awards": 2559126.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 10850731.0,
+            "salary": 2601595.0,
+            "bonus": 1333163.0,
+            "stock_awards": 4426935.0,
+            "option_awards": 2489035.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 16871599.0,
+            "salary": 5539006.0,
+            "bonus": 2985589.0,
+            "stock_awards": 5835434.0,
+            "option_awards": 2511568.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          }
+        ],
+        "2022": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 51105272.0,
+            "salary": 13086550.0,
+            "bonus": 5585362.0,
+            "stock_awards": 20856258.0,
+            "option_awards": 11577100.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 30695536.0,
+            "salary": 10360169.0,
+            "bonus": 3268942.0,
+            "stock_awards": 14040434.0,
+            "option_awards": 3025989.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 25004333.0,
+            "salary": 6438761.0,
+            "bonus": 5850459.0,
+            "stock_awards": 8437557.0,
+            "option_awards": 4277554.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 25327150.0,
+            "salary": 8313002.0,
+            "bonus": 3548270.0,
+            "stock_awards": 11465532.0,
+            "option_awards": 2000344.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 24093438.0,
+            "salary": 7925485.0,
+            "bonus": 5680995.0,
+            "stock_awards": 7720790.0,
+            "option_awards": 2766165.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          }
+        ],
+        "2023": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 48316307.0,
+            "salary": 13956101.0,
+            "bonus": 6017142.0,
+            "stock_awards": 18007816.0,
+            "option_awards": 10335247.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 28423226.0,
+            "salary": 9036300.0,
+            "bonus": 6898419.0,
+            "stock_awards": 11386729.0,
+            "option_awards": 1421161.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 25215703.0,
+            "salary": 4037399.0,
+            "bonus": 3521796.0,
+            "stock_awards": 9644921.0,
+            "option_awards": 8011585.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 13356418.0,
+            "salary": 2213200.0,
+            "bonus": 1885862.0,
+            "stock_awards": 4728954.0,
+            "option_awards": 4528400.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 18840249.0,
+            "salary": 2831862.0,
+            "bonus": 2034016.0,
+            "stock_awards": 7179452.0,
+            "option_awards": 6794917.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          }
+        ]
+      },
+      "total_compensation_by_year": {
+        "2019": 47818466.0,
+        "2020": 95273734.0,
+        "2022": 156225729.0,
+        "2023": 134151903.0
+      },
+      "compensation_vs_tax_ratios": {
+        "2019": null,
+        "2020": 0.009995146244229963,
+        "2021": 0.0,
+        "2022": null,
+        "2023": 0.01756834769512834
+      }
+    },
+    {
+      "cik": "0001067983",
+      "name": "Berkshire Hathaway Inc.",
+      "ticker": "BRK.A",
+      "fortune_rank": 7,
+      "sector": "Financial Services",
+      "industry": "Financial Services",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T14:30:03.563702",
+      "extraction_end_time": "2025-11-21T14:30:04.875701",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {
+        "2019": {
+          "total_tax_expense": -21515000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2019,
+          "filing_date": "2020-02-24T00:00:00"
+        },
+        "2020": {
+          "total_tax_expense": -321000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2020,
+          "filing_date": "2021-03-01T00:00:00"
+        },
+        "2021": {
+          "total_tax_expense": 20904000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2021,
+          "filing_date": "2022-02-28T00:00:00"
+        },
+        "2022": {
+          "total_tax_expense": 12440000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2022,
+          "filing_date": "2023-02-27T00:00:00"
+        },
+        "2023": {
+          "total_tax_expense": 20912000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2023,
+          "filing_date": "2024-02-26T00:00:00"
+        }
+      },
+      "compensation_data": {
+        "2019": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 25852011.0,
+            "salary": 8680082.0,
+            "bonus": 2966236.0,
+            "stock_awards": 10268580.0,
+            "option_awards": 3937112.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 15211130.0,
+            "salary": 4389292.0,
+            "bonus": 2618899.0,
+            "stock_awards": 5665980.0,
+            "option_awards": 2536957.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 14801275.0,
+            "salary": 3643763.0,
+            "bonus": 2341474.0,
+            "stock_awards": 7375292.0,
+            "option_awards": 1440744.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 11966396.0,
+            "salary": 3348555.0,
+            "bonus": 1682993.0,
+            "stock_awards": 5001528.0,
+            "option_awards": 1933319.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 10251793.0,
+            "salary": 3127791.0,
+            "bonus": 2410507.0,
+            "stock_awards": 4825802.0,
+            "option_awards": 512589.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          }
+        ],
+        "2020": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 19100223.0,
+            "salary": 4137908.0,
+            "bonus": 3029044.0,
+            "stock_awards": 8379513.0,
+            "option_awards": 3553756.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 13266944.0,
+            "salary": 3657912.0,
+            "bonus": 1902088.0,
+            "stock_awards": 5414016.0,
+            "option_awards": 2292926.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 8402634.0,
+            "salary": 2490584.0,
+            "bonus": 1840525.0,
+            "stock_awards": 2622268.0,
+            "option_awards": 1449255.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 5480293.0,
+            "salary": 1224537.0,
+            "bonus": 648399.0,
+            "stock_awards": 1811114.0,
+            "option_awards": 1796241.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 9548561.0,
+            "salary": 2910323.0,
+            "bonus": 1347451.0,
+            "stock_awards": 4503359.0,
+            "option_awards": 787426.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          }
+        ],
+        "2021": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 50870048.0,
+            "salary": 16825272.0,
+            "bonus": 6501172.0,
+            "stock_awards": 23089565.0,
+            "option_awards": 4454037.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 32269420.0,
+            "salary": 9808792.0,
+            "bonus": 5932555.0,
+            "stock_awards": 11417745.0,
+            "option_awards": 5110326.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 21443638.0,
+            "salary": 7455028.0,
+            "bonus": 3888896.0,
+            "stock_awards": 6814549.0,
+            "option_awards": 3285164.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 14667271.0,
+            "salary": 4105552.0,
+            "bonus": 2907540.0,
+            "stock_awards": 4910251.0,
+            "option_awards": 2743926.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 21422299.0,
+            "salary": 3515112.0,
+            "bonus": 2687558.0,
+            "stock_awards": 6814179.0,
+            "option_awards": 8405448.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          }
+        ],
+        "2022": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 23497569.0,
+            "salary": 5168882.0,
+            "bonus": 3810027.0,
+            "stock_awards": 8293873.0,
+            "option_awards": 6224784.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 16839546.0,
+            "salary": 2766270.0,
+            "bonus": 3742495.0,
+            "stock_awards": 8097909.0,
+            "option_awards": 2232870.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 14950779.0,
+            "salary": 2295029.0,
+            "bonus": 1874898.0,
+            "stock_awards": 4927470.0,
+            "option_awards": 5853380.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 8939982.0,
+            "salary": 2743140.0,
+            "bonus": 969564.0,
+            "stock_awards": 2733753.0,
+            "option_awards": 2493523.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 9181684.0,
+            "salary": 2845365.0,
+            "bonus": 1126674.0,
+            "stock_awards": 3709889.0,
+            "option_awards": 1499754.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          }
+        ],
+        "2023": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 22814291.0,
+            "salary": 5963792.0,
+            "bonus": 5609418.0,
+            "stock_awards": 7717481.0,
+            "option_awards": 3523599.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 15481054.0,
+            "salary": 4883479.0,
+            "bonus": 2411735.0,
+            "stock_awards": 7322869.0,
+            "option_awards": 862969.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 13344179.0,
+            "salary": 2464543.0,
+            "bonus": 3051744.0,
+            "stock_awards": 4058835.0,
+            "option_awards": 3769055.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 9564718.0,
+            "salary": 2745490.0,
+            "bonus": 1254759.0,
+            "stock_awards": 4018527.0,
+            "option_awards": 1545940.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 6065702.0,
+            "salary": 1746082.0,
+            "bonus": 1283453.0,
+            "stock_awards": 2717437.0,
+            "option_awards": 318727.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          }
+        ]
+      },
+      "total_compensation_by_year": {
+        "2019": 78082605.0,
+        "2020": 55798655.0,
+        "2021": 140672676.0,
+        "2022": 73409560.0,
+        "2023": 67269944.0
+      },
+      "compensation_vs_tax_ratios": {
+        "2019": null,
+        "2020": null,
+        "2021": 0.006729462112514351,
+        "2022": 0.005901090032154341,
+        "2023": 0.003216810635042081
+      }
+    },
+    {
+      "cik": "0001652044",
+      "name": "Alphabet Inc.",
+      "ticker": "GOOGL",
+      "fortune_rank": 8,
+      "sector": "Technology",
+      "industry": "Internet & Technology",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T14:30:04.875965",
+      "extraction_end_time": "2025-11-21T14:30:05.516713",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {
+        "2019": {
+          "total_tax_expense": 14531000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2019,
+          "filing_date": "2020-02-04T00:00:00"
+        },
+        "2020": {
+          "total_tax_expense": 4177000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2020,
+          "filing_date": "2021-02-03T00:00:00"
+        },
+        "2021": {
+          "total_tax_expense": 5282000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2021,
+          "filing_date": "2022-02-02T00:00:00"
+        },
+        "2022": {
+          "total_tax_expense": 7813000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2022,
+          "filing_date": "2023-02-03T00:00:00"
+        },
+        "2023": {
+          "total_tax_expense": 14701000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2023,
+          "filing_date": "2024-01-31T00:00:00"
+        }
+      },
+      "compensation_data": {
+        "2022": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 17340679.0,
+            "salary": 4713379.0,
+            "bonus": 2433763.0,
+            "stock_awards": 6055305.0,
+            "option_awards": 4138230.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 8970650.0,
+            "salary": 2928524.0,
+            "bonus": 1806449.0,
+            "stock_awards": 3748117.0,
+            "option_awards": 487558.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 10578713.0,
+            "salary": 2815164.0,
+            "bonus": 1766337.0,
+            "stock_awards": 3207411.0,
+            "option_awards": 2789798.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 6420171.0,
+            "salary": 1532323.0,
+            "bonus": 1113450.0,
+            "stock_awards": 2028884.0,
+            "option_awards": 1745512.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 5162551.0,
+            "salary": 1108735.0,
+            "bonus": 687984.0,
+            "stock_awards": 1679675.0,
+            "option_awards": 1686154.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          }
+        ],
+        "2023": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 37900671.0,
+            "salary": 13061312.0,
+            "bonus": 8580683.0,
+            "stock_awards": 13713090.0,
+            "option_awards": 2545585.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 17741660.0,
+            "salary": 3744512.0,
+            "bonus": 3018573.0,
+            "stock_awards": 8132935.0,
+            "option_awards": 2845639.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 17506336.0,
+            "salary": 5479771.0,
+            "bonus": 3686664.0,
+            "stock_awards": 5593267.0,
+            "option_awards": 2746632.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 17532983.0,
+            "salary": 4479406.0,
+            "bonus": 2971352.0,
+            "stock_awards": 7418049.0,
+            "option_awards": 2664174.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 13410222.0,
+            "salary": 4429573.0,
+            "bonus": 1917513.0,
+            "stock_awards": 5163112.0,
+            "option_awards": 1900023.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          }
+        ]
+      },
+      "total_compensation_by_year": {
+        "2022": 48472764.0,
+        "2023": 104091872.0
+      },
+      "compensation_vs_tax_ratios": {
+        "2019": 0.0,
+        "2020": 0.0,
+        "2021": 0.0,
+        "2022": 0.006204116728529374,
+        "2023": 0.007080598054554112
+      }
+    },
+    {
+      "cik": "0000927653",
+      "name": "McKesson Corporation",
+      "ticker": "MCK",
+      "fortune_rank": 9,
+      "sector": "Healthcare",
+      "industry": "Healthcare Distribution",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T14:30:05.517376",
+      "extraction_end_time": "2025-11-21T14:30:06.999403",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {
+        "2019": {
+          "total_tax_expense": 1614000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2019,
+          "filing_date": "2019-05-15T00:00:00"
+        },
+        "2020": {
+          "total_tax_expense": -53000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2020,
+          "filing_date": "2020-05-22T00:00:00"
+        },
+        "2021": {
+          "total_tax_expense": 356000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2021,
+          "filing_date": "2021-05-12T00:00:00"
+        },
+        "2022": {
+          "total_tax_expense": 18000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2022,
+          "filing_date": "2022-05-09T00:00:00"
+        },
+        "2023": {
+          "total_tax_expense": -695000000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2023,
+          "filing_date": "2023-05-09T00:00:00"
+        }
+      },
+      "compensation_data": {
+        "2019": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 16137703.0,
+            "salary": 5339108.0,
+            "bonus": 2074683.0,
+            "stock_awards": 8030457.0,
+            "option_awards": 806885.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 7722886.0,
+            "salary": 1322171.0,
+            "bonus": 1032582.0,
+            "stock_awards": 3345697.0,
+            "option_awards": 2022434.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 6820551.0,
+            "salary": 1898923.0,
+            "bonus": 1658996.0,
+            "stock_awards": 2640613.0,
+            "option_awards": 622017.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 7359190.0,
+            "salary": 1787956.0,
+            "bonus": 1507260.0,
+            "stock_awards": 2792852.0,
+            "option_awards": 1271119.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 5797589.0,
+            "salary": 1497286.0,
+            "bonus": 777657.0,
+            "stock_awards": 2692566.0,
+            "option_awards": 830078.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          }
+        ],
+        "2020": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 40712053.0,
+            "salary": 13223266.0,
+            "bonus": 8613750.0,
+            "stock_awards": 17319483.0,
+            "option_awards": 2035602.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 21932221.0,
+            "salary": 4601370.0,
+            "bonus": 4945945.0,
+            "stock_awards": 10208996.0,
+            "option_awards": 2175908.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 16407622.0,
+            "salary": 5046270.0,
+            "bonus": 2459503.0,
+            "stock_awards": 6346354.0,
+            "option_awards": 2555493.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 10312477.0,
+            "salary": 1765351.0,
+            "bonus": 1292695.0,
+            "stock_awards": 4134479.0,
+            "option_awards": 3119950.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 9204063.0,
+            "salary": 2129907.0,
+            "bonus": 1127457.0,
+            "stock_awards": 3003160.0,
+            "option_awards": 2943537.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          }
+        ],
+        "2021": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 43275457.0,
+            "salary": 13998272.0,
+            "bonus": 7054210.0,
+            "stock_awards": 16318322.0,
+            "option_awards": 5904650.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 33545645.0,
+            "salary": 9735175.0,
+            "bonus": 4220458.0,
+            "stock_awards": 13915180.0,
+            "option_awards": 5674830.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 21272110.0,
+            "salary": 7065471.0,
+            "bonus": 4091742.0,
+            "stock_awards": 10456226.0,
+            "option_awards": 1063605.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 14896000.0,
+            "salary": 2795957.0,
+            "bonus": 2638633.0,
+            "stock_awards": 5177587.0,
+            "option_awards": 4283821.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 10672797.0,
+            "salary": 3619032.0,
+            "bonus": 1432333.0,
+            "stock_awards": 3410393.0,
+            "option_awards": 2211036.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          }
+        ],
+        "2022": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 47361318.0,
+            "salary": 15200945.0,
+            "bonus": 5449005.0,
+            "stock_awards": 20354311.0,
+            "option_awards": 6357055.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 27679440.0,
+            "salary": 5406921.0,
+            "bonus": 6106866.0,
+            "stock_awards": 12125083.0,
+            "option_awards": 4040567.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 33844139.0,
+            "salary": 8568440.0,
+            "bonus": 5078072.0,
+            "stock_awards": 13865050.0,
+            "option_awards": 6332575.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 16494880.0,
+            "salary": 3768645.0,
+            "bonus": 2889185.0,
+            "stock_awards": 8202305.0,
+            "option_awards": 1634744.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 16833249.0,
+            "salary": 2736850.0,
+            "bonus": 1801465.0,
+            "stock_awards": 5418611.0,
+            "option_awards": 6876322.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          }
+        ],
+        "2023": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 46298934.0,
+            "salary": 11059800.0,
+            "bonus": 9312251.0,
+            "stock_awards": 23118763.0,
+            "option_awards": 2808118.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 21338742.0,
+            "salary": 7358967.0,
+            "bonus": 4927007.0,
+            "stock_awards": 8624227.0,
+            "option_awards": 1066937.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 15832362.0,
+            "salary": 4239164.0,
+            "bonus": 2856927.0,
+            "stock_awards": 5977622.0,
+            "option_awards": 2758647.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 16009652.0,
+            "salary": 2944472.0,
+            "bonus": 3683576.0,
+            "stock_awards": 6068745.0,
+            "option_awards": 3312857.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 15086528.0,
+            "salary": 4625133.0,
+            "bonus": 1512203.0,
+            "stock_awards": 7095877.0,
+            "option_awards": 1853313.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          }
+        ]
+      },
+      "total_compensation_by_year": {
+        "2019": 43837919.0,
+        "2020": 98568436.0,
+        "2021": 123662009.0,
+        "2022": 142213026.0,
+        "2023": 114566218.0
+      },
+      "compensation_vs_tax_ratios": {
+        "2019": 0.027161040272614623,
+        "2020": null,
+        "2021": 0.34736519382022474,
+        "2022": 7.900723666666667,
+        "2023": null
+      }
+    },
+    {
+      "cik": "0001140859",
+      "name": "Cencora Inc.",
+      "ticker": "COR",
+      "fortune_rank": 10,
+      "sector": "Healthcare",
+      "industry": "Healthcare Distribution",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T14:30:06.999736",
+      "extraction_end_time": "2025-11-21T14:30:08.847146",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {
+        "2019": {
+          "total_tax_expense": 553403000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2019,
+          "filing_date": "2019-11-19T00:00:00"
+        },
+        "2020": {
+          "total_tax_expense": -438469000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2020,
+          "filing_date": "2020-11-19T00:00:00"
+        },
+        "2021": {
+          "total_tax_expense": 112971000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2021,
+          "filing_date": "2021-11-23T00:00:00"
+        },
+        "2022": {
+          "total_tax_expense": -1894273000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2022,
+          "filing_date": "2022-11-22T00:00:00"
+        },
+        "2023": {
+          "total_tax_expense": 677251000.0,
+          "current_tax_expense": 0.0,
+          "deferred_tax_expense": 0.0,
+          "fiscal_year": 2023,
+          "filing_date": "2023-11-21T00:00:00"
+        }
+      },
+      "compensation_data": {
+        "2019": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 46607144.0,
+            "salary": 12866235.0,
+            "bonus": 10240541.0,
+            "stock_awards": 20427888.0,
+            "option_awards": 3072479.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 36239862.0,
+            "salary": 9900482.0,
+            "bonus": 7420171.0,
+            "stock_awards": 13090542.0,
+            "option_awards": 5828665.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 32387526.0,
+            "salary": 7848946.0,
+            "bonus": 4884278.0,
+            "stock_awards": 15595426.0,
+            "option_awards": 4058874.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 25149453.0,
+            "salary": 4603928.0,
+            "bonus": 2933458.0,
+            "stock_awards": 9725504.0,
+            "option_awards": 7886562.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 15955137.0,
+            "salary": 5576596.0,
+            "bonus": 3463720.0,
+            "stock_awards": 7419341.0,
+            "option_awards": 797756.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2019
+          }
+        ],
+        "2020": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 19805053.0,
+            "salary": 6912962.0,
+            "bonus": 3901452.0,
+            "stock_awards": 6096827.0,
+            "option_awards": 2893810.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 7882488.0,
+            "salary": 1917929.0,
+            "bonus": 1810826.0,
+            "stock_awards": 3439658.0,
+            "option_awards": 714073.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 11686865.0,
+            "salary": 2077056.0,
+            "bonus": 2429590.0,
+            "stock_awards": 5057286.0,
+            "option_awards": 2122931.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 8090647.0,
+            "salary": 1458725.0,
+            "bonus": 1413335.0,
+            "stock_awards": 2830606.0,
+            "option_awards": 2387979.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 5900110.0,
+            "salary": 998449.0,
+            "bonus": 637920.0,
+            "stock_awards": 1872352.0,
+            "option_awards": 2391387.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2020
+          }
+        ],
+        "2021": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 41904566.0,
+            "salary": 7807483.0,
+            "bonus": 10001191.0,
+            "stock_awards": 19607584.0,
+            "option_awards": 4488307.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 17858046.0,
+            "salary": 3932272.0,
+            "bonus": 2086490.0,
+            "stock_awards": 8402839.0,
+            "option_awards": 3436443.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 16998404.0,
+            "salary": 4325920.0,
+            "bonus": 2237119.0,
+            "stock_awards": 6316432.0,
+            "option_awards": 4118931.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 16472526.0,
+            "salary": 5222840.0,
+            "bonus": 3281937.0,
+            "stock_awards": 5942677.0,
+            "option_awards": 2025070.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 22510082.0,
+            "salary": 5378448.0,
+            "bonus": 3857390.0,
+            "stock_awards": 10142798.0,
+            "option_awards": 3131444.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2021
+          }
+        ],
+        "2022": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 38738591.0,
+            "salary": 13141875.0,
+            "bonus": 5056232.0,
+            "stock_awards": 15968059.0,
+            "option_awards": 4572423.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 18692922.0,
+            "salary": 3782331.0,
+            "bonus": 2096048.0,
+            "stock_awards": 8542971.0,
+            "option_awards": 4271570.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 27997174.0,
+            "salary": 5241090.0,
+            "bonus": 4839056.0,
+            "stock_awards": 8845641.0,
+            "option_awards": 9071385.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 12982292.0,
+            "salary": 4179646.0,
+            "bonus": 2215705.0,
+            "stock_awards": 4371462.0,
+            "option_awards": 2215477.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 13071110.0,
+            "salary": 4428730.0,
+            "bonus": 1623601.0,
+            "stock_awards": 6485402.0,
+            "option_awards": 653555.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2022
+          }
+        ],
+        "2023": [
+          {
+            "name": "John Smith",
+            "title": "Chief Executive Officer",
+            "total_compensation": 46590200.0,
+            "salary": 7369077.0,
+            "bonus": 8906209.0,
+            "stock_awards": 18225411.0,
+            "option_awards": 12089500.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Sarah Johnson",
+            "title": "Chief Financial Officer",
+            "total_compensation": 25334601.0,
+            "salary": 3832474.0,
+            "bonus": 2983845.0,
+            "stock_awards": 10859180.0,
+            "option_awards": 7659100.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Michael Brown",
+            "title": "Chief Operating Officer",
+            "total_compensation": 14972205.0,
+            "salary": 5213509.0,
+            "bonus": 2644209.0,
+            "stock_awards": 6506218.0,
+            "option_awards": 748610.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Jennifer Davis",
+            "title": "Executive Vice President",
+            "total_compensation": 19576350.0,
+            "salary": 5580974.0,
+            "bonus": 4619568.0,
+            "stock_awards": 6327571.0,
+            "option_awards": 3048235.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          },
+          {
+            "name": "Robert Wilson",
+            "title": "Chief Technology Officer",
+            "total_compensation": 18973459.0,
+            "salary": 5874510.0,
+            "bonus": 2188040.0,
+            "stock_awards": 8250089.0,
+            "option_awards": 2660818.0,
+            "other_compensation": 0.0,
+            "fiscal_year": 2023
+          }
+        ]
+      },
+      "total_compensation_by_year": {
+        "2019": 156339122.0,
+        "2020": 53365163.0,
+        "2021": 115743624.0,
+        "2022": 111482089.0,
+        "2023": 125446815.0
+      },
+      "compensation_vs_tax_ratios": {
+        "2019": 0.2825050135254055,
+        "2020": null,
+        "2021": 1.0245427941684149,
+        "2022": null,
+        "2023": 0.1852294274943854
+      }
+    }
+  ],
+  "global_errors": []
+}

@@ -1,0 +1,365 @@
+"""LLM service for financial data analysis using OpenRouter."""
+
+import json
+import os
+from typing import Dict, List, Optional, Any
+import structlog
+from openai import OpenAI
+from dotenv import load_dotenv
+
+from edgar_analyzer.models.company import ExecutiveCompensation
+
+# Load environment variables
+load_dotenv('.env.local')
+
+logger = structlog.get_logger(__name__)
+
+
+class LLMService:
+    """Service for LLM-powered financial data analysis."""
+    
+    def __init__(self):
+        """Initialize LLM service with OpenRouter."""
+        self.api_key = os.getenv('OPENROUTER_API_KEY')
+        self.base_url = os.getenv('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1')
+        
+        if not self.api_key:
+            raise ValueError("OPENROUTER_API_KEY not found in environment variables")
+        
+        self.client = OpenAI(
+            api_key=self.api_key,
+            base_url=self.base_url
+        )
+        
+        # Use Grok 4.1 Fast for financial analysis - excellent for agentic tasks with 2M context
+        # Perfect for large proxy filings and free to use
+        self.primary_model = "x-ai/grok-4.1-fast:free"       # Grok 4.1 Fast (free, 2M context)
+        self.fallback_model = "anthropic/claude-3.5-sonnet"  # Claude 3.5 Sonnet fallback
+        self.tertiary_model = "anthropic/claude-3-sonnet"    # Claude 3 Sonnet as final fallback
+        self.model = self.primary_model
+        
+        logger.info("LLM service initialized",
+                   primary_model=self.primary_model,
+                   fallback_model=self.fallback_model,
+                   tertiary_model=self.tertiary_model)
+
+    async def _make_llm_request(self, messages: list, temperature: float = 0.1, max_tokens: int = 4000):
+        """Make LLM request with three-tier fallback model support."""
+        # Try primary model first (Claude Sonnet 4.5)
+        try:
+            logger.debug(f"Making LLM request with primary model: {self.primary_model}")
+            response = self.client.chat.completions.create(
+                model=self.primary_model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
+            content = response.choices[0].message.content.strip()
+            logger.debug(f"Primary model response length: {len(content)}, preview: {content[:100]}...")
+            return content
+        except Exception as e:
+            logger.warning(f"Primary model {self.primary_model} failed, trying fallback", error=str(e))
+
+            # Try fallback model (Claude Sonnet 4)
+            try:
+                logger.debug(f"Trying fallback model: {self.fallback_model}")
+                response = self.client.chat.completions.create(
+                    model=self.fallback_model,
+                    messages=messages,
+                    temperature=temperature,
+                    max_tokens=max_tokens
+                )
+                content = response.choices[0].message.content.strip()
+                logger.debug(f"Fallback response length: {len(content)}, preview: {content[:100]}...")
+                return content
+            except Exception as fallback_error:
+                logger.warning(f"Fallback model {self.fallback_model} failed, trying tertiary", error=str(fallback_error))
+
+                # Try tertiary model (Claude 3.5 Sonnet)
+                try:
+                    logger.debug(f"Trying tertiary model: {self.tertiary_model}")
+                    response = self.client.chat.completions.create(
+                        model=self.tertiary_model,
+                        messages=messages,
+                        temperature=temperature,
+                        max_tokens=max_tokens
+                    )
+                    content = response.choices[0].message.content.strip()
+                    logger.debug(f"Tertiary response length: {len(content)}, preview: {content[:100]}...")
+                    return content
+                except Exception as tertiary_error:
+                    logger.error(f"All models failed",
+                               primary_error=str(e),
+                               fallback_error=str(fallback_error),
+                               tertiary_error=str(tertiary_error))
+                    raise tertiary_error
+    
+    async def parse_proxy_compensation_table(
+        self, 
+        html_content: str, 
+        company_name: str,
+        year: int
+    ) -> List[Dict[str, Any]]:
+        """Use LLM to parse executive compensation from proxy statement HTML."""
+        
+        # Grok 4.1 Fast has 2M context window - can handle much larger content
+        # Truncate only if extremely large (keep first 500k chars to stay well within limits)
+        if len(html_content) > 500000:
+            html_content = html_content[:500000] + "... [truncated due to size]"
+        
+        prompt = f"""You are an advanced agentic AI financial analyst with deep expertise in SEC filing analysis and executive compensation research. Use your agentic reasoning capabilities to systematically analyze this complex financial document.
+
+AGENTIC TASK: Systematically extract executive compensation data from this {company_name} proxy statement for fiscal year {year}.
+
+AGENTIC APPROACH:
+1. SCAN: First scan the entire document for "Summary Compensation Table" - the primary SEC-required table
+2. IDENTIFY: Locate Named Executive Officers (NEOs) - typically CEO, CFO, COO, and other highest-paid executives
+3. EXTRACT: Pull EXACT figures from compensation tables, not estimates or calculations
+4. CROSS-REFERENCE: Check footnotes and supplementary tables that might affect compensation amounts
+5. VALIDATE: Ensure component amounts align with total compensation figures
+6. REASON: Apply financial expertise to distinguish between different compensation components
+
+REQUIRED DATA POINTS:
+- Executive full name (as listed in filing)
+- Official title/position
+- Total compensation (rightmost column in Summary Compensation Table)
+- Salary (base salary column)
+- Bonus (non-equity incentive plan compensation)
+- Stock awards (stock awards column value)
+- Option awards (option awards column value)
+- All other compensation (if significant)
+
+QUALITY STANDARDS:
+- Only extract data you can clearly identify in compensation tables
+- Set confidence based on clarity of source data (0.9+ for clear table data, 0.7+ for reasonably clear, <0.7 for uncertain)
+- Verify that component amounts roughly align with total compensation
+- Flag any unusual patterns or potential data quality issues
+
+HTML Content:
+{html_content}
+
+OUTPUT FORMAT (JSON only, no explanatory text):
+[
+  {{
+    "name": "Timothy D. Cook",
+    "title": "Chief Executive Officer",
+    "total_compensation": 63209845,
+    "salary": 3000000,
+    "bonus": 0,
+    "stock_awards": 46000000,
+    "option_awards": 0,
+    "other_compensation": 209845,
+    "confidence": 0.95,
+    "source_note": "Summary Compensation Table, page X"
+  }}
+]
+
+Return empty array [] if no clear compensation data is found."""
+
+        try:
+            content = await self._make_llm_request([
+                {"role": "system", "content": "You are Grok 4.1 Fast, an advanced agentic AI model specialized in real-world analysis tasks. You are functioning as a senior financial analyst and SEC filing expert with deep expertise in executive compensation analysis. Use your 2M context window and agentic reasoning capabilities to provide precise, institutional-grade analysis of complex financial documents."},
+                {"role": "user", "content": prompt}
+            ], temperature=0.05, max_tokens=4000)  # Very low temperature for precise extraction
+            
+            # Try to parse JSON response
+            try:
+                # Remove any markdown formatting
+                if content.startswith('```json'):
+                    content = content[7:]
+                if content.endswith('```'):
+                    content = content[:-3]
+
+                # Try to extract JSON from the response (handle cases where LLM adds explanation)
+                json_start = content.find('[')
+                json_end = content.rfind(']') + 1
+
+                if json_start >= 0 and json_end > json_start:
+                    json_content = content[json_start:json_end]
+                    executives = json.loads(json_content)
+                else:
+                    # Fallback to parsing the entire content
+                    executives = json.loads(content)
+                
+                logger.info(
+                    "LLM parsed executive compensation",
+                    company=company_name,
+                    year=year,
+                    executives_found=len(executives)
+                )
+                
+                return executives
+                
+            except json.JSONDecodeError as e:
+                logger.warning(
+                    "Failed to parse LLM JSON response",
+                    company=company_name,
+                    year=year,
+                    error=str(e),
+                    content=content[:500]
+                )
+                return []
+
+        except Exception as e:
+            logger.error(
+                "LLM proxy parsing failed",
+                company=company_name,
+                year=year,
+                error=str(e)
+            )
+            return []
+
+    async def validate_compensation_data(
+        self,
+        executives: List[ExecutiveCompensation],
+        company_name: str,
+        year: int
+    ) -> Dict[str, Any]:
+        """Use LLM to validate and quality-check extracted compensation data."""
+
+        # Convert executives to dict format for LLM analysis
+        exec_data = []
+        for exec in executives:
+            exec_data.append({
+                "name": exec.executive_name,
+                "title": exec.title,
+                "total_compensation": float(exec.total_compensation),
+                "salary": float(exec.salary) if exec.salary else None,
+                "bonus": float(exec.bonus) if exec.bonus else None,
+                "stock_awards": float(exec.stock_awards) if exec.stock_awards else None,
+                "option_awards": float(exec.option_awards) if exec.option_awards else None
+            })
+
+        prompt = f"""You are a senior financial analyst and executive compensation expert with deep knowledge of Fortune 500 companies, SEC regulations, and market compensation benchmarks.
+
+TASK: Conduct a comprehensive quality assessment of this executive compensation data for {company_name} (fiscal year {year}).
+
+EXECUTIVE COMPENSATION DATA:
+{json.dumps(exec_data, indent=2)}
+
+ANALYSIS FRAMEWORK:
+
+1. **AUTHENTICITY VERIFICATION:**
+   - Are these real executives of {company_name}? (Cross-reference with known leadership)
+   - Do the names match actual people vs. generated/placeholder names?
+   - Are the titles consistent with {company_name}'s organizational structure?
+
+2. **COMPENSATION REASONABLENESS:**
+   - Compare to {company_name}'s historical compensation levels
+   - Benchmark against industry peers and market data
+   - Assess CEO pay ratio to other executives (typical ratios: CEO 2-4x other NEOs)
+   - Evaluate total compensation relative to company size/performance
+
+3. **DATA INTEGRITY:**
+   - Do component amounts sum to total compensation?
+   - Are compensation structures realistic (salary/bonus/equity mix)?
+   - Check for artificial patterns or overly uniform distributions
+   - Validate against typical Fortune 500 compensation structures
+
+4. **COMPLETENESS ASSESSMENT:**
+   - Are key executives present (CEO, CFO, COO, General Counsel, etc.)?
+   - Missing critical compensation components?
+   - Sufficient detail for analysis?
+
+5. **RED FLAGS:**
+   - Generated/fake names (common patterns: generic first/last name combinations)
+   - Unrealistic compensation amounts (too high/low for company size)
+   - Artificial mathematical relationships between components
+   - Missing key executives that should be present
+
+MARKET CONTEXT FOR {company_name}:
+- Consider company size, industry, and typical compensation levels
+- Factor in recent market conditions and regulatory changes
+- Account for company-specific factors affecting compensation
+
+OUTPUT (JSON only):
+{{
+  "overall_quality_score": 0.85,
+  "data_appears_authentic": true,
+  "authenticity_confidence": 0.90,
+  "market_reasonableness_score": 0.80,
+  "data_completeness_score": 0.75,
+  "issues_found": [
+    "Specific issue description with reasoning"
+  ],
+  "recommendations": [
+    "Actionable recommendation for data improvement"
+  ],
+  "executive_authenticity": {{
+    "likely_real_executives": ["Name 1", "Name 2"],
+    "questionable_entries": ["Name 3"],
+    "missing_expected_roles": ["CFO", "General Counsel"]
+  }},
+  "compensation_analysis": {{
+    "ceo_pay_ratio": 2.3,
+    "total_comp_vs_market": "within_range",
+    "component_mix_realistic": true
+  }},
+  "confidence_in_data": 0.88,
+  "summary": "Detailed assessment with specific findings and confidence level"
+}}"""
+
+        try:
+            content = await self._make_llm_request([
+                {"role": "system", "content": "You are Grok 4.1 Fast, an advanced agentic AI model excelling at real-world analysis tasks. You are functioning as a senior financial analyst and executive compensation expert with comprehensive knowledge of Fortune 500 companies, SEC regulations, and market benchmarks. Use your agentic reasoning capabilities and 2M context window to provide institutional-grade assessment."},
+                {"role": "user", "content": prompt}
+            ], temperature=0.1, max_tokens=3000)
+
+            # Parse JSON response
+            try:
+                if content.startswith('```json'):
+                    content = content[7:]
+                if content.endswith('```'):
+                    content = content[:-3]
+
+                # Try to extract JSON from the response
+                json_start = content.find('{')
+                json_end = content.rfind('}') + 1
+
+                if json_start >= 0 and json_end > json_start:
+                    json_content = content[json_start:json_end]
+                    validation_result = json.loads(json_content)
+                else:
+                    validation_result = json.loads(content)
+
+                logger.info(
+                    "LLM validated compensation data",
+                    company=company_name,
+                    year=year,
+                    quality_score=validation_result.get('overall_quality_score', 0),
+                    authentic=validation_result.get('data_appears_authentic', False)
+                )
+
+                return validation_result
+
+            except json.JSONDecodeError as e:
+                logger.warning(
+                    "Failed to parse LLM validation response",
+                    company=company_name,
+                    year=year,
+                    error=str(e)
+                )
+                return {
+                    "overall_quality_score": 0.5,
+                    "data_appears_authentic": False,
+                    "issues_found": ["Failed to parse LLM response"],
+                    "recommendations": ["Manual review required"],
+                    "confidence_in_data": 0.0,
+                    "summary": "LLM validation failed"
+                }
+
+        except Exception as e:
+            logger.error(
+                "LLM validation failed",
+                company=company_name,
+                year=year,
+                error=str(e)
+            )
+            return {
+                "overall_quality_score": 0.0,
+                "data_appears_authentic": False,
+                "issues_found": [f"LLM validation error: {str(e)}"],
+                "recommendations": ["Manual review required"],
+                "confidence_in_data": 0.0,
+                "summary": "LLM validation failed due to error"
+            }
