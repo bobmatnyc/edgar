@@ -190,39 +190,54 @@ class SelfImprovingCode:
     async def _supervisor_evaluate(self, test_results: Dict[str, Any], iteration: int) -> Dict[str, Any]:
         """Supervisor evaluates test results and determines if improvement is needed."""
 
-        evaluation_prompt = f"""You are the SUPERVISOR in a self-improving code pattern.
+        evaluation_prompt = f"""You are the SUPERVISOR + QA ANALYST in a self-improving code pattern.
+
+DUAL ROLE:
+1. SUPERVISOR: Orchestrate the improvement process and make decisions
+2. QA ANALYST: Perform rigorous quality assurance on extracted data
 
 CURRENT ITERATION: {iteration + 1}
 TEST RESULTS: {json.dumps(test_results, indent=2)}
 
-Your job is to evaluate these test results and determine if the code needs improvement.
+QA ANALYSIS REQUIRED:
+1. **Data Authenticity**: Are these real people/entities or fake/generated names?
+2. **Data Completeness**: Are key data points missing or incomplete?
+3. **Data Accuracy**: Do the values make sense and fall within expected ranges?
+4. **Parsing Quality**: Are there signs of extraction errors or data corruption?
+5. **Business Logic**: Does the data meet business requirements and standards?
 
-EVALUATION CRITERIA:
-1. Did the test succeed?
-2. Are the results of acceptable quality?
-3. Are there obvious errors or issues?
-4. Is performance acceptable?
+SUPERVISOR DECISION FRAMEWORK:
+- Quality Score >= 0.8: PASS - No improvement needed
+- Quality Score 0.5-0.8: CONDITIONAL - Minor improvements needed
+- Quality Score < 0.5: FAIL - Major improvements required
 
-DECISION FRAMEWORK:
-- If results are acceptable: needs_improvement = false
-- If results have issues: needs_improvement = true
-
-Provide specific, actionable feedback for the engineer.
+As QA, provide specific issues found and actionable improvement directions.
 
 OUTPUT (JSON only):
 {{
   "needs_improvement": true,
   "quality_score": 0.6,
+  "qa_status": "FAIL",
+  "data_authenticity": "questionable",
   "issues_found": [
-    "Specific issue 1",
-    "Specific issue 2"
+    "QA: Detected fake/generated names",
+    "QA: Missing key executives (CEO, CFO)",
+    "QA: Compensation amounts unrealistic",
+    "PARSING: Name field extraction errors"
   ],
   "improvement_directions": [
-    "Fix parsing logic for edge cases",
-    "Improve error handling"
+    "Fix name parsing logic to handle complex HTML structures",
+    "Improve executive title detection",
+    "Add validation for realistic compensation ranges",
+    "Implement better table structure recognition"
   ],
   "priority": "high",
-  "confidence": 0.9
+  "confidence": 0.9,
+  "qa_recommendations": [
+    "Validate against known executive databases",
+    "Cross-reference with SEC filing patterns",
+    "Implement compensation reasonableness checks"
+  ]
 }}"""
 
         try:
