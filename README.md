@@ -186,13 +186,16 @@ edgar-cli/
 
 ## 📚 Documentation
 
-- **[System Ready Summary](SYSTEM_READY_SUMMARY.md)**: Complete system overview
-- **[Web Search Capabilities](WEB_SEARCH_CAPABILITIES.md)**: OpenRouter integration and usage
-- **[Security Guidelines](SECURITY.md)**: Security best practices and incident response
-- **[Code Governance](CODE_GOVERNANCE.md)**: Development standards and patterns
-- **[Self-Improving Pattern](SELF_IMPROVING_CODE_PATTERN.md)**: Technical deep-dive
-- **[Project Structure](PROJECT_STRUCTURE.md)**: Architecture documentation
-- **[Feasibility Analysis](FEASIBILITY_ANALYSIS.md)**: Technical analysis
+**📖 [Complete Documentation](docs/README.md)** - Comprehensive documentation hub
+
+### **Quick Links**
+- **[System Overview](docs/SYSTEM_READY_SUMMARY.md)** - Complete system capabilities
+- **[Quick Start Guide](docs/guides/QUICK_START.md)** - Get started in 5 minutes
+- **[CLI Usage Guide](docs/guides/CLI_USAGE.md)** - Master the conversational interface
+- **[Web Search Guide](docs/guides/WEB_SEARCH_CAPABILITIES.md)** - Real-time information access
+- **[Security Guidelines](docs/guides/SECURITY.md)** - Enterprise security practices
+- **[API Reference](docs/api/)** - Technical documentation
+- **[Architecture](docs/architecture/)** - System design and patterns
 
 ## 🤝 Contributing
 
@@ -231,5 +234,15 @@ python -m edgar_analyzer --cli
 # With web search capabilities
 python -m edgar_analyzer --enable-web-search
 ```
+
+## 🏗️ Project Organization
+
+**📋 [Project Overview](PROJECT_OVERVIEW.md)** - Complete project structure and organization
+
+The project is now cleanly organized with:
+- **📚 [Documentation](docs/)** - Comprehensive guides and references
+- **🧪 [Tests](tests/)** - Complete test suite and validation
+- **🔧 [Source Code](src/)** - Clean, modular implementation
+- **⚙️ [Configuration](.)** - Setup scripts and environment files
 
 **Revolutionary. Intelligent. Production-Ready.** 🚀
