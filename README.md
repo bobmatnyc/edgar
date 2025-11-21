@@ -34,11 +34,16 @@ cd zach-edgar
 python3 setup_edgar_cli.py
 ```
 
-### 2. **Configure API Keys**
-Edit `.env` file:
+### 2. **Configure API Keys** 🔒
 ```bash
-OPENROUTER_API_KEY=your_openrouter_api_key_here
+# Copy the secure template
+cp .env.template .env.local
+
+# Get your API key from https://openrouter.ai/keys
+# Edit .env.local and replace 'your_openrouter_api_key_here' with your actual key
 ```
+
+**🔒 SECURITY NOTE**: `.env.local` is gitignored to protect your API keys from accidental exposure.
 
 ### 3. **Start the Revolutionary CLI**
 ```bash
@@ -155,6 +160,8 @@ edgar-cli/
 ## 📚 Documentation
 
 - **[System Ready Summary](SYSTEM_READY_SUMMARY.md)**: Complete system overview
+- **[Security Guidelines](SECURITY.md)**: Security best practices and incident response
+- **[Code Governance](CODE_GOVERNANCE.md)**: Development standards and patterns
 - **[Self-Improving Pattern](SELF_IMPROVING_CODE_PATTERN.md)**: Technical deep-dive
 - **[Project Structure](PROJECT_STRUCTURE.md)**: Architecture documentation
 - **[Feasibility Analysis](FEASIBILITY_ANALYSIS.md)**: Technical analysis
@@ -167,6 +174,12 @@ This is a production-ready system demonstrating revolutionary CLI interface conc
 - Conversational AI interfaces for command-line tools
 - Enterprise-grade process monitoring and control
 - Professional safety and validation systems
+
+### **🔒 Security Requirements**
+- Follow [Security Guidelines](SECURITY.md) for API key management
+- Use [Code Governance](CODE_GOVERNANCE.md) standards for all contributions
+- Never commit API keys or sensitive configuration
+- Use `.env.local` for local development (gitignored)
 
 ## 📄 License
 
