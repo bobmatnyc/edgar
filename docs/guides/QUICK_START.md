@@ -6,7 +6,7 @@ Get up and running with the EDGAR CLI in minutes!
 
 - **Python 3.8+** installed
 - **Git** for cloning the repository
-- **OpenRouter API Key** (optional, for web search features)
+- **OpenRouter API Key** (required, for web search features enabled by default)
 
 ## 🎯 5-Minute Setup
 
@@ -34,14 +34,14 @@ cp .env.template .env.local
 # Activate environment
 source venv/bin/activate
 
-# Start conversational interface (default)
+# Start conversational interface (web search enabled by default)
 python -m edgar_analyzer
 
 # Or show CLI help
 python -m edgar_analyzer --cli
 
-# Or with web search
-python -m edgar_analyzer --enable-web-search
+# Or disable web search if needed
+python -m edgar_analyzer --disable-web-search
 ```
 
 ## 🎯 First Commands
@@ -68,13 +68,13 @@ python -m edgar_analyzer test --companies 5
 python -m edgar_analyzer trad-info
 ```
 
-### **Web Search Enhanced**
+### **Web Search (Enabled by Default)**
 ```bash
-# Interactive with real-time information
-python -m edgar_analyzer --enable-web-search
+# Interactive with real-time information (default)
+python -m edgar_analyzer
 
-# Traditional commands with web search
-python -m edgar_analyzer --enable-web-search extract --cik 0000320193
+# Traditional commands with web search (default)
+python -m edgar_analyzer extract --cik 0000320193
 ```
 
 ## 🔧 Key Features to Try
@@ -85,7 +85,7 @@ python -m edgar_analyzer --enable-web-search extract --cik 0000320193
 - Dynamic code execution
 - Real-time help and guidance
 
-### **2. Web Search Integration**
+### **2. Web Search Integration (Enabled by Default)**
 - Current market data access
 - Latest SEC requirements
 - Best practices research

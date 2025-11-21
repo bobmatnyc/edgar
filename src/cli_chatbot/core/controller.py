@@ -160,7 +160,7 @@ class ChatbotController:
         memory: Optional[ConversationMemory] = None,
         personality: Optional[ChatbotPersonality] = None,
         scripting_enabled: bool = True,
-        web_search_enabled: bool = False,
+        web_search_enabled: bool = True,
         web_search_client: Optional[callable] = None
     ):
         """

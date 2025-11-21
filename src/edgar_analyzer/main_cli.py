@@ -38,7 +38,7 @@ load_dotenv()
 @click.option('--mode', type=click.Choice(['auto', 'chatbot', 'traditional']),
               default='auto', help='CLI interface mode')
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
-@click.option('--enable-web-search', is_flag=True, help='Enable web search capabilities')
+@click.option('--enable-web-search/--disable-web-search', default=True, help='Enable/disable web search capabilities (enabled by default)')
 @click.option('--cli', 'bypass_interactive', is_flag=True, help='Bypass interactive mode, show CLI help')
 @click.pass_context
 def cli(ctx, mode, verbose, enable_web_search, bypass_interactive):
@@ -57,12 +57,12 @@ def cli(ctx, mode, verbose, enable_web_search, bypass_interactive):
     • Traditional CLI fallback for automation and scripting
     • Real-time context injection from codebase analysis
     • Subprocess monitoring with automatic fallback to exec()
-    • Optional web search capabilities with --enable-web-search
+    • Web search capabilities enabled by default (use --disable-web-search to disable)
 
     Examples:
-        edgar-cli                                    # Start interactive mode (default)
+        edgar-cli                                    # Start interactive mode with web search (default)
         edgar-cli --cli                             # Show CLI help (bypass interactive)
-        edgar-cli --enable-web-search               # Interactive with web search
+        edgar-cli --disable-web-search              # Interactive without web search
         edgar-cli extract --cik 0000320193          # Traditional command
         edgar-cli --mode traditional interactive    # Force traditional CLI
     """
@@ -94,7 +94,7 @@ def interactive(ctx):
     async def start_interactive():
         mode = ctx.obj.get('mode', 'auto')
         verbose = ctx.obj.get('verbose', False)
-        enable_web_search = ctx.obj.get('enable_web_search', False)
+        enable_web_search = ctx.obj.get('enable_web_search', True)
         
         if verbose:
             click.echo("🚀 Starting interactive mode...")

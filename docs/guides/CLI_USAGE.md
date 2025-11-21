@@ -8,11 +8,11 @@ Comprehensive guide to using the EDGAR CLI's revolutionary conversational interf
 Natural language interface with AI-powered assistance.
 
 ```bash
-# Start conversational interface
+# Start conversational interface (web search enabled by default)
 python -m edgar_analyzer
 
-# With web search capabilities
-python -m edgar_analyzer --enable-web-search
+# Disable web search if needed
+python -m edgar_analyzer --disable-web-search
 
 # Force conversational mode
 python -m edgar_analyzer --mode chatbot
@@ -71,7 +71,7 @@ The AI has access to:
 - Real-time system information
 - Current project structure
 - Available tools and capabilities
-- Web search results (when enabled)
+- Web search results (enabled by default)
 
 ## 📋 Traditional Commands
 
@@ -85,8 +85,8 @@ python -m edgar_analyzer extract --cik 0000320193 --year 2023
 # With output format
 python -m edgar_analyzer extract --cik 0000320193 --year 2023 --format json
 
-# With web search validation
-python -m edgar_analyzer --enable-web-search extract --cik 0000320193
+# Web search is enabled by default
+python -m edgar_analyzer extract --cik 0000320193
 ```
 
 #### **System Testing**
@@ -121,16 +121,16 @@ python -m edgar_analyzer trad-execute --code "print('Hello EDGAR')"
 - `--verbose` - Enable verbose output
 
 #### **Feature Flags**
-- `--enable-web-search` - Enable web search capabilities
+- `--enable-web-search/--disable-web-search` - Web search capabilities (enabled by default)
 - `--scripting-enabled` - Enable dynamic scripting (default: true)
 
 #### **Examples**
 ```bash
-# Verbose mode with web search
-python -m edgar_analyzer --verbose --enable-web-search
+# Verbose mode (web search enabled by default)
+python -m edgar_analyzer --verbose
 
-# Traditional mode with web search
-python -m edgar_analyzer --mode traditional --enable-web-search extract --cik 0000320193
+# Traditional mode without web search
+python -m edgar_analyzer --mode traditional --disable-web-search extract --cik 0000320193
 
 # Show help with all options
 python -m edgar_analyzer --help
@@ -139,19 +139,19 @@ python -m edgar_analyzer --help
 ## 🔍 Web Search Features
 
 ### **Enhanced Analysis**
-When web search is enabled, the system can:
-- Access current SEC requirements
-- Find latest market benchmarks
-- Validate analysis against current standards
-- Research best practices in real-time
+Web search is enabled by default, providing:
+- Access to current SEC requirements
+- Latest market benchmarks
+- Validation against current standards
+- Real-time research capabilities
 
 ### **Usage Examples**
 ```bash
-# Interactive with web search
-python -m edgar_analyzer --enable-web-search
+# Interactive mode (web search enabled by default)
+python -m edgar_analyzer
 
-# Traditional commands with web search
-python -m edgar_analyzer --enable-web-search extract --cik 0000320193
+# Traditional commands (web search enabled by default)
+python -m edgar_analyzer extract --cik 0000320193
 
 # Web search in conversational mode
 You: "What are the current SEC executive compensation disclosure requirements?"
@@ -163,9 +163,9 @@ AI: [Searches web and provides current information]
 ### **Launcher Scripts**
 ```bash
 # Use launcher script (created by setup)
-./edgar_cli.sh                    # Interactive mode
+./edgar_cli.sh                    # Interactive mode (web search enabled)
 ./edgar_cli.sh --cli              # Show help
-./edgar_cli.sh --enable-web-search # With web search
+./edgar_cli.sh --disable-web-search # Without web search
 ```
 
 ### **Environment Variables**
@@ -173,8 +173,8 @@ AI: [Searches web and provides current information]
 # Set default mode
 export EDGAR_CLI_MODE=chatbot
 
-# Enable web search by default
-export EDGAR_ENABLE_WEB_SEARCH=true
+# Disable web search (enabled by default)
+export EDGAR_DISABLE_WEB_SEARCH=true
 
 # Set verbosity
 export EDGAR_VERBOSE=true
@@ -198,7 +198,7 @@ python -m edgar_analyzer extract --cik 0000320193 --format json | jq '.[] | .tot
 
 ### **For Interactive Use**
 1. **Start with conversational mode** for exploration and learning
-2. **Use web search** for current information and validation
+2. **Web search is enabled by default** for current information and validation
 3. **Ask for help** when unsure about capabilities
 4. **Use natural language** - the AI understands context
 
@@ -210,7 +210,7 @@ python -m edgar_analyzer extract --cik 0000320193 --format json | jq '.[] | .tot
 
 ### **For Development**
 1. **Use --cli flag** to explore available commands
-2. **Enable web search** for best practices research
+2. **Web search is enabled by default** for best practices research
 3. **Use verbose mode** for detailed logging
 4. **Test with small datasets** before scaling
 
