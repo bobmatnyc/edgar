@@ -34,7 +34,7 @@ from cli_chatbot.fallback.traditional_cli import create_fallback_cli
 load_dotenv()
 
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click.option('--mode', type=click.Choice(['auto', 'chatbot', 'traditional']),
               default='auto', help='CLI interface mode')
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
@@ -43,16 +43,26 @@ load_dotenv()
 def cli(ctx, mode, verbose, enable_web_search):
     """
     EDGAR Analyzer - Intelligent Executive Compensation Analysis
-    
+
     A revolutionary CLI that combines conversational AI with traditional commands
     for analyzing SEC EDGAR filings and extracting executive compensation data.
-    
+
+    By default, starts in interactive conversational mode. Use subcommands for
+    specific operations or traditional CLI functionality.
+
     Features:
     • Self-improving code with LLM quality assurance
-    • Conversational interface with natural language processing
+    • Conversational interface with natural language processing (DEFAULT)
     • Traditional CLI fallback for automation and scripting
     • Real-time context injection from codebase analysis
     • Subprocess monitoring with automatic fallback to exec()
+    • Optional web search capabilities with --enable-web-search
+
+    Examples:
+        edgar-cli                                    # Start interactive mode (default)
+        edgar-cli --enable-web-search               # Interactive with web search
+        edgar-cli extract --cik 0000320193          # Traditional command
+        edgar-cli --mode traditional interactive    # Force traditional CLI
     """
     ctx.ensure_object(dict)
     ctx.obj['mode'] = mode
@@ -64,11 +74,15 @@ def cli(ctx, mode, verbose, enable_web_search):
         if enable_web_search:
             click.echo("🔍 Web search capabilities enabled")
 
+    # If no subcommand is provided, start interactive mode by default
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(interactive)
+
 
 @cli.command()
 @click.pass_context
 def interactive(ctx):
-    """Start interactive conversational interface."""
+    """Start interactive conversational interface (default mode)."""
     
     async def start_interactive():
         mode = ctx.obj.get('mode', 'auto')
