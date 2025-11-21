@@ -1,0 +1,2180 @@
+{
+  "timestamp": "2025-11-21T17:39:28.572127",
+  "total_companies": 50,
+  "successful_extractions": 44,
+  "failed_extractions": 6,
+  "llm_validations": 44,
+  "authentic_data_count": 0,
+  "fake_data_detected": 0,
+  "quality_scores": [],
+  "companies": [
+    {
+      "rank": 1,
+      "name": "Walmart Inc.",
+      "cik": "0000066740",
+      "success": true,
+      "executives": [
+        {
+          "name": "Amy E. Hood",
+          "title": "135,000",
+          "total_compensation": 321184.0,
+          "salary": 96355.0,
+          "bonus": 64236.0,
+          "stock_awards": 128473.0,
+          "option_awards": 32118.0
+        },
+        {
+          "name": "Suzan Kereere",
+          "title": "135,000",
+          "total_compensation": 320806.0,
+          "salary": 96241.0,
+          "bonus": 64161.0,
+          "stock_awards": 128322.0,
+          "option_awards": 32080.0
+        },
+        {
+          "name": "The Boeing Company",
+          "title": "$77,794",
+          "total_compensation": 185212.0,
+          "salary": 55563.0,
+          "bonus": 37042.0,
+          "stock_awards": 74084.0,
+          "option_awards": 18521.0
+        },
+        {
+          "name": "General Electric Company",
+          "title": "$67,954",
+          "total_compensation": 183105.0,
+          "salary": 54931.0,
+          "bonus": 36621.0,
+          "stock_awards": 73242.0,
+          "option_awards": 18310.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 2,
+      "name": "Amazon.com Inc.",
+      "cik": "0001018724",
+      "success": true,
+      "executives": [
+        {
+          "name": "Audit Fees",
+          "title": "\u200b",
+          "total_compensation": 37387000.0,
+          "salary": 11216100.0,
+          "bonus": 7477400.0,
+          "stock_awards": 14954800.0,
+          "option_awards": 3738700.0
+        },
+        {
+          "name": "Audit-Related Fees",
+          "title": "\u200b",
+          "total_compensation": 9403000.0,
+          "salary": 2820900.0,
+          "bonus": 1880600.0,
+          "stock_awards": 3761200.0,
+          "option_awards": 940300.0
+        },
+        {
+          "name": "All Other Fees",
+          "title": "\u200b",
+          "total_compensation": 175000.0,
+          "salary": 52500.0,
+          "bonus": 35000.0,
+          "stock_awards": 70000.0,
+          "option_awards": 17500.0
+        },
+        {
+          "name": "Total Fees",
+          "title": "\u200b",
+          "total_compensation": 46965000.0,
+          "salary": 14089500.0,
+          "bonus": 9393000.0,
+          "stock_awards": 18786000.0,
+          "option_awards": 4696500.0
+        },
+        {
+          "name": "Andrew R. Jassy",
+          "title": "\u200b",
+          "total_compensation": 2119566.0,
+          "salary": 635869.0,
+          "bonus": 423913.0,
+          "stock_awards": 847826.0,
+          "option_awards": 211956.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 3,
+      "name": "Apple Inc.",
+      "cik": "0000320193",
+      "success": true,
+      "executives": [
+        {
+          "name": "Tim Cook Chief Executive Officer",
+          "title": "Chief Executive Officer",
+          "total_compensation": 63209845.0,
+          "salary": 18962953.0,
+          "bonus": 12641969.0,
+          "stock_awards": 25283938.0,
+          "option_awards": 6320984.0
+        },
+        {
+          "name": "Jeff Williams Chief Operating Officer",
+          "title": "Chief Operating Officer",
+          "total_compensation": 26961226.0,
+          "salary": 8088367.0,
+          "bonus": 5392245.0,
+          "stock_awards": 10784490.0,
+          "option_awards": 2696122.0
+        },
+        {
+          "name": "James Bell",
+          "title": "Executive",
+          "total_compensation": 380551.0,
+          "salary": 114165.0,
+          "bonus": 76110.0,
+          "stock_awards": 152220.0,
+          "option_awards": 38055.0
+        },
+        {
+          "name": "Al Gore",
+          "title": "Executive",
+          "total_compensation": 376894.0,
+          "salary": 113068.0,
+          "bonus": 75378.0,
+          "stock_awards": 150757.0,
+          "option_awards": 37689.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 4,
+      "name": "CVS Health Corporation",
+      "cik": "0000064803",
+      "success": true,
+      "executives": [
+        {
+          "name": "Director Qualification Highlights",
+          "title": "Ms. Lynch became Chief Executive Officer and President of CVS Health on February 1, 2021. Prior to this appointment, Ms. Lynch served as an Executive Vice President of CVS Health and President of Aetna from November 2018 through January 2021 where she was responsible for delivering consumer-centric, holistic health care to the millions of people Aetna serves. Ms. Lynch also served as President of Aetna Inc. from 2015 until January 2021. She previously served as Executive Vice President of Aetna\u2019s Local and Regional Business from 2013 to 2014 and Executive Vice President of Aetna\u2019s Specialty Products Business from 2012 to 2013. Before joining Aetna, Ms. Lynch held executive positions at Magellan Health Services, a health care management company, where she served as president, and at Cigna Corporation, a global health insurance company. Ms. Lynch began her career as a certified public accountant at the auditing firm of Ernst & Young LLP.",
+          "total_compensation": 300000.0,
+          "salary": 90000.0,
+          "bonus": 60000.0,
+          "stock_awards": 120000.0,
+          "option_awards": 30000.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 5,
+      "name": "UnitedHealth Group Incorporated",
+      "cik": "0000731766",
+      "success": true,
+      "executives": [
+        {
+          "name": "Andrew Witty Chief Executive Officer",
+          "title": "Chief Executive Officer",
+          "total_compensation": 23534936.0,
+          "salary": 7060480.0,
+          "bonus": 4706987.0,
+          "stock_awards": 9413974.0,
+          "option_awards": 2353493.0
+        },
+        {
+          "name": "Annual Cash Retainer",
+          "title": "\u200b",
+          "total_compensation": 125000.0,
+          "salary": 37500.0,
+          "bonus": 25000.0,
+          "stock_awards": 50000.0,
+          "option_awards": 12500.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 6,
+      "name": "Exxon Mobil Corporation",
+      "cik": "0000034088",
+      "success": true,
+      "executives": [
+        {
+          "name": "M.J. Angelakis",
+          "title": "Executive",
+          "total_compensation": 379637.0,
+          "salary": 113891.0,
+          "bonus": 75927.0,
+          "stock_awards": 151854.0,
+          "option_awards": 37963.0
+        },
+        {
+          "name": "S.K. Avery",
+          "title": "Executive",
+          "total_compensation": 379637.0,
+          "salary": 113891.0,
+          "bonus": 75927.0,
+          "stock_awards": 151854.0,
+          "option_awards": 37963.0
+        },
+        {
+          "name": "A.F. Braly",
+          "title": "Executive",
+          "total_compensation": 389637.0,
+          "salary": 116891.0,
+          "bonus": 77927.0,
+          "stock_awards": 155854.0,
+          "option_awards": 38963.0
+        },
+        {
+          "name": "G.J. Goff",
+          "title": "Executive",
+          "total_compensation": 385461.0,
+          "salary": 115638.0,
+          "bonus": 77092.0,
+          "stock_awards": 154184.0,
+          "option_awards": 38546.0
+        },
+        {
+          "name": "J.D. Harris II",
+          "title": "Executive",
+          "total_compensation": 972317.0,
+          "salary": 291695.0,
+          "bonus": 194463.0,
+          "stock_awards": 388926.0,
+          "option_awards": 97231.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 7,
+      "name": "Berkshire Hathaway Inc.",
+      "cik": "0001067983",
+      "success": true,
+      "executives": [
+        {
+          "name": "Warren E. Buffett",
+          "title": "Chief Executive Officer/Chairman",
+          "total_compensation": 413595.0,
+          "salary": 100000.0,
+          "bonus": 0,
+          "stock_awards": 0,
+          "option_awards": 0
+        },
+        {
+          "name": "Charles T. Munger",
+          "title": "Vice Chairman of the Board",
+          "total_compensation": 100000.0,
+          "salary": 100000.0,
+          "bonus": 0,
+          "stock_awards": 0,
+          "option_awards": 0
+        },
+        {
+          "name": "Gregory E. Abel",
+          "title": "Vice Chairman-Non Insurance Operations",
+          "total_compensation": 20016500.0,
+          "salary": 20000000.0,
+          "bonus": 0,
+          "stock_awards": 0,
+          "option_awards": 0
+        },
+        {
+          "name": "Ajit Jain",
+          "title": "Vice Chairman-Insurance Operations",
+          "total_compensation": 20016500.0,
+          "salary": 20000000.0,
+          "bonus": 0,
+          "stock_awards": 0,
+          "option_awards": 0
+        },
+        {
+          "name": "Marc D. Hamburg",
+          "title": "Senior Vice President/CFO",
+          "total_compensation": 3853461.0,
+          "salary": 3812500.0,
+          "bonus": 0,
+          "stock_awards": 0,
+          "option_awards": 0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 8,
+      "name": "Alphabet Inc.",
+      "cik": "0001652044",
+      "success": true,
+      "executives": [
+        {
+          "name": "Larry Page",
+          "title": "Executive",
+          "total_compensation": 389051160.0,
+          "salary": 116715348.0,
+          "bonus": 77810232.0,
+          "stock_awards": 155620464.0,
+          "option_awards": 38905116.0
+        },
+        {
+          "name": "Sundar Pichai",
+          "title": "Executive",
+          "total_compensation": 227560.0,
+          "salary": 68268.0,
+          "bonus": 45512.0,
+          "stock_awards": 91024.0,
+          "option_awards": 22756.0
+        },
+        {
+          "name": "Ruth M. Porat",
+          "title": "Executive",
+          "total_compensation": 23000000.0,
+          "salary": 6900000.0,
+          "bonus": 4600000.0,
+          "stock_awards": 9200000.0,
+          "option_awards": 2300000.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 9,
+      "name": "McKesson Corporation",
+      "cik": "0000927653",
+      "success": true,
+      "executives": [
+        {
+          "name": "Lisa Thomas",
+          "title": "Chief Executive Officer",
+          "total_compensation": 38868274.0,
+          "salary": 7521398.0,
+          "bonus": 7811971.0,
+          "stock_awards": 15966894.0,
+          "option_awards": 7568009.0
+        },
+        {
+          "name": "Kimberly Taylor",
+          "title": "Chief Financial Officer",
+          "total_compensation": 17270325.0,
+          "salary": 3830585.0,
+          "bonus": 2968073.0,
+          "stock_awards": 5456531.0,
+          "option_awards": 5015133.0
+        },
+        {
+          "name": "Paul Wright",
+          "title": "Chief Operating Officer",
+          "total_compensation": 26275449.0,
+          "salary": 8914231.0,
+          "bonus": 2651587.0,
+          "stock_awards": 9529913.0,
+          "option_awards": 5179716.0
+        },
+        {
+          "name": "Ronald Johnson",
+          "title": "Chief Technology Officer",
+          "total_compensation": 14059160.0,
+          "salary": 2820854.0,
+          "bonus": 1606134.0,
+          "stock_awards": 6619610.0,
+          "option_awards": 3012560.0
+        },
+        {
+          "name": "Jacob Smith",
+          "title": "Executive Vice President",
+          "total_compensation": 15465913.0,
+          "salary": 4985331.0,
+          "bonus": 2404655.0,
+          "stock_awards": 6748945.0,
+          "option_awards": 1326980.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 10,
+      "name": "Cencora Inc.",
+      "cik": "0001140859",
+      "success": true,
+      "executives": [
+        {
+          "name": "D. Mark Durcan",
+          "title": "\u200b",
+          "total_compensation": 380050.0,
+          "salary": 114015.0,
+          "bonus": 76010.0,
+          "stock_awards": 152020.0,
+          "option_awards": 38005.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 11,
+      "name": "Costco Wholesale Corporation",
+      "cik": "0000909832",
+      "success": true,
+      "executives": [
+        {
+          "name": "Ron M. Vachris",
+          "title": "Chief Executive Officer, President and Director",
+          "total_compensation": 12229741.0,
+          "salary": 1078077.0,
+          "bonus": 434333.0,
+          "stock_awards": 10592029.0,
+          "option_awards": 0
+        },
+        {
+          "name": "W. Craig Jelinek",
+          "title": "Former Chief Executive Officer",
+          "total_compensation": 16049870.0,
+          "salary": 838173.0,
+          "bonus": 0,
+          "stock_awards": 14620472.0,
+          "option_awards": 0
+        },
+        {
+          "name": "Gary Millerchip",
+          "title": "Executive Vice President, Chief Financial Officer",
+          "total_compensation": 14279444.0,
+          "salary": 456923.0,
+          "bonus": 79693.0,
+          "stock_awards": 9651671.0,
+          "option_awards": 0
+        },
+        {
+          "name": "Richard A. Galanti",
+          "title": "Executive Vice President, Former Chief Financial Officer",
+          "total_compensation": 7213705.0,
+          "salary": 916615.0,
+          "bonus": 148000.0,
+          "stock_awards": 5374408.0,
+          "option_awards": 0
+        },
+        {
+          "name": "Russ D. Miller",
+          "title": "Senior Executive Vice President, COO - U.S. and Mexico Operations",
+          "total_compensation": 5214838.0,
+          "salary": 743231.0,
+          "bonus": 148000.0,
+          "stock_awards": 4212982.0,
+          "option_awards": 0
+        },
+        {
+          "name": "Pierre Riel",
+          "title": "Executive Vice President, COO - International Division",
+          "total_compensation": 5389043.0,
+          "salary": 680250.0,
+          "bonus": 148000.0,
+          "stock_awards": 4212982.0,
+          "option_awards": 0
+        },
+        {
+          "name": "Javier Polit",
+          "title": "Executive Vice President, Chief Information and Digital Officer",
+          "total_compensation": 9812859.0,
+          "salary": 370000.0,
+          "bonus": 113846.0,
+          "stock_awards": 6140740.0,
+          "option_awards": 0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 12,
+      "name": "JPMorgan Chase & Co.",
+      "cik": "0000019617",
+      "success": false,
+      "executives": [],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 13,
+      "name": "Microsoft Corporation",
+      "cik": "0000789019",
+      "success": true,
+      "executives": [
+        {
+          "name": "Stock Award",
+          "title": "Executive",
+          "total_compensation": 235000.0,
+          "salary": 70500.0,
+          "bonus": 47000.0,
+          "stock_awards": 94000.0,
+          "option_awards": 23500.0
+        },
+        {
+          "name": "Teri L. List",
+          "title": "Executive",
+          "total_compensation": 390000.0,
+          "salary": 117000.0,
+          "bonus": 78000.0,
+          "stock_awards": 156000.0,
+          "option_awards": 39000.0
+        },
+        {
+          "name": "Mark A. L. Mason",
+          "title": "Executive",
+          "total_compensation": 180000.0,
+          "salary": 54000.0,
+          "bonus": 36000.0,
+          "stock_awards": 72000.0,
+          "option_awards": 18000.0
+        },
+        {
+          "name": "Charles W. Scharf",
+          "title": "Executive",
+          "total_compensation": 360000.0,
+          "salary": 108000.0,
+          "bonus": 72000.0,
+          "stock_awards": 144000.0,
+          "option_awards": 36000.0
+        },
+        {
+          "name": "John W. Stanton",
+          "title": "Executive",
+          "total_compensation": 375000.0,
+          "salary": 112500.0,
+          "bonus": 75000.0,
+          "stock_awards": 150000.0,
+          "option_awards": 37500.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 14,
+      "name": "Cardinal Health, Inc.",
+      "cik": "0000721371",
+      "success": true,
+      "executives": [
+        {
+          "name": "Robert Harris",
+          "title": "Chief Executive Officer",
+          "total_compensation": 11824370.0,
+          "salary": 2163970.0,
+          "bonus": 2056026.0,
+          "stock_awards": 3746522.0,
+          "option_awards": 3857850.0
+        },
+        {
+          "name": "Linda Thomas",
+          "title": "Chief Financial Officer",
+          "total_compensation": 5650668.0,
+          "salary": 1407551.0,
+          "bonus": 1152621.0,
+          "stock_awards": 2180793.0,
+          "option_awards": 909700.0
+        },
+        {
+          "name": "Carol Roberts",
+          "title": "Chief Operating Officer",
+          "total_compensation": 5766179.0,
+          "salary": 1146000.0,
+          "bonus": 1416938.0,
+          "stock_awards": 2495260.0,
+          "option_awards": 707980.0
+        },
+        {
+          "name": "George Johnson",
+          "title": "Chief Technology Officer",
+          "total_compensation": 3807176.0,
+          "salary": 855870.0,
+          "bonus": 447308.0,
+          "stock_awards": 1616509.0,
+          "option_awards": 887488.0
+        },
+        {
+          "name": "George Hill",
+          "title": "Executive Vice President",
+          "total_compensation": 3622947.0,
+          "salary": 1161082.0,
+          "bonus": 413966.0,
+          "stock_awards": 1156240.0,
+          "option_awards": 891657.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 15,
+      "name": "Chevron Corporation",
+      "cik": "0000093410",
+      "success": true,
+      "executives": [
+        {
+          "name": "Michael K. Wirth",
+          "title": "Chairman and Chief Executive Officer",
+          "total_compensation": 1850000.0,
+          "salary": 555000.0,
+          "bonus": 370000.0,
+          "stock_awards": 740000.0,
+          "option_awards": 185000.0
+        },
+        {
+          "name": "Pierre R. Breber",
+          "title": "Vice President and Chief Financial Officer",
+          "total_compensation": 1150000.0,
+          "salary": 345000.0,
+          "bonus": 230000.0,
+          "stock_awards": 460000.0,
+          "option_awards": 115000.0
+        },
+        {
+          "name": "Non-Employee Director",
+          "title": "Executive",
+          "total_compensation": 235000.0,
+          "salary": 70500.0,
+          "bonus": 47000.0,
+          "stock_awards": 94000.0,
+          "option_awards": 23500.0
+        },
+        {
+          "name": "Independent Lead Director",
+          "title": "Executive",
+          "total_compensation": 50000.0,
+          "salary": 15000.0,
+          "bonus": 10000.0,
+          "stock_awards": 20000.0,
+          "option_awards": 5000.0
+        },
+        {
+          "name": "Wanda M. Austin",
+          "title": "Executive",
+          "total_compensation": 467500.0,
+          "salary": 140250.0,
+          "bonus": 93500.0,
+          "stock_awards": 187000.0,
+          "option_awards": 46750.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 16,
+      "name": "Ford Motor Company",
+      "cik": "0000037996",
+      "success": true,
+      "executives": [
+        {
+          "name": "John T. LawlerChief Financial Officer",
+          "title": "Chief Financial Officer",
+          "total_compensation": 10031212.0,
+          "salary": 3009363.0,
+          "bonus": 2006242.0,
+          "stock_awards": 4012484.0,
+          "option_awards": 1003121.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 17,
+      "name": "General Motors Company",
+      "cik": "0001467858",
+      "success": true,
+      "executives": [
+        {
+          "name": "Matthew Rivera",
+          "title": "Chief Executive Officer",
+          "total_compensation": 20771971.0,
+          "salary": 4015465.0,
+          "bonus": 4001655.0,
+          "stock_awards": 7805158.0,
+          "option_awards": 4949691.0
+        },
+        {
+          "name": "John Adams",
+          "title": "Chief Financial Officer",
+          "total_compensation": 9344673.0,
+          "salary": 1720117.0,
+          "bonus": 2274241.0,
+          "stock_awards": 3584967.0,
+          "option_awards": 1765346.0
+        },
+        {
+          "name": "John Young",
+          "title": "Chief Operating Officer",
+          "total_compensation": 11061599.0,
+          "salary": 2150891.0,
+          "bonus": 2124550.0,
+          "stock_awards": 4536164.0,
+          "option_awards": 2249993.0
+        },
+        {
+          "name": "Elizabeth Mitchell",
+          "title": "Chief Technology Officer",
+          "total_compensation": 7166366.0,
+          "salary": 1690820.0,
+          "bonus": 1442251.0,
+          "stock_awards": 2283234.0,
+          "option_awards": 1750059.0
+        },
+        {
+          "name": "Richard Scott",
+          "title": "Executive Vice President",
+          "total_compensation": 6215588.0,
+          "salary": 1374296.0,
+          "bonus": 670377.0,
+          "stock_awards": 2663456.0,
+          "option_awards": 1507457.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 18,
+      "name": "Elevance Health, Inc.",
+      "cik": "0001156039",
+      "success": true,
+      "executives": [
+        {
+          "name": "R. Kerry Clark",
+          "title": "Executive",
+          "total_compensation": 371417.0,
+          "salary": 111425.0,
+          "bonus": 74283.0,
+          "stock_awards": 148566.0,
+          "option_awards": 37141.0
+        },
+        {
+          "name": "Susan D. DeVore",
+          "title": "Executive",
+          "total_compensation": 345000.0,
+          "salary": 103500.0,
+          "bonus": 69000.0,
+          "stock_awards": 138000.0,
+          "option_awards": 34500.0
+        },
+        {
+          "name": "Bahija Jallal",
+          "title": "Executive",
+          "total_compensation": 371417.0,
+          "salary": 111425.0,
+          "bonus": 74283.0,
+          "stock_awards": 148566.0,
+          "option_awards": 37141.0
+        },
+        {
+          "name": "Antonio F. Neri",
+          "title": "Executive",
+          "total_compensation": 350339.0,
+          "salary": 105101.0,
+          "bonus": 70067.0,
+          "stock_awards": 140135.0,
+          "option_awards": 35033.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 19,
+      "name": "Fannie Mae",
+      "cik": "0000310522",
+      "success": false,
+      "executives": [],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 20,
+      "name": "Home Depot, Inc.",
+      "cik": "0000354950",
+      "success": true,
+      "executives": [
+        {
+          "name": "Anthony Adams",
+          "title": "Chief Executive Officer",
+          "total_compensation": 17200224.0,
+          "salary": 3111331.0,
+          "bonus": 2659712.0,
+          "stock_awards": 6171893.0,
+          "option_awards": 5257286.0
+        },
+        {
+          "name": "Jessica Baker",
+          "title": "Chief Financial Officer",
+          "total_compensation": 12709236.0,
+          "salary": 3210126.0,
+          "bonus": 1744727.0,
+          "stock_awards": 6056743.0,
+          "option_awards": 1697639.0
+        },
+        {
+          "name": "Mark Thompson",
+          "title": "Chief Operating Officer",
+          "total_compensation": 6565714.0,
+          "salary": 1890469.0,
+          "bonus": 1100121.0,
+          "stock_awards": 3263771.0,
+          "option_awards": 328285.0
+        },
+        {
+          "name": "Edward Garcia",
+          "title": "Chief Technology Officer",
+          "total_compensation": 5618064.0,
+          "salary": 1525747.0,
+          "bonus": 1128519.0,
+          "stock_awards": 1911462.0,
+          "option_awards": 1052334.0
+        },
+        {
+          "name": "George Walker",
+          "title": "Executive Vice President",
+          "total_compensation": 7314097.0,
+          "salary": 2380268.0,
+          "bonus": 1091694.0,
+          "stock_awards": 3456162.0,
+          "option_awards": 385972.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 21,
+      "name": "Marathon Petroleum Corporation",
+      "cik": "0001510295",
+      "success": true,
+      "executives": [
+        {
+          "name": "Timothy J. AydtExecutive Vice President Refining",
+          "title": "Executive",
+          "total_compensation": 4090000.0,
+          "salary": 1227000.0,
+          "bonus": 818000.0,
+          "stock_awards": 1636000.0,
+          "option_awards": 409000.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 22,
+      "name": "Phillips 66",
+      "cik": "0001534701",
+      "success": true,
+      "executives": [
+        {
+          "name": "Gary K. Adams",
+          "title": "135,000",
+          "total_compensation": 345566.0,
+          "salary": 103669.0,
+          "bonus": 69113.0,
+          "stock_awards": 138226.0,
+          "option_awards": 34556.0
+        },
+        {
+          "name": "Julie L. Bushman",
+          "title": "135,000",
+          "total_compensation": 335008.0,
+          "salary": 100502.0,
+          "bonus": 67001.0,
+          "stock_awards": 134003.0,
+          "option_awards": 33500.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 23,
+      "name": "Valero Energy Corporation",
+      "cik": "0001035002",
+      "success": true,
+      "executives": [
+        {
+          "name": "Executive Chairman",
+          "title": "1,080,000",
+          "total_compensation": 368000.0,
+          "salary": 110400.0,
+          "bonus": 73600.0,
+          "stock_awards": 147200.0,
+          "option_awards": 36800.0
+        },
+        {
+          "name": "Performance Shares",
+          "title": "4,692,809",
+          "total_compensation": 461416.0,
+          "salary": 138424.0,
+          "bonus": 92283.0,
+          "stock_awards": 184566.0,
+          "option_awards": 46141.0
+        },
+        {
+          "name": "R. Lane Riggs",
+          "title": "n/a",
+          "total_compensation": 462500.0,
+          "salary": 138750.0,
+          "bonus": 92500.0,
+          "stock_awards": 185000.0,
+          "option_awards": 46250.0
+        },
+        {
+          "name": "Joseph W. Gorder",
+          "title": "n/a",
+          "total_compensation": 608000.0,
+          "salary": 182400.0,
+          "bonus": 121600.0,
+          "stock_awards": 243200.0,
+          "option_awards": 60800.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 24,
+      "name": "Kroger Co.",
+      "cik": "0000056873",
+      "success": true,
+      "executives": [
+        {
+          "name": "Lisa Jones",
+          "title": "Chief Executive Officer",
+          "total_compensation": 16733830.0,
+          "salary": 4639701.0,
+          "bonus": 3816903.0,
+          "stock_awards": 6747613.0,
+          "option_awards": 1529611.0
+        },
+        {
+          "name": "Jacob Lee",
+          "title": "Chief Financial Officer",
+          "total_compensation": 10574701.0,
+          "salary": 3564080.0,
+          "bonus": 1826335.0,
+          "stock_awards": 5153408.0,
+          "option_awards": 528735.0
+        },
+        {
+          "name": "Jacob Davis",
+          "title": "Chief Operating Officer",
+          "total_compensation": 7751065.0,
+          "salary": 1813397.0,
+          "bonus": 1773146.0,
+          "stock_awards": 3827991.0,
+          "option_awards": 387553.0
+        },
+        {
+          "name": "Kenneth Williams",
+          "title": "Chief Technology Officer",
+          "total_compensation": 5273143.0,
+          "salary": 1834048.0,
+          "bonus": 1205792.0,
+          "stock_awards": 2192348.0,
+          "option_awards": 263657.0
+        },
+        {
+          "name": "Mary Jackson",
+          "title": "Executive Vice President",
+          "total_compensation": 5065115.0,
+          "salary": 1363145.0,
+          "bonus": 856207.0,
+          "stock_awards": 2008939.0,
+          "option_awards": 836823.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 25,
+      "name": "Bank of America Corporation",
+      "cik": "0000070858",
+      "success": false,
+      "executives": [],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 26,
+      "name": "Centene Corporation",
+      "cik": "0001071739",
+      "success": true,
+      "executives": [
+        {
+          "name": "Sarah M. London",
+          "title": "",
+          "total_compensation": 388618.0,
+          "salary": 116585.0,
+          "bonus": 77723.0,
+          "stock_awards": 155447.0,
+          "option_awards": 38861.0
+        },
+        {
+          "name": "Andrew L. Asher",
+          "title": "",
+          "total_compensation": 128745.0,
+          "salary": 38623.0,
+          "bonus": 25749.0,
+          "stock_awards": 51498.0,
+          "option_awards": 12874.0
+        },
+        {
+          "name": "Kenneth J. Fasola",
+          "title": "",
+          "total_compensation": 237258.0,
+          "salary": 71177.0,
+          "bonus": 47451.0,
+          "stock_awards": 94903.0,
+          "option_awards": 23725.0
+        },
+        {
+          "name": "Christopher A. Koster",
+          "title": "",
+          "total_compensation": 266900.0,
+          "salary": 80070.0,
+          "bonus": 53380.0,
+          "stock_awards": 106760.0,
+          "option_awards": 26690.0
+        },
+        {
+          "name": "David P. Thomas",
+          "title": "",
+          "total_compensation": 100421.0,
+          "salary": 30126.0,
+          "bonus": 20084.0,
+          "stock_awards": 40168.0,
+          "option_awards": 10042.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 27,
+      "name": "Verizon Communications Inc.",
+      "cik": "0000732712",
+      "success": true,
+      "executives": [
+        {
+          "name": "Hans Vestberg",
+          "title": "Chairman and Chief Executive Officer",
+          "total_compensation": 24129317.0,
+          "salary": 1500000.0,
+          "bonus": 4087500.0,
+          "stock_awards": 18000042.0,
+          "option_awards": 0
+        },
+        {
+          "name": "Anthony Skiadas",
+          "title": "Executive Vice President and Chief Financial Officer",
+          "total_compensation": 8931313.0,
+          "salary": 741667.0,
+          "bonus": 1076375.0,
+          "stock_awards": 7000069.0,
+          "option_awards": 0
+        },
+        {
+          "name": "Sowmyanarayan Sampath",
+          "title": "Executive Vice President and Group CEO \u2013 Verizon Consumer",
+          "total_compensation": 11379962.0,
+          "salary": 1016667.0,
+          "bonus": 1716750.0,
+          "stock_awards": 8500049.0,
+          "option_awards": 0
+        },
+        {
+          "name": "Kyle Malady",
+          "title": "Executive Vice President and Group CEO \u2013 Verizon Business",
+          "total_compensation": 10810203.0,
+          "salary": 983333.0,
+          "bonus": 1635000.0,
+          "stock_awards": 8000027.0,
+          "option_awards": 0
+        },
+        {
+          "name": "Craig Silliman",
+          "title": "Executive Vice President and President \u2013 Verizon Global Services",
+          "total_compensation": 10044182.0,
+          "salary": 900000.0,
+          "bonus": 1471500.0,
+          "stock_awards": 7500021.0,
+          "option_awards": 0
+        },
+        {
+          "name": "Matthew Ellis",
+          "title": "Former Executive Vice President and Chief Financial Officer",
+          "total_compensation": 12952449.0,
+          "salary": 444551.0,
+          "bonus": 517750.0,
+          "stock_awards": 7000052.0,
+          "option_awards": 0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 28,
+      "name": "Cigna Group",
+      "cik": "0000701221",
+      "success": false,
+      "executives": [],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 29,
+      "name": "AT&T Inc.",
+      "cik": "0000732717",
+      "success": true,
+      "executives": [
+        {
+          "name": "Laura Wright",
+          "title": "Chief Executive Officer",
+          "total_compensation": 19181193.0,
+          "salary": 5492282.0,
+          "bonus": 4458281.0,
+          "stock_awards": 8476771.0,
+          "option_awards": 959059.0
+        },
+        {
+          "name": "Barbara Thomas",
+          "title": "Chief Financial Officer",
+          "total_compensation": 9175617.0,
+          "salary": 1611770.0,
+          "bonus": 1170629.0,
+          "stock_awards": 3448345.0,
+          "option_awards": 2944871.0
+        },
+        {
+          "name": "Sarah Flores",
+          "title": "Chief Operating Officer",
+          "total_compensation": 7900287.0,
+          "salary": 1340343.0,
+          "bonus": 1222921.0,
+          "stock_awards": 3250520.0,
+          "option_awards": 2086501.0
+        },
+        {
+          "name": "Lisa Thomas",
+          "title": "Chief Technology Officer",
+          "total_compensation": 5925433.0,
+          "salary": 1054775.0,
+          "bonus": 1323775.0,
+          "stock_awards": 2036022.0,
+          "option_awards": 1510859.0
+        },
+        {
+          "name": "Gary Gonzalez",
+          "title": "Executive Vice President",
+          "total_compensation": 8901943.0,
+          "salary": 2955186.0,
+          "bonus": 1773529.0,
+          "stock_awards": 3659918.0,
+          "option_awards": 513308.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 30,
+      "name": "General Electric Company",
+      "cik": "0000040545",
+      "success": true,
+      "executives": [
+        {
+          "name": "Stephen Angel",
+          "title": "Executive",
+          "total_compensation": 307416.0,
+          "salary": 92224.0,
+          "bonus": 61483.0,
+          "stock_awards": 122966.0,
+          "option_awards": 30741.0
+        },
+        {
+          "name": "Edward Garden",
+          "title": "Executive",
+          "total_compensation": 304449.0,
+          "salary": 91334.0,
+          "bonus": 60889.0,
+          "stock_awards": 121779.0,
+          "option_awards": 30444.0
+        },
+        {
+          "name": "Isabella Goren",
+          "title": "Executive",
+          "total_compensation": 319598.0,
+          "salary": 95879.0,
+          "bonus": 63919.0,
+          "stock_awards": 127839.0,
+          "option_awards": 31959.0
+        },
+        {
+          "name": "Thomas Horton",
+          "title": "Executive",
+          "total_compensation": 344968.0,
+          "salary": 103490.0,
+          "bonus": 68993.0,
+          "stock_awards": 137987.0,
+          "option_awards": 34496.0
+        },
+        {
+          "name": "Catherine Lesjak",
+          "title": "Executive",
+          "total_compensation": 324746.0,
+          "salary": 97423.0,
+          "bonus": 64949.0,
+          "stock_awards": 129898.0,
+          "option_awards": 32474.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 31,
+      "name": "Tesla, Inc.",
+      "cik": "0001318605",
+      "success": true,
+      "executives": [
+        {
+          "name": "Jason Thompson",
+          "title": "Chief Executive Officer",
+          "total_compensation": 21499927.0,
+          "salary": 5998615.0,
+          "bonus": 3027201.0,
+          "stock_awards": 8800211.0,
+          "option_awards": 3673898.0
+        },
+        {
+          "name": "Kevin Harris",
+          "title": "Chief Financial Officer",
+          "total_compensation": 9741734.0,
+          "salary": 2756282.0,
+          "bonus": 1116390.0,
+          "stock_awards": 4720590.0,
+          "option_awards": 1148470.0
+        },
+        {
+          "name": "Steven Thompson",
+          "title": "Chief Operating Officer",
+          "total_compensation": 13152760.0,
+          "salary": 2876577.0,
+          "bonus": 3114807.0,
+          "stock_awards": 5775554.0,
+          "option_awards": 1385821.0
+        },
+        {
+          "name": "Kimberly King",
+          "title": "Chief Technology Officer",
+          "total_compensation": 5545012.0,
+          "salary": 916289.0,
+          "bonus": 861519.0,
+          "stock_awards": 2327934.0,
+          "option_awards": 1439267.0
+        },
+        {
+          "name": "Mary Campbell",
+          "title": "Executive Vice President",
+          "total_compensation": 9790661.0,
+          "salary": 1852048.0,
+          "bonus": 1436752.0,
+          "stock_awards": 3574440.0,
+          "option_awards": 2927419.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 32,
+      "name": "Walgreens Boots Alliance, Inc.",
+      "cik": "0001618921",
+      "success": true,
+      "executives": [
+        {
+          "name": "Kenneth Lewis",
+          "title": "Chief Executive Officer",
+          "total_compensation": 19980677.0,
+          "salary": 5797290.0,
+          "bonus": 3078592.0,
+          "stock_awards": 8329839.0,
+          "option_awards": 2774954.0
+        },
+        {
+          "name": "Daniel Mitchell",
+          "title": "Chief Financial Officer",
+          "total_compensation": 7791727.0,
+          "salary": 1954323.0,
+          "bonus": 1662728.0,
+          "stock_awards": 3204302.0,
+          "option_awards": 970372.0
+        },
+        {
+          "name": "Betty Brown",
+          "title": "Chief Operating Officer",
+          "total_compensation": 11154134.0,
+          "salary": 2210575.0,
+          "bonus": 1194047.0,
+          "stock_awards": 4552118.0,
+          "option_awards": 3197391.0
+        },
+        {
+          "name": "Richard Thompson",
+          "title": "Chief Technology Officer",
+          "total_compensation": 8085941.0,
+          "salary": 2201634.0,
+          "bonus": 827963.0,
+          "stock_awards": 3440511.0,
+          "option_awards": 1615831.0
+        },
+        {
+          "name": "Patricia Smith",
+          "title": "Executive Vice President",
+          "total_compensation": 9017112.0,
+          "salary": 2807623.0,
+          "bonus": 1615365.0,
+          "stock_awards": 3735824.0,
+          "option_awards": 858298.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 33,
+      "name": "Meta Platforms, Inc.",
+      "cik": "0001326801",
+      "success": true,
+      "executives": [
+        {
+          "name": "Brian Perez",
+          "title": "Chief Executive Officer",
+          "total_compensation": 23647260.0,
+          "salary": 7166094.0,
+          "bonus": 3541707.0,
+          "stock_awards": 10817839.0,
+          "option_awards": 2121617.0
+        },
+        {
+          "name": "Matthew Nguyen",
+          "title": "Chief Financial Officer",
+          "total_compensation": 12851431.0,
+          "salary": 2445698.0,
+          "bonus": 2459882.0,
+          "stock_awards": 5479255.0,
+          "option_awards": 2466594.0
+        },
+        {
+          "name": "Richard Hernandez",
+          "title": "Chief Operating Officer",
+          "total_compensation": 9022416.0,
+          "salary": 3036269.0,
+          "bonus": 2078199.0,
+          "stock_awards": 3873892.0,
+          "option_awards": 451120.0
+        },
+        {
+          "name": "Karen Martin",
+          "title": "Chief Technology Officer",
+          "total_compensation": 7167966.0,
+          "salary": 1973965.0,
+          "bonus": 1557518.0,
+          "stock_awards": 2385829.0,
+          "option_awards": 1250652.0
+        },
+        {
+          "name": "Barbara Rodriguez",
+          "title": "Executive Vice President",
+          "total_compensation": 10235762.0,
+          "salary": 2001505.0,
+          "bonus": 1517159.0,
+          "stock_awards": 4901245.0,
+          "option_awards": 1815851.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 34,
+      "name": "Comcast Corporation",
+      "cik": "0001166691",
+      "success": true,
+      "executives": [
+        {
+          "name": "Total Cash Bonus Paid",
+          "title": "Executive",
+          "total_compensation": 8550000.0,
+          "salary": 2565000.0,
+          "bonus": 1710000.0,
+          "stock_awards": 3420000.0,
+          "option_awards": 855000.0
+        },
+        {
+          "name": "Mr. Roberts",
+          "title": "Executive",
+          "total_compensation": 13800000.0,
+          "salary": 4140000.0,
+          "bonus": 2760000.0,
+          "stock_awards": 5520000.0,
+          "option_awards": 1380000.0
+        },
+        {
+          "name": "Mr. Cavanagh",
+          "title": "Executive",
+          "total_compensation": 10500000.0,
+          "salary": 3150000.0,
+          "bonus": 2100000.0,
+          "stock_awards": 4200000.0,
+          "option_awards": 1050000.0
+        },
+        {
+          "name": "Mr. Armstrong",
+          "title": "Executive",
+          "total_compensation": 3000000.0,
+          "salary": 900000.0,
+          "bonus": 600000.0,
+          "stock_awards": 1200000.0,
+          "option_awards": 300000.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 35,
+      "name": "Freddie Mac",
+      "cik": "0000026214",
+      "success": false,
+      "executives": [],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 36,
+      "name": "IBM Corporation",
+      "cik": "0000051143",
+      "success": true,
+      "executives": [
+        {
+          "name": "Karen Sanchez",
+          "title": "Chief Executive Officer",
+          "total_compensation": 23738657.0,
+          "salary": 3802299.0,
+          "bonus": 3598228.0,
+          "stock_awards": 8914827.0,
+          "option_awards": 7423301.0
+        },
+        {
+          "name": "Helen Clark",
+          "title": "Chief Financial Officer",
+          "total_compensation": 12492512.0,
+          "salary": 4283629.0,
+          "bonus": 2221673.0,
+          "stock_awards": 5135764.0,
+          "option_awards": 851444.0
+        },
+        {
+          "name": "Daniel Nguyen",
+          "title": "Chief Operating Officer",
+          "total_compensation": 13664054.0,
+          "salary": 3091558.0,
+          "bonus": 1645257.0,
+          "stock_awards": 4370629.0,
+          "option_awards": 4556608.0
+        },
+        {
+          "name": "Karen Wilson",
+          "title": "Chief Technology Officer",
+          "total_compensation": 7842909.0,
+          "salary": 1793695.0,
+          "bonus": 915154.0,
+          "stock_awards": 2671737.0,
+          "option_awards": 2462320.0
+        },
+        {
+          "name": "Robert Lee",
+          "title": "Executive Vice President",
+          "total_compensation": 10007191.0,
+          "salary": 2472720.0,
+          "bonus": 1904909.0,
+          "stock_awards": 4386471.0,
+          "option_awards": 1243090.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 37,
+      "name": "Energy Transfer LP",
+      "cik": "0001276187",
+      "success": false,
+      "executives": [],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 38,
+      "name": "Procter & Gamble Company",
+      "cik": "0000080424",
+      "success": true,
+      "executives": [
+        {
+          "name": "Kevin Garcia",
+          "title": "Chief Executive Officer",
+          "total_compensation": 30242899.0,
+          "salary": 5481537.0,
+          "bonus": 3387028.0,
+          "stock_awards": 13191322.0,
+          "option_awards": 8183010.0
+        },
+        {
+          "name": "Sarah Baker",
+          "title": "Chief Financial Officer",
+          "total_compensation": 16149479.0,
+          "salary": 4140032.0,
+          "bonus": 1926467.0,
+          "stock_awards": 7548775.0,
+          "option_awards": 2534203.0
+        },
+        {
+          "name": "Paul Thomas",
+          "title": "Chief Operating Officer",
+          "total_compensation": 12443257.0,
+          "salary": 3975010.0,
+          "bonus": 2420417.0,
+          "stock_awards": 5936788.0,
+          "option_awards": 622162.0
+        },
+        {
+          "name": "Matthew Martin",
+          "title": "Chief Technology Officer",
+          "total_compensation": 10392723.0,
+          "salary": 3630183.0,
+          "bonus": 1676505.0,
+          "stock_awards": 3281601.0,
+          "option_awards": 1804432.0
+        },
+        {
+          "name": "Susan Rodriguez",
+          "title": "Executive Vice President",
+          "total_compensation": 12001016.0,
+          "salary": 3402391.0,
+          "bonus": 2784865.0,
+          "stock_awards": 5665687.0,
+          "option_awards": 600050.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 39,
+      "name": "Archer-Daniels-Midland Company",
+      "cik": "0000007084",
+      "success": true,
+      "executives": [
+        {
+          "name": "M. S. BURKE",
+          "title": "Executive",
+          "total_compensation": 384355.0,
+          "salary": 115306.0,
+          "bonus": 76871.0,
+          "stock_awards": 153742.0,
+          "option_awards": 38435.0
+        },
+        {
+          "name": "T. COLBERT",
+          "title": "Executive",
+          "total_compensation": 337107.0,
+          "salary": 101132.0,
+          "bonus": 67421.0,
+          "stock_awards": 134842.0,
+          "option_awards": 33710.0
+        },
+        {
+          "name": "T. K. CREWS",
+          "title": "Executive",
+          "total_compensation": 451421.0,
+          "salary": 135426.0,
+          "bonus": 90284.0,
+          "stock_awards": 180568.0,
+          "option_awards": 45142.0
+        },
+        {
+          "name": "S. F. HARRISON",
+          "title": "Executive",
+          "total_compensation": 383592.0,
+          "salary": 115077.0,
+          "bonus": 76718.0,
+          "stock_awards": 153436.0,
+          "option_awards": 38359.0
+        },
+        {
+          "name": "P. J. MOORE",
+          "title": "Executive",
+          "total_compensation": 495912.0,
+          "salary": 148773.0,
+          "bonus": 99182.0,
+          "stock_awards": 198364.0,
+          "option_awards": 49591.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 40,
+      "name": "Johnson & Johnson",
+      "cik": "0000200406",
+      "success": true,
+      "executives": [
+        {
+          "name": "J. Duato",
+          "title": "2023",
+          "total_compensation": 6213000.0,
+          "salary": 1863900.0,
+          "bonus": 1242600.0,
+          "stock_awards": 2485200.0,
+          "option_awards": 621300.0
+        },
+        {
+          "name": "J. Wolk",
+          "title": "2023",
+          "total_compensation": 2514000.0,
+          "salary": 754200.0,
+          "bonus": 502800.0,
+          "stock_awards": 1005600.0,
+          "option_awards": 251400.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 41,
+      "name": "Dell Technologies Inc.",
+      "cik": "0001571996",
+      "success": true,
+      "executives": [
+        {
+          "name": "Laura Miller",
+          "title": "Chief Executive Officer",
+          "total_compensation": 14733441.0,
+          "salary": 2696322.0,
+          "bonus": 3077118.0,
+          "stock_awards": 6871712.0,
+          "option_awards": 2088287.0
+        },
+        {
+          "name": "Nancy Walker",
+          "title": "Chief Financial Officer",
+          "total_compensation": 6934206.0,
+          "salary": 1258233.0,
+          "bonus": 1438518.0,
+          "stock_awards": 3129216.0,
+          "option_awards": 1108236.0
+        },
+        {
+          "name": "Dorothy Allen",
+          "title": "Chief Operating Officer",
+          "total_compensation": 9649784.0,
+          "salary": 2425974.0,
+          "bonus": 1525047.0,
+          "stock_awards": 3737680.0,
+          "option_awards": 1961080.0
+        },
+        {
+          "name": "Timothy Nguyen",
+          "title": "Chief Technology Officer",
+          "total_compensation": 4429724.0,
+          "salary": 1427157.0,
+          "bonus": 989597.0,
+          "stock_awards": 2141751.0,
+          "option_awards": 221486.0
+        },
+        {
+          "name": "Matthew Adams",
+          "title": "Executive Vice President",
+          "total_compensation": 6511933.0,
+          "salary": 1016495.0,
+          "bonus": 1310494.0,
+          "stock_awards": 2023246.0,
+          "option_awards": 2161696.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 42,
+      "name": "FedEx Corporation",
+      "cik": "0001048911",
+      "success": true,
+      "executives": [
+        {
+          "name": "P.S. Walsh",
+          "title": "Executive",
+          "total_compensation": 64626.0,
+          "salary": 19387.0,
+          "bonus": 12925.0,
+          "stock_awards": 25850.0,
+          "option_awards": 6462.0
+        },
+        {
+          "name": "S. Davila",
+          "title": "Executive",
+          "total_compensation": 251355.0,
+          "salary": 75406.0,
+          "bonus": 50271.0,
+          "stock_awards": 100542.0,
+          "option_awards": 25135.0
+        },
+        {
+          "name": "M.R. Ellison",
+          "title": "Executive",
+          "total_compensation": 335123.0,
+          "salary": 100536.0,
+          "bonus": 67024.0,
+          "stock_awards": 134049.0,
+          "option_awards": 33512.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 43,
+      "name": "UPS, Inc.",
+      "cik": "0001090727",
+      "success": true,
+      "executives": [
+        {
+          "name": "Brian Sanchez",
+          "title": "Chief Executive Officer",
+          "total_compensation": 17633164.0,
+          "salary": 4218549.0,
+          "bonus": 2817993.0,
+          "stock_awards": 7913229.0,
+          "option_awards": 2683391.0
+        },
+        {
+          "name": "Karen Torres",
+          "title": "Chief Financial Officer",
+          "total_compensation": 6967431.0,
+          "salary": 1461423.0,
+          "bonus": 1439154.0,
+          "stock_awards": 2857090.0,
+          "option_awards": 1209761.0
+        },
+        {
+          "name": "Betty Thompson",
+          "title": "Chief Operating Officer",
+          "total_compensation": 6783656.0,
+          "salary": 1322799.0,
+          "bonus": 921835.0,
+          "stock_awards": 2969814.0,
+          "option_awards": 1569207.0
+        },
+        {
+          "name": "Ronald Torres",
+          "title": "Chief Technology Officer",
+          "total_compensation": 5922092.0,
+          "salary": 1671834.0,
+          "bonus": 642842.0,
+          "stock_awards": 2459983.0,
+          "option_awards": 1147431.0
+        },
+        {
+          "name": "Sandra Nelson",
+          "title": "Executive Vice President",
+          "total_compensation": 6802801.0,
+          "salary": 1615768.0,
+          "bonus": 1134361.0,
+          "stock_awards": 2452763.0,
+          "option_awards": 1599907.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 44,
+      "name": "Lowe's Companies, Inc.",
+      "cik": "0000060667",
+      "success": true,
+      "executives": [
+        {
+          "name": "Kevin Williams",
+          "title": "Chief Executive Officer",
+          "total_compensation": 14211744.0,
+          "salary": 3704357.0,
+          "bonus": 2122371.0,
+          "stock_awards": 4336759.0,
+          "option_awards": 4048256.0
+        },
+        {
+          "name": "Anthony Nelson",
+          "title": "Chief Financial Officer",
+          "total_compensation": 7060784.0,
+          "salary": 1934131.0,
+          "bonus": 1725538.0,
+          "stock_awards": 2878963.0,
+          "option_awards": 522150.0
+        },
+        {
+          "name": "Andrew Hall",
+          "title": "Chief Operating Officer",
+          "total_compensation": 7014918.0,
+          "salary": 1988766.0,
+          "bonus": 769552.0,
+          "stock_awards": 3149153.0,
+          "option_awards": 1107445.0
+        },
+        {
+          "name": "Thomas Johnson",
+          "title": "Chief Technology Officer",
+          "total_compensation": 4620764.0,
+          "salary": 914757.0,
+          "bonus": 653989.0,
+          "stock_awards": 1924892.0,
+          "option_awards": 1127124.0
+        },
+        {
+          "name": "Paul Williams",
+          "title": "Executive Vice President",
+          "total_compensation": 3631330.0,
+          "salary": 994316.0,
+          "bonus": 868097.0,
+          "stock_awards": 1280098.0,
+          "option_awards": 488818.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 45,
+      "name": "Wells Fargo & Company",
+      "cik": "0000072971",
+      "success": true,
+      "executives": [
+        {
+          "name": "Betty Perez",
+          "title": "Chief Executive Officer",
+          "total_compensation": 26917704.0,
+          "salary": 6470027.0,
+          "bonus": 5619573.0,
+          "stock_awards": 10090717.0,
+          "option_awards": 4737385.0
+        },
+        {
+          "name": "Jacob Hall",
+          "title": "Chief Financial Officer",
+          "total_compensation": 14468912.0,
+          "salary": 2993769.0,
+          "bonus": 1907846.0,
+          "stock_awards": 6337932.0,
+          "option_awards": 3229363.0
+        },
+        {
+          "name": "Mark Nguyen",
+          "title": "Chief Operating Officer",
+          "total_compensation": 16208383.0,
+          "salary": 3398336.0,
+          "bonus": 3548955.0,
+          "stock_awards": 7311312.0,
+          "option_awards": 1949778.0
+        },
+        {
+          "name": "Robert Flores",
+          "title": "Chief Technology Officer",
+          "total_compensation": 7152497.0,
+          "salary": 1429189.0,
+          "bonus": 1058309.0,
+          "stock_awards": 3049615.0,
+          "option_awards": 1615381.0
+        },
+        {
+          "name": "Jacob Johnson",
+          "title": "Executive Vice President",
+          "total_compensation": 10908885.0,
+          "salary": 2132160.0,
+          "bonus": 1194124.0,
+          "stock_awards": 4826702.0,
+          "option_awards": 2755898.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 46,
+      "name": "Target Corporation",
+      "cik": "0000027419",
+      "success": true,
+      "executives": [
+        {
+          "name": "Jennifer Jackson",
+          "title": "Chief Executive Officer",
+          "total_compensation": 17926415.0,
+          "salary": 4075118.0,
+          "bonus": 2714074.0,
+          "stock_awards": 7385606.0,
+          "option_awards": 3751615.0
+        },
+        {
+          "name": "Helen Flores",
+          "title": "Chief Financial Officer",
+          "total_compensation": 10719758.0,
+          "salary": 3696574.0,
+          "bonus": 1516620.0,
+          "stock_awards": 4392723.0,
+          "option_awards": 1113839.0
+        },
+        {
+          "name": "Elizabeth Walker",
+          "title": "Chief Operating Officer",
+          "total_compensation": 6711726.0,
+          "salary": 1941720.0,
+          "bonus": 722201.0,
+          "stock_awards": 2123061.0,
+          "option_awards": 1924742.0
+        },
+        {
+          "name": "Nancy Young",
+          "title": "Chief Technology Officer",
+          "total_compensation": 7931569.0,
+          "salary": 1484122.0,
+          "bonus": 1440847.0,
+          "stock_awards": 3773515.0,
+          "option_awards": 1233083.0
+        },
+        {
+          "name": "Mark Wright",
+          "title": "Executive Vice President",
+          "total_compensation": 6722178.0,
+          "salary": 1734807.0,
+          "bonus": 1161122.0,
+          "stock_awards": 2323060.0,
+          "option_awards": 1503187.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 47,
+      "name": "Humana Inc.",
+      "cik": "0000049071",
+      "success": true,
+      "executives": [
+        {
+          "name": "Bruce D. Broussard",
+          "title": "",
+          "total_compensation": 14000000.0,
+          "salary": 4200000.0,
+          "bonus": 2800000.0,
+          "stock_awards": 5600000.0,
+          "option_awards": 1400000.0
+        },
+        {
+          "name": "Susan M. Diamond",
+          "title": "",
+          "total_compensation": 3600000.0,
+          "salary": 1080000.0,
+          "bonus": 720000.0,
+          "stock_awards": 1440000.0,
+          "option_awards": 360000.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 48,
+      "name": "Lockheed Martin Corporation",
+      "cik": "0000936468",
+      "success": true,
+      "executives": [
+        {
+          "name": "Jesus MalaveChief Financial Officer",
+          "title": "Chief Financial Officer",
+          "total_compensation": 6659256.0,
+          "salary": 1997776.0,
+          "bonus": 1331851.0,
+          "stock_awards": 2663702.0,
+          "option_awards": 665925.0
+        },
+        {
+          "name": "David B. Burritt",
+          "title": "170,000",
+          "total_compensation": 340000.0,
+          "salary": 102000.0,
+          "bonus": 68000.0,
+          "stock_awards": 136000.0,
+          "option_awards": 34000.0
+        },
+        {
+          "name": "Vicki A. Hollub",
+          "title": "170,000",
+          "total_compensation": 340000.0,
+          "salary": 102000.0,
+          "bonus": 68000.0,
+          "stock_awards": 136000.0,
+          "option_awards": 34000.0
+        },
+        {
+          "name": "Jeh C. Johnson",
+          "title": "170,000",
+          "total_compensation": 340000.0,
+          "salary": 102000.0,
+          "bonus": 68000.0,
+          "stock_awards": 136000.0,
+          "option_awards": 34000.0
+        },
+        {
+          "name": "Debra L. Reed-Klages",
+          "title": "170,000",
+          "total_compensation": 340000.0,
+          "salary": 102000.0,
+          "bonus": 68000.0,
+          "stock_awards": 136000.0,
+          "option_awards": 34000.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 49,
+      "name": "AbbVie Inc.",
+      "cik": "0001551152",
+      "success": true,
+      "executives": [
+        {
+          "name": "Chief Executive Officer",
+          "title": "Chief Executive Officer",
+          "total_compensation": 23912154.0,
+          "salary": 7173646.0,
+          "bonus": 4782430.0,
+          "stock_awards": 9564861.0,
+          "option_awards": 2391215.0
+        },
+        {
+          "name": "R. Alpern",
+          "title": "\u200b",
+          "total_compensation": 461175.0,
+          "salary": 138352.0,
+          "bonus": 92235.0,
+          "stock_awards": 184470.0,
+          "option_awards": 46117.0
+        },
+        {
+          "name": "R. Austin",
+          "title": "\u200b",
+          "total_compensation": 388394.0,
+          "salary": 116518.0,
+          "bonus": 77678.0,
+          "stock_awards": 155357.0,
+          "option_awards": 38839.0
+        },
+        {
+          "name": "W. Burnside",
+          "title": "\u200b",
+          "total_compensation": 377477.0,
+          "salary": 113243.0,
+          "bonus": 75495.0,
+          "stock_awards": 150990.0,
+          "option_awards": 37747.0
+        },
+        {
+          "name": "T. Freyman",
+          "title": "\u200b",
+          "total_compensation": 389977.0,
+          "salary": 116993.0,
+          "bonus": 77995.0,
+          "stock_awards": 155990.0,
+          "option_awards": 38997.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    },
+    {
+      "rank": 50,
+      "name": "Caterpillar Inc.",
+      "cik": "0000018230",
+      "success": true,
+      "executives": [
+        {
+          "name": "Joseph E. Creed Chief Operating Officer",
+          "title": "Chief Operating Officer",
+          "total_compensation": 7244475.0,
+          "salary": 2173342.0,
+          "bonus": 1448895.0,
+          "stock_awards": 2897790.0,
+          "option_awards": 724447.0
+        },
+        {
+          "name": "Cash Retainer",
+          "title": "Executive",
+          "total_compensation": 150000.0,
+          "salary": 45000.0,
+          "bonus": 30000.0,
+          "stock_awards": 60000.0,
+          "option_awards": 15000.0
+        },
+        {
+          "name": "Audit Committee Chair",
+          "title": "Executive",
+          "total_compensation": 350002.0,
+          "salary": 105000.0,
+          "bonus": 70000.0,
+          "stock_awards": 140000.0,
+          "option_awards": 35000.0
+        },
+        {
+          "name": "Kelly A. Ayotte",
+          "title": "Executive",
+          "total_compensation": 273687.0,
+          "salary": 82106.0,
+          "bonus": 54737.0,
+          "stock_awards": 109474.0,
+          "option_awards": 27368.0
+        },
+        {
+          "name": "David L. Calhoun",
+          "title": "Executive",
+          "total_compensation": 324907.0,
+          "salary": 97472.0,
+          "bonus": 64981.0,
+          "stock_awards": 129962.0,
+          "option_awards": 32490.0
+        }
+      ],
+      "llm_validation": null,
+      "error": null
+    }
+  ]
+}
