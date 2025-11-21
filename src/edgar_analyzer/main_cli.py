@@ -39,8 +39,9 @@ load_dotenv()
               default='auto', help='CLI interface mode')
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
 @click.option('--enable-web-search', is_flag=True, help='Enable web search capabilities')
+@click.option('--cli', 'bypass_interactive', is_flag=True, help='Bypass interactive mode, show CLI help')
 @click.pass_context
-def cli(ctx, mode, verbose, enable_web_search):
+def cli(ctx, mode, verbose, enable_web_search, bypass_interactive):
     """
     EDGAR Analyzer - Intelligent Executive Compensation Analysis
 
@@ -60,6 +61,7 @@ def cli(ctx, mode, verbose, enable_web_search):
 
     Examples:
         edgar-cli                                    # Start interactive mode (default)
+        edgar-cli --cli                             # Show CLI help (bypass interactive)
         edgar-cli --enable-web-search               # Interactive with web search
         edgar-cli extract --cik 0000320193          # Traditional command
         edgar-cli --mode traditional interactive    # Force traditional CLI
@@ -74,9 +76,14 @@ def cli(ctx, mode, verbose, enable_web_search):
         if enable_web_search:
             click.echo("🔍 Web search capabilities enabled")
 
-    # If no subcommand is provided, start interactive mode by default
+    # If no subcommand is provided, decide what to do
     if ctx.invoked_subcommand is None:
-        ctx.invoke(interactive)
+        if bypass_interactive:
+            # Show CLI help instead of starting interactive mode
+            click.echo(ctx.get_help())
+        else:
+            # Start interactive mode by default
+            ctx.invoke(interactive)
 
 
 @cli.command()

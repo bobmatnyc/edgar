@@ -58,6 +58,9 @@ source venv/bin/activate
 # Interactive mode (default)
 python -m edgar_analyzer
 
+# Bypass interactive, show CLI help
+python -m edgar_analyzer --cli
+
 # With web search capabilities (requires OpenRouter API key)
 python -m edgar_analyzer --enable-web-search
 
@@ -79,10 +82,13 @@ python -m edgar_analyzer --mode traditional # Force traditional CLI
        latest proxy filing and run the analysis...
 ```
 
-### **Traditional CLI Commands**
+### **CLI Usage Examples**
 ```bash
 # Default: Interactive conversational mode
 python -m edgar_analyzer
+
+# Bypass interactive, show CLI help
+python -m edgar_analyzer --cli
 
 # Extract specific company
 python -m edgar_analyzer extract --cik 0000320193 --year 2023
@@ -218,6 +224,9 @@ source venv/bin/activate
 
 # Start interactive mode (default)
 python -m edgar_analyzer
+
+# Bypass interactive, show CLI help
+python -m edgar_analyzer --cli
 
 # With web search capabilities
 python -m edgar_analyzer --enable-web-search
