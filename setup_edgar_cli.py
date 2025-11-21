@@ -175,10 +175,11 @@ class EdgarCLISetup:
         launcher_sh = self.project_root / "edgar_cli.sh"
         launcher_content_sh = f"""#!/bin/bash
 # EDGAR CLI Launcher Script
+# Starts interactive mode by default
 
 cd "{self.project_root}"
 source venv/bin/activate
-python -m edgar_analyzer.cli "$@"
+python -m edgar_analyzer "$@"
 """
         
         with open(launcher_sh, 'w') as f:
@@ -191,10 +192,11 @@ python -m edgar_analyzer.cli "$@"
         launcher_bat = self.project_root / "edgar_cli.bat"
         launcher_content_bat = f"""@echo off
 REM EDGAR CLI Launcher Script
+REM Starts interactive mode by default
 
 cd /d "{self.project_root}"
 call venv\\Scripts\\activate.bat
-python -m edgar_analyzer.cli %*
+python -m edgar_analyzer %*
 """
         
         with open(launcher_bat, 'w') as f:
@@ -269,9 +271,10 @@ print("🎉 Installation test complete")
         print("   • Automatic: Detects LLM availability and chooses mode")
         
         print("\n🛠️  **EXAMPLE USAGE:**")
-        print("   ./edgar_cli.sh                    # Start interactive mode")
-        print("   ./edgar_cli.sh analyze --help     # Show analysis options")
-        print("   ./edgar_cli.sh execute --help     # Show execution options")
+        print("   ./edgar_cli.sh                    # Start interactive mode (default)")
+        print("   ./edgar_cli.sh --enable-web-search # Interactive with web search")
+        print("   ./edgar_cli.sh extract --help     # Show extraction options")
+        print("   ./edgar_cli.sh test --help        # Show testing options")
         
         print("\n📚 **DOCUMENTATION:**")
         print("   • README.md - General documentation")

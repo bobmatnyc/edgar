@@ -55,11 +55,15 @@ cp .env.template .env.local
 ```bash
 source venv/bin/activate
 
-# Basic mode
-python -m edgar_analyzer --mode auto interactive
+# Interactive mode (default)
+python -m edgar_analyzer
 
 # With web search capabilities (requires OpenRouter API key)
-python -m edgar_analyzer --enable-web-search --mode auto interactive
+python -m edgar_analyzer --enable-web-search
+
+# Specific modes
+python -m edgar_analyzer --mode chatbot    # Force conversational mode
+python -m edgar_analyzer --mode traditional # Force traditional CLI
 ```
 
 ## 💬 Usage Examples
@@ -77,6 +81,9 @@ python -m edgar_analyzer --enable-web-search --mode auto interactive
 
 ### **Traditional CLI Commands**
 ```bash
+# Default: Interactive conversational mode
+python -m edgar_analyzer
+
 # Extract specific company
 python -m edgar_analyzer extract --cik 0000320193 --year 2023
 
@@ -209,11 +216,11 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ```bash
 source venv/bin/activate
 
-# Basic mode
-python -m edgar_analyzer --mode auto interactive
+# Start interactive mode (default)
+python -m edgar_analyzer
 
 # With web search capabilities
-python -m edgar_analyzer --enable-web-search --mode auto interactive
+python -m edgar_analyzer --enable-web-search
 ```
 
 **Revolutionary. Intelligent. Production-Ready.** 🚀
