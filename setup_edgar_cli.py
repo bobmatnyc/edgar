@@ -140,50 +140,32 @@ class EdgarCLISetup:
     def create_environment_config(self):
         """Create environment configuration file."""
         print("\n⚙️  Creating environment configuration...")
-        
-        env_file = self.project_root / ".env"
-        
-        if env_file.exists():
-            print("⚠️  .env file already exists")
+
+        env_local_file = self.project_root / ".env.local"
+        env_template = self.project_root / ".env.template"
+
+        # Check if template exists
+        if not env_template.exists():
+            print("❌ .env.template not found. Please ensure it exists in the project root.")
+            return
+
+        if env_local_file.exists():
+            print("⚠️  .env.local file already exists")
             response = input("   Overwrite? (y/N): ").strip().lower()
             if response not in ['y', 'yes']:
-                print("   Keeping existing .env file")
+                print("   Keeping existing .env.local file")
                 return
-        
-        env_content = """# EDGAR CLI Environment Configuration
 
-# LLM Service Configuration
-OPENROUTER_API_KEY=your_openrouter_api_key_here
-PRIMARY_MODEL=x-ai/grok-4.1-fast
-FALLBACK_MODEL=anthropic/claude-3.5-sonnet
+        # Copy template to .env.local
+        import shutil
+        shutil.copy2(env_template, env_local_file)
 
-# EDGAR API Configuration
-EDGAR_USER_AGENT=YourCompany YourEmail@example.com
-EDGAR_API_BASE_URL=https://data.sec.gov
-
-# Database Configuration (Optional)
-DATABASE_URL=postgresql://user:password@localhost/edgar_db
-
-# Logging Configuration
-LOG_LEVEL=INFO
-LOG_FORMAT=json
-
-# CLI Configuration
-CLI_MODE=auto  # auto, chatbot, traditional
-SCRIPTING_ENABLED=true
-MAX_EXECUTION_TIME=30.0
-
-# Performance Configuration
-MAX_CONCURRENT_REQUESTS=5
-REQUEST_DELAY=0.1
-CACHE_ENABLED=true
-"""
-        
-        with open(env_file, 'w') as f:
-            f.write(env_content)
-        
         print("✅ Environment configuration created")
-        print(f"   📝 Edit {env_file} to configure your API keys")
+        print(f"   📝 Edit {env_local_file} to configure your API keys")
+        print("   🔒 SECURITY: .env.local is gitignored to protect your API keys")
+        print("   🔑 Get OpenRouter API key: https://openrouter.ai/keys")
+        print("")
+        print("   ⚠️  IMPORTANT: Replace 'your_openrouter_api_key_here' with your actual API key")
     
     def create_launcher_scripts(self):
         """Create convenient launcher scripts."""
