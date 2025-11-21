@@ -92,6 +92,14 @@ class OpenRouterService:
                 "context_window": 131072,
                 "cost_tier": "free"
             },
+            "anthropic/claude-sonnet-4.5": {
+                "max_tokens": 8192,
+                "supports_web_search": True,
+                "context_window": 1000000,  # 1M context
+                "cost_tier": "premium",
+                "specialization": "coding_agents",
+                "features": ["agentic_workflows", "tool_orchestration", "extended_autonomous_operation"]
+            },
             "anthropic/claude-3.5-sonnet": {
                 "max_tokens": 8192,
                 "supports_web_search": True,

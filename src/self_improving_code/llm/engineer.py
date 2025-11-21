@@ -25,7 +25,7 @@ class LLMEngineer(EngineerLLM):
     def __init__(
         self,
         llm_client: Callable,
-        model_name: str = "claude-3.5-sonnet",
+        model_name: str = "claude-sonnet-4.5",
         programming_language: str = "Python",
         coding_standards: Dict[str, Any] = None,
         enable_web_search: bool = False,

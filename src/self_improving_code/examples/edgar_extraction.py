@@ -32,7 +32,7 @@ class EdgarExtractionExample:
         
         # Create domain-specific supervisor (Grok for financial QA)
         self.supervisor = LLMSupervisor(
-            llm_client=self._grok_llm_call,
+            llm_client=self._qa_llm_call,
             model_name="grok-4.1-fast",
             domain_expertise="executive compensation and SEC filings analysis",
             quality_standards={
@@ -41,11 +41,11 @@ class EdgarExtractionExample:
                 "fail_threshold": 0.0
             }
         )
-        
-        # Create domain-specific engineer (Claude for Python coding)
+
+        # Create domain-specific engineer (Claude Sonnet 4.5 for advanced Python coding)
         self.engineer = LLMEngineer(
-            llm_client=self._claude_llm_call,
-            model_name="claude-3.5-sonnet",
+            llm_client=self._engineer_llm_call,
+            model_name="claude-sonnet-4.5",
             programming_language="Python",
             coding_standards={
                 "max_function_length": 50,
@@ -75,24 +75,17 @@ class EdgarExtractionExample:
             protected_files=protected_files
         )
     
-    async def _grok_llm_call(self, messages: List[Dict[str, str]]) -> str:
-        """LLM call for Grok (Supervisor + QA)."""
+    async def _qa_llm_call(self, messages: List[Dict[str, str]]) -> str:
+        """LLM call for QA/Supervisor (Grok for fast, reliable QA)."""
         return await self.llm_service._make_llm_request(
-            messages, temperature=0.1, max_tokens=2000
+            messages, temperature=0.1, max_tokens=2000, model="x-ai/grok-4.1-fast:free"
         )
-    
-    async def _claude_llm_call(self, messages: List[Dict[str, str]]) -> str:
-        """LLM call for Claude (Engineer)."""
-        # Temporarily switch to Claude
-        original_model = self.llm_service.primary_model
-        self.llm_service.primary_model = "anthropic/claude-3.5-sonnet"
-        
-        try:
-            return await self.llm_service._make_llm_request(
-                messages, temperature=0.1, max_tokens=4000
-            )
-        finally:
-            self.llm_service.primary_model = original_model
+
+    async def _engineer_llm_call(self, messages: List[Dict[str, str]]) -> str:
+        """LLM call for Engineer (Claude Sonnet 4.5 for advanced coding)."""
+        return await self.llm_service._make_llm_request(
+            messages, temperature=0.3, max_tokens=4000, model="anthropic/claude-sonnet-4.5"
+        )
     
     async def extract_with_improvement(
         self, 
