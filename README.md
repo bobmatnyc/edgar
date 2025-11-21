@@ -25,6 +25,12 @@
 - **Automatic Fallback**: Graceful degradation when subprocess unavailable
 - **Enhanced Security**: Process isolation and comprehensive validation
 
+### 🔍 **Web Search Integration**
+- **OpenRouter Web Search**: Real-time information access using OpenRouter standard
+- **Validation Enhancement**: Supervisor validation with current standards
+- **Best Practices Research**: Engineer improvements using latest practices
+- **Contextual Search**: Domain-specific query generation and analysis
+
 ## 🚀 Quick Start
 
 ### 1. **Clone and Setup**
@@ -48,7 +54,12 @@ cp .env.template .env.local
 ### 3. **Start the Revolutionary CLI**
 ```bash
 source venv/bin/activate
+
+# Basic mode
 python -m edgar_analyzer --mode auto interactive
+
+# With web search capabilities (requires OpenRouter API key)
+python -m edgar_analyzer --enable-web-search --mode auto interactive
 ```
 
 ## 💬 Usage Examples
@@ -69,14 +80,17 @@ python -m edgar_analyzer --mode auto interactive
 # Extract specific company
 python -m edgar_analyzer extract --cik 0000320193 --year 2023
 
+# Extract with web search validation
+python -m edgar_analyzer --enable-web-search extract --cik 0000320193 --year 2023
+
 # Run system test
 python -m edgar_analyzer test --companies 10
 
 # Show application info
 python -m edgar_analyzer trad-info
 
-# Analyze codebase
-python -m edgar_analyzer trad-analyze --query "compensation extraction"
+# Analyze codebase with web search
+python -m edgar_analyzer --enable-web-search trad-analyze --query "compensation extraction"
 ```
 
 ## 🏗️ Architecture
@@ -160,6 +174,7 @@ edgar-cli/
 ## 📚 Documentation
 
 - **[System Ready Summary](SYSTEM_READY_SUMMARY.md)**: Complete system overview
+- **[Web Search Capabilities](WEB_SEARCH_CAPABILITIES.md)**: OpenRouter integration and usage
 - **[Security Guidelines](SECURITY.md)**: Security best practices and incident response
 - **[Code Governance](CODE_GOVERNANCE.md)**: Development standards and patterns
 - **[Self-Improving Pattern](SELF_IMPROVING_CODE_PATTERN.md)**: Technical deep-dive
@@ -193,7 +208,12 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ```bash
 source venv/bin/activate
+
+# Basic mode
 python -m edgar_analyzer --mode auto interactive
+
+# With web search capabilities
+python -m edgar_analyzer --enable-web-search --mode auto interactive
 ```
 
 **Revolutionary. Intelligent. Production-Ready.** 🚀
