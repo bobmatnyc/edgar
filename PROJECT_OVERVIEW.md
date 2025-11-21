@@ -29,13 +29,20 @@ edgar-cli/
 │       ├── BASIC_USAGE.md            # Common use cases
 │       ├── ADVANCED_USAGE.md         # Complex scenarios
 │       └── INTEGRATION.md            # Integration patterns
-├── 🧪 tests/                         # Comprehensive test suite
+├── 🧪 tests/                         # Comprehensive test suite and artifacts
 │   ├── README.md                     # Test documentation
 │   ├── test_centralized_openrouter.py # Architecture tests
 │   ├── test_web_search_integration.py # Integration tests
 │   ├── test_web_search_structure.py   # Structure validation
 │   ├── test_subprocess_monitoring.py  # Process monitoring
-│   └── test_50_companies.py          # System validation
+│   ├── test_50_companies.py          # System validation
+│   ├── debug_proxy_content.py        # Debug utilities
+│   ├── edgar_analyzer_prototype.py   # Original prototype
+│   ├── run_top_100_enhanced.py       # Enhanced analysis script
+│   ├── results/                      # Test results and outputs
+│   ├── output/                       # Generated test outputs
+│   ├── scripts/                      # Testing and utility scripts
+│   └── logs/                         # Test execution logs
 ├── 🔧 src/                           # Source code
 │   ├── edgar_analyzer/              # Main application
 │   │   ├── services/                # Core services

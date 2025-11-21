@@ -1,6 +1,19 @@
 # 🧪 EDGAR CLI Tests
 
-Comprehensive test suite for the EDGAR CLI system.
+Comprehensive test suite and testing artifacts for the EDGAR CLI system.
+
+## 📁 Directory Structure
+
+### **🧪 Test Files**
+- `test_*.py` - Automated test scripts
+- `debug_*.py` - Debug and diagnostic utilities
+- `run_*.py` - Analysis and execution scripts
+
+### **📊 Test Artifacts**
+- `results/` - Test execution results and outputs
+- `output/` - Generated test data and reports
+- `scripts/` - Testing and utility scripts
+- `logs/` - Test execution logs and debugging information
 
 ## 📋 Test Categories
 
@@ -15,6 +28,17 @@ Comprehensive test suite for the EDGAR CLI system.
 ### **📊 System Tests**
 - `test_50_companies.py` - Large-scale system validation
 - `test_system_validation.py` - End-to-end system testing
+
+### **🔧 Analysis Scripts**
+- `run_top_100_enhanced.py` - Enhanced Fortune 100 analysis with LLM validation
+- `edgar_analyzer_prototype.py` - Original prototype implementation
+- `debug_proxy_content.py` - Debug utility for proxy filing content
+
+### **📁 Test Artifacts**
+- `results/` - Test execution results and analysis outputs
+- `output/` - Generated test data, reports, and Excel files
+- `scripts/` - Utility scripts for setup, quality assurance, and maintenance
+- `logs/` - Test execution logs and debugging information
 
 ## 🚀 Running Tests
 

@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, List
 
 # Add the src directory to the path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from edgar_analyzer.services.data_extraction_service import DataExtractionService
 from edgar_analyzer.services.edgar_api_service import EdgarApiService
@@ -42,7 +42,7 @@ async def run_top_100_enhanced():
     data_extraction = DataExtractionService(edgar_api, company_service, cache_service, llm_service)
     
     # Load Fortune 500 companies
-    companies_file = "data/companies/fortune_500_complete.json"
+    companies_file = "../data/companies/fortune_500_complete.json"
     try:
         with open(companies_file, 'r') as f:
             all_companies = json.load(f)
