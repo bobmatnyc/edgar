@@ -18,6 +18,7 @@ Welcome to the comprehensive documentation for the EDGAR CLI system - the world'
 ### 📖 **User Guides**
 - [Web Search Capabilities](guides/WEB_SEARCH_CAPABILITIES.md) - OpenRouter integration and usage
 - [Security Guidelines](guides/SECURITY.md) - Security best practices and incident response
+- [API Key Security](guides/API_KEY_SECURITY.md) - Secure API key management
 - [Code Governance](guides/CODE_GOVERNANCE.md) - Development standards and patterns
 - [CLI Usage Guide](guides/CLI_USAGE.md) - Comprehensive CLI reference
 - [Configuration Guide](guides/CONFIGURATION.md) - Environment and settings
