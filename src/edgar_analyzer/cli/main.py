@@ -34,6 +34,7 @@ from edgar_analyzer.services.interfaces import (
 )
 from edgar_analyzer.services.enhanced_report_service import EnhancedReportService
 from edgar_analyzer.services.historical_analysis_service import HistoricalAnalysisService
+from edgar_analyzer.cli.commands.project import project
 from edgar_analyzer.cli.commands.setup import setup
 
 # Install rich traceback handler
@@ -1223,7 +1224,8 @@ def cache_clear(ctx: click.Context) -> None:
     console.print("[green]Cache cleared successfully[/green]")
 
 
-# Register setup command from commands module
+# Register commands from commands module
+cli.add_command(project)
 cli.add_command(setup)
 
 
