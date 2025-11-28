@@ -67,9 +67,7 @@ class ExampleParser:
         self.schema_analyzer = schema_analyzer or SchemaAnalyzer()
         self.logger = logger
 
-    def parse_examples(
-        self, examples: List[ExampleConfig]
-    ) -> ParsedExamples:
+    def parse_examples(self, examples: List[ExampleConfig]) -> ParsedExamples:
         """Parse all examples and extract patterns.
 
         This is the main entry point for pattern extraction.
@@ -93,9 +91,7 @@ class ExampleParser:
         if not examples:
             self.logger.warning("No examples provided to parse")
             return ParsedExamples(
-                input_schema=Schema(),
-                output_schema=Schema(),
-                num_examples=0
+                input_schema=Schema(), output_schema=Schema(), num_examples=0
             )
 
         self.logger.info(f"Parsing {len(examples)} examples")
@@ -125,7 +121,7 @@ class ExampleParser:
             patterns=patterns,
             schema_differences=schema_differences,
             num_examples=len(examples),
-            warnings=warnings
+            warnings=warnings,
         )
 
         self.logger.info(
@@ -136,9 +132,7 @@ class ExampleParser:
 
         return parsed
 
-    def identify_patterns(
-        self, examples: List[ExampleConfig]
-    ) -> List[Pattern]:
+    def identify_patterns(self, examples: List[ExampleConfig]) -> List[Pattern]:
         """Identify transformation patterns across examples.
 
         Analyzes all examples to detect common transformation patterns:
@@ -222,9 +216,16 @@ class ExampleParser:
         self,
         output_path: str,
         value_pairs: List[Tuple[Any, Any]],
-        examples: List[ExampleConfig]
+        examples: List[ExampleConfig],
     ) -> Optional[Pattern]:
         """Detect the type of transformation pattern.
+
+        Detection Priority (from most specific to least specific):
+        1. Field mapping/extraction (checks for nested paths first)
+        2. Constant value
+        3. Array first element
+        4. Type conversion
+        5. Direct copy (only if none of the above matched)
 
         Args:
             output_path: Output field path
@@ -233,34 +234,50 @@ class ExampleParser:
 
         Returns:
             Pattern if detected, None otherwise
+
+        Design Decision: Check field mapping FIRST (before direct copy) to ensure
+        nested extractions like input["main"]["temp"] → output["temperature_c"]
+        are correctly classified as FIELD_EXTRACTION instead of direct copy.
+        This prioritizes semantic accuracy over simple value matching.
         """
         if not value_pairs:
             return None
 
-        # Check for direct mapping (input value is dict/object)
-        if all(isinstance(inp, dict) for inp, _ in value_pairs):
-            return self._detect_field_mapping(output_path, value_pairs, examples)
+        # PRIORITY 1: Check for field mapping/extraction
+        # This must come FIRST to detect nested paths before direct copy check
+        # Example: {"main": {"temp": 15.5}} → {"temperature_c": 15.5}
+        # Value pairs: [(15.5, 15.5)] but source is nested path "main.temp"
+        field_mapping_pattern = self._detect_field_mapping(
+            output_path, value_pairs, examples
+        )
+        if field_mapping_pattern is not None:
+            return field_mapping_pattern
 
-        # Check for constant value (all outputs same, input varies or None)
+        # PRIORITY 2: Check for constant value (all outputs same, input varies or None)
         output_values = [out for _, out in value_pairs]
         if len(set(str(v) for v in output_values)) == 1:
             return self._create_constant_pattern(output_path, value_pairs)
 
-        # Check for direct copy (input == output)
-        if all(inp == out for inp, out in value_pairs if inp is not None):
-            return self._create_direct_copy_pattern(output_path, value_pairs)
-
-        # Check for array first element
+        # PRIORITY 3: Check for array first element
+        # Must come before direct copy to detect array[0] extractions
         if all(isinstance(inp, list) for inp, _ in value_pairs if inp is not None):
-            return self._detect_array_first(output_path, value_pairs)
+            array_pattern = self._detect_array_first(output_path, value_pairs)
+            if array_pattern is not None:
+                return array_pattern
 
-        # Check for type conversion
+        # PRIORITY 4: Check for type conversion
         input_types = set(type(inp) for inp, _ in value_pairs if inp is not None)
         output_types = set(type(out) for _, out in value_pairs if out is not None)
 
         if len(input_types) == 1 and len(output_types) == 1:
             if list(input_types)[0] != list(output_types)[0]:
                 return self._create_type_conversion_pattern(output_path, value_pairs)
+
+        # PRIORITY 5: Check for direct copy (input == output)
+        # This is LAST because inp==out might be from nested extraction
+        # Only apply if no more specific pattern was detected above
+        if all(inp == out for inp, out in value_pairs if inp is not None):
+            return self._create_direct_copy_pattern(output_path, value_pairs)
 
         # Default: complex transformation
         return self._create_complex_pattern(output_path, value_pairs)
@@ -269,7 +286,7 @@ class ExampleParser:
         self,
         output_path: str,
         value_pairs: List[Tuple[Any, Any]],
-        examples: List[ExampleConfig]
+        examples: List[ExampleConfig],
     ) -> Optional[Pattern]:
         """Detect field mapping or extraction pattern.
 
@@ -303,8 +320,7 @@ class ExampleParser:
             is_nested = "." in input_path or "[" in input_path
 
             pattern_type = (
-                PatternType.FIELD_EXTRACTION if is_nested
-                else PatternType.FIELD_MAPPING
+                PatternType.FIELD_EXTRACTION if is_nested else PatternType.FIELD_MAPPING
             )
 
             transformation = (
@@ -321,7 +337,7 @@ class ExampleParser:
                 transformation=transformation,
                 examples=value_pairs,
                 source_type=self._infer_type_from_values([v for v, _ in value_pairs]),
-                target_type=self._infer_type_from_values([v for _, v in value_pairs])
+                target_type=self._infer_type_from_values([v for _, v in value_pairs]),
             )
 
         return None
@@ -355,7 +371,7 @@ class ExampleParser:
 
         if matches == len(value_pairs):
             confidence = 1.0
-            transformation = f"Extract first element from array"
+            transformation = "Extract first element from array"
 
             return Pattern(
                 type=PatternType.ARRAY_FIRST,
@@ -365,7 +381,7 @@ class ExampleParser:
                 transformation=transformation,
                 examples=value_pairs,
                 source_type=FieldTypeEnum.LIST,
-                target_type=self._infer_type_from_values([v for _, v in value_pairs])
+                target_type=self._infer_type_from_values([v for _, v in value_pairs]),
             )
 
         return None
@@ -392,7 +408,7 @@ class ExampleParser:
             transformation="Direct copy",
             examples=value_pairs,
             source_type=self._infer_type_from_values([v for v, _ in value_pairs]),
-            target_type=self._infer_type_from_values([v for _, v in value_pairs])
+            target_type=self._infer_type_from_values([v for _, v in value_pairs]),
         )
 
     def _create_type_conversion_pattern(
@@ -420,7 +436,7 @@ class ExampleParser:
             transformation=transformation,
             examples=value_pairs,
             source_type=source_type,
-            target_type=target_type
+            target_type=target_type,
         )
 
     def _create_constant_pattern(
@@ -444,7 +460,7 @@ class ExampleParser:
             target_path=output_path,
             transformation=f"Set constant value: {constant_value}",
             examples=value_pairs,
-            target_type=self._infer_type_from_values([constant_value])
+            target_type=self._infer_type_from_values([constant_value]),
         )
 
     def _create_complex_pattern(
@@ -468,7 +484,7 @@ class ExampleParser:
             examples=value_pairs,
             source_type=self._infer_type_from_values([v for v, _ in value_pairs]),
             target_type=self._infer_type_from_values([v for _, v in value_pairs]),
-            notes="This transformation may require custom logic or calculation"
+            notes="This transformation may require custom logic or calculation",
         )
 
     def _find_source_value(
@@ -529,9 +545,7 @@ class ExampleParser:
 
         return None
 
-    def _get_value_at_path(
-        self, data: Dict[str, Any], path: str
-    ) -> Any:
+    def _get_value_at_path(self, data: Dict[str, Any], path: str) -> Any:
         """Get value at a specific path in nested structure.
 
         Args:
@@ -567,9 +581,7 @@ class ExampleParser:
 
         return current
 
-    def _extract_all_paths(
-        self, data: Any, prefix: str = ""
-    ) -> List[str]:
+    def _extract_all_paths(self, data: Any, prefix: str = "") -> List[str]:
         """Extract all field paths from data structure.
 
         Args:
@@ -595,9 +607,7 @@ class ExampleParser:
 
         return paths
 
-    def _infer_type_from_values(
-        self, values: List[Any]
-    ) -> FieldTypeEnum:
+    def _infer_type_from_values(self, values: List[Any]) -> FieldTypeEnum:
         """Infer FieldTypeEnum from a list of values.
 
         Args:
