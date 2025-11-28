@@ -73,7 +73,7 @@ class TestProjectCreate:
 
     def test_create_minimal_project(self, runner, temp_projects_dir, monkeypatch):
         """Test creating a minimal project."""
-        # Monkeypatch the templates directory
+        # Create test templates directory
         templates_dir = temp_projects_dir.parent / "templates"
         templates_dir.mkdir()
 
@@ -88,15 +88,8 @@ class TestProjectCreate:
         with open(templates_dir / "project.yaml.template", "w") as f:
             yaml.dump(minimal_template, f)
 
-        # Mock the Path resolution to use our test templates
-        original_file = Path(__file__).parent.parent.parent / "templates"
-
-        def mock_template_path(*args):
-            if "templates" in str(args):
-                return templates_dir
-            return original_file
-
-        monkeypatch.setattr(Path, "__truediv__", lambda self, other: self / other if self != original_file.parent.parent.parent.parent.parent else templates_dir if other == "templates" else self / other)
+        # Set environment variable to override templates directory
+        monkeypatch.setenv("EDGAR_TEMPLATES_DIR", str(templates_dir))
 
         result = runner.invoke(
             create,

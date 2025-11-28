@@ -6,6 +6,7 @@ examples, and generated code.
 """
 
 import json
+import os
 import shutil
 from pathlib import Path
 from typing import Optional
@@ -18,6 +19,20 @@ from rich.table import Table
 from rich.tree import Tree
 
 console = Console()
+
+
+def get_templates_dir() -> Path:
+    """Get the templates directory, allowing override via environment variable.
+
+    Returns:
+        Path to templates directory
+    """
+    # Allow override for testing
+    if env_path := os.getenv("EDGAR_TEMPLATES_DIR"):
+        return Path(env_path)
+
+    # Default to project root templates directory
+    return Path(__file__).parent.parent.parent.parent.parent / "templates"
 
 
 @click.group()
@@ -42,7 +57,7 @@ def project():
 )
 @click.option(
     "--output-dir",
-    type=click.Path(),
+    type=click.Path(path_type=str),
     default="projects",
     help="Directory to create project in",
 )
@@ -68,7 +83,7 @@ def create(
         # Resolve paths
         output_path = Path(output_dir)
         project_path = output_path / name
-        templates_dir = Path(__file__).parent.parent.parent.parent.parent / "templates"
+        templates_dir = get_templates_dir()
 
         # Check if project already exists
         if project_path.exists():
@@ -176,7 +191,7 @@ See the main EDGAR Analyzer documentation for details on:
 @project.command()
 @click.option(
     "--output-dir",
-    type=click.Path(),
+    type=click.Path(path_type=str),
     default="projects",
     help="Projects directory to list",
 )
@@ -264,7 +279,7 @@ def list(output_dir: str, format: str):
 @click.argument("name")
 @click.option(
     "--output-dir",
-    type=click.Path(),
+    type=click.Path(path_type=str),
     default="projects",
     help="Projects directory",
 )
@@ -320,7 +335,7 @@ def delete(name: str, output_dir: str, force: bool):
 @click.argument("name")
 @click.option(
     "--output-dir",
-    type=click.Path(),
+    type=click.Path(path_type=str),
     default="projects",
     help="Projects directory",
 )
@@ -380,7 +395,8 @@ def validate(name: str, output_dir: str, verbose: bool):
         # Check for example files
         examples_dir = project_path / "examples"
         if examples_dir.exists():
-            example_files = list(examples_dir.glob("*"))
+            # Use os.listdir instead of Path.glob to avoid Click parser conflict
+            example_files = [f for f in os.listdir(str(examples_dir)) if (examples_dir / f).is_file()]
             if not example_files:
                 warnings.append("No example files found in examples/")
 

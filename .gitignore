@@ -238,3 +238,9 @@ virtualenv/
 
 # MCP Ticketer
 .mcp-ticketer/
+
+# Ticket tracking (local workflow data)
+.aitrackdown/
+
+# Test projects (created during project command tests)
+projects/test-*/
