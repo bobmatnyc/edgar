@@ -165,3 +165,76 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Added by Claude MPM /mpm-init
+$RECYCLE.BIN/
+*.backup
+*.cab
+*.cache
+*.cert
+*.crt
+*.db
+*.lnk
+*.manifest
+*.mpm.tmp
+*.msi
+*.msm
+*.msp
+*.old
+*.pytest_cache
+*.spec
+*.sql
+*.sqlite
+*.sqlite3
+*.sublime-project
+*.sublime-workspace
+*.temp
+.claude-mpm/cache/
+.claude-mpm/logs/
+.claude-mpm/sessions/
+.claude-mpm/tmp/
+.claude-mpm/*.log
+.claude/cache/
+.claude/sessions/
+.conda/
+.coverage
+.coverage.*
+.env.*
+.kuzu-memory/
+.mcp-vector-search/
+.nox/
+.project
+.pydevproject
+.pytype/
+.secrets/
+.settings/
+.tox/
+.venv
+.yarn/
+Desktop.ini
+_build/
+backup/
+backups/
+conda-env/
+credentials/
+docs/_build/
+htmlcov/
+kuzu-memories/
+logs/
+site/
+temp/
+tmp/
+virtualenv/
+
+# Claude MPM - Keep config directory but ignore sensitive data
+!.claude-mpm/
+!.claude-mpm/config/
+!.claude-mpm/memories/
+.claude-mpm/config/*.local
+
+# Keep .claude directory structure for agents
+!.claude/
+!.claude/agents/
+
+# MCP Ticketer
+.mcp-ticketer/

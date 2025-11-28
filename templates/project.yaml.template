@@ -1,0 +1,447 @@
+# ============================================================================
+# Project Configuration Template
+# ============================================================================
+#
+# This template demonstrates all supported configuration options for the
+# general-purpose extract & transform platform.
+#
+# QUICK START:
+# 1. Copy this file to your project directory as project.yaml
+# 2. Fill in project metadata
+# 3. Configure data sources
+# 4. Provide 2-3 example input/output pairs
+# 5. Define validation rules
+# 6. Configure output formats
+# 7. Run: python -m edgar_analyzer extract-project project.yaml
+#
+# IMPORTANT:
+# - Use ${ENV_VAR} syntax for secrets (API keys, passwords)
+# - Add secrets to .env.local (gitignored)
+# - Provide quality examples for better transformation accuracy
+#
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Project Metadata (REQUIRED)
+# ----------------------------------------------------------------------------
+project:
+  name: "my_project_name"  # Lowercase, underscores allowed
+  description: "Brief description of what this project extracts"
+  version: "1.0.0"  # Semantic versioning recommended
+  author: "Your Name or Organization"
+  tags:
+    - category1  # For organization and search
+    - category2
+    - data-source-type
+
+# ----------------------------------------------------------------------------
+# Data Sources (REQUIRED - at least one)
+# ----------------------------------------------------------------------------
+data_sources:
+  # -------------------------------------------------------------------------
+  # Example 1: REST API Data Source
+  # -------------------------------------------------------------------------
+  - type: api
+    name: "my_api_source"  # Unique identifier
+
+    # API endpoint
+    endpoint: "https://api.example.com/v1/data"
+
+    # Authentication
+    auth:
+      type: api_key  # none | api_key | bearer | basic | oauth2
+      key: "${MY_API_KEY}"  # Use environment variable
+      param_name: "apikey"  # OR header_name: "X-API-Key"
+
+    # Query parameters (supports ${variable} templating)
+    parameters:
+      format: "json"
+      limit: 100
+      category: "${category}"  # Runtime variable
+
+    # Custom headers
+    headers:
+      Accept: "application/json"
+      User-Agent: "MyExtractor/1.0"
+
+    # Caching
+    cache:
+      enabled: true
+      ttl: 3600  # 1 hour in seconds
+      max_size_mb: 100
+      cache_dir: "data/cache"
+
+    # Rate limiting
+    rate_limit:
+      requests_per_second: 2
+      burst_size: 10
+
+    # Request settings
+    timeout: 30  # seconds
+    max_retries: 3
+
+  # -------------------------------------------------------------------------
+  # Example 2: Web Scraping (URL) Data Source
+  # -------------------------------------------------------------------------
+  - type: url
+    name: "web_scraper"
+
+    # Web page URL
+    url: "https://example.com/data-page"
+
+    # No authentication needed for public pages
+    auth:
+      type: none
+
+    # Custom headers (important for web scraping)
+    headers:
+      User-Agent: "Mozilla/5.0 (compatible; MyBot/1.0)"
+      Accept-Language: "en-US,en;q=0.9"
+
+    # Caching (avoid repeated requests)
+    cache:
+      enabled: true
+      ttl: 86400  # 24 hours
+
+    # Options specific to URL source
+    options:
+      extract_method: "beautifulsoup"  # beautifulsoup | selenium | playwright
+      wait_for_element: "#data-table"  # CSS selector to wait for
+      javascript_enabled: false
+
+  # -------------------------------------------------------------------------
+  # Example 3: File-Based Data Source
+  # -------------------------------------------------------------------------
+  - type: file
+    name: "csv_import"
+
+    # File path (relative or absolute)
+    file_path: "data/input/source_data.csv"
+
+    # No authentication for local files
+    auth:
+      type: none
+
+    # File format options
+    options:
+      file_format: "csv"  # csv | json | xml | excel | parquet
+      encoding: "utf-8"
+      delimiter: ","
+      has_header: true
+      sheet_name: "Sheet1"  # For Excel files
+
+  # -------------------------------------------------------------------------
+  # Example 4: Jina.ai Reader (Web to Markdown)
+  # -------------------------------------------------------------------------
+  - type: jina
+    name: "jina_reader"
+
+    # Jina.ai endpoint (prepends r.jina.ai to URLs)
+    url: "https://example.com/article"
+
+    # Jina.ai API authentication
+    auth:
+      type: bearer
+      key: "${JINA_API_KEY}"
+      header_name: "Authorization"
+
+    # Caching
+    cache:
+      enabled: true
+      ttl: 604800  # 7 days
+
+    # Jina-specific options
+    options:
+      format: "markdown"  # markdown | html | text
+      include_images: true
+      include_links: true
+
+# ----------------------------------------------------------------------------
+# Example Input/Output Pairs (REQUIRED - at least 1, recommend 3+)
+# ----------------------------------------------------------------------------
+# These examples teach Sonnet 4.5 how to transform raw data into your
+# desired output structure. More examples = better accuracy.
+examples:
+  # Example 1
+  - description: "Typical successful response"
+    input:
+      # Raw API/file response structure
+      id: 12345
+      user:
+        name: "John Doe"
+        email: "john@example.com"
+      data:
+        value: 42.5
+        unit: "kg"
+        timestamp: "2024-01-15T10:30:00Z"
+      metadata:
+        source: "sensor_01"
+        location: "warehouse_a"
+    output:
+      # Desired output structure
+      record_id: 12345
+      user_name: "John Doe"
+      user_email: "john@example.com"
+      measurement_value: 42.5
+      measurement_unit: "kg"
+      sensor_id: "sensor_01"
+      location: "warehouse_a"
+      recorded_at: "2024-01-15T10:30:00Z"
+
+  # Example 2: Edge case (missing optional fields)
+  - description: "Response with missing optional fields"
+    input:
+      id: 67890
+      user:
+        name: "Jane Smith"
+        # email missing
+      data:
+        value: 38.2
+        unit: "kg"
+        timestamp: "2024-01-15T11:00:00Z"
+      metadata:
+        source: "sensor_02"
+        # location missing
+    output:
+      record_id: 67890
+      user_name: "Jane Smith"
+      user_email: null  # Show how to handle missing data
+      measurement_value: 38.2
+      measurement_unit: "kg"
+      sensor_id: "sensor_02"
+      location: null
+      recorded_at: "2024-01-15T11:00:00Z"
+
+  # Example 3: Different data pattern
+  - description: "Alternative data structure"
+    input:
+      id: 11111
+      user:
+        name: "Bob Wilson"
+        email: "bob@example.com"
+      data:
+        value: 55.0
+        unit: "lb"  # Different unit
+        timestamp: "2024-01-15T12:00:00Z"
+      metadata:
+        source: "sensor_03"
+        location: "warehouse_b"
+    output:
+      record_id: 11111
+      user_name: "Bob Wilson"
+      user_email: "bob@example.com"
+      measurement_value: 55.0
+      measurement_unit: "lb"
+      sensor_id: "sensor_03"
+      location: "warehouse_b"
+      recorded_at: "2024-01-15T12:00:00Z"
+
+# ----------------------------------------------------------------------------
+# Validation Rules (OPTIONAL but RECOMMENDED)
+# ----------------------------------------------------------------------------
+validation:
+  # Required fields (extraction fails if missing)
+  required_fields:
+    - record_id
+    - user_name
+    - measurement_value
+    - recorded_at
+
+  # Field type definitions
+  field_types:
+    record_id: int
+    user_name: str
+    user_email: str
+    measurement_value: float
+    measurement_unit: str
+    sensor_id: str
+    location: str
+    recorded_at: datetime
+
+  # Field-specific constraints
+  constraints:
+    measurement_value:
+      min: 0.0
+      max: 1000.0
+    measurement_unit:
+      allowed_values: ["kg", "lb", "oz", "g"]
+    user_name:
+      min_length: 1
+      max_length: 100
+    user_email:
+      pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+
+  # Allow fields not defined in schema
+  allow_extra_fields: true
+
+# ----------------------------------------------------------------------------
+# Output Configuration (REQUIRED - at least one format)
+# ----------------------------------------------------------------------------
+output:
+  formats:
+    # CSV output
+    - type: csv
+      path: "output/extracted_data.csv"
+      include_timestamp: true  # Filename: extracted_data_2024-01-15_10-30-00.csv
+      options:
+        delimiter: ","
+        quoting: "minimal"  # minimal | all | non-numeric | none
+        index: false
+        encoding: "utf-8"
+
+    # JSON output
+    - type: json
+      path: "output/extracted_data.json"
+      pretty_print: true
+      include_timestamp: false
+      options:
+        indent: 2
+        ensure_ascii: false
+        sort_keys: false
+
+    # Excel output
+    - type: excel
+      path: "output/extracted_data.xlsx"
+      include_timestamp: false
+      options:
+        sheet_name: "Extracted Data"
+        freeze_panes: "A2"  # Freeze header row
+        auto_filter: true
+
+    # Parquet output (efficient for large datasets)
+    - type: parquet
+      path: "output/extracted_data.parquet"
+      include_timestamp: false
+      options:
+        compression: "snappy"  # snappy | gzip | brotli | none
+        index: false
+
+# ----------------------------------------------------------------------------
+# Runtime Configuration (OPTIONAL - uses defaults if not specified)
+# ----------------------------------------------------------------------------
+runtime:
+  # Logging level
+  log_level: INFO  # DEBUG | INFO | WARNING | ERROR | CRITICAL
+
+  # Parallel processing
+  parallel: false  # Enable for multiple records
+  max_workers: 4  # Number of parallel workers
+
+  # Error handling strategy
+  error_strategy: continue  # continue | fail_fast | skip_invalid
+
+  # Checkpointing (resumable extraction)
+  checkpoint_enabled: false
+  checkpoint_interval: 10  # Save every N records
+  checkpoint_dir: "data/checkpoints"
+
+# ============================================================================
+# ADDITIONAL EXAMPLES
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# WEB SCRAPING EXAMPLE
+# ---------------------------------------------------------------------------
+# project:
+#   name: "product_scraper"
+#   description: "Scrape product data from e-commerce site"
+#   tags: [scraping, products, e-commerce]
+#
+# data_sources:
+#   - type: url
+#     name: "product_page"
+#     url: "${product_url}"
+#     headers:
+#       User-Agent: "Mozilla/5.0"
+#     cache:
+#       enabled: true
+#       ttl: 86400
+#
+# examples:
+#   - input:
+#       html: "<div class='product'><h1>Widget Pro</h1><span class='price'>$29.99</span></div>"
+#     output:
+#       product_name: "Widget Pro"
+#       price: 29.99
+#       currency: "USD"
+
+# ---------------------------------------------------------------------------
+# FILE PROCESSING EXAMPLE
+# ---------------------------------------------------------------------------
+# project:
+#   name: "csv_transformer"
+#   description: "Transform legacy CSV to new format"
+#   tags: [csv, transformation, data-migration]
+#
+# data_sources:
+#   - type: file
+#     name: "legacy_data"
+#     file_path: "data/legacy/old_format.csv"
+#     options:
+#       file_format: "csv"
+#       delimiter: "|"
+#       encoding: "latin1"
+#
+# examples:
+#   - input:
+#       old_id: "12345"
+#       old_name: "John|Doe"
+#       old_date: "2024/01/15"
+#     output:
+#       id: 12345
+#       first_name: "John"
+#       last_name: "Doe"
+#       date: "2024-01-15"
+
+# ---------------------------------------------------------------------------
+# EDGAR SEC FILINGS EXAMPLE
+# ---------------------------------------------------------------------------
+# project:
+#   name: "edgar_compensation"
+#   description: "Extract executive compensation from SEC filings"
+#   tags: [edgar, sec, compensation, finance]
+#
+# data_sources:
+#   - type: edgar
+#     name: "sec_edgar"
+#     endpoint: "https://data.sec.gov"
+#     headers:
+#       User-Agent: "MyCompany contact@example.com"
+#     rate_limit:
+#       requests_per_second: 0.1  # SEC rate limit
+#     cache:
+#       enabled: true
+#       ttl: 604800  # 7 days
+#
+# examples:
+#   - input:
+#       cik: "0000320193"
+#       company_name: "Apple Inc"
+#       executive: "Timothy D. Cook"
+#       total_compensation: 99420097
+#     output:
+#       company_cik: "0000320193"
+#       company_name: "Apple Inc"
+#       executive_name: "Timothy D. Cook"
+#       total_comp: 99420097
+
+# ============================================================================
+# TROUBLESHOOTING
+# ============================================================================
+#
+# Issue: "Authentication failed"
+# Solution: Verify ${ENV_VAR} is in .env.local and loaded correctly
+#
+# Issue: "No examples provided warning"
+# Solution: Add at least 2-3 examples for better transformation quality
+#
+# Issue: "Rate limit exceeded"
+# Solution: Adjust rate_limit.requests_per_second to lower value
+#
+# Issue: "Validation error: field required"
+# Solution: Check examples include all required_fields
+#
+# Issue: "Output file not created"
+# Solution: Verify output directory exists and is writable
+#
+# ============================================================================

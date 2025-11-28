@@ -12,6 +12,9 @@ from edgar_analyzer.services.historical_analysis_service import HistoricalAnalys
 from edgar_analyzer.services.llm_service import LLMService
 from edgar_analyzer.services.parallel_processing_service import ParallelProcessingService
 from edgar_analyzer.services.report_service import ReportService
+from edgar_analyzer.services.schema_analyzer import SchemaAnalyzer
+from edgar_analyzer.services.example_parser import ExampleParser
+from edgar_analyzer.services.prompt_generator import PromptGenerator
 
 
 class Container(containers.DeclarativeContainer):
@@ -76,6 +79,20 @@ class Container(containers.DeclarativeContainer):
         data_extraction_service=data_extraction_service,
         historical_analysis_service=historical_analysis_service,
         config=config
+    )
+
+    # Example Parser services (Phase 1 MVP)
+    schema_analyzer = providers.Singleton(
+        SchemaAnalyzer
+    )
+
+    example_parser = providers.Singleton(
+        ExampleParser,
+        schema_analyzer=schema_analyzer
+    )
+
+    prompt_generator = providers.Singleton(
+        PromptGenerator
     )
 
     # CLI commands wiring

@@ -1,0 +1,58 @@
+{
+  "input": {
+    "coord": {
+      "lon": 37.6156,
+      "lat": 55.7522
+    },
+    "weather": [
+      {
+        "id": 601,
+        "main": "Snow",
+        "description": "snow",
+        "icon": "13d"
+      }
+    ],
+    "base": "stations",
+    "main": {
+      "temp": -8.0,
+      "feels_like": -12.5,
+      "temp_min": -10.0,
+      "temp_max": -6.0,
+      "pressure": 1020,
+      "humidity": 85
+    },
+    "visibility": 5000,
+    "wind": {
+      "speed": 5.5,
+      "deg": 320
+    },
+    "clouds": {
+      "all": 90
+    },
+    "dt": 1701360000,
+    "sys": {
+      "type": 1,
+      "id": 9029,
+      "country": "RU",
+      "sunrise": 1701323400,
+      "sunset": 1701349800
+    },
+    "timezone": 10800,
+    "id": 524901,
+    "name": "Moscow",
+    "cod": 200
+  },
+  "output": {
+    "city": "Moscow",
+    "country": "RU",
+    "temperature_c": -8.0,
+    "feels_like_c": -12.5,
+    "humidity_percent": 85,
+    "pressure_hpa": 1020,
+    "wind_speed_ms": 5.5,
+    "conditions": "snow",
+    "cloudiness_percent": 90,
+    "visibility_m": 5000
+  },
+  "description": "Snowy cold climate - demonstrates negative temperatures and reduced visibility"
+}

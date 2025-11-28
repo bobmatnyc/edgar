@@ -1,0 +1,351 @@
+# ============================================================================
+# Weather Data Extraction Project
+# ============================================================================
+#
+# This example demonstrates extracting current weather data from OpenWeatherMap API
+# for multiple cities and transforming it into a structured CSV/JSON format.
+#
+# Prerequisites:
+# 1. Get free API key from https://openweathermap.org/api
+# 2. Add to .env.local: OPENWEATHER_API_KEY=your_key_here
+# 3. Run: python -m edgar_analyzer extract-project weather_api_project.yaml
+#
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Project Metadata
+# ----------------------------------------------------------------------------
+project:
+  name: "weather_data_extractor"
+  description: "Extract current weather data for multiple cities worldwide"
+  version: "1.0.0"
+  author: "Platform User"
+  tags:
+    - weather
+    - api
+    - openweathermap
+    - example
+
+# ----------------------------------------------------------------------------
+# Data Sources
+# ----------------------------------------------------------------------------
+data_sources:
+  # OpenWeatherMap Current Weather API
+  - type: api
+    name: "openweathermap_current"
+    endpoint: "https://api.openweathermap.org/data/2.5/weather"
+
+    # Authentication (API key from environment variable)
+    auth:
+      type: api_key
+      key: "${OPENWEATHER_API_KEY}"  # Loaded from .env.local
+      param_name: "appid"  # Query parameter name for API key
+
+    # Query parameters (supports templating with ${variable})
+    parameters:
+      q: "${city}"  # City name (will be replaced at runtime)
+      units: "metric"  # Celsius, meters/sec
+      lang: "en"  # Response language
+
+    # Caching configuration (reduce API calls)
+    cache:
+      enabled: true
+      ttl: 3600  # 1 hour (weather updates hourly)
+      max_size_mb: 10
+      cache_dir: "data/cache/weather"
+
+    # Rate limiting (free tier: 60 calls/minute)
+    rate_limit:
+      requests_per_second: 1  # Conservative limit
+      burst_size: 5  # Allow small bursts
+
+    # Request configuration
+    timeout: 10  # 10 second timeout
+    max_retries: 3  # Retry failed requests
+
+    # Custom headers
+    headers:
+      Accept: "application/json"
+      User-Agent: "WeatherExtractor/1.0"
+
+# ----------------------------------------------------------------------------
+# Example Input/Output Pairs (Teaches Sonnet 4.5 transformation)
+# ----------------------------------------------------------------------------
+examples:
+  # Example 1: Light rain in London
+  - description: "Rainy weather with moderate temperature"
+    input:
+      city: "London"
+      raw_response:
+        coord:
+          lon: -0.1257
+          lat: 51.5085
+        weather:
+          - id: 500
+            main: "Rain"
+            description: "light rain"
+            icon: "10d"
+        base: "stations"
+        main:
+          temp: 15.5
+          feels_like: 14.2
+          temp_min: 13.8
+          temp_max: 17.1
+          pressure: 1013
+          humidity: 72
+        visibility: 10000
+        wind:
+          speed: 4.1
+          deg: 230
+        clouds:
+          all: 75
+        dt: 1699200000
+        sys:
+          type: 2
+          id: 2019646
+          country: "GB"
+          sunrise: 1699167000
+          sunset: 1699199000
+        timezone: 0
+        id: 2643743
+        name: "London"
+        cod: 200
+    output:
+      city: "London"
+      country: "GB"
+      temperature_c: 15.5
+      feels_like_c: 14.2
+      humidity_percent: 72
+      pressure_hpa: 1013
+      conditions: "light rain"
+      wind_speed_ms: 4.1
+      wind_direction_deg: 230
+      cloud_cover_percent: 75
+      visibility_m: 10000
+      timestamp: 1699200000
+
+  # Example 2: Clear sky in Tokyo
+  - description: "Clear weather with warmer temperature"
+    input:
+      city: "Tokyo"
+      raw_response:
+        coord:
+          lon: 139.6917
+          lat: 35.6895
+        weather:
+          - id: 800
+            main: "Clear"
+            description: "clear sky"
+            icon: "01d"
+        base: "stations"
+        main:
+          temp: 22.3
+          feels_like: 21.8
+          temp_min: 20.5
+          temp_max: 24.1
+          pressure: 1015
+          humidity: 65
+        visibility: 10000
+        wind:
+          speed: 2.5
+          deg: 180
+        clouds:
+          all: 0
+        dt: 1699200000
+        sys:
+          type: 2
+          id: 2001249
+          country: "JP"
+          sunrise: 1699134000
+          sunset: 1699172000
+        timezone: 32400
+        id: 1850144
+        name: "Tokyo"
+        cod: 200
+    output:
+      city: "Tokyo"
+      country: "JP"
+      temperature_c: 22.3
+      feels_like_c: 21.8
+      humidity_percent: 65
+      pressure_hpa: 1015
+      conditions: "clear sky"
+      wind_speed_ms: 2.5
+      wind_direction_deg: 180
+      cloud_cover_percent: 0
+      visibility_m: 10000
+      timestamp: 1699200000
+
+  # Example 3: Snow in Moscow
+  - description: "Snowy weather with freezing temperature"
+    input:
+      city: "Moscow"
+      raw_response:
+        coord:
+          lon: 37.6156
+          lat: 55.7522
+        weather:
+          - id: 600
+            main: "Snow"
+            description: "light snow"
+            icon: "13d"
+        base: "stations"
+        main:
+          temp: -5.2
+          feels_like: -9.1
+          temp_min: -7.0
+          temp_max: -3.5
+          pressure: 1020
+          humidity: 85
+        visibility: 5000
+        wind:
+          speed: 3.5
+          deg: 45
+        clouds:
+          all: 90
+        dt: 1699200000
+        sys:
+          type: 2
+          id: 2000314
+          country: "RU"
+          sunrise: 1699157000
+          sunset: 1699188000
+        timezone: 10800
+        id: 524901
+        name: "Moscow"
+        cod: 200
+    output:
+      city: "Moscow"
+      country: "RU"
+      temperature_c: -5.2
+      feels_like_c: -9.1
+      humidity_percent: 85
+      pressure_hpa: 1020
+      conditions: "light snow"
+      wind_speed_ms: 3.5
+      wind_direction_deg: 45
+      cloud_cover_percent: 90
+      visibility_m: 5000
+      timestamp: 1699200000
+
+# ----------------------------------------------------------------------------
+# Validation Rules
+# ----------------------------------------------------------------------------
+validation:
+  # Required fields in output
+  required_fields:
+    - city
+    - country
+    - temperature_c
+    - conditions
+    - timestamp
+
+  # Field type definitions
+  field_types:
+    city: str
+    country: str
+    temperature_c: float
+    feels_like_c: float
+    humidity_percent: int
+    pressure_hpa: int
+    conditions: str
+    wind_speed_ms: float
+    wind_direction_deg: int
+    cloud_cover_percent: int
+    visibility_m: int
+    timestamp: int
+
+  # Field constraints
+  constraints:
+    temperature_c:
+      min: -50.0
+      max: 60.0
+    humidity_percent:
+      min: 0
+      max: 100
+    pressure_hpa:
+      min: 870  # Lowest recorded: 870 hPa
+      max: 1085  # Highest recorded: 1085 hPa
+    wind_speed_ms:
+      min: 0.0
+      max: 100.0
+    cloud_cover_percent:
+      min: 0
+      max: 100
+    visibility_m:
+      min: 0
+      max: 10000
+
+  # Allow additional fields not in validation schema
+  allow_extra_fields: true
+
+# ----------------------------------------------------------------------------
+# Output Configuration
+# ----------------------------------------------------------------------------
+output:
+  formats:
+    # CSV output
+    - type: csv
+      path: "output/weather_data.csv"
+      include_timestamp: true  # Adds timestamp to filename
+      options:
+        delimiter: ","
+        quoting: "minimal"
+        index: false
+
+    # JSON output (pretty-printed)
+    - type: json
+      path: "output/weather_data.json"
+      pretty_print: true
+      include_timestamp: true
+      options:
+        indent: 2
+        ensure_ascii: false
+
+    # Excel output (optional, requires openpyxl)
+    - type: excel
+      path: "output/weather_data.xlsx"
+      include_timestamp: false
+      options:
+        sheet_name: "Weather Data"
+        freeze_panes: "A2"  # Freeze header row
+
+# ----------------------------------------------------------------------------
+# Runtime Configuration
+# ----------------------------------------------------------------------------
+runtime:
+  # Logging
+  log_level: INFO  # DEBUG | INFO | WARNING | ERROR | CRITICAL
+
+  # Parallel processing
+  parallel: true
+  max_workers: 4  # Process 4 cities simultaneously
+
+  # Error handling
+  error_strategy: continue  # continue | fail_fast | skip_invalid
+
+  # Checkpointing (resume after failures)
+  checkpoint_enabled: true
+  checkpoint_interval: 5  # Save every 5 records
+  checkpoint_dir: "data/checkpoints/weather"
+
+# ============================================================================
+# Usage Examples
+# ============================================================================
+#
+# 1. Extract weather for single city:
+#    python -m edgar_analyzer extract-project weather_api_project.yaml --city "Paris"
+#
+# 2. Extract weather for multiple cities:
+#    python -m edgar_analyzer extract-project weather_api_project.yaml \
+#      --cities "Paris,Berlin,Madrid,Rome,Vienna"
+#
+# 3. Extract from cities file:
+#    python -m edgar_analyzer extract-project weather_api_project.yaml \
+#      --cities-file cities.txt
+#
+# 4. Resume from checkpoint after failure:
+#    python -m edgar_analyzer extract-project weather_api_project.yaml \
+#      --resume
+#
+# ============================================================================

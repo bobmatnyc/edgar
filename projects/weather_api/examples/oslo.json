@@ -1,0 +1,58 @@
+{
+  "input": {
+    "coord": {
+      "lon": 10.7461,
+      "lat": 59.9127
+    },
+    "weather": [
+      {
+        "id": 803,
+        "main": "Clouds",
+        "description": "broken clouds",
+        "icon": "04d"
+      }
+    ],
+    "base": "stations",
+    "main": {
+      "temp": 2.0,
+      "feels_like": -3.0,
+      "temp_min": 0.0,
+      "temp_max": 4.0,
+      "pressure": 1005,
+      "humidity": 78
+    },
+    "visibility": 8000,
+    "wind": {
+      "speed": 7.5,
+      "deg": 280
+    },
+    "clouds": {
+      "all": 60
+    },
+    "dt": 1701360000,
+    "sys": {
+      "type": 1,
+      "id": 1418,
+      "country": "NO",
+      "sunrise": 1701334800,
+      "sunset": 1701357600
+    },
+    "timezone": 3600,
+    "id": 3143244,
+    "name": "Oslo",
+    "cod": 200
+  },
+  "output": {
+    "city": "Oslo",
+    "country": "NO",
+    "temperature_c": 2.0,
+    "feels_like_c": -3.0,
+    "humidity_percent": 78,
+    "pressure_hpa": 1005,
+    "wind_speed_ms": 7.5,
+    "conditions": "broken clouds",
+    "cloudiness_percent": 60,
+    "visibility_m": 8000
+  },
+  "description": "Cold windy climate - demonstrates wind chill effect (feels_like < actual)"
+}
