@@ -106,6 +106,4 @@ class OpenRouterClient:
         elif response.status_code == 429:
             raise RateLimitError(f"Rate limit exceeded: {response.text}")
         else:
-            raise APIError(
-                f"API error (status {response.status_code}): {response.text}"
-            )
+            raise APIError(f"API error (status {response.status_code}): {response.text}")

@@ -5,7 +5,6 @@ of generated code through multiple AI interactions.
 """
 
 from dataclasses import dataclass, field
-from typing import Any
 
 
 @dataclass
@@ -79,7 +78,7 @@ class ContextManager:
             conversation = [m for m in self.messages if m["role"] != "system"]
 
             # Keep only recent conversation
-            trimmed_conversation = conversation[-(self.max_messages - len(system_messages)):]
+            trimmed_conversation = conversation[-(self.max_messages - len(system_messages)) :]
 
             # Rebuild messages list
             self.messages = system_messages + trimmed_conversation

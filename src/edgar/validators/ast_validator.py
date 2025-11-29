@@ -6,7 +6,6 @@ and basic structural requirements using Python's ast module.
 
 import ast
 from dataclasses import dataclass
-from typing import Any
 
 
 class ValidationError(Exception):
