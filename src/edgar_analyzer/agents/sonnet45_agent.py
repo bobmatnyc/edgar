@@ -154,9 +154,19 @@ class PromptLoader:
         plan_json = json.dumps(plan.model_dump(), indent=2)
 
         # Combine patterns and examples
+        # Convert examples to dicts if they're ExampleConfig objects
+        examples_dicts = []
+        for ex in examples:
+            if hasattr(ex, 'model_dump'):
+                examples_dicts.append(ex.model_dump())
+            elif hasattr(ex, 'dict'):
+                examples_dicts.append(ex.dict())
+            else:
+                examples_dicts.append(ex)
+
         patterns_and_examples = {
             "patterns": [p.model_dump() for p in patterns],
-            "examples": examples
+            "examples": examples_dicts
         }
         patterns_examples_json = json.dumps(patterns_and_examples, indent=2)
 
@@ -172,6 +182,108 @@ class PromptLoader:
         )
 
         return prompt
+
+    def render_coder_retry_prompt(
+        self,
+        plan: PlanSpec,
+        patterns: List[Pattern],
+        examples: List[Dict[str, Any]],
+        validation_errors: Any
+    ) -> str:
+        """
+        Render Coder mode retry prompt with validation errors.
+
+        Args:
+            plan: PM-generated implementation plan
+            patterns: Transformation patterns
+            examples: Input/output example pairs
+            validation_errors: Validation result from previous attempt
+
+        Returns:
+            Rendered retry prompt with validation feedback
+        """
+        template = self.load_template("coder_mode_retry.md")
+
+        # Serialize plan to JSON
+        plan_json = json.dumps(plan.model_dump(), indent=2)
+
+        # Combine patterns and examples
+        # Convert examples to dicts if they're ExampleConfig objects
+        examples_dicts = []
+        for ex in examples:
+            if hasattr(ex, 'model_dump'):
+                examples_dicts.append(ex.model_dump())
+            elif hasattr(ex, 'dict'):
+                examples_dicts.append(ex.dict())
+            else:
+                examples_dicts.append(ex)
+
+        patterns_and_examples = {
+            "patterns": [p.model_dump() for p in patterns],
+            "examples": examples_dicts
+        }
+        patterns_examples_json = json.dumps(patterns_and_examples, indent=2)
+
+        # Format validation errors
+        validation_errors_text = self._format_validation_errors(validation_errors)
+
+        # Replace placeholders
+        prompt = template.replace("{{plan_spec_json}}", plan_json)
+        prompt = prompt.replace("{{patterns_and_examples_json}}", patterns_examples_json)
+        prompt = prompt.replace("{{validation_errors}}", validation_errors_text)
+
+        logger.debug(
+            "Rendered Coder retry prompt",
+            pattern_count=len(patterns),
+            example_count=len(examples),
+            validation_issues=len(validation_errors.issues) if hasattr(validation_errors, 'issues') else 0,
+            prompt_length=len(prompt)
+        )
+
+        return prompt
+
+    def _format_validation_errors(self, validation_result: Any) -> str:
+        """
+        Format validation errors for LLM context.
+
+        Args:
+            validation_result: CodeValidationResult object
+
+        Returns:
+            Formatted error text
+        """
+        if not hasattr(validation_result, 'issues'):
+            return str(validation_result)
+
+        formatted = []
+        formatted.append("## Validation Issues")
+        formatted.append("")
+
+        if not validation_result.is_valid:
+            formatted.append(f"**Overall Status**: INVALID (Quality Score: {validation_result.quality_score})")
+            formatted.append("")
+
+        if validation_result.issues:
+            formatted.append("### Critical Issues (Must Fix)")
+            for i, issue in enumerate(validation_result.issues, 1):
+                formatted.append(f"{i}. {issue}")
+            formatted.append("")
+
+        if hasattr(validation_result, 'recommendations') and validation_result.recommendations:
+            formatted.append("### Recommendations (Should Fix)")
+            for i, rec in enumerate(validation_result.recommendations, 1):
+                formatted.append(f"{i}. {rec}")
+            formatted.append("")
+
+        # Add quality metrics
+        formatted.append("### Quality Metrics")
+        formatted.append(f"- Syntax Valid: {'✅' if validation_result.syntax_valid else '❌'}")
+        formatted.append(f"- Has Type Hints: {'✅' if validation_result.has_type_hints else '❌'}")
+        formatted.append(f"- Has Docstrings: {'✅' if validation_result.has_docstrings else '❌'}")
+        formatted.append(f"- Has Tests: {'✅' if validation_result.has_tests else '❌'}")
+        formatted.append(f"- Implements Interface: {'✅' if validation_result.implements_interface else '❌'}")
+
+        return "\n".join(formatted)
 
 
 # ============================================================================
@@ -304,7 +416,17 @@ class Sonnet45Agent:
 
         # Parse JSON response
         try:
-            plan_data = json.loads(response)
+            # Strip markdown code blocks if present
+            response_clean = response.strip()
+            if response_clean.startswith("```json"):
+                response_clean = response_clean[7:]  # Remove ```json
+            if response_clean.startswith("```"):
+                response_clean = response_clean[3:]  # Remove ```
+            if response_clean.endswith("```"):
+                response_clean = response_clean[:-3]  # Remove trailing ```
+            response_clean = response_clean.strip()
+
+            plan_data = json.loads(response_clean)
 
             # Convert to PlanSpec (validates structure)
             plan = PlanSpec(**plan_data)
@@ -330,18 +452,22 @@ class Sonnet45Agent:
         self,
         plan: PlanSpec,
         patterns: List[Pattern],
-        examples: Optional[List[Dict[str, Any]]] = None
+        examples: Optional[List[Dict[str, Any]]] = None,
+        validation_errors: Optional[Any] = None
     ) -> GeneratedCode:
         """
-        Coder Mode: Generate production code from plan.
+        Coder Mode: Generate production code from plan with optional validation feedback.
 
         This method uses Sonnet 4.5 to act as a Python developer,
         implementing the architecture specified in the PM plan.
+        If validation_errors are provided, it will retry generation
+        with feedback to fix the issues.
 
         Args:
             plan: Implementation plan from PM mode
             patterns: Transformation patterns
             examples: Input/output example pairs (extracted from patterns if None)
+            validation_errors: Validation result from previous attempt (for retry)
 
         Returns:
             Generated code artifacts (extractor, models, tests)
@@ -351,11 +477,16 @@ class Sonnet45Agent:
             Exception: If API call fails after retries
 
         Example:
+            >>> # First attempt
             >>> code = await agent.code(plan, patterns, examples)
-            >>> print(f"Generated {code.total_lines} lines")
-            >>> print(code.extractor_code[:200])
+            >>> # Retry with validation errors
+            >>> code = await agent.code(plan, patterns, examples, validation_errors=result)
         """
-        logger.info("Starting Coder mode generation", classes=len(plan.classes))
+        logger.info(
+            "Starting Coder mode generation",
+            classes=len(plan.classes),
+            is_retry=validation_errors is not None
+        )
 
         # Extract examples from patterns if not provided
         if examples is None:
@@ -368,8 +499,18 @@ class Sonnet45Agent:
                         "pattern": pattern.type
                     })
 
-        # Render Coder prompt
-        prompt = self.prompt_loader.render_coder_prompt(plan, patterns, examples)
+        # Render Coder prompt (with or without validation errors)
+        if validation_errors is not None:
+            # Retry prompt with validation errors
+            prompt = self.prompt_loader.render_coder_retry_prompt(
+                plan,
+                patterns,
+                examples,
+                validation_errors
+            )
+        else:
+            # First attempt prompt
+            prompt = self.prompt_loader.render_coder_prompt(plan, patterns, examples)
 
         # Prepare messages
         messages = [

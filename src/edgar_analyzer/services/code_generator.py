@@ -300,30 +300,35 @@ class CodeGeneratorService:
         examples: List[Dict[str, Any]],
         project_config: ProjectConfig,
         validate: bool = True,
-        write_files: bool = True
+        write_files: bool = True,
+        max_retries: int = 3
     ) -> GenerationContext:
         """
-        Generate code from examples and configuration.
+        Generate code from examples and configuration with iterative refinement.
 
         This is the main entry point for the code generation pipeline.
+        If validation fails, the system will retry with validation feedback
+        to iteratively improve the generated code.
 
         Args:
             examples: List of input/output example pairs
             project_config: Project configuration
             validate: Whether to validate generated code
             write_files: Whether to write files to disk
+            max_retries: Maximum retry attempts for validation failures (default: 3)
 
         Returns:
             Generation context with plan, code, and metadata
 
         Raises:
-            ValueError: If validation fails
+            ValueError: If validation fails after max retries
             Exception: If generation fails
 
         Example:
             >>> context = await service.generate(
             ...     examples=[{"input": {...}, "output": {...}}],
-            ...     project_config=config
+            ...     project_config=config,
+            ...     max_retries=3
             ... )
             >>> if context.is_complete:
             ...     print("Success!")
@@ -333,7 +338,8 @@ class CodeGeneratorService:
         logger.info(
             "Starting code generation",
             project=project_config.project.name,
-            examples=len(examples)
+            examples=len(examples),
+            max_retries=max_retries
         )
 
         # Create generation context
@@ -370,37 +376,95 @@ class CodeGeneratorService:
                 dependencies=len(plan.dependencies)
             )
 
-            # Step 3: Coder mode implementation
-            logger.info("Step 3: Coder mode code generation")
-            code = await self.agent.code(plan, parsed.patterns, examples)
+            # Step 3: Coder mode implementation with iterative refinement
+            logger.info("Step 3: Coder mode code generation with iterative refinement")
+
+            validation_result = None
+            code = None
+
+            for attempt in range(max_retries):
+                logger.info(
+                    "Code generation attempt",
+                    attempt=attempt + 1,
+                    max_retries=max_retries
+                )
+
+                # Generate code (passing validation errors from previous attempt if any)
+                if attempt == 0:
+                    # First attempt - no validation errors yet
+                    code = await self.agent.code(plan, parsed.patterns, examples)
+                else:
+                    # Retry with validation errors from previous attempt
+                    code = await self.agent.code(
+                        plan,
+                        parsed.patterns,
+                        examples,
+                        validation_errors=validation_result
+                    )
+
+                logger.info(
+                    "Code generated",
+                    attempt=attempt + 1,
+                    total_lines=code.total_lines
+                )
+
+                # Validate if enabled
+                if validate:
+                    logger.info(
+                        "Validating generated code",
+                        attempt=attempt + 1
+                    )
+                    validation_result = self.validator.validate(code)
+
+                    if validation_result.is_valid:
+                        # Success! Code is valid
+                        logger.info(
+                            "Code generation successful",
+                            attempt=attempt + 1,
+                            quality_score=validation_result.quality_score
+                        )
+                        code.add_metadata("generation_attempts", attempt + 1)
+                        code.validation_notes = f"Quality score: {validation_result.quality_score} (attempt {attempt + 1})"
+                        break
+                    else:
+                        # Validation failed
+                        logger.warning(
+                            "Validation failed",
+                            attempt=attempt + 1,
+                            issues=len(validation_result.issues),
+                            max_retries=max_retries
+                        )
+
+                        if attempt == max_retries - 1:
+                            # Final attempt failed
+                            error_msg = f"Code validation failed after {max_retries} attempts: {validation_result.issues}"
+                            context.add_error(error_msg)
+                            logger.error(
+                                "Code generation failed after max retries",
+                                max_retries=max_retries,
+                                final_issues=validation_result.issues
+                            )
+                            raise ValueError(error_msg)
+                        else:
+                            logger.info(
+                                "Retrying code generation with validation feedback",
+                                attempt=attempt + 1,
+                                next_attempt=attempt + 2
+                            )
+                else:
+                    # Validation disabled, accept code on first attempt
+                    logger.info("Validation disabled, accepting generated code")
+                    code.add_metadata("generation_attempts", 1)
+                    break
 
             context.generated_code = code
 
             logger.info(
-                "Code generated",
-                total_lines=code.total_lines
+                "Code validated",
+                quality_score=validation_result.quality_score if validation_result else None,
+                issues=len(validation_result.issues) if validation_result else 0,
+                recommendations=len(validation_result.recommendations) if validation_result else 0
             )
-
-            # Step 4: Validation (if enabled)
-            if validate:
-                logger.info("Step 4: Validating generated code")
-                validation_result = self.validator.validate(code)
-
-                if not validation_result.is_valid:
-                    error_msg = f"Code validation failed: {validation_result.issues}"
-                    context.add_error(error_msg)
-                    logger.error("Validation failed", issues=validation_result.issues)
-                    raise ValueError(error_msg)
-
-                logger.info(
-                    "Code validated",
-                    quality_score=validation_result.quality_score,
-                    issues=len(validation_result.issues),
-                    recommendations=len(validation_result.recommendations)
-                )
-
-                # Add validation notes to code
-                code.validation_notes = f"Quality score: {validation_result.quality_score}"
 
             # Step 5: Write files (if enabled)
             if write_files:

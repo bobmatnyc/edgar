@@ -490,6 +490,171 @@ async def test_generation_performance(
     print(f"✅ Generation completed in {duration:.2f}s")
 
 
+@pytest.mark.asyncio
+async def test_iterative_refinement_on_validation_failure(
+    code_generator,
+    weather_examples,
+    weather_project_config,
+    monkeypatch
+):
+    """
+    Test that generator retries when validation fails.
+
+    This test mocks the validator to fail on the first attempt
+    and succeed on the second attempt, verifying the iterative
+    refinement loop works correctly.
+    """
+    from edgar_analyzer.services.code_generator import CodeValidator
+
+    # Track validation calls
+    validation_attempts = []
+
+    # Save original validate method
+    original_validate = CodeValidator.validate
+
+    def mock_validate(self, code):
+        """Mock validation that fails first, then succeeds."""
+        attempt_number = len(validation_attempts) + 1
+        validation_attempts.append(attempt_number)
+
+        if attempt_number == 1:
+            # First attempt: validation failure
+            from edgar_analyzer.models.plan import CodeValidationResult
+            result = CodeValidationResult(
+                is_valid=False,
+                syntax_valid=True,
+                has_type_hints=False,
+                has_docstrings=True,
+                has_tests=True,
+                implements_interface=True
+            )
+            result.add_issue("Missing type hints on extract() method")
+            result.add_recommendation("Add type hints to all function parameters")
+            return result
+        else:
+            # Second attempt: use real validation (should pass)
+            return original_validate(self, code)
+
+    # Patch the validate method
+    monkeypatch.setattr(CodeValidator, 'validate', mock_validate)
+
+    # Generate code (should retry and succeed)
+    context = await code_generator.generate(
+        examples=weather_examples,
+        project_config=weather_project_config,
+        validate=True,
+        write_files=False,
+        max_retries=3
+    )
+
+    # Verify code generation succeeded
+    assert context.is_complete
+    assert not context.has_errors
+    assert context.generated_code is not None
+
+    # Verify retry happened
+    assert len(validation_attempts) == 2, f"Expected 2 validation attempts, got {len(validation_attempts)}"
+
+    # Verify metadata tracks attempts
+    assert context.generated_code.metadata.get("generation_attempts") == 2
+
+    print(f"\n✅ Iterative refinement successful: {validation_attempts} validation attempts")
+
+
+@pytest.mark.asyncio
+async def test_max_retries_exceeded(
+    code_generator,
+    weather_examples,
+    weather_project_config,
+    monkeypatch
+):
+    """
+    Test that generator fails after max retries.
+
+    This test mocks the validator to always fail, verifying
+    that the system respects max_retries and raises an error.
+    """
+    from edgar_analyzer.services.code_generator import CodeValidator
+    from edgar_analyzer.models.plan import CodeValidationResult
+
+    # Track validation calls
+    validation_attempts = []
+
+    def mock_validate_always_fail(self, code):
+        """Mock validation that always fails."""
+        attempt_number = len(validation_attempts) + 1
+        validation_attempts.append(attempt_number)
+
+        result = CodeValidationResult(
+            is_valid=False,
+            syntax_valid=False,
+            has_type_hints=False,
+            has_docstrings=False,
+            has_tests=False,
+            implements_interface=False
+        )
+        result.add_issue(f"Critical syntax error (attempt {attempt_number})")
+        result.add_issue("Missing required interface implementation")
+        return result
+
+    # Patch the validate method
+    monkeypatch.setattr(CodeValidator, 'validate', mock_validate_always_fail)
+
+    # Attempt code generation (should fail after max_retries)
+    max_retries = 3
+
+    with pytest.raises(ValueError) as exc_info:
+        await code_generator.generate(
+            examples=weather_examples,
+            project_config=weather_project_config,
+            validate=True,
+            write_files=False,
+            max_retries=max_retries
+        )
+
+    # Verify error message
+    error_message = str(exc_info.value)
+    assert f"failed after {max_retries} attempts" in error_message.lower()
+
+    # Verify all retries were attempted
+    assert len(validation_attempts) == max_retries, \
+        f"Expected {max_retries} validation attempts, got {len(validation_attempts)}"
+
+    print(f"\n✅ Max retries enforcement works: Failed after {validation_attempts} attempts")
+
+
+@pytest.mark.asyncio
+async def test_validation_disabled_no_retry(
+    code_generator,
+    weather_examples,
+    weather_project_config
+):
+    """
+    Test that validation can be disabled, skipping retry loop.
+
+    When validate=False, code should be accepted on first attempt
+    regardless of quality.
+    """
+    # Generate code with validation disabled
+    context = await code_generator.generate(
+        examples=weather_examples,
+        project_config=weather_project_config,
+        validate=False,  # Skip validation
+        write_files=False,
+        max_retries=3
+    )
+
+    # Verify code generation succeeded
+    assert context.is_complete
+    assert not context.has_errors
+    assert context.generated_code is not None
+
+    # Verify only one attempt was made (no retries)
+    assert context.generated_code.metadata.get("generation_attempts") == 1
+
+    print("\n✅ Validation disabled: Accepted on first attempt")
+
+
 if __name__ == "__main__":
     # Allow running integration tests directly
     pytest.main([__file__, "-v", "-s"])
