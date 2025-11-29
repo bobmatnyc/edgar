@@ -1,0 +1,33 @@
+{
+  "example_id": "example_3",
+  "description": "Extract weather data for New York with light rain",
+  "input": {
+    "coord": {
+      "lon": -74.01,
+      "lat": 40.71
+    },
+    "weather": [
+      {
+        "id": 500,
+        "main": "Rain",
+        "description": "light rain",
+        "icon": "10d"
+      }
+    ],
+    "main": {
+      "temp": 18.0,
+      "feels_like": 17.5,
+      "temp_min": 16,
+      "temp_max": 20,
+      "pressure": 1010,
+      "humidity": 75
+    },
+    "name": "New York"
+  },
+  "output": {
+    "city": "New York",
+    "temperature_c": 18.0,
+    "humidity_percent": 75,
+    "conditions": "light rain"
+  }
+}
