@@ -1,295 +1,36 @@
 """
-Base Data Source Protocol and Implementation
+Backward Compatibility Wrapper - DEPRECATED
 
-Defines common interface (IDataSource) and base implementation (BaseDataSource)
-for all data sources with built-in caching, rate limiting, and retry logic.
+This module is DEPRECATED and maintained only for backward compatibility.
+All code has been migrated to extract_transform_platform.core.base
+
+Please update imports to:
+    from extract_transform_platform.core import BaseDataSource, IDataSource
+
+Migration Status: Complete (T2) - This is now a thin wrapper
+Code Reuse: 100% (imports from platform)
+
+History:
+- Original: 295 LOC (BaseDataSource + IDataSource)
+- Migrated: extract_transform_platform.core.base (100% generic)
+- Current: 30 LOC (backward compatibility wrapper)
+- Net LOC Impact: -265 lines (removed duplicates)
 """
 
-import asyncio
+import warnings
+from extract_transform_platform.core.base import BaseDataSource, IDataSource
+
+# Emit deprecation warning on import
+warnings.warn(
+    "edgar_analyzer.data_sources.base is deprecated. "
+    "Import from extract_transform_platform.core instead:\n"
+    "  from extract_transform_platform.core import BaseDataSource, IDataSource",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+__all__ = ['BaseDataSource', 'IDataSource']
+
+# Legacy logger for any existing code that references it
 import logging
-from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
-from typing import Any, Callable, Dict, Optional, Protocol, Tuple
-from edgar_analyzer.utils.rate_limiter import RateLimiter
-
 logger = logging.getLogger(__name__)
-
-
-class IDataSource(Protocol):
-    """Protocol defining the interface all data sources must implement.
-
-    This is a structural type (Protocol) allowing any class that implements
-    these methods to be used as a data source, regardless of inheritance.
-    """
-
-    async def fetch(self, **kwargs) -> Dict[str, Any]:
-        """Fetch data from the source.
-
-        Args:
-            **kwargs: Source-specific parameters for the fetch operation
-
-        Returns:
-            Dictionary containing the fetched data
-
-        Raises:
-            Exception: Source-specific errors (network, validation, etc.)
-        """
-        ...
-
-    async def validate_config(self) -> bool:
-        """Validate source configuration.
-
-        Returns:
-            True if configuration is valid and source is accessible
-
-        Example:
-            For API sources: Test connection and authentication
-            For file sources: Verify file exists and is readable
-        """
-        ...
-
-    def get_cache_key(self, **kwargs) -> str:
-        """Generate cache key for this request.
-
-        Args:
-            **kwargs: Same parameters passed to fetch()
-
-        Returns:
-            Unique string identifier for caching this request
-
-        Design Decision: Cache keys must be deterministic and unique per request.
-        Use hashing for complex parameters to keep keys manageable.
-        """
-        ...
-
-
-class BaseDataSource(ABC):
-    """Base implementation with common functionality for all data sources.
-
-    Provides:
-    - Caching with TTL
-    - Rate limiting
-    - Retry logic with exponential backoff
-    - Request/error logging
-
-    Design Decision: Use composition over inheritance
-    - RateLimiter is injected, not inherited
-    - Cache is internal implementation detail
-    - Subclasses focus on fetch logic, not infrastructure
-
-    Performance Analysis:
-    - Time Complexity: O(1) for cache hits, O(n) for cache cleanup (n = cache size)
-    - Space Complexity: O(m) where m = number of cached items
-    - Cache cleanup is lazy (on access), not proactive
-    """
-
-    def __init__(
-        self,
-        cache_enabled: bool = True,
-        cache_ttl_seconds: int = 3600,
-        rate_limit_per_minute: int = 60,
-        max_retries: int = 3,
-        retry_backoff_factor: float = 2.0,
-    ):
-        """Initialize base data source with common settings.
-
-        Args:
-            cache_enabled: Enable response caching
-            cache_ttl_seconds: Cache time-to-live in seconds (default: 1 hour)
-            rate_limit_per_minute: Maximum requests per minute
-            max_retries: Maximum retry attempts on failure
-            retry_backoff_factor: Exponential backoff multiplier (default: 2.0)
-                Formula: wait_time = backoff_factor ** attempt
-                Example: 2^0=1s, 2^1=2s, 2^2=4s, 2^3=8s
-
-        Design Trade-offs:
-        - Cache in memory vs Redis: In-memory for simplicity, Redis for distributed systems
-        - TTL-based expiry vs LRU: TTL for predictable memory usage
-        - Rate limiting per-instance vs global: Per-instance for simplicity
-        """
-        self.cache_enabled = cache_enabled
-        self.cache_ttl_seconds = cache_ttl_seconds
-        self.rate_limit_per_minute = rate_limit_per_minute
-        self.max_retries = max_retries
-        self.retry_backoff_factor = retry_backoff_factor
-
-        # Internal state
-        self._cache: Dict[str, Tuple[Any, datetime]] = {}
-        self._rate_limiter = RateLimiter(rate_limit_per_minute)
-
-        logger.info(
-            f"Initialized {self.__class__.__name__} with "
-            f"cache={'enabled' if cache_enabled else 'disabled'}, "
-            f"ttl={cache_ttl_seconds}s, "
-            f"rate_limit={rate_limit_per_minute}/min, "
-            f"max_retries={max_retries}"
-        )
-
-    async def fetch_with_cache(
-        self, cache_key: str, fetch_fn: Callable[[], Any]
-    ) -> Any:
-        """Fetch data with caching support.
-
-        Workflow:
-        1. Check cache for valid entry
-        2. Apply rate limiting
-        3. Fetch with retry logic
-        4. Cache successful result
-
-        Args:
-            cache_key: Unique identifier for this request
-            fetch_fn: Async callable that performs the actual fetch
-
-        Returns:
-            Fetched data (from cache or fresh fetch)
-
-        Performance:
-        - Cache hit: O(1) lookup, no network I/O
-        - Cache miss: O(1) cache check + fetch time + O(1) cache store
-        - Rate limiting: O(1) with deque operations
-        """
-        # Check cache first
-        if self.cache_enabled and cache_key in self._cache:
-            data, timestamp = self._cache[cache_key]
-            age_seconds = (datetime.now() - timestamp).total_seconds()
-
-            if age_seconds < self.cache_ttl_seconds:
-                logger.debug(
-                    f"Cache HIT for key={cache_key[:16]}... (age={age_seconds:.1f}s)"
-                )
-                return data
-            else:
-                # Expired entry, remove it
-                logger.debug(
-                    f"Cache EXPIRED for key={cache_key[:16]}... (age={age_seconds:.1f}s)"
-                )
-                del self._cache[cache_key]
-
-        logger.debug(f"Cache MISS for key={cache_key[:16]}...")
-
-        # Apply rate limiting before fetch
-        await self._rate_limiter.acquire()
-
-        # Fetch with retry logic
-        data = await self._retry_fetch(fetch_fn)
-
-        # Cache successful result
-        if self.cache_enabled:
-            self._cache[cache_key] = (data, datetime.now())
-            logger.debug(f"Cached result for key={cache_key[:16]}...")
-
-        return data
-
-    async def _retry_fetch(self, fetch_fn: Callable[[], Any]) -> Any:
-        """Fetch with exponential backoff retry logic.
-
-        Implements exponential backoff: wait_time = backoff_factor ** attempt
-        Example with backoff_factor=2.0:
-        - Attempt 0: No wait
-        - Attempt 1: Wait 2^0 = 1 second
-        - Attempt 2: Wait 2^1 = 2 seconds
-        - Attempt 3: Wait 2^2 = 4 seconds
-
-        Args:
-            fetch_fn: Async callable that performs the fetch
-
-        Returns:
-            Fetched data
-
-        Raises:
-            Exception: Re-raises the last exception if all retries fail
-
-        Error Handling Strategy:
-        - Transient errors (network, timeout): Retry with backoff
-        - Permanent errors (404, validation): Fail immediately (future optimization)
-        - All retries exhausted: Propagate last exception
-
-        Performance:
-        - Best case: O(1) - single successful fetch
-        - Worst case: O(n) where n = max_retries + 1 attempts
-        - Total wait time: sum(backoff_factor ** i for i in range(max_retries))
-        """
-        last_exception: Optional[Exception] = None
-
-        for attempt in range(self.max_retries + 1):
-            try:
-                logger.debug(f"Fetch attempt {attempt + 1}/{self.max_retries + 1}")
-                result = await fetch_fn()
-
-                if attempt > 0:
-                    logger.info(f"Fetch succeeded on retry attempt {attempt}")
-
-                return result
-
-            except Exception as e:
-                last_exception = e
-                logger.warning(
-                    f"Fetch attempt {attempt + 1} failed: {type(e).__name__}: {e}"
-                )
-
-                # If this was the last attempt, don't wait
-                if attempt >= self.max_retries:
-                    break
-
-                # Calculate exponential backoff wait time
-                wait_time = self.retry_backoff_factor**attempt
-                logger.info(f"Retrying in {wait_time:.1f} seconds...")
-                await asyncio.sleep(wait_time)
-
-        # All retries exhausted
-        logger.error(
-            f"All {self.max_retries + 1} fetch attempts failed. "
-            f"Last error: {type(last_exception).__name__}: {last_exception}"
-        )
-        raise last_exception  # type: ignore
-
-    def clear_cache(self) -> int:
-        """Clear all cached entries.
-
-        Returns:
-            Number of cache entries cleared
-        """
-        count = len(self._cache)
-        self._cache.clear()
-        logger.info(f"Cleared {count} cache entries")
-        return count
-
-    def get_cache_stats(self) -> Dict[str, Any]:
-        """Get cache statistics.
-
-        Returns:
-            Dictionary with cache size, oldest entry age, etc.
-        """
-        if not self._cache:
-            return {
-                "enabled": self.cache_enabled,
-                "size": 0,
-                "ttl_seconds": self.cache_ttl_seconds,
-            }
-
-        now = datetime.now()
-        ages = [(now - timestamp).total_seconds() for _, timestamp in self._cache.values()]
-
-        return {
-            "enabled": self.cache_enabled,
-            "size": len(self._cache),
-            "ttl_seconds": self.cache_ttl_seconds,
-            "oldest_age_seconds": max(ages) if ages else 0,
-            "newest_age_seconds": min(ages) if ages else 0,
-            "average_age_seconds": sum(ages) / len(ages) if ages else 0,
-        }
-
-    @abstractmethod
-    async def fetch(self, **kwargs) -> Dict[str, Any]:
-        """Fetch data from the source. Must be implemented by subclasses."""
-        ...
-
-    @abstractmethod
-    async def validate_config(self) -> bool:
-        """Validate source configuration. Must be implemented by subclasses."""
-        ...
-
-    @abstractmethod
-    def get_cache_key(self, **kwargs) -> str:
-        """Generate cache key. Must be implemented by subclasses."""
-        ...

@@ -29,6 +29,28 @@ cp .env.template .env.local
 # OPENROUTER_API_KEY=your_key_here
 ```
 
+### 2a. **Configure External Artifacts Directory (Optional but Recommended)**
+```bash
+# Set environment variable for external storage
+export EDGAR_ARTIFACTS_DIR=~/edgar_projects
+
+# Make it permanent (add to ~/.bashrc or ~/.zshrc)
+echo 'export EDGAR_ARTIFACTS_DIR=~/edgar_projects' >> ~/.bashrc
+source ~/.bashrc
+
+# Verify
+echo $EDGAR_ARTIFACTS_DIR
+# Expected: /Users/yourname/edgar_projects
+```
+
+**Benefits**:
+- ✅ Keeps repository clean (no large files in git)
+- ✅ Unlimited external storage
+- ✅ Easy backup (single directory)
+- ✅ Shared across multiple repository clones
+
+**Skip this step** if you prefer in-repo storage (default behavior).
+
 ### 3. **Start Using**
 ```bash
 # Activate environment
@@ -107,6 +129,7 @@ python -m edgar_analyzer extract --cik 0000320193
 
 ### **Learn More**
 - [CLI Usage Guide](CLI_USAGE.md) - Complete interface reference
+- [External Artifacts Guide](EXTERNAL_ARTIFACTS.md) - External directory setup
 - [Web Search Guide](WEB_SEARCH_CAPABILITIES.md) - Advanced features
 - [Configuration Guide](CONFIGURATION.md) - Customize your setup
 

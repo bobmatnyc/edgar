@@ -178,7 +178,64 @@ export EDGAR_DISABLE_WEB_SEARCH=true
 
 # Set verbosity
 export EDGAR_VERBOSE=true
+
+# External artifacts directory (optional but recommended)
+export EDGAR_ARTIFACTS_DIR=~/edgar_projects
 ```
+
+### **External Artifacts Directory**
+
+Store all platform outputs outside the repository for cleaner version control.
+
+#### **Configuration**
+
+```bash
+# 1. Set environment variable (recommended)
+export EDGAR_ARTIFACTS_DIR=~/edgar_projects
+
+# 2. Make it permanent (add to ~/.bashrc or ~/.zshrc)
+echo 'export EDGAR_ARTIFACTS_DIR=~/edgar_projects' >> ~/.bashrc
+
+# 3. Verify
+echo $EDGAR_ARTIFACTS_DIR
+```
+
+#### **Directory Precedence**
+
+The platform determines output directories in this order:
+
+1. **CLI flag** - `--output-dir` (highest priority)
+2. **Environment variable** - `EDGAR_ARTIFACTS_DIR`
+3. **Default** - In-repo directories (`./projects`, `./output`, `./data`)
+
+#### **Examples**
+
+```bash
+# Use environment variable (all projects go to external directory)
+export EDGAR_ARTIFACTS_DIR=~/edgar_projects
+python -m edgar_analyzer project create my-api --template weather
+# Created at: ~/edgar_projects/projects/my-api/
+
+# Override with CLI flag (one-time custom location)
+python -m edgar_analyzer project create test --output-dir /tmp/test_projects
+# Created at: /tmp/test_projects/test/
+
+# List projects (uses EDGAR_ARTIFACTS_DIR if set)
+python -m edgar_analyzer project list
+# Lists: ~/edgar_projects/projects/
+
+# List projects from custom directory
+python -m edgar_analyzer project list --output-dir /tmp/test_projects
+```
+
+#### **Benefits**
+
+- ✅ **Clean repository** - No large data files in git
+- ✅ **Unlimited storage** - Use external drives for large datasets
+- ✅ **Easy backup** - Single directory to backup
+- ✅ **Shared access** - Multiple repository clones use same artifacts
+
+See [External Artifacts Guide](EXTERNAL_ARTIFACTS.md) for complete documentation.
 
 ### **Scripting and Automation**
 ```bash

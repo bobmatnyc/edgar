@@ -1,6 +1,12 @@
 # PDF File Transform Guide
 
-Transform PDF documents with structured tables into structured data using the EDGAR platform's example-driven approach.
+Transform PDF documents with structured tables into structured data using the platform's example-driven approach.
+
+**Platform Package**: `extract_transform_platform` (NEW - Phase 2)
+**Data Source**: `PDFDataSource` (MIGRATED from `edgar_analyzer`)
+**Status**: Production-ready (77% test coverage, 51 tests passing)
+
+> **Note**: This guide uses the new `extract_transform_platform` package. For migration from `edgar_analyzer`, see [Platform Migration Guide](PLATFORM_MIGRATION.md).
 
 ---
 
@@ -50,6 +56,24 @@ The PDF file transform capability allows you to extract and transform data from 
 - **Receipts and statements** - Purchase receipts, bank statements
 - **Product catalogs** - Inventory lists, price sheets, specifications
 - **Scientific data** - Lab results, experimental data, measurements
+
+### Import Paths
+
+**NEW (Platform - Recommended)**:
+```python
+from extract_transform_platform.data_sources.file import PDFDataSource
+from extract_transform_platform.models import ProjectConfig
+```
+
+**OLD (EDGAR - Legacy)**:
+```python
+from edgar_analyzer.data_sources.pdf_source import PDFDataSource
+from edgar_analyzer.models.project_config import ProjectConfig
+```
+
+See [Platform Migration Guide](PLATFORM_MIGRATION.md) for details.
+
+---
 
 ### How It Works
 

@@ -35,6 +35,22 @@ def get_templates_dir() -> Path:
     return Path(__file__).parent.parent.parent.parent.parent / "templates"
 
 
+def get_projects_dir() -> Path:
+    """Get the projects directory, allowing override via environment variable.
+
+    Returns:
+        Path to projects directory (external or in-repo)
+    """
+    # Check for external artifacts directory
+    artifacts_base = os.getenv("EDGAR_ARTIFACTS_DIR")
+    if artifacts_base and artifacts_base.strip():
+        artifacts_path = Path(artifacts_base).expanduser().resolve()
+        return artifacts_path / "projects"
+
+    # Default to in-repo projects directory
+    return Path("projects")
+
+
 @click.group()
 def project():
     """Manage projects (create, list, delete, validate)."""
@@ -58,14 +74,14 @@ def project():
 @click.option(
     "--output-dir",
     type=click.Path(path_type=str),
-    default="projects",
-    help="Directory to create project in",
+    default=None,
+    help="Directory to create project in (default: $EDGAR_ARTIFACTS_DIR/projects or ./projects)",
 )
 def create(
     name: str,
     template: str,
     description: str,
-    output_dir: str,
+    output_dir: Optional[str],
 ):
     """Create a new project from a template.
 
@@ -73,15 +89,15 @@ def create(
         name: Project name (will be used as directory name)
         template: Template to use (weather, minimal)
         description: Optional project description
-        output_dir: Directory to create project in (default: projects/)
+        output_dir: Directory to create project in (default: from environment or ./projects)
 
     Examples:
         edgar-analyzer project create my-api --template weather
         edgar-analyzer project create custom-scraper --template minimal
     """
     try:
-        # Resolve paths
-        output_path = Path(output_dir)
+        # Resolve paths - use get_projects_dir() if output_dir not specified
+        output_path = Path(output_dir) if output_dir else get_projects_dir()
         project_path = output_path / name
         templates_dir = get_templates_dir()
 
@@ -192,8 +208,8 @@ See the main EDGAR Analyzer documentation for details on:
 @click.option(
     "--output-dir",
     type=click.Path(path_type=str),
-    default="projects",
-    help="Projects directory to list",
+    default=None,
+    help="Projects directory to list (default: $EDGAR_ARTIFACTS_DIR/projects or ./projects)",
 )
 @click.option(
     "--format",
@@ -201,11 +217,11 @@ See the main EDGAR Analyzer documentation for details on:
     default="table",
     help="Output format",
 )
-def list(output_dir: str, format: str):
+def list(output_dir: Optional[str], format: str):
     """List all projects.
 
     Args:
-        output_dir: Directory containing projects (default: projects/)
+        output_dir: Directory containing projects (default: from environment or ./projects)
         format: Output format (table, tree, json)
 
     Examples:
@@ -214,7 +230,7 @@ def list(output_dir: str, format: str):
         edgar-analyzer project list --format json
     """
     try:
-        output_path = Path(output_dir)
+        output_path = Path(output_dir) if output_dir else get_projects_dir()
 
         if not output_path.exists():
             console.print(f"[yellow]No projects directory found at {output_path}[/yellow]")
@@ -280,20 +296,20 @@ def list(output_dir: str, format: str):
 @click.option(
     "--output-dir",
     type=click.Path(path_type=str),
-    default="projects",
-    help="Projects directory",
+    default=None,
+    help="Projects directory (default: $EDGAR_ARTIFACTS_DIR/projects or ./projects)",
 )
 @click.option(
     "--force",
     is_flag=True,
     help="Delete without confirmation",
 )
-def delete(name: str, output_dir: str, force: bool):
+def delete(name: str, output_dir: Optional[str], force: bool):
     """Delete a project.
 
     Args:
         name: Project name to delete
-        output_dir: Directory containing projects (default: projects/)
+        output_dir: Directory containing projects (default: from environment or ./projects)
         force: Skip confirmation prompt
 
     Examples:
@@ -301,7 +317,7 @@ def delete(name: str, output_dir: str, force: bool):
         edgar-analyzer project delete my-api --force
     """
     try:
-        output_path = Path(output_dir)
+        output_path = Path(output_dir) if output_dir else get_projects_dir()
         project_path = output_path / name
 
         if not project_path.exists():
@@ -336,20 +352,20 @@ def delete(name: str, output_dir: str, force: bool):
 @click.option(
     "--output-dir",
     type=click.Path(path_type=str),
-    default="projects",
-    help="Projects directory",
+    default=None,
+    help="Projects directory (default: $EDGAR_ARTIFACTS_DIR/projects or ./projects)",
 )
 @click.option(
     "--verbose",
     is_flag=True,
     help="Show detailed validation output",
 )
-def validate(name: str, output_dir: str, verbose: bool):
+def validate(name: str, output_dir: Optional[str], verbose: bool):
     """Validate a project configuration.
 
     Args:
         name: Project name to validate
-        output_dir: Directory containing projects (default: projects/)
+        output_dir: Directory containing projects (default: from environment or ./projects)
         verbose: Show detailed validation output
 
     Examples:
@@ -357,7 +373,7 @@ def validate(name: str, output_dir: str, verbose: bool):
         edgar-analyzer project validate my-api --verbose
     """
     try:
-        output_path = Path(output_dir)
+        output_path = Path(output_dir) if output_dir else get_projects_dir()
         project_path = output_path / name
 
         if not project_path.exists():

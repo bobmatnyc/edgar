@@ -1,83 +1,32 @@
 """
-Rate Limiter Utility
+Backward Compatibility Wrapper - DEPRECATED
 
-Implements token bucket rate limiting for API calls.
-Supports both synchronous and asynchronous contexts.
+This module is DEPRECATED and maintained only for backward compatibility.
+All code has been migrated to extract_transform_platform.utils.rate_limiter
+
+Please update imports to:
+    from extract_transform_platform.utils import RateLimiter
+
+Migration Status: Complete (T2) - This is now a thin wrapper
+Code Reuse: 100% (imports from platform)
+
+History:
+- Original: 84 LOC (RateLimiter implementation)
+- Migrated: extract_transform_platform.utils.rate_limiter (100% generic)
+- Current: 20 LOC (backward compatibility wrapper)
+- Net LOC Impact: -64 lines (removed duplicates)
 """
 
-import asyncio
-from datetime import datetime, timedelta
-from collections import deque
-from typing import Optional
+import warnings
+from extract_transform_platform.utils.rate_limiter import RateLimiter
 
+# Emit deprecation warning on import
+warnings.warn(
+    "edgar_analyzer.utils.rate_limiter is deprecated. "
+    "Import from extract_transform_platform.utils instead:\n"
+    "  from extract_transform_platform.utils import RateLimiter",
+    DeprecationWarning,
+    stacklevel=2
+)
 
-class RateLimiter:
-    """Token bucket rate limiter for controlling request rates.
-
-    Uses a sliding window approach to track requests and enforce limits.
-
-    Example:
-        limiter = RateLimiter(requests_per_minute=60)
-        await limiter.acquire()  # Wait if needed before making request
-    """
-
-    def __init__(self, requests_per_minute: int):
-        """Initialize rate limiter.
-
-        Args:
-            requests_per_minute: Maximum number of requests allowed per minute
-        """
-        if requests_per_minute <= 0:
-            raise ValueError("requests_per_minute must be positive")
-
-        self.requests_per_minute = requests_per_minute
-        self.window = timedelta(minutes=1)
-        self.requests: deque[datetime] = deque()
-        self._lock = asyncio.Lock()
-
-    async def acquire(self) -> None:
-        """Acquire permission to make a request.
-
-        Blocks until a request slot is available within the rate limit.
-        Uses asyncio.sleep() to avoid busy waiting.
-        """
-        async with self._lock:
-            now = datetime.now()
-
-            # Remove old requests outside the sliding window
-            while self.requests and now - self.requests[0] > self.window:
-                self.requests.popleft()
-
-            # Check if we need to wait
-            if len(self.requests) >= self.requests_per_minute:
-                # Calculate wait time until oldest request expires
-                oldest = self.requests[0]
-                wait_until = oldest + self.window
-                wait_time = (wait_until - now).total_seconds()
-
-                if wait_time > 0:
-                    await asyncio.sleep(wait_time)
-
-                # Clean up expired requests after waiting
-                now = datetime.now()
-                while self.requests and now - self.requests[0] > self.window:
-                    self.requests.popleft()
-
-            # Record this request
-            self.requests.append(now)
-
-    def get_current_usage(self) -> int:
-        """Get current number of requests in the sliding window.
-
-        Returns:
-            Number of requests made in the last minute
-        """
-        now = datetime.now()
-        # Clean up old requests
-        while self.requests and now - self.requests[0] > self.window:
-            self.requests.popleft()
-        return len(self.requests)
-
-    def reset(self) -> None:
-        """Reset the rate limiter, clearing all tracked requests."""
-        self.requests.clear()
+__all__ = ['RateLimiter']

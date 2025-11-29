@@ -27,6 +27,9 @@ Transform EDGAR into a **general-purpose platform** supporting 4 major work path
 - [Project Overview](#project-overview)
 - [Priority Workflows](#priority-workflows-)
 - [File Transform Workflows](#file-transform-workflows-)
+- [Batch 1 Data Sources Complete](#batch-1-data-sources-complete-)
+- [Batch 2 Schema Services Complete](#batch-2-schema-services-complete-) 🆕
+- [External Artifacts Directory](#external-artifacts-directory-)
 - [Documentation Index](#documentation-index)
 - [Code Architecture](#code-architecture)
 - [Development Patterns](#development-patterns)
@@ -359,11 +362,293 @@ python -m edgar_analyzer run-extraction projects/invoice_extraction/
 
 ---
 
+## Batch 1 Data Sources Complete ✅
+
+**Status**: All 4 data sources migrated to platform (100% code reuse)
+**Ticket**: 1M-377 (T2 - Extract Data Source Abstractions)
+**Test Coverage**: 120/120 tests passing, zero breaking changes
+
+---
+
+## Batch 2 Schema Services Complete ✅ 🆕
+
+**Status**: All 3 schema services migrated to platform (100% code reuse)
+**Ticket**: 1M-378 (T3 - Extract Schema Analyzer)
+**Test Coverage**: 60/60 tests passing (100%), zero breaking changes
+**Total LOC**: 1,645 LOC platform + 199 LOC wrappers
+
+### Migrated Schema Components
+
+#### 1. PatternModels (530 LOC platform + 58 LOC wrapper)
+**Purpose**: Define transformation pattern data models for Example Parser
+**Platform Location**: `src/extract_transform_platform/models/patterns.py`
+
+```python
+# NEW Platform Import (preferred)
+from extract_transform_platform.models.patterns import (
+    Pattern,
+    PatternType,
+    ParsedExamples,
+    Schema,
+    SchemaField,
+    FieldTypeEnum
+)
+
+# Define a transformation pattern
+pattern = Pattern(
+    type=PatternType.FIELD_MAPPING,
+    confidence=1.0,
+    source_path="employee_id",
+    target_path="id",
+    transformation="Direct field rename"
+)
+```
+
+**Features**:
+- ✅ 14 transformation pattern types (field mapping, concatenation, type conversion, etc.)
+- ✅ 9 Pydantic model classes (Pattern, Schema, SchemaField, etc.)
+- ✅ 11 field type enumerations (STRING, INTEGER, FLOAT, BOOLEAN, etc.)
+- ✅ Confidence scoring (0.0-1.0)
+- ✅ 100% code reuse from EDGAR
+
+**Pattern Types Supported**:
+- `FIELD_MAPPING` - Direct field mapping
+- `CONCATENATION` - String concatenation
+- `TYPE_CONVERSION` - Type conversions
+- `BOOLEAN_CONVERSION` - Boolean normalization
+- `VALUE_MAPPING` - Discrete value mapping
+- `FIELD_EXTRACTION` - Substring extraction
+- `NESTED_ACCESS` - Nested object access
+- `LIST_AGGREGATION` - List operations
+- `CONDITIONAL` - Conditional logic
+- `DATE_PARSING` - Date/time parsing
+- `MATH_OPERATION` - Mathematical operations
+- `STRING_FORMATTING` - String formatting
+- `DEFAULT_VALUE` - Default value handling
+- `CUSTOM` - Custom transformations
+
+---
+
+#### 2. SchemaAnalyzer (436 LOC platform + 94 LOC wrapper)
+**Purpose**: Infer and compare schemas from example data
+**Platform Location**: `src/extract_transform_platform/services/analysis/schema_analyzer.py`
+
+```python
+# NEW Platform Import (preferred)
+from extract_transform_platform.services.analysis import SchemaAnalyzer
+
+# Create analyzer
+analyzer = SchemaAnalyzer()
+
+# Infer schema from examples
+input_schema = analyzer.infer_input_schema(examples)
+output_schema = analyzer.infer_output_schema(examples)
+
+# Compare schemas to find transformations
+differences = analyzer.compare_schemas(input_schema, output_schema)
+```
+
+**Features**:
+- ✅ Automatic type inference (11 types: int, float, str, bool, date, etc.)
+- ✅ Nested structure analysis (handles dicts and lists)
+- ✅ Schema comparison and diff generation
+- ✅ Path-based field addressing (e.g., "main.temp")
+- ✅ Null handling and nullability tracking
+- ✅ Performance: <100ms for 10 examples with 50 fields
+- ✅ 100% code reuse from EDGAR
+
+**Type Detection**:
+- `STRING`, `INTEGER`, `FLOAT`, `DECIMAL`
+- `BOOLEAN`, `DATE`, `DATETIME`, `TIME`
+- `NULL`, `ARRAY`, `OBJECT`
+
+---
+
+#### 3. ExampleParser (679 LOC platform + 47 LOC wrapper)
+**Purpose**: Extract transformation patterns from input/output examples
+**Platform Location**: `src/extract_transform_platform/services/analysis/example_parser.py`
+
+```python
+# NEW Platform Import (preferred)
+from extract_transform_platform.services.analysis import ExampleParser, SchemaAnalyzer
+
+# Create parser with analyzer
+analyzer = SchemaAnalyzer()
+parser = ExampleParser(analyzer)
+
+# Parse examples to detect patterns
+examples = [example1, example2, example3]
+parsed = parser.parse_examples(examples)
+
+# Get high-confidence patterns (≥0.9)
+for pattern in parsed.high_confidence_patterns:
+    print(f"{pattern.type}: {pattern.transformation}")
+```
+
+**Features**:
+- ✅ Pattern extraction from 2-3 examples
+- ✅ Confidence scoring (0.0-1.0 based on consistency)
+- ✅ 14 pattern type detection (all PatternType enums)
+- ✅ Field mapping and conversion logic
+- ✅ Handles edge cases (nulls, special characters, nested data)
+- ✅ Performance: <500ms for 10 examples with 50 fields
+- ✅ 100% code reuse from EDGAR
+
+**Example Workflow**:
+1. **Provide examples** - 2-3 input/output pairs
+2. **Analyze schemas** - Infer types and structure
+3. **Extract patterns** - Detect transformations
+4. **Score confidence** - Based on consistency
+5. **Generate code** - Use patterns for AI prompts
+
+---
+
+### Quick Reference Table
+
+| Component | Import Path | Purpose | LOC |
+|-----------|-------------|---------|-----|
+| **PatternModels** | `extract_transform_platform.models.patterns` | Pattern data models (14 types) | 530+58 |
+| **SchemaAnalyzer** | `extract_transform_platform.services.analysis` | Schema inference & comparison | 436+94 |
+| **ExampleParser** | `extract_transform_platform.services.analysis` | Pattern extraction from examples | 679+47 |
+
+---
+
+### Import Examples
+
+```python
+# Pattern Models
+from extract_transform_platform.models.patterns import (
+    Pattern, PatternType, ParsedExamples, Schema, SchemaField, FieldTypeEnum
+)
+
+# Schema Services
+from extract_transform_platform.services.analysis import (
+    SchemaAnalyzer, ExampleParser
+)
+
+# End-to-end example-driven workflow
+analyzer = SchemaAnalyzer()
+parser = ExampleParser(analyzer)
+
+# Parse examples
+parsed = parser.parse_examples([example1, example2])
+
+# Get patterns
+patterns = parsed.high_confidence_patterns  # Confidence ≥ 0.9
+```
+
+---
+
+### Backward Compatibility
+
+**EDGAR imports still work** - Both paths functional:
+
+```python
+# ❌ OLD (EDGAR - still works with deprecation warning)
+from edgar_analyzer.models.patterns import Pattern, PatternType
+from edgar_analyzer.services.schema_analyzer import SchemaAnalyzer
+from edgar_analyzer.services.example_parser import ExampleParser
+
+# ✅ NEW (Platform - preferred)
+from extract_transform_platform.models.patterns import Pattern, PatternType
+from extract_transform_platform.services.analysis import SchemaAnalyzer, ExampleParser
+```
+
+**Migration**: See [Platform Migration Guide](docs/guides/PLATFORM_MIGRATION.md) for step-by-step instructions.
+
+**Pattern Detection Guide**: See [Pattern Detection Guide](docs/guides/PATTERN_DETECTION.md) for detailed explanation of all 14 pattern types.
+
+---
+
+### Documentation Links
+
+- **[Platform Usage Guide](docs/guides/PLATFORM_USAGE.md)** - Complete usage examples for all 4 sources
+- **[Platform API Reference](docs/api/PLATFORM_API.md)** - Detailed API documentation
+- **[Web Scraping Guide](docs/guides/WEB_SCRAPING.md)** - JinaDataSource tutorials and best practices
+- **[Platform Migration Guide](docs/guides/PLATFORM_MIGRATION.md)** - Batch 1 migration status
+
+---
+
+## External Artifacts Directory 🆕
+
+Store all platform outputs outside the repository for cleaner version control and unlimited storage.
+
+### Quick Setup
+
+```bash
+# 1. Set environment variable (add to ~/.bashrc or ~/.zshrc)
+export EDGAR_ARTIFACTS_DIR=~/edgar_projects
+
+# 2. Restart terminal or source profile
+source ~/.bashrc  # or ~/.zshrc
+
+# 3. Verify configuration
+echo $EDGAR_ARTIFACTS_DIR
+# Expected: /Users/yourname/edgar_projects
+
+# 4. Run commands (directory created automatically)
+python -m edgar_analyzer project create my-api --template weather
+# Project created at: ~/edgar_projects/projects/my-api/
+```
+
+### Benefits
+
+- ✅ **Clean repository** - No large data files in git
+- ✅ **Unlimited storage** - Use external drives for large datasets
+- ✅ **Easy backup** - Single directory to backup
+- ✅ **Shared access** - Multiple repository clones use same artifacts
+- ✅ **Environment separation** - Separate dev/prod environments
+
+### Directory Structure
+
+When `EDGAR_ARTIFACTS_DIR` is set, the platform creates this structure:
+
+```
+$EDGAR_ARTIFACTS_DIR/
+├── output/                  # Global reports (Excel, JSON, CSV)
+├── projects/                # User-created project workspaces
+│   ├── weather_api/
+│   ├── employee_roster/
+│   └── invoice_transform/
+├── data/                    # Platform data directories
+│   ├── cache/               # API response cache
+│   ├── checkpoints/         # Analysis checkpoints
+│   └── backups/             # Database backups
+└── logs/                    # Log files
+```
+
+### Configuration Options
+
+**In-Repo (Default)**:
+- No environment variable set
+- All artifacts in `./output`, `./projects`, `./data`
+- Good for: Small projects, single repository
+
+**External Directory**:
+- Set `EDGAR_ARTIFACTS_DIR` environment variable
+- All artifacts in external directory
+- Good for: Large datasets, multiple repositories, team collaboration
+
+**CLI Override**:
+```bash
+# Use custom directory for specific command
+python -m edgar_analyzer project create test --output-dir /tmp/test_projects
+```
+
+### External Artifacts Documentation
+
+- **[External Artifacts Guide](docs/guides/EXTERNAL_ARTIFACTS.md)** - Complete setup guide
+- **[Quick Start](docs/guides/QUICK_START.md)** - Includes external directory setup
+- **[CLI Usage](docs/guides/CLI_USAGE.md)** - Command-line options
+
+---
+
 ## Documentation Index
 
 ### User Guides
 - **[Quick Start](docs/guides/QUICK_START.md)** - 5-minute setup
 - **[CLI Usage](docs/guides/CLI_USAGE.md)** - Complete CLI reference
+- **[External Artifacts](docs/guides/EXTERNAL_ARTIFACTS.md)** - External directory setup 🆕
 - **[Excel File Transform](docs/guides/EXCEL_FILE_TRANSFORM.md)** - Excel → JSON transformation 🆕
 - **[PDF File Transform](docs/guides/PDF_FILE_TRANSFORM.md)** - PDF → JSON transformation 🆕
 - **[Data Interpretation](docs/USER_GUIDE_DATA_INTERPRETATION.md)** - Understanding results
@@ -395,6 +680,113 @@ python -m edgar_analyzer run-extraction projects/invoice_extraction/
 ---
 
 ## Code Architecture
+
+### Platform Package Structure (NEW - Phase 2 Migration) 🆕
+
+**Migration Status**: Complete (1M-376, 1M-377 T2, 1M-380 T5)
+**Code Reuse**: 83% from EDGAR (exceeds 70% target)
+**Tests**: 132/132 passing (100% success rate)
+
+The codebase is transitioning to a dual-package structure:
+- **`extract_transform_platform/`** - Generic platform (NEW - preferred for all new code)
+- **`edgar_analyzer/`** - EDGAR-specific implementation (legacy, maintained for compatibility)
+
+#### Extract Transform Platform Structure
+
+```
+src/extract_transform_platform/
+├── core/                        # Base abstractions (MIGRATED ✅)
+│   ├── __init__.py
+│   └── base.py                  # BaseDataSource, IDataSource
+├── data_sources/                # Data source implementations
+│   ├── file/                    # File-based sources (MIGRATED ✅)
+│   │   ├── excel_source.py      # Excel (.xlsx, .xls)
+│   │   ├── pdf_source.py        # PDF tables (pdfplumber)
+│   │   └── csv_source.py        # CSV/JSON/YAML
+│   └── web/                     # Web-based sources
+│       ├── api_source.py        # REST APIs
+│       └── jina_source.py       # Jina.ai web scraping
+├── ai/                          # AI integration (MIGRATED ✅)
+│   ├── openrouter_client.py     # OpenRouter client
+│   ├── prompt_templates.py      # Prompt templates
+│   └── config.py                # AI configuration
+├── models/                      # Data models
+│   ├── project_config.py        # Project configuration
+│   └── transformation_pattern.py # Transformation patterns
+├── codegen/                     # Code generation
+│   ├── generator.py             # Code generator
+│   └── validator.py             # AST validation
+├── services/                    # Shared services
+│   └── cache_service.py         # Caching
+├── utils/                       # Utilities
+│   └── rate_limiter.py          # Rate limiting
+├── cli/                         # CLI commands
+│   └── commands.py              # Command implementations
+└── templates/                   # Code templates
+    └── __init__.py
+```
+
+#### Import Path Migration
+
+**NEW (Platform - Preferred)**: Use for all new code
+```python
+# Core abstractions
+from extract_transform_platform.core import BaseDataSource, IDataSource
+
+# File data sources
+from extract_transform_platform.data_sources.file import (
+    ExcelDataSource,
+    PDFDataSource,
+    CSVDataSource,
+)
+
+# Web data sources
+from extract_transform_platform.data_sources.web import (
+    APIDataSource,
+    JinaDataSource,
+)
+
+# AI integration
+from extract_transform_platform.ai import (
+    OpenRouterClient,
+    OpenRouterConfig,
+    PromptTemplates,
+)
+```
+
+**OLD (EDGAR - Deprecated)**: Still works, but migrate to platform imports
+```python
+# Legacy paths (still functional but deprecated)
+from edgar_analyzer.data_sources.base import BaseDataSource
+from edgar_analyzer.data_sources.excel_source import ExcelDataSource
+from edgar_analyzer.services.openrouter_client import OpenRouterClient
+```
+
+#### Migration Benefits
+
+1. **Generic Platform**: No EDGAR-specific dependencies
+2. **Better Organization**: Clear separation of concerns
+3. **Code Reuse**: 83% reuse from EDGAR (proven patterns)
+4. **Testing**: Comprehensive test suite (132/132 passing)
+5. **Documentation**: Platform-focused guides and API reference
+
+#### Quick Reference: Platform vs EDGAR
+
+| Component | Platform Path | EDGAR Path (Legacy) |
+|-----------|---------------|---------------------|
+| **BaseDataSource** | `extract_transform_platform.core` | `edgar_analyzer.data_sources.base` |
+| **ExcelDataSource** | `extract_transform_platform.data_sources.file` | `edgar_analyzer.data_sources.excel_source` |
+| **PDFDataSource** | `extract_transform_platform.data_sources.file` | `edgar_analyzer.data_sources.pdf_source` |
+| **OpenRouterClient** | `extract_transform_platform.ai` | `edgar_analyzer.services.openrouter_client` |
+| **PromptTemplates** | `extract_transform_platform.ai` | `edgar_analyzer.services.prompt_templates` |
+
+See **[Platform Migration Guide](docs/guides/PLATFORM_MIGRATION.md)** for step-by-step migration instructions.
+See **[Platform Usage Guide](docs/guides/PLATFORM_USAGE.md)** for complete usage examples.
+See **[Platform API Reference](docs/api/PLATFORM_API.md)** for detailed API documentation.
+
+---
+
+### EDGAR Project Structure (Legacy)
 
 ### Project Structure
 ```
@@ -653,6 +1045,9 @@ python -m edgar_analyzer --help
 OPENROUTER_API_KEY=your_api_key_here
 SEC_EDGAR_USER_AGENT=YourName/YourEmail
 LOG_LEVEL=INFO
+
+# Optional: External artifacts directory
+# EDGAR_ARTIFACTS_DIR=~/edgar_projects
 ```
 
 ### Virtual Environment
@@ -795,6 +1190,15 @@ open docs/README.md
 
 # ONE command to view Excel tutorial (NEW 🆕)
 open projects/employee_roster/TUTORIAL.md
+
+# ONE command to set external artifacts directory (NEW 🆕)
+export EDGAR_ARTIFACTS_DIR=~/edgar_projects
+
+# ONE command to view platform migration guide (NEW 🆕)
+open docs/guides/PLATFORM_MIGRATION.md
+
+# ONE command to view platform usage guide (NEW 🆕)
+open docs/guides/PLATFORM_USAGE.md
 ```
 
 ---

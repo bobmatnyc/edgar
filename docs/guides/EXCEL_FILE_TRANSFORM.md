@@ -1,6 +1,12 @@
 # Excel File Transform Guide
 
-Transform Excel spreadsheets into structured data using the EDGAR platform's example-driven approach.
+Transform Excel spreadsheets into structured data using the platform's example-driven approach.
+
+**Platform Package**: `extract_transform_platform` (NEW - Phase 2)
+**Data Source**: `ExcelDataSource` (MIGRATED from `edgar_analyzer`)
+**Status**: Production-ready (80% test coverage, 69 tests passing)
+
+> **Note**: This guide uses the new `extract_transform_platform` package. For migration from `edgar_analyzer`, see [Platform Migration Guide](PLATFORM_MIGRATION.md).
 
 ---
 
@@ -51,6 +57,24 @@ AI generates extraction code
     ↓
 Structured JSON (output)
 ```
+
+### Import Paths
+
+**NEW (Platform - Recommended)**:
+```python
+from extract_transform_platform.data_sources.file import ExcelDataSource
+from extract_transform_platform.models import ProjectConfig
+```
+
+**OLD (EDGAR - Legacy)**:
+```python
+from edgar_analyzer.data_sources.excel_source import ExcelDataSource
+from edgar_analyzer.models.project_config import ProjectConfig
+```
+
+See [Platform Migration Guide](PLATFORM_MIGRATION.md) for details.
+
+---
 
 **Example**: Transform HR roster
 

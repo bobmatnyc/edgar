@@ -40,6 +40,8 @@ dependencies = [
     "structlog>=23.0.0",
     "httpx>=0.24.0",
     "tiktoken>=0.5.0",
+    "jinja2>=3.1.0",  # Code generation templates
+    "pyyaml>=6.0.0",  # Project configuration
 ]
 
 [project.optional-dependencies]
@@ -58,6 +60,7 @@ dev = [
 
 [project.scripts]
 edgar-analyzer = "edgar_analyzer.main_cli:main"
+extract-transform = "extract_transform_platform.cli.commands:cli"
 
 [project.urls]
 Homepage = "https://github.com/example/edgar-analyzer"
@@ -67,9 +70,11 @@ Documentation = "https://edgar-analyzer.readthedocs.io"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["edgar_analyzer*", "extract_transform_platform*", "cli_chatbot*", "self_improving_code*"]
 
 [tool.setuptools.package-data]
 edgar_analyzer = ["config/*.yaml", "data/*.json"]
+extract_transform_platform = ["templates/*.j2"]
 
 [tool.black]
 line-length = 88
@@ -93,7 +98,7 @@ extend-exclude = '''
 profile = "black"
 multi_line_output = 3
 line_length = 88
-known_first_party = ["edgar_analyzer"]
+known_first_party = ["edgar_analyzer", "extract_transform_platform", "cli_chatbot", "self_improving_code"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -127,6 +132,7 @@ addopts = [
     "--strict-markers",
     "--strict-config",
     "--cov=src/edgar_analyzer",
+    "--cov=src/extract_transform_platform",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-fail-under=80",
@@ -135,4 +141,5 @@ markers = [
     "unit: Unit tests",
     "integration: Integration tests",
     "slow: Slow tests that make external API calls",
+    "platform: Extract & transform platform tests",
 ]
