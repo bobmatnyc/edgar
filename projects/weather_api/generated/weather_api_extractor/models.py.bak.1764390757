@@ -1,0 +1,139 @@
+"""
+Data models for WeatherExtractor
+Defines input and output schemas for OpenWeatherMap API data transformation.
+"""
+from typing import Optional, List, Dict, Any
+from pydantic import BaseModel, Field, field_validator
+class WeatherInputSchema(BaseModel):
+    """Input data schema for OpenWeatherMap API response.
+    This model represents the raw data structure from the API.
+    Example:
+        >>> data = WeatherInputSchema(
+        ...     coord={"lon": -0.1257, "lat": 51.5085},
+        ...     weather=[{"description": "light rain"}],
+        ...     main={"temp": 15.5, "humidity": 72},
+        ...     name="London"
+        ... )
+    """
+    coord: Dict[str, float] = Field(..., description="Coordinates (lon, lat)")
+    weather: List[Dict[str, Any]] = Field(..., description="Weather conditions array")
+    main: Dict[str, float] = Field(..., description="Main weather parameters")
+    visibility: int = Field(..., description="Visibility in meters")
+    wind: Dict[str, float] = Field(..., description="Wind parameters")
+    clouds: Dict[str, int] = Field(..., description="Cloudiness data")
+    sys: Dict[str, Any] = Field(..., description="System data including country")
+    name: str = Field(..., description="City name")
+    class Config:
+        """Pydantic model configuration."""
+        extra = "allow"  # Allow extra fields from API
+class WeatherOutputSchema(BaseModel):
+    """Output data schema for transformed weather data.
+    This model represents the simplified, transformed data structure.
+    Example:
+        >>> output = WeatherOutputSchema(
+        ...     city="London",
+        ...     country="GB",
+        ...     temperature_c=15.5,
+        ...     feels_like_c=14.2,
+        ...     humidity_percent=72,
+        ...     pressure_hpa=1012,
+        ...     wind_speed_ms=4.1,
+        ...     conditions="light rain",
+        ...     cloudiness_percent=75,
+        ...     visibility_m=10000
+        ... )
+    """
+    city: str = Field(..., description="City name")
+    country: str = Field(..., description="Country code (ISO 3166-1 alpha-2)")
+    temperature_c: float = Field(..., description="Temperature in Celsius")
+    feels_like_c: float = Field(..., description="Feels like temperature in Celsius")
+    humidity_percent: int = Field(..., description="Humidity percentage")
+    pressure_hpa: int = Field(..., description="Atmospheric pressure in hPa")
+    wind_speed_ms: float = Field(..., description="Wind speed in m/s")
+    conditions: str = Field(..., description="Weather condition description")
+    cloudiness_percent: int = Field(..., description="Cloudiness percentage")
+    visibility_m: int = Field(..., description="Visibility in meters")
+    @field_validator('temperature_c', 'feels_like_c')
+    @classmethod
+    def validate_temperature(cls, v: float) -> float:
+        """Validate temperature is within realistic range.
+        Args:
+            v: Temperature value
+        Returns:
+            Validated temperature
+        Raises:
+            ValueError: If temperature out of range
+        """
+        if not -60 <= v <= 60:
+            raise ValueError(f"Temperature {v}°C out of range (-60 to 60)")
+        return v
+    @field_validator('humidity_percent')
+    @classmethod
+    def validate_humidity(cls, v: int) -> int:
+        """Validate humidity percentage.
+        Args:
+            v: Humidity value
+        Returns:
+            Validated humidity
+        Raises:
+            ValueError: If humidity out of range
+        """
+        if not 0 <= v <= 100:
+            raise ValueError(f"Humidity {v}% out of range (0 to 100)")
+        return v
+    @field_validator('pressure_hpa')
+    @classmethod
+    def validate_pressure(cls, v: int) -> int:
+        """Validate atmospheric pressure.
+        Args:
+            v: Pressure value
+        Returns:
+            Validated pressure
+        Raises:
+            ValueError: If pressure out of range
+        """
+        if not 870 <= v <= 1085:
+            raise ValueError(f"Pressure {v} hPa out of range (870 to 1085)")
+        return v
+    @field_validator('wind_speed_ms')
+    @classmethod
+    def validate_wind_speed(cls, v: float) -> float:
+        """Validate wind speed.
+        Args:
+            v: Wind speed value
+        Returns:
+            Validated wind speed
+        Raises:
+            ValueError: If wind speed out of range
+        """
+        if not 0 <= v <= 113:
+            raise ValueError(f"Wind speed {v} m/s out of range (0 to 113)")
+        return v
+    @field_validator('cloudiness_percent')
+    @classmethod
+    def validate_cloudiness(cls, v: int) -> int:
+        """Validate cloudiness percentage.
+        Args:
+            v: Cloudiness value
+        Returns:
+            Validated cloudiness
+        Raises:
+            ValueError: If cloudiness out of range
+        """
+        if not 0 <= v <= 100:
+            raise ValueError(f"Cloudiness {v}% out of range (0 to 100)")
+        return v
+    @field_validator('visibility_m')
+    @classmethod
+    def validate_visibility(cls, v: int) -> int:
+        """Validate visibility distance.
+        Args:
+            v: Visibility value
+        Returns:
+            Validated visibility
+        Raises:
+            ValueError: If visibility out of range
+        """
+        if not 0 <= v <= 100000:
+            raise ValueError(f"Visibility {v}m out of range (0 to 100000)")
+        return v
