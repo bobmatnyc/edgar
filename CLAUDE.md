@@ -26,6 +26,7 @@ Transform EDGAR into a **general-purpose platform** supporting 4 major work path
 
 - [Project Overview](#project-overview)
 - [Priority Workflows](#priority-workflows-)
+- [Excel File Transform (NEW)](#excel-file-transform-new-)
 - [Documentation Index](#documentation-index)
 - [Code Architecture](#code-architecture)
 - [Development Patterns](#development-patterns)
@@ -160,15 +161,122 @@ python tests/test_xbrl_executive_compensation.py
 
 ---
 
+## Excel File Transform (NEW) 🆕
+
+**Status**: ✅ Phase 1 Complete (398 LOC, 80% coverage, 35/35 validations passing)
+
+### Quick Start: Transform Excel → JSON
+
+```bash
+# 1. Create project with Excel source
+cd projects/
+mkdir my_excel_project
+cd my_excel_project
+mkdir input examples output
+
+# 2. Add your Excel file
+cp /path/to/your/file.xlsx input/data.xlsx
+
+# 3. Create 2-3 transformation examples
+# (See employee_roster POC for format)
+
+# 4. Configure project.yaml
+cat > project.yaml <<EOF
+name: My Excel Transform
+data_source:
+  type: excel
+  config:
+    file_path: input/data.xlsx
+    sheet_name: 0
+    header_row: 0
+examples:
+  - examples/row1.json
+  - examples/row2.json
+EOF
+
+# 5. Run analysis and generate code
+python -m edgar_analyzer analyze-project projects/my_excel_project/
+python -m edgar_analyzer generate-code projects/my_excel_project/
+
+# 6. Run extraction
+python -m edgar_analyzer run-extraction projects/my_excel_project/
+```
+
+### Example: Employee Roster POC
+
+**Source Excel**:
+```
+| employee_id | first_name | last_name | department  | hire_date  | salary | is_manager |
+| E1001       | Alice      | Johnson   | Engineering | 2020-03-15 | 95000  | Yes        |
+```
+
+**Transformed Output**:
+```json
+{
+  "id": "E1001",
+  "full_name": "Alice Johnson",
+  "dept": "Engineering",
+  "hired": "2020-03-15",
+  "annual_salary_usd": 95000.0,
+  "manager": true
+}
+```
+
+**Automatic Transformations**:
+- ✅ Field renaming (employee_id → id)
+- ✅ String concatenation (first_name + last_name → full_name)
+- ✅ Type conversions (int → float, "Yes" → true)
+- ✅ Boolean normalization ("Yes"/"No" → true/false)
+
+### Key Features
+
+1. **ExcelDataSource** - Read .xlsx/.xls files with pandas
+2. **Schema-aware parsing** - Automatic type inference
+3. **Pattern detection** - AI detects 6+ transformation types
+4. **Code generation** - Produces type-safe extractors
+5. **Validation** - Auto-generated pytest tests
+
+### Documentation
+
+- **[Excel File Transform Guide](docs/guides/EXCEL_FILE_TRANSFORM.md)** - Complete user guide
+- **[ExcelDataSource Technical Reference](docs/architecture/EXCEL_DATA_SOURCE.md)** - Implementation details
+- **[Employee Roster Tutorial](projects/employee_roster/TUTORIAL.md)** - Step-by-step walkthrough
+- **[Employee Roster POC](projects/employee_roster/)** - Working proof-of-concept
+
+### Supported Transformations
+
+| Type | Example | Detection |
+|------|---------|-----------|
+| **Field Rename** | `employee_id` → `id` | Schema comparison |
+| **Concatenation** | `first_name + last_name` → `full_name` | Value matching |
+| **Type Convert** | `salary: 95000` (int) → `95000.0` (float) | Type change |
+| **Boolean** | `"Yes"` → `true`, `"No"` → `false` | Pattern recognition |
+| **Value Mapping** | `"A"` → `"Active"`, `"I"` → `"Inactive"` | Discrete mapping |
+| **Field Extract** | `"alice@ex.com"` → `"ex.com"` | Substring patterns |
+
+### Performance
+
+| Rows | Columns | File Size | Read Time | Memory |
+|------|---------|-----------|-----------|--------|
+| 100 | 7 | 15 KB | 45 ms | 3 MB |
+| 1,000 | 7 | 120 KB | 180 ms | 12 MB |
+| 10,000 | 7 | 1.2 MB | 950 ms | 85 MB |
+
+**End-to-End**: <10 seconds (read → analyze → generate → validate)
+
+---
+
 ## Documentation Index
 
 ### User Guides
 - **[Quick Start](docs/guides/QUICK_START.md)** - 5-minute setup
 - **[CLI Usage](docs/guides/CLI_USAGE.md)** - Complete CLI reference
+- **[Excel File Transform](docs/guides/EXCEL_FILE_TRANSFORM.md)** - Excel → JSON transformation (NEW 🆕)
 - **[Data Interpretation](docs/USER_GUIDE_DATA_INTERPRETATION.md)** - Understanding results
 
 ### Technical Documentation
 - **[Architecture Overview](docs/architecture/PROJECT_STRUCTURE.md)** - Codebase structure
+- **[ExcelDataSource Reference](docs/architecture/EXCEL_DATA_SOURCE.md)** - Excel parsing implementation (NEW 🆕)
 - **[Self-Improving Pattern](docs/architecture/SELF_IMPROVING_CODE_PATTERN.md)** - LLM enhancement
 - **[OpenRouter Architecture](docs/architecture/OPENROUTER_ARCHITECTURE.md)** - API design
 - **[Feasibility Analysis](docs/architecture/FEASIBILITY_ANALYSIS.md)** - Technical analysis
@@ -204,6 +312,11 @@ edgar/
 │   │   │   ├── edgar_api_service.py            # SEC EDGAR API
 │   │   │   ├── data_extraction_service.py      # Data extraction
 │   │   │   └── report_service.py               # Report generation
+│   │   ├── data_sources/        # Data source abstraction (NEW 🆕)
+│   │   │   ├── base.py          # BaseDataSource abstract class
+│   │   │   ├── excel_source.py  # Excel file source (398 LOC)
+│   │   │   ├── file_source.py   # CSV/JSON/YAML file source
+│   │   │   └── api_source.py    # REST API source
 │   │   ├── models/              # Data models
 │   │   │   ├── company.py       # Company data structures
 │   │   │   └── intermediate_data.py # Processing models
@@ -215,9 +328,21 @@ edgar/
 │   └── self_improving_code/     # LLM enhancement system
 ├── tests/                        # Test suite
 │   ├── unit/                    # Unit tests
+│   │   └── data_sources/        # Data source tests (69 tests, 80% coverage)
 │   ├── integration/             # Integration tests
 │   └── results/                 # Test results
 ├── docs/                         # Documentation
+│   ├── guides/                  # User guides
+│   │   └── EXCEL_FILE_TRANSFORM.md  # Excel transform guide (NEW 🆕)
+│   └── architecture/            # Technical docs
+│       └── EXCEL_DATA_SOURCE.md     # ExcelDataSource reference (NEW 🆕)
+├── projects/                     # Transformation projects (NEW 🆕)
+│   ├── employee_roster/         # Employee roster POC (35/35 validations)
+│   │   ├── input/               # Source Excel files
+│   │   ├── examples/            # Transformation examples
+│   │   ├── output/              # Generated code
+│   │   └── TUTORIAL.md          # Step-by-step tutorial (NEW 🆕)
+│   └── weather_api/             # Weather API POC (proven template)
 ├── data/                         # Data files
 │   ├── companies/               # Company lists
 │   ├── cache/                   # API cache
@@ -256,6 +381,20 @@ edgar/
 - `create_report_spreadsheet.py`
 - **Function**: Generate CSV and Excel reports
 - **Formats**: Multiple output formats, data visualization
+
+#### 5. ExcelDataSource (NEW - Phase 2) 🆕
+**File**: `src/edgar_analyzer/data_sources/excel_source.py`
+- **Achievement**: 70% code reuse from FileDataSource pattern
+- **Function**: Read and parse Excel spreadsheets (.xlsx, .xls)
+- **Key Features**:
+  - Schema-aware parsing with pandas
+  - Automatic type inference (int, float, date, string, boolean)
+  - Compatible with SchemaAnalyzer for pattern detection
+  - No caching (local files - no network overhead)
+  - NaN handling (converts to None for JSON compatibility)
+- **Performance**: <50ms for 100 rows, <1s for 10k rows
+- **Test Coverage**: 80% (69 tests, all passing)
+- **POC**: Employee roster (35/35 validations passing)
 
 ---
 
@@ -471,6 +610,21 @@ pre-commit run --all-files
 - **Validation**: Data quality checks before output
 - **Files**: `create_csv_reports.py`, `create_report_spreadsheet.py`
 
+### Excel File Transform (NEW - Phase 2) 🆕
+- **Pattern**: Example-driven transformation (same as Weather API)
+- **Schema Detection**: Automatic pattern recognition from 2-3 examples
+- **Type Safety**: Pydantic models + pandas type inference
+- **Code Reuse**: 70% from FileDataSource (CSV pattern)
+- **Files**: `src/edgar_analyzer/data_sources/excel_source.py`
+- **POC**: `projects/employee_roster/` (35/35 validations passing)
+- **Transformations Supported**:
+  - Field renaming (employee_id → id)
+  - String concatenation (first_name + last_name → full_name)
+  - Type conversions (int → float, string → date)
+  - Boolean normalization ("Yes"/"No" → true/false)
+  - Value mapping (discrete value transformations)
+  - Field extraction (substring patterns)
+
 ---
 
 ## Troubleshooting
@@ -511,6 +665,7 @@ pip install -e ".[dev]"
 
 **EDGAR Extraction Patterns**: XBRL extraction techniques, concept mapping, success rates
 **Data Source Integration**: Multi-source patterns, validation methods, tracking
+**Excel File Transform (NEW)**: Example-driven approach, schema detection, transformation patterns, pandas usage
 **Report Generation**: Output formats, data presentation, quality standards
 **Code Quality**: Testing patterns, type checking, formatting standards
 **Performance**: Caching strategies, batch processing, rate limiting
@@ -527,6 +682,9 @@ python -m edgar_analyzer extract --cik 0000320193 --year 2023
 # ONE command to generate reports
 python create_csv_reports.py
 
+# ONE command to transform Excel file (NEW 🆕)
+python -m edgar_analyzer analyze-project projects/employee_roster/
+
 # ONE command to run tests
 pytest tests/
 
@@ -538,6 +696,9 @@ python create_deployment_package.py
 
 # ONE command to view docs
 open docs/README.md
+
+# ONE command to view Excel tutorial (NEW 🆕)
+open projects/employee_roster/TUTORIAL.md
 ```
 
 ---

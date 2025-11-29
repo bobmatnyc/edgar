@@ -1,0 +1,38 @@
+name: Employee Roster Extraction
+description: Transform HR roster Excel data into structured employee records
+version: 1.0.0
+
+data_source:
+  type: excel
+  config:
+    file_path: input/hr_roster.xlsx
+    sheet_name: 0
+    header_row: 0
+
+examples:
+  - examples/alice.json
+  - examples/bob.json
+  - examples/carol.json
+
+transformations:
+  # Schema analyzer will detect these automatically from examples
+  - type: field_rename
+    description: Rename employee_id to id
+  - type: concatenation
+    description: Combine first_name + last_name → full_name
+  - type: field_rename
+    description: Rename department to dept
+  - type: field_rename
+    description: Rename hire_date to hired
+  - type: type_conversion
+    description: Convert salary to float as annual_salary_usd
+  - type: boolean_conversion
+    description: Convert is_manager Yes/No to true/false
+
+target_schema:
+  id: string
+  full_name: string
+  dept: string
+  hired: date
+  annual_salary_usd: number
+  manager: boolean
