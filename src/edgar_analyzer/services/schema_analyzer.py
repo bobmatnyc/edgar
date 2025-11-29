@@ -57,9 +57,7 @@ class SchemaAnalyzer:
         """Initialize SchemaAnalyzer."""
         self.logger = logger
 
-    def infer_input_schema(
-        self, examples: List[Dict[str, Any]]
-    ) -> Schema:
+    def infer_input_schema(self, examples: List[Dict[str, Any]]) -> Schema:
         """Infer input data schema from examples.
 
         Args:
@@ -77,9 +75,7 @@ class SchemaAnalyzer:
         """
         return self.infer_schema(examples, is_input=True)
 
-    def infer_output_schema(
-        self, examples: List[Dict[str, Any]]
-    ) -> Schema:
+    def infer_output_schema(self, examples: List[Dict[str, Any]]) -> Schema:
         """Infer output data schema from examples.
 
         Args:
@@ -139,11 +135,7 @@ class SchemaAnalyzer:
             f"nested={is_nested}, arrays={has_arrays}"
         )
 
-        return Schema(
-            fields=fields,
-            is_nested=is_nested,
-            has_arrays=has_arrays
-        )
+        return Schema(fields=fields, is_nested=is_nested, has_arrays=has_arrays)
 
     def compare_schemas(
         self, input_schema: Schema, output_schema: Schema
@@ -188,7 +180,7 @@ class SchemaAnalyzer:
                     output_path=path,
                     difference_type="added",
                     description=f"Field '{path}' added in output (may be calculated or constant)",
-                    output_type=output_field.field_type
+                    output_type=output_field.field_type,
                 )
             )
 
@@ -202,7 +194,7 @@ class SchemaAnalyzer:
                     output_path=None,
                     difference_type="removed",
                     description=f"Field '{path}' removed in output (dropped)",
-                    input_type=input_field.field_type
+                    input_type=input_field.field_type,
                 )
             )
 
@@ -220,7 +212,7 @@ class SchemaAnalyzer:
                         difference_type="type_changed",
                         description=f"Field '{path}' type changed: {input_field.field_type} → {output_field.field_type}",
                         input_type=input_field.field_type,
-                        output_type=output_field.field_type
+                        output_type=output_field.field_type,
                     )
                 )
 
@@ -236,7 +228,7 @@ class SchemaAnalyzer:
         data: Any,
         prefix: str,
         all_fields: Dict[str, List[Any]],
-        nested_level: int = 0
+        nested_level: int = 0,
     ) -> None:
         """Recursively extract all fields from nested data structure.
 
@@ -309,7 +301,7 @@ class SchemaAnalyzer:
             nested_level=nested_level,
             is_array=is_array,
             array_item_type=array_item_type,
-            sample_values=sample_values
+            sample_values=sample_values,
         )
 
     def _infer_type(self, values: List[Any]) -> FieldTypeEnum:
@@ -395,11 +387,13 @@ class SchemaAnalyzer:
 
         # Get fields that appear only in one schema
         input_only = {
-            f.path: f for f in input_schema.fields
+            f.path: f
+            for f in input_schema.fields
             if not output_schema.get_field(f.path)
         }
         output_only = {
-            f.path: f for f in output_schema.fields
+            f.path: f
+            for f in output_schema.fields
             if not input_schema.get_field(f.path)
         }
 
@@ -431,7 +425,7 @@ class SchemaAnalyzer:
                             difference_type="renamed",
                             description=f"Field '{input_path}' likely renamed to '{output_path}' (similarity: {similarity:.0%})",
                             input_type=input_field.field_type,
-                            output_type=output_field.field_type
+                            output_type=output_field.field_type,
                         )
                     )
 
