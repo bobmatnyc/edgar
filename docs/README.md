@@ -14,6 +14,8 @@ Welcome to the comprehensive documentation for the EDGAR CLI system - the world'
 - [Project Structure](architecture/PROJECT_STRUCTURE.md) - Codebase organization
 - [OpenRouter Service Architecture](architecture/OPENROUTER_ARCHITECTURE.md) - Centralized API design
 - [Feasibility Analysis](architecture/FEASIBILITY_ANALYSIS.md) - Technical analysis and decisions
+- [Project YAML Schema](PROJECT_YAML_SCHEMA.md) - Complete configuration schema reference
+- [Project YAML Quick Reference](PROJECT_YAML_QUICK_REFERENCE.md) - Quick schema reference guide
 
 ### 📖 **User Guides**
 - [Web Search Capabilities](guides/WEB_SEARCH_CAPABILITIES.md) - OpenRouter integration and usage
