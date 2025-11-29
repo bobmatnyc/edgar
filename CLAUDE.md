@@ -1,8 +1,24 @@
-# EDGAR Analyzer - Claude Code Agent Guide
+# EDGAR Platform - Claude Code Agent Guide
 
-**Project Type**: Python CLI tool for SEC EDGAR data analysis
-**Focus**: Executive compensation extraction from SEC filings
-**Agent Role**: Optimize EDGAR data workflows and Python codebase maintenance
+**Project Type**: General-purpose, example-driven data extraction & transformation platform
+**Original Focus**: SEC EDGAR executive compensation (transforming into generic platform)
+**Agent Role**: Build general-purpose platform that works from examples (70% code reuse from EDGAR)
+
+**Linear Project**: [EDGAR → General-Purpose Extract & Transform Platform](https://linear.app/1m-hyperdev/project/edgar-%E2%86%92-general-purpose-extract-and-transform-platform-e4cb3518b13e/issues)
+**Epic ID**: `edgar-e4cb3518b13e` / `4a248615-f1dd-4669-9f61-edec2d2355ac`
+
+---
+
+## Platform Vision (Phase 2 GO Decision Approved ✅)
+
+Transform EDGAR into a **general-purpose platform** supporting 4 major work paths:
+- **a) Project-based workflows** (external artifacts directory)
+- **b) File transformation** (Excel, PDF, DOCX, PPTX → structured data)
+- **c) Web scraping/research** (JS-heavy sites with Jina.ai)
+- **d) Interactive workflows** (example-driven, user-prompted confidence threshold)
+
+**Status**: Phase 1 MVP validated (92% confidence GO decision), Phase 2 approved
+**Timeline**: 6 weeks total (currently in Phase 2: Core Platform Architecture)
 
 ---
 
@@ -526,13 +542,26 @@ open docs/README.md
 
 ---
 
-**Agent Role**: Optimize EDGAR data extraction workflows, maintain code quality, enhance documentation, and improve data processing efficiency.
+**Agent Role**: Build general-purpose extract & transform platform from EDGAR foundation (70% code reuse), focusing on example-driven workflows and multi-format support.
 
-**Success Criteria**:
-- ✅ XBRL extraction success rate > 90%
-- ✅ Data source tracking 100% accurate
+**Success Criteria (Platform Transformation)**:
+- ✅ Phase 1 MVP validated (92% confidence)
+- ✅ All 4 work paths functional (project-based, file transform, web scraping, interactive)
+- ✅ Excel/PDF/DOCX/PPTX support implemented
+- ✅ External artifacts directory configured
+- ✅ JS-heavy web scraping with Jina.ai
+- ✅ User-prompted confidence threshold
 - ✅ All tests passing
 - ✅ Code quality standards met
-- ✅ Documentation up-to-date
+
+**User Preferences (Confirmed 2025-11-28)**:
+1. Office format priority: Excel → PDF → DOCX → PPTX
+2. Artifact storage: External directory (outside repo)
+3. Web scraping: JS-heavy sites (Jina.ai key provided, no auth yet)
+4. Example collection: Exemplar-based with data types
+5. Confidence threshold: User choice (prompted)
+6. Project workflow: Sequential (one project at a time)
+
+**Linear Project**: [View all issues](https://linear.app/1m-hyperdev/project/edgar-%E2%86%92-general-purpose-extract-and-transform-platform-e4cb3518b13e/issues)
 
 **Contact**: See [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) for full project context.
