@@ -81,17 +81,53 @@ class SecurityValidator:
         """
         violations = []
 
+        # First pass: track variables assigned f-strings or formatted strings
+        # This enables detection of SQL injection through variables
+        query_vars = self._find_query_variables(tree)
+
         for node in ast.walk(tree):
             # Check for dangerous function calls
             if isinstance(node, ast.Call):
                 violations.extend(self._check_dangerous_call(node))
-                violations.extend(self._check_sql_injection(node))
+                violations.extend(self._check_sql_injection(node, query_vars))
 
             # Check for hardcoded credentials
             elif isinstance(node, ast.Assign):
                 violations.extend(self._check_hardcoded_credentials(node))
 
         return violations
+
+    def _find_query_variables(self, tree: ast.AST) -> dict:
+        """
+        Find variables that are assigned formatted strings (f-strings, .format(), etc).
+
+        Returns:
+            Dict mapping variable names to (line_number, format_type)
+        """
+        query_vars = {}
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        var_name = target.id
+
+                        # Check if assigned an f-string
+                        if isinstance(node.value, ast.JoinedStr):
+                            query_vars[var_name] = (node.lineno, "f-string")
+
+                        # Check if assigned .format() call
+                        elif isinstance(node.value, ast.Call):
+                            if isinstance(node.value.func, ast.Attribute):
+                                if node.value.func.attr == "format":
+                                    query_vars[var_name] = (node.lineno, ".format()")
+
+                        # Check if assigned string concatenation
+                        elif isinstance(node.value, ast.BinOp):
+                            if isinstance(node.value.op, ast.Add):
+                                query_vars[var_name] = (node.lineno, "concatenation")
+
+        return query_vars
 
     def _check_dangerous_call(self, node: ast.Call) -> List[Violation]:
         """Check for dangerous function calls like eval, exec."""
@@ -117,9 +153,17 @@ class SecurityValidator:
 
         return violations
 
-    def _check_sql_injection(self, node: ast.Call) -> List[Violation]:
-        """Check for potential SQL injection patterns."""
-        violations = []
+    def _check_sql_injection(self, node: ast.Call, query_vars: dict) -> List[Violation]:
+        """Check for potential SQL injection patterns.
+
+        Args:
+            node: AST Call node to check
+            query_vars: Dict of variables assigned formatted strings
+
+        Returns:
+            List of SQL injection violations
+        """
+        violations: List[Violation] = []
 
         # Check if this is a SQL execute call
         func_name = None
@@ -133,7 +177,7 @@ class SecurityValidator:
         if node.args:
             query_arg = node.args[0]
 
-            # Check for f-strings
+            # Check for f-strings (direct)
             if isinstance(query_arg, ast.JoinedStr):
                 violations.append(
                     Violation(
@@ -146,7 +190,7 @@ class SecurityValidator:
                     )
                 )
 
-            # Check for .format() calls
+            # Check for .format() calls (direct)
             elif isinstance(query_arg, ast.Call) and isinstance(
                 query_arg.func, ast.Attribute
             ):
@@ -161,7 +205,7 @@ class SecurityValidator:
                         )
                     )
 
-            # Check for + operator (string concatenation)
+            # Check for + operator (string concatenation, direct)
             elif isinstance(query_arg, ast.BinOp) and isinstance(query_arg.op, ast.Add):
                 violations.append(
                     Violation(
@@ -172,6 +216,23 @@ class SecurityValidator:
                         suggestion="Use parameterized queries instead of string concatenation",
                     )
                 )
+
+            # Check if query argument is a variable that was assigned a formatted string
+            elif isinstance(query_arg, ast.Name):
+                var_name = query_arg.id
+                if var_name in query_vars:
+                    assign_line, format_type = query_vars[var_name]
+                    violations.append(
+                        Violation(
+                            code="SQL_INJECTION_RISK",
+                            message=f"SQL query uses variable '{var_name}' assigned with "
+                            f"{format_type} (injection risk, assigned at line {assign_line})",
+                            line=node.lineno,
+                            severity=Severity.ERROR,
+                            suggestion="Use parameterized queries: "
+                            "cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))",
+                        )
+                    )
 
         return violations
 
@@ -209,7 +270,7 @@ class SecurityValidator:
                                 message=f"Potential hardcoded credential in variable '{var_name}'",
                                 line=node.lineno,
                                 severity=Severity.ERROR,
-                                suggestion=f"Load '{var_name}' from environment variable: "
+                                suggestion=f"Remove hardcoded value and use environment variable: "
                                 f"{var_name} = os.getenv('{var_name.upper()}')",
                             )
                         )
