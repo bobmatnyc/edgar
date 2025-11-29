@@ -1,0 +1,16 @@
+{
+  "example_id": "invoice_001_line1",
+  "description": "Transform invoice line item: Widget A",
+  "input": {
+    "Item": "Widget A",
+    "Qty": "5",
+    "Price": "$10.00",
+    "Total": "$50.00"
+  },
+  "output": {
+    "product": "Widget A",
+    "quantity": 5,
+    "unit_price": 10.00,
+    "line_total": 50.00
+  }
+}

@@ -16,9 +16,13 @@ Welcome to the comprehensive documentation for the EDGAR CLI system - the world'
 - [Feasibility Analysis](architecture/FEASIBILITY_ANALYSIS.md) - Technical analysis and decisions
 - [Project YAML Schema](PROJECT_YAML_SCHEMA.md) - Complete configuration schema reference
 - [Project YAML Quick Reference](PROJECT_YAML_QUICK_REFERENCE.md) - Quick schema reference guide
+- [Excel Data Source](architecture/EXCEL_DATA_SOURCE.md) - Excel file data source implementation
+- [PDF Data Source](architecture/PDF_DATA_SOURCE.md) - PDF file data source implementation
 
 ### 📖 **User Guides**
 - [Web Search Capabilities](guides/WEB_SEARCH_CAPABILITIES.md) - OpenRouter integration and usage
+- [Excel File Transform](guides/EXCEL_FILE_TRANSFORM.md) - Transform Excel spreadsheets to structured data
+- [PDF File Transform](guides/PDF_FILE_TRANSFORM.md) - Extract data from PDF tables
 - [Security Guidelines](guides/SECURITY.md) - Security best practices and incident response
 - [API Key Security](guides/API_KEY_SECURITY.md) - Secure API key management
 - [Code Governance](guides/CODE_GOVERNANCE.md) - Development standards and patterns

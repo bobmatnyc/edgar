@@ -26,7 +26,7 @@ Transform EDGAR into a **general-purpose platform** supporting 4 major work path
 
 - [Project Overview](#project-overview)
 - [Priority Workflows](#priority-workflows-)
-- [Excel File Transform (NEW)](#excel-file-transform-new-)
+- [File Transform Workflows](#file-transform-workflows-)
 - [Documentation Index](#documentation-index)
 - [Code Architecture](#code-architecture)
 - [Development Patterns](#development-patterns)
@@ -161,9 +161,13 @@ python tests/test_xbrl_executive_compensation.py
 
 ---
 
-## Excel File Transform (NEW) 🆕
+## File Transform Workflows 🆕
 
-**Status**: ✅ Phase 1 Complete (398 LOC, 80% coverage, 35/35 validations passing)
+Transform files (Excel, PDF, DOCX, PPTX) into structured data using example-driven approach.
+
+### Excel File Transform ✅
+
+**Status**: Phase 1 Complete (398 LOC, 80% coverage, 35/35 validations passing)
 
 ### Quick Start: Transform Excel → JSON
 
@@ -236,12 +240,101 @@ python -m edgar_analyzer run-extraction projects/my_excel_project/
 4. **Code generation** - Produces type-safe extractors
 5. **Validation** - Auto-generated pytest tests
 
-### Documentation
+#### Excel Documentation
 
 - **[Excel File Transform Guide](docs/guides/EXCEL_FILE_TRANSFORM.md)** - Complete user guide
 - **[ExcelDataSource Technical Reference](docs/architecture/EXCEL_DATA_SOURCE.md)** - Implementation details
 - **[Employee Roster Tutorial](projects/employee_roster/TUTORIAL.md)** - Step-by-step walkthrough
 - **[Employee Roster POC](projects/employee_roster/)** - Working proof-of-concept
+
+---
+
+### PDF File Transform ✅
+
+**Status**: Phase 1 Complete (481 LOC, 77% coverage, 51 tests passing)
+
+#### Quick Start: Transform PDF → JSON
+
+```bash
+# 1. Create project with PDF source
+cd projects/
+mkdir invoice_extraction
+cd invoice_extraction
+mkdir input examples output
+
+# 2. Add your PDF file
+cp /path/to/invoice.pdf input/invoice_001.pdf
+
+# 3. Create 2-3 transformation examples
+# (See invoice_transform POC for format)
+
+# 4. Configure project.yaml
+cat > project.yaml <<EOF
+name: Invoice Extraction
+data_source:
+  type: pdf
+  config:
+    file_path: input/invoice_001.pdf
+    page_number: 0
+    table_strategy: lines
+examples:
+  - examples/row1.json
+  - examples/row2.json
+EOF
+
+# 5. Run analysis and generate code
+python -m edgar_analyzer analyze-project projects/invoice_extraction/
+python -m edgar_analyzer generate-code projects/invoice_extraction/
+
+# 6. Run extraction
+python -m edgar_analyzer run-extraction projects/invoice_extraction/
+```
+
+#### Example: Invoice Line Items
+
+**Source PDF Table**:
+```
+| Item       | Quantity | Unit Price | Total   |
+| Widget A   | 2        | $15.00     | $30.00  |
+| Service B  | 1        | $50.00     | $50.00  |
+```
+
+**Transformed Output**:
+```json
+{
+  "product": "Widget A",
+  "qty": 2,
+  "unit_price_usd": 15.00,
+  "line_total_usd": 30.00
+}
+```
+
+**Automatic Transformations**:
+- ✅ Field renaming (Item → product)
+- ✅ Currency parsing ($15.00 → 15.00)
+- ✅ Type conversions (string → int/float)
+- ✅ Table extraction with multiple strategies
+
+#### Key Features
+
+1. **PDFDataSource** - Extract tables from PDF with pdfplumber
+2. **Multiple strategies** - Lines, text, or mixed table detection
+3. **Bounding box support** - Target specific page regions
+4. **Schema-aware parsing** - Automatic type inference
+5. **Pattern detection** - AI detects transformation patterns
+6. **Code generation** - Produces type-safe extractors
+
+#### Table Extraction Strategies
+
+- **Lines** - For bordered tables (invoices, reports)
+- **Text** - For borderless tables (plain text layouts)
+- **Mixed** - Hybrid approach (partially bordered tables)
+
+#### PDF Documentation
+
+- **[PDF File Transform Guide](docs/guides/PDF_FILE_TRANSFORM.md)** - Complete user guide
+- **[PDFDataSource Technical Reference](docs/architecture/PDF_DATA_SOURCE.md)** - Implementation details
+- **[Invoice Transform POC](projects/invoice_transform/)** - Working proof-of-concept
 
 ### Supported Transformations
 
@@ -271,12 +364,14 @@ python -m edgar_analyzer run-extraction projects/my_excel_project/
 ### User Guides
 - **[Quick Start](docs/guides/QUICK_START.md)** - 5-minute setup
 - **[CLI Usage](docs/guides/CLI_USAGE.md)** - Complete CLI reference
-- **[Excel File Transform](docs/guides/EXCEL_FILE_TRANSFORM.md)** - Excel → JSON transformation (NEW 🆕)
+- **[Excel File Transform](docs/guides/EXCEL_FILE_TRANSFORM.md)** - Excel → JSON transformation 🆕
+- **[PDF File Transform](docs/guides/PDF_FILE_TRANSFORM.md)** - PDF → JSON transformation 🆕
 - **[Data Interpretation](docs/USER_GUIDE_DATA_INTERPRETATION.md)** - Understanding results
 
 ### Technical Documentation
 - **[Architecture Overview](docs/architecture/PROJECT_STRUCTURE.md)** - Codebase structure
-- **[ExcelDataSource Reference](docs/architecture/EXCEL_DATA_SOURCE.md)** - Excel parsing implementation (NEW 🆕)
+- **[ExcelDataSource Reference](docs/architecture/EXCEL_DATA_SOURCE.md)** - Excel parsing implementation 🆕
+- **[PDFDataSource Reference](docs/architecture/PDF_DATA_SOURCE.md)** - PDF parsing implementation 🆕
 - **[Self-Improving Pattern](docs/architecture/SELF_IMPROVING_CODE_PATTERN.md)** - LLM enhancement
 - **[OpenRouter Architecture](docs/architecture/OPENROUTER_ARCHITECTURE.md)** - API design
 - **[Feasibility Analysis](docs/architecture/FEASIBILITY_ANALYSIS.md)** - Technical analysis
@@ -665,7 +760,8 @@ pip install -e ".[dev]"
 
 **EDGAR Extraction Patterns**: XBRL extraction techniques, concept mapping, success rates
 **Data Source Integration**: Multi-source patterns, validation methods, tracking
-**Excel File Transform (NEW)**: Example-driven approach, schema detection, transformation patterns, pandas usage
+**Excel File Transform**: Example-driven approach, schema detection, transformation patterns, pandas usage
+**PDF File Transform**: Table extraction strategies (lines/text/mixed), bounding boxes, pdfplumber usage, currency parsing
 **Report Generation**: Output formats, data presentation, quality standards
 **Code Quality**: Testing patterns, type checking, formatting standards
 **Performance**: Caching strategies, batch processing, rate limiting

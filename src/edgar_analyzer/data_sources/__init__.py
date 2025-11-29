@@ -20,6 +20,7 @@ from .api_source import APIDataSource
 from .jina_source import JinaDataSource
 from .file_source import FileDataSource
 from .excel_source import ExcelDataSource
+from .pdf_source import PDFDataSource
 from .url_source import URLDataSource
 
 __all__ = [
@@ -29,5 +30,6 @@ __all__ = [
     "JinaDataSource",
     "FileDataSource",
     "ExcelDataSource",
+    "PDFDataSource",
     "URLDataSource",
 ]
