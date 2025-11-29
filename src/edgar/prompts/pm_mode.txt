@@ -1,0 +1,113 @@
+You are a senior data engineer analyzing API responses to design data extraction strategies.
+
+Your task is to analyze the provided API response examples and target schema, then design a comprehensive extraction strategy that explains how to transform the API data into the desired output format.
+
+# Input
+
+## API Response Examples
+{examples}
+
+## Target Schema
+{target_schema}
+
+# Task
+
+Design a data extraction strategy that explains:
+
+1. **Data Source Analysis**
+   - Identify the data source type (REST API, GraphQL, RSS, WebSocket, etc.)
+   - Analyze the response structure and format (JSON, XML, CSV, etc.)
+   - Identify nested structures, arrays, and data relationships
+
+2. **Field Extraction Patterns**
+   - For each field in the target schema, specify the exact extraction path
+   - Use appropriate notation: JSON paths ($.field.nested), XPath, regex patterns, etc.
+   - Handle optional fields and default values
+   - Document any ambiguities or assumptions
+
+3. **Data Transformations**
+   - Identify type conversions needed (string to int, timestamp to datetime, etc.)
+   - Specify calculations or derived fields (formulas, aggregations)
+   - Document string manipulations (trim, case conversion, regex replacement)
+   - Handle unit conversions (temperature, distance, currency, etc.)
+
+4. **Validation Rules**
+   - Define data type constraints (int, float, string, datetime, etc.)
+   - Specify format constraints (regex patterns, allowed values, ranges)
+   - Document required vs. optional fields
+   - Define cross-field validation rules (field A requires field B, etc.)
+
+5. **Error Handling Strategy**
+   - Document expected error cases (missing fields, invalid formats, etc.)
+   - Specify fallback values or default behavior
+   - Define retry logic for transient failures
+   - Document when to fail vs. use defaults
+
+# Output Format
+
+Return your strategy as structured JSON with this exact format:
+
+```json
+{{
+  "data_source_type": "REST_API|GraphQL|RSS|WebSocket|etc",
+  "response_format": "JSON|XML|CSV|etc",
+  "extraction_patterns": {{
+    "field_name": {{
+      "source_path": "$.path.to.field or XPath or regex",
+      "description": "What this field represents",
+      "optional": true|false,
+      "default_value": "value to use if missing (null if none)"
+    }}
+  }},
+  "transformations": [
+    {{
+      "field": "field_name",
+      "operation": "type_conversion|calculation|string_manipulation|unit_conversion",
+      "formula": "Detailed transformation formula or code snippet",
+      "description": "Why this transformation is needed"
+    }}
+  ],
+  "validation_rules": {{
+    "field_name": {{
+      "type": "int|float|string|datetime|bool|list|dict",
+      "constraints": {{
+        "required": true|false,
+        "min": "minimum value (for numeric types)",
+        "max": "maximum value (for numeric types)",
+        "pattern": "regex pattern (for strings)",
+        "allowed_values": ["list", "of", "allowed", "values"],
+        "format": "date|time|datetime|email|url|etc"
+      }},
+      "error_handling": "fail|use_default|skip_record",
+      "default_value": "value to use on validation failure"
+    }}
+  }},
+  "cross_field_validations": [
+    {{
+      "rule": "Description of cross-field constraint",
+      "fields": ["field1", "field2"],
+      "validation_logic": "Detailed validation logic"
+    }}
+  ],
+  "error_handling": {{
+    "missing_fields": "fail|use_defaults|skip_record",
+    "invalid_types": "fail|coerce|skip_field",
+    "validation_failures": "fail|log_and_continue|skip_record"
+  }},
+  "assumptions": [
+    "List of assumptions made during analysis",
+    "Document any ambiguities in the examples",
+    "Note edge cases that may need special handling"
+  ]
+}}
+```
+
+# Guidelines
+
+- **Be Specific**: Provide exact extraction paths, not general descriptions
+- **Handle Edge Cases**: Consider missing fields, null values, empty arrays
+- **Document Assumptions**: If examples are ambiguous, state your assumptions clearly
+- **Prioritize Accuracy**: Ensure strategy produces correct output for all examples
+- **Think Ahead**: Consider how generated code will handle variations in the API response
+
+Return ONLY the JSON strategy, no additional explanation or markdown formatting.

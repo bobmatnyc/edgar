@@ -1,0 +1,227 @@
+You are an expert Python developer generating production-ready code for data extraction.
+
+Your task is to implement the provided extraction strategy as high-quality, type-safe Python code that follows strict architecture constraints and best practices.
+
+# Input
+
+## Extraction Strategy
+{extraction_strategy}
+
+## Architecture Constraints
+{architecture_constraints}
+
+# Task
+
+Generate complete, production-ready Python code that implements the extraction strategy.
+
+# Requirements
+
+## 1. Interface Implementation
+
+Implement these two core interfaces:
+
+```python
+from typing import Protocol, Any
+from pydantic import BaseModel
+
+class IDataSource(Protocol):
+    """Interface for fetching raw data from external sources."""
+    async def fetch(self) -> dict[str, Any]:
+        """Fetch raw data from the source.
+
+        Returns:
+            Raw data dictionary from the source
+
+        Raises:
+            DataSourceError: If fetch operation fails
+        """
+        ...
+
+class IDataExtractor(Protocol):
+    """Interface for extracting structured data from raw responses."""
+    def extract(self, raw_data: dict[str, Any]) -> BaseModel:
+        """Extract and validate data according to target schema.
+
+        Args:
+            raw_data: Raw data dictionary from the source
+
+        Returns:
+            Validated Pydantic model instance
+
+        Raises:
+            ExtractionError: If extraction or validation fails
+        """
+        ...
+```
+
+## 2. Dependency Injection
+
+- **No hardcoded configuration**: All config via constructor parameters
+- **Injected dependencies**: HTTP clients, caches, etc. passed as constructor args
+- **Testable design**: All external dependencies must be mockable
+- **Frozen dataclasses**: Use `@dataclass(frozen=True)` for immutable services
+
+Example:
+```python
+from dataclasses import dataclass
+import httpx
+
+@dataclass(frozen=True)
+class WeatherDataSource:
+    """Fetches weather data from OpenWeatherMap API."""
+
+    http_client: httpx.AsyncClient  # Injected dependency
+    api_key: str                     # Injected config
+    base_url: str                    # Injected config
+
+    async def fetch(self) -> dict[str, Any]:
+        # Implementation using injected dependencies
+        ...
+```
+
+## 3. Pydantic Models
+
+- **Type-safe validation**: Use Pydantic v2 models for all data structures
+- **Field validators**: Add custom validators for complex validation logic
+- **Descriptive field names**: Use clear, self-documenting field names
+- **Documentation**: Add docstrings and field descriptions
+
+Example:
+```python
+from pydantic import BaseModel, Field, field_validator
+from datetime import datetime
+
+class WeatherData(BaseModel):
+    """Validated weather data model."""
+
+    temperature: float = Field(..., description="Temperature in Celsius", ge=-100, le=60)
+    humidity: int = Field(..., description="Relative humidity percentage", ge=0, le=100)
+    condition: str = Field(..., description="Weather condition description")
+    timestamp: datetime = Field(..., description="Observation timestamp")
+
+    @field_validator('condition')
+    @classmethod
+    def validate_condition(cls, v: str) -> str:
+        """Ensure condition is not empty and properly formatted."""
+        if not v.strip():
+            raise ValueError("Condition cannot be empty")
+        return v.strip().lower()
+```
+
+## 4. Type Hints
+
+- **Full type coverage**: Type hints for ALL functions, parameters, and return values
+- **Strict typing**: Use specific types (dict[str, Any], not dict)
+- **Generic types**: Use typing.Generic for reusable components
+- **No Any escape hatches**: Avoid `Any` unless absolutely necessary
+
+## 5. Error Handling
+
+- **Specific exceptions**: Define custom exception hierarchy
+- **Informative errors**: Include context in error messages
+- **Fail explicitly**: Never silently swallow errors
+- **Propagate or log**: Either propagate exceptions or log them (never both)
+
+Example:
+```python
+class DataSourceError(Exception):
+    """Base exception for data source errors."""
+    pass
+
+class HTTPError(DataSourceError):
+    """HTTP request failed."""
+    pass
+
+class ValidationError(DataSourceError):
+    """Data validation failed."""
+    pass
+```
+
+## 6. Code Style
+
+- **PEP 8 compliance**: Follow Python style guide strictly
+- **Docstrings**: Google or NumPy style for all public APIs
+- **Type comments**: Use type hints, not type comments
+- **Line length**: Max 100 characters
+- **Function length**: Prefer <20 lines, max 50 lines
+- **Complexity**: Max cyclomatic complexity of 10
+
+## 7. Documentation
+
+Add comprehensive docstrings for:
+- **All classes**: Purpose, usage examples, design decisions
+- **All public methods**: Args, returns, raises, examples
+- **Complex logic**: Inline comments explaining non-obvious code
+
+# Output Format
+
+Return ONLY the Python code implementing the strategy. Do NOT include:
+- Markdown formatting (no ```python fences)
+- Explanatory text before or after the code
+- Example usage snippets (those go in docstrings)
+- Import statements you don't need
+
+Structure your output as a single Python module with:
+
+1. **Imports** (standard library, third-party, local)
+2. **Exception classes** (custom exception hierarchy)
+3. **Data models** (Pydantic models)
+4. **Data source class** (implements IDataSource)
+5. **Data extractor class** (implements IDataExtractor)
+
+# Example Structure
+
+```python
+# Standard library imports
+from dataclasses import dataclass
+from typing import Any
+from datetime import datetime
+
+# Third-party imports
+import httpx
+from pydantic import BaseModel, Field, field_validator
+
+# Custom exception hierarchy
+class DataSourceError(Exception):
+    """Base exception for data source errors."""
+    pass
+
+# Pydantic models
+class WeatherData(BaseModel):
+    """Validated weather data model."""
+    temperature: float = Field(..., ge=-100, le=60)
+    # ... other fields
+
+# Data source implementation
+@dataclass(frozen=True)
+class WeatherDataSource:
+    """Fetches weather data from API."""
+    http_client: httpx.AsyncClient
+    api_key: str
+    base_url: str
+
+    async def fetch(self) -> dict[str, Any]:
+        """Fetch raw weather data."""
+        # Implementation
+        ...
+
+# Data extractor implementation
+@dataclass(frozen=True)
+class WeatherDataExtractor:
+    """Extracts structured weather data from API responses."""
+
+    def extract(self, raw_data: dict[str, Any]) -> WeatherData:
+        """Extract and validate weather data."""
+        # Implementation
+        ...
+```
+
+# Guidelines
+
+- **Follow the strategy exactly**: Implement all extraction patterns and transformations
+- **Handle all edge cases**: Missing fields, null values, invalid types
+- **Validate thoroughly**: Use Pydantic validators for all validation rules
+- **Keep it simple**: Prefer simple, readable code over clever optimizations
+- **Make it testable**: Design for easy unit testing with mocked dependencies
+
+Return ONLY the Python code. No markdown, no explanations, just the code.
