@@ -235,6 +235,8 @@ virtualenv/
 # Keep .claude directory structure for agents
 !.claude/
 !.claude/agents/
+.claude/*.local.json
+.claude/mcp.local.json
 
 # MCP Ticketer
 .mcp-ticketer/
