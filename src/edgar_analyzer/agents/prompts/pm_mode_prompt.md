@@ -27,15 +27,17 @@ Analyze the patterns and design an optimal extraction implementation following t
 Define the main extractor class that implements the `IDataExtractor` interface:
 
 ```python
-from abc import ABC, abstractmethod
+from extract_transform_platform.core import IDataExtractor
 from typing import Dict, List, Optional, Any
 
-class IDataExtractor(ABC):
-    """Interface for data extractors."""
+# IDataExtractor interface is provided by the platform
+# Your extractor MUST inherit from it:
+class YourExtractor(IDataExtractor):
+    """Your extractor implementation."""
 
-    @abstractmethod
     async def extract(self, **kwargs) -> Optional[Dict[str, Any]]:
         """Extract data from source."""
+        # Your implementation here
         pass
 ```
 
