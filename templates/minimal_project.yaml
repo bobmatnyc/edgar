@@ -1,0 +1,169 @@
+# =============================================================================
+# Minimal Project Template (Bare-Bones Starter)
+# =============================================================================
+#
+# Purpose: Quick-start template with essential configuration only
+# Use Case: When you want maximum flexibility or have unique requirements
+# Data Source: FILE type (CSV/JSON) - easiest to get started
+#
+# Quick Start:
+#   1. Copy this template: cp templates/minimal_project.yaml projects/my_project/project.yaml
+#   2. Add your data file to projects/my_project/input/
+#   3. Provide 2-3 transformation examples
+#   4. Run: python -m edgar_analyzer analyze-project projects/my_project/
+#
+# Documentation:
+#   - Template Guide: docs/guides/PROJECT_TEMPLATES.md
+#   - Platform Usage: docs/guides/PLATFORM_USAGE.md
+#   - Full Templates: templates/weather_api/project.yaml, templates/news_scraper_project.yaml
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# PROJECT METADATA (REQUIRED)
+# -----------------------------------------------------------------------------
+project:
+  name: minimal_starter  # Change this
+  description: Minimal project template for quick start
+  version: 1.0.0
+
+# -----------------------------------------------------------------------------
+# DATA SOURCES (REQUIRED - At least 1)
+# -----------------------------------------------------------------------------
+# This minimal template uses FILE type for simplicity.
+# For other types (API, URL, JINA, EDGAR), see full templates.
+data_sources:
+  - type: file
+    name: input_data
+    file_path: ./projects/minimal_starter/input/data.csv  # Change this path
+
+    # File format (csv, json, or yaml)
+    format: csv
+
+    # CSV-specific options
+    delimiter: ","
+    encoding: utf-8
+    has_header: true
+
+# -----------------------------------------------------------------------------
+# TRANSFORMATION EXAMPLES (REQUIRED - At least 2)
+# -----------------------------------------------------------------------------
+# Provide examples showing input → output transformations.
+# The AI learns patterns from these examples.
+#
+# Format:
+#   - input: { field1: value1, field2: value2, ... }
+#     output: { new_field1: transformed_value1, ... }
+examples:
+  # Example 1: Add your first transformation example
+  - input:
+      raw_field_name: "example_value"
+      another_field: 123
+
+    output:
+      cleaned_field: "example_value"
+      transformed_number: 123.0
+
+  # Example 2: Add your second transformation example
+  - input:
+      raw_field_name: "another_value"
+      another_field: 456
+
+    output:
+      cleaned_field: "another_value"
+      transformed_number: 456.0
+
+# -----------------------------------------------------------------------------
+# VALIDATION RULES (REQUIRED)
+# -----------------------------------------------------------------------------
+validation:
+  # List fields that MUST be present in output
+  required_fields:
+    - cleaned_field
+    - transformed_number
+
+  # Define types for validation
+  # Use simple type names: str, int, float, decimal, bool, date, datetime, list, dict
+  field_types:
+    cleaned_field: str
+    transformed_number: float
+
+  # Optional: Custom validation constraints
+  constraints: {}
+
+# -----------------------------------------------------------------------------
+# OUTPUT CONFIGURATION (REQUIRED - At least 1 format)
+# -----------------------------------------------------------------------------
+output:
+  formats:
+    # JSON output (recommended for testing)
+    - type: json
+      path: output/results.json
+      pretty_print: true
+      include_timestamp: true
+
+# -----------------------------------------------------------------------------
+# RUNTIME CONFIGURATION (OPTIONAL - Defaults provided)
+# -----------------------------------------------------------------------------
+runtime:
+  # Logging level
+  logging:
+    level: INFO  # Options: DEBUG, INFO, WARNING, ERROR
+
+  # Error handling
+  error_handling:
+    strategy: continue  # Options: fail_fast, continue, retry
+
+# =============================================================================
+# NEXT STEPS
+# =============================================================================
+#
+# 1. CUSTOMIZE THIS TEMPLATE:
+#    - Change project.name to your project name
+#    - Update data_sources.path to your data file
+#    - Replace examples with your actual input/output pairs
+#    - Add required_fields and field_types for validation
+#
+# 2. ADD YOUR DATA:
+#    - Place data file in projects/<your_project>/input/
+#    - Supported formats: CSV, JSON, YAML
+#
+# 3. CREATE EXAMPLES:
+#    - Copy 2-3 rows from your data
+#    - Define desired output structure
+#    - Add as input/output pairs above
+#
+# 4. RUN ANALYSIS:
+#    python -m edgar_analyzer analyze-project projects/<your_project>/
+#
+# 5. REVIEW PATTERNS:
+#    - Check detected transformation patterns
+#    - Verify AI understood your examples
+#
+# 6. GENERATE CODE:
+#    python -m edgar_analyzer generate-code projects/<your_project>/
+#
+# 7. TEST EXTRACTION:
+#    python -m edgar_analyzer run-extraction projects/<your_project>/
+#
+# =============================================================================
+# TEMPLATE OPTIONS
+# =============================================================================
+#
+# For more features, see full templates:
+#
+#   - templates/weather_api/project.yaml
+#     * API authentication
+#     * Cache configuration
+#     * Rate limiting
+#     * Multiple output formats
+#     * Comprehensive validation
+#
+#   - templates/news_scraper_project.yaml
+#     * Jina.ai web scraping
+#     * URL lists
+#     * Markdown extraction
+#     * Deduplication
+#     * Checkpointing
+#
+# =============================================================================
