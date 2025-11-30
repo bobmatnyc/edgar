@@ -4,11 +4,13 @@ Models Module
 Pydantic models for project configuration and data structures.
 
 Components:
-- project_config: Project configuration model
+- project_config: Project configuration model (MIGRATED ✅)
 - transformation_pattern: Transformation pattern models
-- patterns: Pattern models for schema analysis and transformation
+- patterns: Pattern models for schema analysis and transformation (MIGRATED ✅)
+- plan: Code generation plan models (MIGRATED ✅)
+- validation: Constraint validation models (MIGRATED ✅)
 
-Status: Week 1, Phase 1 - New implementations
+Status: Week 1, Phase 1 - T3 Complete
 """
 
 # Pattern models (T3 - Extract Schema Analyzer)
@@ -24,7 +26,45 @@ from extract_transform_platform.models.patterns import (
     GeneratedPrompt,
 )
 
-# TODO: from extract_transform_platform.models.project_config import ProjectConfig
+# Project configuration models (T3 - Migrated from EDGAR)
+from extract_transform_platform.models.project_config import (
+    ProjectConfig,
+    ProjectMetadata,
+    DataSourceConfig,
+    DataSourceType,
+    AuthConfig,
+    AuthType,
+    CacheConfig,
+    RateLimitConfig,
+    ExampleConfig,
+    ValidationConfig,
+    FieldConstraint,
+    FieldType,
+    OutputConfig,
+    OutputDestinationConfig,
+    OutputFormat,
+    RuntimeConfig,
+    ErrorStrategy,
+)
+
+# Plan models (T3 - Migrated from EDGAR)
+from extract_transform_platform.models.plan import (
+    MethodSpec,
+    ClassSpec,
+    PlanSpec,
+    GeneratedCode,
+    GenerationContext,
+    CodeValidationResult,
+)
+
+# Validation models (T3 - Migrated from EDGAR)
+from extract_transform_platform.models.validation import (
+    Severity,
+    Violation,
+    ValidationResult,
+    ConstraintConfig,
+)
+
 # TODO: from extract_transform_platform.models.transformation_pattern import TransformationPattern
 
 __all__ = [
@@ -38,7 +78,36 @@ __all__ = [
     "ParsedExamples",
     "PromptSection",
     "GeneratedPrompt",
-    # Project models (TODO)
+    # Project configuration models
     "ProjectConfig",
+    "ProjectMetadata",
+    "DataSourceConfig",
+    "DataSourceType",
+    "AuthConfig",
+    "AuthType",
+    "CacheConfig",
+    "RateLimitConfig",
+    "ExampleConfig",
+    "ValidationConfig",
+    "FieldConstraint",
+    "FieldType",
+    "OutputConfig",
+    "OutputDestinationConfig",
+    "OutputFormat",
+    "RuntimeConfig",
+    "ErrorStrategy",
+    # Plan models
+    "MethodSpec",
+    "ClassSpec",
+    "PlanSpec",
+    "GeneratedCode",
+    "GenerationContext",
+    "CodeValidationResult",
+    # Validation models
+    "Severity",
+    "Violation",
+    "ValidationResult",
+    "ConstraintConfig",
+    # Transformation patterns (TODO)
     "TransformationPattern",
 ]
