@@ -10,6 +10,14 @@
 
 ## 🆕 What's New
 
+### **November 30, 2025** - T5: Sonnet 4.5 AI Integration Migration ✅
+- Migrated AI-powered code generation to platform (1,224 LOC)
+  - `Sonnet45Agent` (753 LOC) - Dual-mode agent (PM + Coder) for code generation
+  - `OpenRouterClient` (471 LOC) - OpenRouter API client with retry logic
+- **Package**: `extract_transform_platform.ai`
+- **Status**: 100% code reuse, zero breaking changes
+- **Ticket**: [1M-380](https://linear.app/1m-hyperdev/issue/1M-380)
+
 ### **November 30, 2025** - T4: Code Generation Pipeline Migration ✅
 - Migrated 3 code generation services to platform (1,266 LOC)
   - `PromptGenerator` (436 LOC) - Generate Sonnet 4.5 prompts from patterns
