@@ -1,0 +1,300 @@
+# =============================================================================
+# News Scraper Project Template (Jina.ai Web Extraction)
+# =============================================================================
+#
+# Purpose: Extract article content from news websites using Jina.ai Reader API
+# Use Case: Convert web pages to structured data (title, author, date, content)
+# Data Source: Jina.ai (handles JS-heavy sites, clean markdown output)
+#
+# Quick Start:
+#   1. Copy this template: cp templates/news_scraper_project.yaml projects/my_news/project.yaml
+#   2. Set JINA_API_KEY env variable (optional - free tier: 20 req/min, paid: 200 req/min)
+#   3. Customize URLs and examples below
+#   4. Run: python -m edgar_analyzer analyze-project projects/my_news/
+#
+# Documentation:
+#   - Jina.ai Reader: https://jina.ai/reader
+#   - Template Guide: docs/guides/PROJECT_TEMPLATES.md
+#   - Platform Usage: docs/guides/PLATFORM_USAGE.md
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# PROJECT METADATA
+# -----------------------------------------------------------------------------
+project:
+  # Unique identifier for this project (lowercase, underscores allowed)
+  name: news_scraper
+
+  # Human-readable description
+  description: Extract structured article data from news websites using Jina.ai Reader API
+
+  # Semantic version (major.minor.patch)
+  version: 1.0.0
+
+  # Author information
+  author: Your Name
+  email: your.email@example.com
+
+  # Project tags for organization
+  tags:
+    - news
+    - web-scraping
+    - jina
+    - markdown
+    - article-extraction
+
+# -----------------------------------------------------------------------------
+# DATA SOURCES
+# -----------------------------------------------------------------------------
+# Define where your data comes from. This template uses Jina.ai for web extraction.
+# Jina handles JavaScript-rendered content (React, Vue, Angular) and returns clean markdown.
+data_sources:
+  - type: jina
+    name: jina_reader
+
+    # Jina.ai Reader API base URL (do not change unless using custom deployment)
+    base_url: https://r.jina.ai
+
+    # Authentication: Optional API key for higher rate limits
+    # Free tier: 20 requests/minute (no key needed)
+    # Paid tier: 200 requests/minute (requires JINA_API_KEY)
+    auth:
+      type: bearer
+      token: ${JINA_API_KEY}  # Environment variable (optional)
+
+    # Request configuration
+    request:
+      timeout: 30.0  # Seconds (Jina needs time to render JavaScript)
+      retry_attempts: 3
+      retry_backoff: 2.0  # Exponential backoff multiplier
+
+    # Caching: Store extracted content to avoid re-fetching
+    cache:
+      enabled: true
+      ttl: 3600  # 1 hour (web content changes slowly)
+
+    # Rate limiting: Auto-configured by JinaDataSource based on API key
+    # Free: 20/min, Paid: 200/min
+    rate_limit:
+      requests_per_second: 0.33  # 20 per minute (free tier default)
+      burst_size: 5  # Allow short bursts
+
+    # URLs to extract (can also be passed at runtime)
+    urls:
+      - https://techcrunch.com/2024/01/15/example-article/
+      - https://arstechnica.com/science/2024/01/breakthrough-discovery/
+      - https://www.wired.com/story/ai-latest-developments/
+
+# -----------------------------------------------------------------------------
+# TRANSFORMATION EXAMPLES
+# -----------------------------------------------------------------------------
+# Provide 2-3 examples showing input (Jina markdown) → output (structured data).
+# The AI learns transformation patterns from these examples.
+examples:
+  # Example 1: Technology news article
+  - input:
+      # This is what Jina.ai returns (simplified for example)
+      content: |
+        # OpenAI Announces GPT-5
+
+        **By Sarah Chen** | *Published: January 15, 2024*
+
+        San Francisco - OpenAI today unveiled GPT-5, their latest language model...
+
+        ## Key Features
+        - 10 trillion parameters
+        - Multimodal capabilities
+        - Real-time learning
+
+      title: "OpenAI Announces GPT-5"
+      url: "https://techcrunch.com/2024/01/15/openai-announces-gpt5/"
+      extracted_at: "2024-01-15T10:30:00Z"
+
+    output:
+      # Structured data extracted from markdown
+      article_title: "OpenAI Announces GPT-5"
+      author: "Sarah Chen"
+      published_date: "2024-01-15"
+      source_url: "https://techcrunch.com/2024/01/15/openai-announces-gpt5/"
+      category: "Technology"
+      summary: "San Francisco - OpenAI today unveiled GPT-5, their latest language model..."
+      key_points:
+        - "10 trillion parameters"
+        - "Multimodal capabilities"
+        - "Real-time learning"
+
+  # Example 2: Science article
+  - input:
+      content: |
+        # New Exoplanet Discovered in Habitable Zone
+
+        **Dr. Maria Rodriguez** | *January 20, 2024*
+
+        Astronomers using the James Webb Space Telescope have identified a potentially
+        habitable exoplanet 120 light-years from Earth.
+
+        The planet, designated K2-18b, shows signs of water vapor and methane...
+
+      title: "New Exoplanet Discovered in Habitable Zone"
+      url: "https://arstechnica.com/science/2024/01/exoplanet-discovery/"
+      extracted_at: "2024-01-20T14:00:00Z"
+
+    output:
+      article_title: "New Exoplanet Discovered in Habitable Zone"
+      author: "Dr. Maria Rodriguez"
+      published_date: "2024-01-20"
+      source_url: "https://arstechnica.com/science/2024/01/exoplanet-discovery/"
+      category: "Science"
+      summary: "Astronomers using the James Webb Space Telescope have identified a potentially habitable exoplanet 120 light-years from Earth."
+      key_points:
+        - "Potentially habitable exoplanet"
+        - "K2-18b designation"
+        - "Shows water vapor and methane"
+
+  # Example 3: Business article
+  - input:
+      content: |
+        # Tech Startup Raises $50M Series B
+
+        **By Alex Kim** | *January 25, 2024*
+
+        CloudAI, a San Francisco-based startup, announced today a $50 million
+        Series B funding round led by Sequoia Capital.
+
+        ## About the Company
+        Founded in 2021, CloudAI provides infrastructure automation tools...
+
+      title: "Tech Startup Raises $50M Series B"
+      url: "https://www.wired.com/story/cloudai-series-b-funding/"
+      extracted_at: "2024-01-25T09:15:00Z"
+
+    output:
+      article_title: "Tech Startup Raises $50M Series B"
+      author: "Alex Kim"
+      published_date: "2024-01-25"
+      source_url: "https://www.wired.com/story/cloudai-series-b-funding/"
+      category: "Business"
+      summary: "CloudAI, a San Francisco-based startup, announced today a $50 million Series B funding round led by Sequoia Capital."
+      key_points:
+        - "Series B funding: $50 million"
+        - "Led by Sequoia Capital"
+        - "Founded in 2021"
+
+# -----------------------------------------------------------------------------
+# VALIDATION RULES
+# -----------------------------------------------------------------------------
+# Define what makes the output valid. These rules are used for:
+# 1. Generated code validation (AST constraints)
+# 2. Runtime data quality checks
+# 3. Test case generation
+validation:
+  # Fields that MUST be present in every output
+  required_fields:
+    - article_title
+    - author
+    - published_date
+    - source_url
+    - category
+    - summary
+
+  # Field types with validation rules
+  # Note: Use simple type names: str, int, float, decimal, bool, date, datetime, list, dict
+  field_types:
+    article_title: str
+    author: str
+    published_date: date
+    source_url: str
+    category: str
+    summary: str
+    key_points: list
+
+  # Custom validation constraints (optional - for advanced validation)
+  constraints: {}
+
+# -----------------------------------------------------------------------------
+# OUTPUT CONFIGURATION
+# -----------------------------------------------------------------------------
+# Define how extracted data should be saved
+output:
+  # Output formats (at least one required)
+  formats:
+    - type: json
+      path: output/articles.json
+      pretty_print: true
+      include_timestamp: true
+
+    - type: csv
+      path: output/articles.csv
+      include_timestamp: true
+      options:
+        delimiter: ","
+        include_header: true
+
+# -----------------------------------------------------------------------------
+# RUNTIME CONFIGURATION
+# -----------------------------------------------------------------------------
+# Control how the extraction pipeline runs
+runtime:
+  # Logging configuration
+  logging:
+    level: INFO  # DEBUG, INFO, WARNING, ERROR
+    format: structured  # Options: structured, json, simple
+    file: "./projects/news_scraper/logs/extraction.log"
+
+  # Parallel processing
+  concurrency:
+    enabled: true
+    max_workers: 3  # Respect Jina rate limits (free: 20/min)
+    batch_size: 10
+
+  # Error handling strategy
+  error_handling:
+    strategy: continue  # Options: fail_fast, continue, retry
+    max_retries: 3
+    retry_delay: 5.0  # Seconds
+    log_errors: true
+    save_failed_urls: true
+
+  # Progress tracking
+  progress:
+    enabled: true
+    update_interval: 5  # Seconds
+    show_eta: true
+
+  # Checkpointing (resume interrupted runs)
+  checkpoints:
+    enabled: true
+    interval: 10  # Save checkpoint every 10 URLs
+    directory: "./projects/news_scraper/checkpoints"
+
+# -----------------------------------------------------------------------------
+# NOTES & TIPS
+# -----------------------------------------------------------------------------
+#
+# Jina.ai Features:
+#   - JavaScript rendering (React, Vue, Angular sites work)
+#   - Clean markdown (removes ads, navigation, clutter)
+#   - Main content extraction (focused content only)
+#   - Metadata extraction (title, description, images)
+#   - Rate limiting: Free 20/min, Paid 200/min
+#
+# Common Patterns:
+#   - Extract article metadata (title, author, date)
+#   - Parse structured content (headings, lists, quotes)
+#   - Identify key points (bullet lists, highlights)
+#   - Extract publication details
+#
+# Testing:
+#   - Use small URL list first (2-3 articles)
+#   - Verify markdown extraction quality
+#   - Check transformation patterns detected
+#   - Run with --dry-run to preview
+#
+# Performance:
+#   - Jina: 2-5 seconds per URL (JS rendering)
+#   - Caching essential for re-runs (1 hour TTL)
+#   - Parallel processing helps (respect rate limits)
+#   - Free tier: ~6 minutes for 100 URLs
+#
+# =============================================================================
