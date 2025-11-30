@@ -683,7 +683,7 @@ python -m edgar_analyzer project create test --output-dir /tmp/test_projects
 
 ### Platform Package Structure (NEW - Phase 2 Migration) 🆕
 
-**Migration Status**: Complete (1M-376, 1M-377 T2, 1M-380 T5)
+**Migration Status**: Complete (1M-376, 1M-377 T2, 1M-380 T5, 1M-381 T6 ✅)
 **Code Reuse**: 83% from EDGAR (exceeds 70% target)
 **Tests**: 132/132 passing (100% success rate)
 
@@ -697,7 +697,7 @@ The codebase is transitioning to a dual-package structure:
 src/extract_transform_platform/
 ├── core/                        # Base abstractions (MIGRATED ✅)
 │   ├── __init__.py
-│   └── base.py                  # BaseDataSource, IDataSource
+│   └── base.py                  # BaseDataSource, IDataSource, IDataExtractor
 ├── data_sources/                # Data source implementations
 │   ├── file/                    # File-based sources (MIGRATED ✅)
 │   │   ├── excel_source.py      # Excel (.xlsx, .xls)
@@ -731,7 +731,7 @@ src/extract_transform_platform/
 **NEW (Platform - Preferred)**: Use for all new code
 ```python
 # Core abstractions
-from extract_transform_platform.core import BaseDataSource, IDataSource
+from extract_transform_platform.core import BaseDataSource, IDataSource, IDataExtractor
 
 # File data sources
 from extract_transform_platform.data_sources.file import (
@@ -762,6 +762,57 @@ from edgar_analyzer.data_sources.excel_source import ExcelDataSource
 from edgar_analyzer.services.openrouter_client import OpenRouterClient
 ```
 
+#### IDataExtractor Interface (NEW - T6) 🆕
+
+**Purpose**: Abstract interface for AI-generated data extractors
+
+**Migration Status**: T6 (1M-381 - IDataExtractor Interface Definition) ✅
+- Extracted from PM mode prompt template
+- Made explicit interface for platform consistency
+- Enables InterfaceValidator to work with platform extractors
+
+**Usage in Generated Code**:
+```python
+from extract_transform_platform.core import IDataExtractor
+from typing import Dict, Optional, Any
+
+class WeatherExtractor(IDataExtractor):
+    """Extract weather data from OpenWeatherMap API."""
+
+    async def extract(self, city: str, units: str = "metric") -> Optional[Dict[str, Any]]:
+        """Extract weather data for a given city.
+
+        Args:
+            city: City name (e.g., "London")
+            units: Temperature units ("metric" or "imperial")
+
+        Returns:
+            Extracted weather data or None if failed
+        """
+        # Implementation here...
+        return weather_data
+```
+
+**Key Features**:
+- ✅ **Abstract interface** - All generated extractors must implement
+- ✅ **Async-first** - Supports I/O operations (API calls, file reads)
+- ✅ **Type-safe** - Full type hints for IDE support
+- ✅ **Validation** - InterfaceValidator checks compliance
+- ✅ **Consistent API** - Uniform extract() signature across all extractors
+
+**Design Decisions**:
+- **ABC over Protocol**: PM mode generates explicit inheritance
+- **Optional return**: Allows graceful failure handling
+- **Dict return type**: JSON serialization compatibility
+- **kwargs parameters**: Flexible extractor-specific parameters
+
+**Code Generation**:
+The Sonnet 4.5 PM mode automatically generates extractors that:
+1. Inherit from IDataExtractor
+2. Implement async extract() method
+3. Include comprehensive type hints
+4. Follow platform conventions
+
 #### Migration Benefits
 
 1. **Generic Platform**: No EDGAR-specific dependencies
@@ -769,12 +820,14 @@ from edgar_analyzer.services.openrouter_client import OpenRouterClient
 3. **Code Reuse**: 83% reuse from EDGAR (proven patterns)
 4. **Testing**: Comprehensive test suite (132/132 passing)
 5. **Documentation**: Platform-focused guides and API reference
+6. **Interface Consistency**: IDataExtractor ensures uniform API (T6) ✅
 
 #### Quick Reference: Platform vs EDGAR
 
 | Component | Platform Path | EDGAR Path (Legacy) |
 |-----------|---------------|---------------------|
 | **BaseDataSource** | `extract_transform_platform.core` | `edgar_analyzer.data_sources.base` |
+| **IDataExtractor** | `extract_transform_platform.core` | *(new - no legacy path)* |
 | **ExcelDataSource** | `extract_transform_platform.data_sources.file` | `edgar_analyzer.data_sources.excel_source` |
 | **PDFDataSource** | `extract_transform_platform.data_sources.file` | `edgar_analyzer.data_sources.pdf_source` |
 | **OpenRouterClient** | `extract_transform_platform.ai` | `edgar_analyzer.services.openrouter_client` |
