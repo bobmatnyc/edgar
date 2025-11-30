@@ -11,7 +11,7 @@ import yaml
 from pathlib import Path
 
 # Test imports
-from src.edgar_analyzer.data_sources.excel_data_source import ExcelDataSource
+from edgar_analyzer.data_sources.excel_source import ExcelDataSource
 
 
 class TestEmployeeRosterPOC:
