@@ -10,6 +10,16 @@
 
 ## 🆕 What's New
 
+### **November 30, 2025** - T6: IDataExtractor Interface Definition ✅
+- Defined formal IDataExtractor interface for AI-generated extractors (135 LOC)
+  - `IDataExtractor` ABC - Abstract interface with single extract() method
+  - Exported from `extract_transform_platform.core` module
+  - Updated PM mode prompt to use platform import
+  - Comprehensive documentation with usage examples
+- **Package**: `extract_transform_platform.core`
+- **Status**: Interface validation verified, zero breaking changes
+- **Ticket**: [1M-381](https://linear.app/1m-hyperdev/issue/1M-381)
+
 ### **November 30, 2025** - T5: Sonnet 4.5 AI Integration Migration ✅
 - Migrated AI-powered code generation to platform (1,224 LOC)
   - `Sonnet45Agent` (753 LOC) - Dual-mode agent (PM + Coder) for code generation
