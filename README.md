@@ -1,10 +1,50 @@
-# 🚀 EDGAR CLI - Revolutionary AI-Powered Command Line Interface
+# 🚀 EDGAR → Extract & Transform Platform
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green.svg)](https://github.com/bobmatnyc/zach-edgar)
+[![Status: Active Development](https://img.shields.io/badge/Status-Active%20Development-orange.svg)](https://github.com/bobmatnyc/zach-edgar)
 
-**The world's first self-improving CLI with conversational AI interface for SEC EDGAR analysis.**
+**General-purpose extract & transform platform - transforming EDGAR into example-driven data extraction for any source.**
+
+*Last updated: November 30, 2025*
+
+## 🆕 What's New
+
+### **November 30, 2025** - T4: Code Generation Pipeline Migration ✅
+- Migrated 3 code generation services to platform (1,266 LOC)
+  - `PromptGenerator` (436 LOC) - Generate Sonnet 4.5 prompts from patterns
+  - `CodeGeneratorService` (590 LOC) - End-to-end code generation pipeline
+  - `ConstraintEnforcer` (240 LOC) - AST-based code validation
+- **Package**: `extract_transform_platform.services.codegen`
+- **Status**: 100% code reuse, zero breaking changes
+- **Ticket**: [1M-379](https://linear.app/1m-hyperdev/issue/1M-379)
+
+### **November 29, 2025** - T3: Schema Services Migration ✅
+- Migrated 3 schema analysis services to platform (1,645 LOC)
+  - `PatternModels` (530 LOC) - 14 transformation pattern types
+  - `SchemaAnalyzer` (436 LOC) - Schema inference and comparison
+  - `ExampleParser` (679 LOC) - Pattern extraction from examples
+- **Package**: `extract_transform_platform.models.patterns` & `extract_transform_platform.services.analysis`
+- **Status**: 100% code reuse, 60/60 tests passing
+- **Ticket**: [1M-378](https://linear.app/1m-hyperdev/issue/1M-378)
+
+### **November 28, 2025** - T2: Data Source Abstractions Migration ✅
+- Migrated 4 data sources to platform (2,180 LOC)
+  - `ExcelDataSource` - Excel file parsing with pandas
+  - `PDFDataSource` - PDF table extraction with pdfplumber
+  - `CSVDataSource` - CSV/JSON/YAML file parsing
+  - `APIDataSource` - REST API integration
+- **Package**: `extract_transform_platform.data_sources`
+- **Status**: 120/120 tests passing, zero breaking changes
+- **Ticket**: [1M-377](https://linear.app/1m-hyperdev/issue/1M-377)
+
+### **November 27, 2025** - Phase 2: Platform Architecture Launch 🚀
+- Created `extract_transform_platform` package structure
+- Established core abstractions (`IDataSource`, `BaseDataSource`)
+- Set up generic data models (no EDGAR dependencies)
+- **Epic**: [EDGAR → General-Purpose Extract & Transform Platform](https://linear.app/1m-hyperdev/project/edgar-%E2%86%92-general-purpose-extract-and-transform-platform-e4cb3518b13e)
+
+---
 
 ## 🎯 What Makes This Revolutionary
 
