@@ -37,7 +37,7 @@ from typing import Dict, List, Optional, Any
 
 import structlog
 
-from edgar_analyzer.agents.sonnet45_agent import Sonnet45Agent
+from extract_transform_platform.ai import Sonnet45Agent
 from extract_transform_platform.models.patterns import ParsedExamples, Pattern
 from extract_transform_platform.models.project_config import ProjectConfig
 from extract_transform_platform.models.plan import (
