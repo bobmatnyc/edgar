@@ -1,5 +1,7 @@
 """Setup command for API key configuration."""
 
+import asyncio
+import os
 import click
 from pathlib import Path
 from typing import Optional
@@ -9,6 +11,8 @@ from rich.prompt import Prompt, Confirm
 from rich.table import Table
 
 console = Console()
+
+__all__ = ["setup", "_test_openrouter", "_test_jina"]
 
 
 @click.command()
@@ -249,3 +253,83 @@ def _save_to_env_file(env_file: Path, updates: dict) -> None:
     # Write back
     with open(env_file, "w") as f:
         f.writelines(lines)
+
+
+# ============================================================================
+# TEST FUNCTIONS (for CLI test command)
+# ============================================================================
+
+
+def _test_openrouter() -> bool:
+    """Test OpenRouter API connection using environment variable.
+
+    Returns:
+        True if connection successful, False otherwise
+
+    Note:
+        This function is exported for use by CLI test command and unit tests.
+        It uses OPENROUTER_API_KEY from environment variables.
+    """
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        console.print("[red]❌ OPENROUTER_API_KEY not set[/red]")
+        return False
+
+    try:
+        # Import here to avoid circular dependencies
+        from extract_transform_platform.ai.openrouter_client import OpenRouterClient
+
+        # Test with simple completion request
+        client = OpenRouterClient(api_key=api_key)
+        # Use asyncio to run the async method
+        response = asyncio.run(client.chat_completion(
+            messages=[{"role": "user", "content": "Test"}],
+            model="anthropic/claude-sonnet-4.5",
+            max_tokens=10
+        ))
+
+        if response:
+            console.print("[green]✅ OpenRouter connection successful[/green]")
+            return True
+        else:
+            console.print("[red]❌ OpenRouter returned empty response[/red]")
+            return False
+
+    except Exception as e:
+        console.print(f"[red]❌ OpenRouter connection failed: {e}[/red]")
+        return False
+
+
+def _test_jina() -> bool:
+    """Test Jina.ai API connection using environment variable.
+
+    Returns:
+        True if connection successful or API key not set (optional),
+        False if connection failed with key present
+
+    Note:
+        This function is exported for use by CLI test command and unit tests.
+        Jina.ai is optional, so missing key returns True.
+    """
+    api_key = os.getenv("JINA_API_KEY")
+    if not api_key:
+        console.print("[yellow]⚠️  JINA_API_KEY not set (optional)[/yellow]")
+        return True  # Jina is optional
+
+    try:
+        with httpx.Client(timeout=10.0) as client:
+            response = client.get(
+                "https://r.jina.ai/https://example.com",
+                headers={"Authorization": f"Bearer {api_key}"}
+            )
+
+            if response.status_code == 200:
+                console.print("[green]✅ Jina.ai connection successful[/green]")
+                return True
+            else:
+                console.print(f"[red]❌ Jina.ai returned status {response.status_code}[/red]")
+                return False
+
+    except Exception as e:
+        console.print(f"[red]❌ Jina.ai connection failed: {e}[/red]")
+        return False

@@ -44,8 +44,12 @@ from extract_transform_platform.models.plan import (
     GeneratedCode,
     GenerationContext,
     CodeValidationResult,
+    GenerationProgress,
 )
 from extract_transform_platform.services.analysis import ExampleParser
+import shutil
+import time
+from typing import Callable
 
 logger = structlog.get_logger(__name__)
 
@@ -307,7 +311,8 @@ class CodeGeneratorService:
         project_config: ProjectConfig,
         validate: bool = True,
         write_files: bool = True,
-        max_retries: int = 3
+        max_retries: int = 3,
+        on_progress: Optional[Callable[[GenerationProgress], None]] = None
     ) -> GenerationContext:
         """
         Generate code from examples and configuration with iterative refinement.
@@ -322,6 +327,7 @@ class CodeGeneratorService:
             validate: Whether to validate generated code
             write_files: Whether to write files to disk
             max_retries: Maximum retry attempts for validation failures (default: 3)
+            on_progress: Optional callback for progress updates
 
         Returns:
             Generation context with plan, code, and metadata
@@ -339,7 +345,23 @@ class CodeGeneratorService:
             >>> if context.is_complete:
             ...     print("Success!")
         """
-        start_time = datetime.now()
+        start_time = time.time()
+        total_steps = 7
+        project_dir = self.writer.base_dir / project_config.project.name
+
+        def report_progress(step: int, step_name: str, status: str, message: Optional[str] = None):
+            """Helper to report progress if callback provided."""
+            if on_progress:
+                elapsed = time.time() - start_time
+                progress = GenerationProgress(
+                    current_step=step,
+                    total_steps=total_steps,
+                    step_name=step_name,
+                    status=status,
+                    elapsed_time=elapsed,
+                    message=message
+                )
+                on_progress(progress)
 
         logger.info(
             "Starting code generation",
@@ -357,12 +379,14 @@ class CodeGeneratorService:
 
         try:
             # Step 1: Parse examples and extract patterns
+            step_name = "Parse examples and extract patterns"
+            report_progress(1, step_name, "in_progress")
             logger.info("Step 1: Parsing examples")
-            # parse_examples is synchronous, not async
-            parsed = self.parser.parse_examples(examples)
 
+            parsed = self.parser.parse_examples(examples)
             context.num_patterns = len(parsed.patterns)
 
+            report_progress(1, step_name, "completed")
             logger.info(
                 "Examples parsed",
                 patterns=len(parsed.patterns),
@@ -371,18 +395,23 @@ class CodeGeneratorService:
             )
 
             # Step 2: PM mode planning
+            step_name = "PM mode: Create implementation plan"
+            report_progress(2, step_name, "in_progress")
             logger.info("Step 2: PM mode planning")
-            plan = await self.agent.plan(parsed.patterns, project_config)
 
+            plan = await self.agent.plan(parsed.patterns, project_config)
             context.plan = plan
 
+            report_progress(2, step_name, "completed")
             logger.info(
                 "Plan created",
                 classes=len(plan.classes),
                 dependencies=len(plan.dependencies)
             )
 
-            # Step 3: Coder mode implementation with iterative refinement
+            # Step 3: Coder mode implementation
+            step_name = "Coder mode: Generate production code"
+            report_progress(3, step_name, "in_progress")
             logger.info("Step 3: Coder mode code generation with iterative refinement")
 
             validation_result = None
@@ -395,12 +424,10 @@ class CodeGeneratorService:
                     max_retries=max_retries
                 )
 
-                # Generate code (passing validation errors from previous attempt if any)
+                # Generate code
                 if attempt == 0:
-                    # First attempt - no validation errors yet
                     code = await self.agent.code(plan, parsed.patterns, examples)
                 else:
-                    # Retry with validation errors from previous attempt
                     code = await self.agent.code(
                         plan,
                         parsed.patterns,
@@ -416,6 +443,9 @@ class CodeGeneratorService:
 
                 # Validate if enabled
                 if validate:
+                    # Step 4: Validate code
+                    step_4_name = "Validate code quality"
+                    report_progress(4, step_4_name, "in_progress")
                     logger.info(
                         "Validating generated code",
                         attempt=attempt + 1
@@ -423,7 +453,8 @@ class CodeGeneratorService:
                     validation_result = self.validator.validate(code)
 
                     if validation_result.is_valid:
-                        # Success! Code is valid
+                        # Success!
+                        report_progress(4, step_4_name, "completed")
                         logger.info(
                             "Code generation successful",
                             attempt=attempt + 1,
@@ -442,9 +473,18 @@ class CodeGeneratorService:
                         )
 
                         if attempt == max_retries - 1:
-                            # Final attempt failed
+                            # Final attempt failed - trigger rollback
+                            report_progress(4, step_4_name, "failed",
+                                          f"Validation failed after {max_retries} attempts")
                             error_msg = f"Code validation failed after {max_retries} attempts: {validation_result.issues}"
                             context.add_error(error_msg)
+
+                            # Rollback: Delete project directory if it exists
+                            if write_files and project_dir.exists():
+                                logger.warning("Rolling back - deleting project directory",
+                                             project_dir=str(project_dir))
+                                shutil.rmtree(project_dir)
+
                             logger.error(
                                 "Code generation failed after max retries",
                                 max_retries=max_retries,
@@ -463,18 +503,22 @@ class CodeGeneratorService:
                     code.add_metadata("generation_attempts", 1)
                     break
 
+            report_progress(3, "Coder mode: Generate production code", "completed")
+
+            # Step 4: Validation (if not done in loop above)
+            if not validate:
+                step_4_name = "Validate code quality"
+                report_progress(4, step_4_name, "skipped", "Validation disabled")
+                logger.info("Step 4: Validation skipped")
+
             context.generated_code = code
 
-            logger.info(
-                "Code validated",
-                quality_score=validation_result.quality_score if validation_result else None,
-                issues=len(validation_result.issues) if validation_result else 0,
-                recommendations=len(validation_result.recommendations) if validation_result else 0
-            )
-
-            # Step 5: Write files (if enabled)
+            # Step 5: Write files
+            step_5_name = "Write generated files to disk"
             if write_files:
+                report_progress(5, step_5_name, "in_progress")
                 logger.info("Step 5: Writing files")
+
                 paths = self.writer.write(
                     code,
                     project_config.project.name,
@@ -482,16 +526,33 @@ class CodeGeneratorService:
                 )
 
                 code.add_metadata("output_paths", {k: str(v) for k, v in paths.items()})
+                report_progress(5, step_5_name, "completed")
 
                 logger.info(
                     "Files written",
                     files=len(paths),
-                    directory=str(self.writer.base_dir / project_config.project.name)
+                    directory=str(project_dir)
                 )
+            else:
+                # Dry-run mode
+                dry_run_msg = "Dry-run mode - preview only, no files written"
+                report_progress(5, step_5_name, "skipped", dry_run_msg)
+                logger.info("Step 5: File writing skipped (dry-run)")
 
-            # Record completion time
-            duration = (datetime.now() - start_time).total_seconds()
+            # Step 6: Generate test suite
+            step_6_name = "Generate test suite"
+            report_progress(6, step_6_name, "in_progress")
+            # Tests are already generated in step 3, just mark complete
+            report_progress(6, step_6_name, "completed")
+
+            # Step 7: Finalize
+            step_7_name = "Finalize generation and record metadata"
+            report_progress(7, step_7_name, "in_progress")
+
+            duration = time.time() - start_time
             context.generation_duration_seconds = duration
+
+            report_progress(7, step_7_name, "completed")
 
             logger.info(
                 "Code generation completed successfully",
@@ -505,8 +566,14 @@ class CodeGeneratorService:
             # Record error in context
             context.add_error(str(e))
 
+            # Rollback: Delete project directory if it exists
+            if write_files and project_dir.exists():
+                logger.warning("Rolling back on error - deleting project directory",
+                             project_dir=str(project_dir))
+                shutil.rmtree(project_dir)
+
             # Calculate duration even on failure
-            duration = (datetime.now() - start_time).total_seconds()
+            duration = time.time() - start_time
             context.generation_duration_seconds = duration
 
             logger.error(
