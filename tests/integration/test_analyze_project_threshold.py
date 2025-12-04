@@ -116,7 +116,7 @@ def sample_parsed_examples():
                 transformation="Round to integer",
             ),
         ],
-        examples=[],
+        num_examples=3,
     )
 
 
@@ -308,7 +308,7 @@ class TestEdgeCases:
                 input_schema=Schema(fields=[]),
                 output_schema=Schema(fields=[]),
                 patterns=[],  # No patterns
-                examples=[],
+                num_examples=0,
             )
             mock_parser.parse_examples.return_value = mock_parsed
             mock_parser_class.return_value = mock_parser

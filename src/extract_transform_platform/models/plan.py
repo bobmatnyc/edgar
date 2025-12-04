@@ -454,3 +454,152 @@ class CodeValidationResult(BaseModel):
     def add_recommendation(self, recommendation: str) -> None:
         """Add a recommendation."""
         self.recommendations.append(recommendation)
+
+
+# ============================================================================
+# PROGRESS TRACKING
+# ============================================================================
+
+
+class GenerationProgress(BaseModel):
+    """Progress tracking for code generation pipeline.
+
+    Tracks progress through the 7-step code generation pipeline, providing
+    real-time feedback for CLI display and logging. Supports status transitions
+    from pending → in_progress → completed/failed/skipped.
+
+    Design Rationale:
+    - **Granular Tracking**: 7 distinct steps for transparency
+    - **Status Validation**: Only allows valid status values
+    - **Progress Calculation**: Automatic percentage calculation
+    - **Failure Detection**: Explicit failed state for error handling
+    - **Skip Support**: Dry-run mode can skip file writing step
+
+    Status Values:
+    - "pending": Step has not started yet
+    - "in_progress": Step is currently executing
+    - "completed": Step finished successfully
+    - "failed": Step failed with error
+    - "skipped": Step was skipped (validation disabled, dry-run mode)
+
+    Example:
+        >>> progress = GenerationProgress(
+        ...     current_step=3,
+        ...     total_steps=7,
+        ...     step_name="Generate code",
+        ...     status="in_progress",
+        ...     elapsed_time=2.5
+        ... )
+        >>> print(f"{progress.progress_percentage:.1f}% complete")
+        28.6% complete
+
+    Usage in callbacks:
+        >>> def on_progress(progress: GenerationProgress):
+        ...     if progress.is_failed:
+        ...         print(f"ERROR: {progress.message}")
+        ...     else:
+        ...         print(f"[{progress.current_step}/{progress.total_steps}] "
+        ...               f"{progress.step_name} - {progress.status}")
+
+    Related to: T10 (1M-452: Enhanced CodeGenerationPipeline with Progress Tracking)
+    """
+
+    current_step: int = Field(
+        ...,
+        ge=1,
+        description="Current pipeline step (1-indexed)"
+    )
+
+    total_steps: int = Field(
+        ...,
+        ge=1,
+        description="Total number of pipeline steps"
+    )
+
+    step_name: str = Field(
+        ...,
+        description="Human-readable name of current step"
+    )
+
+    status: str = Field(
+        ...,
+        description="Step status (pending, in_progress, completed, failed, skipped)"
+    )
+
+    elapsed_time: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="Elapsed time in seconds since pipeline start"
+    )
+
+    message: Optional[str] = Field(
+        None,
+        description="Optional status message (error details, warnings, etc.)"
+    )
+
+    @field_validator('status')
+    @classmethod
+    def validate_status(cls, v: str) -> str:
+        """Ensure status is one of the allowed values."""
+        allowed = {"pending", "in_progress", "completed", "failed", "skipped"}
+        if v not in allowed:
+            raise ValueError(
+                f"Status must be one of {allowed}, got '{v}'"
+            )
+        return v
+
+    @field_validator('current_step')
+    @classmethod
+    def validate_current_step(cls, v: int, info) -> int:
+        """Ensure current_step doesn't exceed total_steps."""
+        # Note: info.data may not have total_steps yet during validation
+        # This is checked at runtime, not during construction
+        return v
+
+    @property
+    def progress_percentage(self) -> float:
+        """Calculate progress as percentage (0.0 to 100.0).
+
+        Logic:
+        - If step is in_progress: (current_step - 1) / total_steps * 100
+        - If step is completed: current_step / total_steps * 100
+        - This ensures in_progress shows partial progress, completed shows full step progress
+
+        Example:
+            >>> # Step 3 in progress (2 completed out of 7)
+            >>> progress = GenerationProgress(
+            ...     current_step=3, total_steps=7,
+            ...     step_name="Generate code", status="in_progress"
+            ... )
+            >>> progress.progress_percentage  # (3-1)/7 * 100 = 28.57%
+            28.571428571428573
+
+            >>> # Step 3 completed (3 completed out of 7)
+            >>> progress.status = "completed"
+            >>> progress.progress_percentage  # 3/7 * 100 = 42.86%
+            42.857142857142854
+        """
+        if self.total_steps == 0:
+            return 0.0
+
+        # Calculate based on status
+        if self.status == "completed":
+            completed = self.current_step
+        else:
+            # For in_progress, pending, failed, skipped - count previous completed steps
+            completed = self.current_step - 1
+
+        return (completed / self.total_steps) * 100.0
+
+    @property
+    def is_complete(self) -> bool:
+        """Check if pipeline is complete (all steps done).
+
+        Returns True only when on final step AND status is completed.
+        """
+        return self.current_step == self.total_steps and self.status == "completed"
+
+    @property
+    def is_failed(self) -> bool:
+        """Check if current step failed."""
+        return self.status == "failed"

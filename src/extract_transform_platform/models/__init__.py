@@ -22,6 +22,7 @@ from extract_transform_platform.models.patterns import (
     Schema,
     SchemaDifference,
     ParsedExamples,
+    FilteredParsedExamples,
     PromptSection,
     GeneratedPrompt,
 )
@@ -55,6 +56,7 @@ from extract_transform_platform.models.plan import (
     GeneratedCode,
     GenerationContext,
     CodeValidationResult,
+    GenerationProgress,
 )
 
 # Validation models (T3 - Migrated from EDGAR)
@@ -76,6 +78,7 @@ __all__ = [
     "Schema",
     "SchemaDifference",
     "ParsedExamples",
+    "FilteredParsedExamples",
     "PromptSection",
     "GeneratedPrompt",
     # Project configuration models
@@ -103,6 +106,7 @@ __all__ = [
     "GeneratedCode",
     "GenerationContext",
     "CodeValidationResult",
+    "GenerationProgress",
     # Validation models
     "Severity",
     "Violation",

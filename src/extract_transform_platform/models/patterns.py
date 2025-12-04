@@ -425,6 +425,11 @@ class ParsedExamples(BaseModel):
     )
 
     @property
+    def all_patterns(self) -> List[Pattern]:
+        """Get all patterns (alias for patterns field for consistency with FilteredParsedExamples)."""
+        return self.patterns
+
+    @property
     def high_confidence_patterns(self) -> List[Pattern]:
         """Get patterns with confidence >= 0.9."""
         return [p for p in self.patterns if p.confidence >= 0.9]
@@ -446,6 +451,115 @@ class ParsedExamples(BaseModel):
     def get_pattern_for_field(self, target_path: str) -> Optional[Pattern]:
         """Get pattern that produces a specific output field."""
         for pattern in self.patterns:
+            if pattern.target_path == target_path:
+                return pattern
+        return None
+
+
+class FilteredParsedExamples(BaseModel):
+    """Filtered ParsedExamples with patterns split by confidence threshold.
+
+    This model extends ParsedExamples concept by separating patterns into
+    included (meeting threshold) and excluded (below threshold) groups.
+    Used by PatternFilterService for interactive confidence threshold selection.
+
+    Design Rationale:
+    - **Separation of Concerns**: Keeps original patterns intact while providing
+      filtered views for code generation
+    - **Explicit Filtering**: Makes threshold-based decisions transparent
+    - **Warning Integration**: Captures filtering impact for user feedback
+
+    Example:
+        >>> filtered = FilteredParsedExamples(
+        ...     input_schema=input_schema,
+        ...     output_schema=output_schema,
+        ...     all_patterns=[p1, p2, p3],
+        ...     included_patterns=[p1, p2],  # confidence >= 0.7
+        ...     excluded_patterns=[p3],       # confidence < 0.7
+        ...     confidence_threshold=0.7,
+        ...     num_examples=3
+        ... )
+        >>> assert len(filtered.included_patterns) == 2
+        >>> assert all(p.confidence >= 0.7 for p in filtered.included_patterns)
+
+    Related to: 1M-362 (Interactive Confidence Threshold UX)
+    """
+
+    input_schema: Schema = Field(
+        ...,
+        description="Inferred input data schema"
+    )
+
+    output_schema: Schema = Field(
+        ...,
+        description="Inferred output data schema"
+    )
+
+    all_patterns: List[Pattern] = Field(
+        default_factory=list,
+        description="All detected patterns before filtering"
+    )
+
+    included_patterns: List[Pattern] = Field(
+        default_factory=list,
+        description="Patterns meeting confidence threshold (will be used for code generation)"
+    )
+
+    excluded_patterns: List[Pattern] = Field(
+        default_factory=list,
+        description="Patterns below confidence threshold (excluded from code generation)"
+    )
+
+    confidence_threshold: float = Field(
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Confidence threshold used for filtering (0.0 to 1.0)"
+    )
+
+    schema_differences: List[SchemaDifference] = Field(
+        default_factory=list,
+        description="Differences between input and output schemas"
+    )
+
+    num_examples: int = Field(
+        ...,
+        ge=0,
+        description="Number of examples analyzed"
+    )
+
+    warnings: List[str] = Field(
+        default_factory=list,
+        description="Warnings about filtering impact and excluded patterns"
+    )
+
+    @property
+    def patterns(self) -> List[Pattern]:
+        """Get included patterns (alias for compatibility with ParsedExamples interface)."""
+        return self.included_patterns
+
+    @property
+    def high_confidence_patterns(self) -> List[Pattern]:
+        """Get included patterns with confidence >= 0.9."""
+        return [p for p in self.included_patterns if p.confidence >= 0.9]
+
+    @property
+    def medium_confidence_patterns(self) -> List[Pattern]:
+        """Get included patterns with 0.7 <= confidence < 0.9."""
+        return [p for p in self.included_patterns if 0.7 <= p.confidence < 0.9]
+
+    @property
+    def low_confidence_patterns(self) -> List[Pattern]:
+        """Get included patterns with confidence < 0.7."""
+        return [p for p in self.included_patterns if p.confidence < 0.7]
+
+    def get_patterns_by_type(self, pattern_type: PatternType) -> List[Pattern]:
+        """Get included patterns of a specific type."""
+        return [p for p in self.included_patterns if p.type == pattern_type]
+
+    def get_pattern_for_field(self, target_path: str) -> Optional[Pattern]:
+        """Get included pattern that produces a specific output field."""
+        for pattern in self.included_patterns:
             if pattern.target_path == target_path:
                 return pattern
         return None
