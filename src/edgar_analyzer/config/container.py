@@ -15,6 +15,8 @@ from edgar_analyzer.services.report_service import ReportService
 from edgar_analyzer.services.schema_analyzer import SchemaAnalyzer
 from edgar_analyzer.services.example_parser import ExampleParser
 from edgar_analyzer.services.prompt_generator import PromptGenerator
+from extract_transform_platform.services.project_manager import ProjectManager
+from extract_transform_platform.services.codegen.code_generator import CodeGeneratorService
 
 
 class Container(containers.DeclarativeContainer):
@@ -93,6 +95,18 @@ class Container(containers.DeclarativeContainer):
 
     prompt_generator = providers.Singleton(
         PromptGenerator
+    )
+
+    # Platform services (T7-T8: Project Management, T4-T6: Code Generation)
+    project_manager = providers.Singleton(
+        ProjectManager
+    )
+
+    code_generator = providers.Factory(
+        CodeGeneratorService
+        # api_key loaded from environment (OPENROUTER_API_KEY)
+        # output_dir defaults to ./generated
+        # model defaults to "anthropic/claude-sonnet-4.5"
     )
 
     # CLI commands wiring

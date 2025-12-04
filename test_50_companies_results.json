@@ -1,0 +1,97 @@
+{
+  "total_companies": 50,
+  "successful_extractions": 10,
+  "failed_extractions": 10,
+  "companies_processed": [
+    {
+      "cik": "0000320193",
+      "name": "Apple Inc.",
+      "success": false,
+      "error": "'FinalResult' object has no attribute 'get'",
+      "processing_time": 0.5360989570617676
+    },
+    {
+      "cik": "0000789019",
+      "name": "Microsoft Corporation",
+      "success": false,
+      "error": "'FinalResult' object has no attribute 'get'",
+      "processing_time": 0.06361079216003418
+    },
+    {
+      "cik": "0001018724",
+      "name": "Amazon.com Inc.",
+      "success": false,
+      "error": "'FinalResult' object has no attribute 'get'",
+      "processing_time": 0.06477594375610352
+    },
+    {
+      "cik": "0001652044",
+      "name": "Alphabet Inc.",
+      "success": false,
+      "error": "'FinalResult' object has no attribute 'get'",
+      "processing_time": 0.06334328651428223
+    },
+    {
+      "cik": "0000019617",
+      "name": "Walmart Inc.",
+      "success": false,
+      "error": "'FinalResult' object has no attribute 'get'",
+      "processing_time": 0.06339097023010254
+    },
+    {
+      "cik": "0000051143",
+      "name": "Exxon Mobil Corporation",
+      "success": false,
+      "error": "'FinalResult' object has no attribute 'get'",
+      "processing_time": 0.10864615440368652
+    },
+    {
+      "cik": "0000093410",
+      "name": "Berkshire Hathaway Inc.",
+      "success": false,
+      "error": "'FinalResult' object has no attribute 'get'",
+      "processing_time": 0.06331586837768555
+    },
+    {
+      "cik": "0000886982",
+      "name": "UnitedHealth Group Incorporated",
+      "success": false,
+      "error": "'FinalResult' object has no attribute 'get'",
+      "processing_time": 0.062493085861206055
+    },
+    {
+      "cik": "0000200406",
+      "name": "Johnson & Johnson",
+      "success": false,
+      "error": "'FinalResult' object has no attribute 'get'",
+      "processing_time": 0.06472611427307129
+    },
+    {
+      "cik": "0000732712",
+      "name": "JPMorgan Chase & Co.",
+      "success": false,
+      "error": "'FinalResult' object has no attribute 'get'",
+      "processing_time": 0.061895132064819336
+    }
+  ],
+  "start_time": "2025-12-03T13:54:10.209873",
+  "processing_times": [
+    0.5360827445983887,
+    0.0635828971862793,
+    0.06474971771240234,
+    0.06332015991210938,
+    0.06336426734924316,
+    0.10861992835998535,
+    0.06328606605529785,
+    0.06246209144592285,
+    0.06470084190368652,
+    0.061868906021118164
+  ],
+  "quality_scores": [],
+  "improvements_made": 0,
+  "end_time": "2025-12-03T13:54:11.362288",
+  "total_processing_time": 1.1520376205444336,
+  "average_processing_time": 0.11520376205444335,
+  "average_quality_score": 0,
+  "success_rate": 20.0
+}

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "kuzu-memory": {
+      "type": "stdio",
+      "command": "kuzu-memory",
+      "args": [
+        "mcp"
+      ]
+    }
+  }
+}
