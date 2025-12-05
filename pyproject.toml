@@ -40,8 +40,10 @@ dependencies = [
     "structlog>=23.0.0",
     "httpx>=0.24.0",
     "tiktoken>=0.5.0",
-    "jinja2>=3.1.0",  # Code generation templates
-    "pyyaml>=6.0.0",  # Project configuration
+    "jinja2>=3.1.0", # Code generation templates
+    "pyyaml>=6.0.0", # Project configuration
+    "python-docx>=0.8.11", # DOCX report generation
+    "python-pptx>=0.6.21", # PPTX report generation
 ]
 
 [project.optional-dependencies]
@@ -142,4 +144,5 @@ markers = [
     "integration: Integration tests",
     "slow: Slow tests that make external API calls",
     "platform: Extract & transform platform tests",
+    "requires_api: Tests that require external API access (OpenRouter, Jina, etc.)",
 ]
