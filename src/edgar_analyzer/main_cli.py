@@ -510,6 +510,7 @@ def analyze_project(ctx, project_path):
         try:
             from edgar_analyzer.models.project_config import ProjectConfig
             from edgar_analyzer.services.example_parser import ExampleParser
+            from extract_transform_platform.models.project_config import ExampleConfig
 
             verbose = ctx.obj.get('verbose', False)
 
@@ -524,7 +525,7 @@ def analyze_project(ctx, project_path):
 
             config = ProjectConfig.from_yaml(config_path)
 
-            # Load examples
+            # Load examples and convert to ExampleConfig objects
             examples = []
             examples_dir = project_path / "examples"
 
@@ -535,8 +536,18 @@ def analyze_project(ctx, project_path):
             for example_file in examples_dir.glob("*.json"):
                 if verbose:
                     click.echo(f"Loading example: {example_file.name}")
-                with open(example_file, 'r') as f:
-                    examples.append(json.load(f))
+                try:
+                    with open(example_file, 'r') as f:
+                        example_data = json.load(f)
+                        # Convert dict to ExampleConfig object
+                        example_config = ExampleConfig(**example_data)
+                        examples.append(example_config)
+                except Exception as e:
+                    click.echo(f"❌ Error loading {example_file.name}: {e}")
+                    if verbose:
+                        import traceback
+                        traceback.print_exc()
+                    sys.exit(1)
 
             if not examples:
                 click.echo(f"❌ Error: No example files found in {examples_dir}")
@@ -546,20 +557,20 @@ def analyze_project(ctx, project_path):
 
             # Parse examples and detect patterns
             parser = ExampleParser()
-            parsed = await parser.parse_examples(examples)
+            parsed = parser.parse_examples(examples)
 
             click.echo(f"✅ Analysis complete!")
             click.echo(f"\n   Patterns detected: {len(parsed.patterns)}")
-            click.echo(f"   Source fields: {len(parsed.source_schema.fields)}")
-            click.echo(f"   Target fields: {len(parsed.target_schema.fields)}")
+            click.echo(f"   Input fields: {len(parsed.input_schema.fields)}")
+            click.echo(f"   Output fields: {len(parsed.output_schema.fields)}")
 
             # Save analysis results
             analysis_path = project_path / "analysis_results.json"
             with open(analysis_path, 'w') as f:
                 json.dump({
                     'patterns': [p.dict() for p in parsed.patterns],
-                    'source_schema': parsed.source_schema.dict(),
-                    'target_schema': parsed.target_schema.dict(),
+                    'input_schema': parsed.input_schema.dict(),
+                    'output_schema': parsed.output_schema.dict(),
                     'num_examples': len(examples)
                 }, f, indent=2)
 

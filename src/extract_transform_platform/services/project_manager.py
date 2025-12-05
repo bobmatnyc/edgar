@@ -77,6 +77,11 @@ class InvalidConfigError(Exception):
     pass
 
 
+class TemplateNotFoundError(Exception):
+    """Raised when project template does not exist."""
+    pass
+
+
 # ============================================================================
 # DATA CLASSES
 # ============================================================================
@@ -373,12 +378,14 @@ class ProjectManager:
     async def create_project(
         self,
         name: str,
+        description: str = "",
         template: Optional[str] = None
     ) -> ProjectInfo:
         """Create a new project from template.
 
         Args:
             name: Project name (alphanumeric, underscores, hyphens)
+            description: Project description (optional, overrides template)
             template: Template name (default: "minimal")
 
         Returns:
@@ -387,9 +394,10 @@ class ProjectManager:
         Raises:
             ValueError: If name is invalid
             ProjectAlreadyExistsError: If project already exists
+            TemplateNotFoundError: If template doesn't exist
 
         Example:
-            >>> project = await manager.create_project("weather_api")
+            >>> project = await manager.create_project("weather_api", template="weather")
             >>> print(f"Created at: {project.path}")
         """
         # Validate name
@@ -408,9 +416,12 @@ class ProjectManager:
         (project_path / "tests").mkdir(exist_ok=True)
         (project_path / "output").mkdir(exist_ok=True)
 
-        # Create minimal configuration
-        # TODO: Load template configurations when template system is implemented
-        config = self._create_minimal_config(name)
+        # Load template or create minimal configuration
+        if template:
+            config = self._load_template(template, name, description)
+        else:
+            config = self._create_minimal_config(name, description)
+
         config.to_yaml(project_path / "project.yaml")
 
         # Invalidate cache
@@ -420,11 +431,12 @@ class ProjectManager:
 
         return ProjectInfo.from_config(config, project_path)
 
-    def _create_minimal_config(self, name: str) -> ProjectConfig:
+    def _create_minimal_config(self, name: str, description: str = "") -> ProjectConfig:
         """Create minimal project configuration.
 
         Args:
             name: Project name
+            description: Project description (optional)
 
         Returns:
             ProjectConfig with minimal settings
@@ -438,7 +450,10 @@ class ProjectManager:
         )
 
         return ProjectConfig(
-            project=ProjectMetadata(name=name),
+            project=ProjectMetadata(
+                name=name,
+                description=description if description else f"Minimal project: {name}"
+            ),
             data_sources=[
                 DataSourceConfig(
                     type=DataSourceType.API,
@@ -455,6 +470,69 @@ class ProjectManager:
                 ]
             )
         )
+
+    def _load_template(self, template: str, name: str, description: str = "") -> ProjectConfig:
+        """Load project configuration from template file.
+
+        Args:
+            template: Template name (e.g., "weather", "news_scraper", "minimal")
+            name: Project name (overrides template name)
+            description: Project description (overrides template description)
+
+        Returns:
+            ProjectConfig loaded from template
+
+        Raises:
+            TemplateNotFoundError: If template file doesn't exist
+            ValueError: If template YAML is invalid
+
+        Example:
+            >>> config = manager._load_template("weather", "my_weather")
+            >>> assert config.project.name == "my_weather"
+        """
+        # Map template names to file names
+        template_map = {
+            "weather": "weather_api_project.yaml",
+            "news_scraper": "news_scraper_project.yaml",
+            "minimal": "minimal_project.yaml"
+        }
+
+        if template not in template_map:
+            available = ", ".join(template_map.keys())
+            raise TemplateNotFoundError(
+                f"Template '{template}' not found. Available templates: {available}"
+            )
+
+        # Locate template file
+        # Templates are in project_root/templates/
+        template_filename = template_map[template]
+        template_path = Path(__file__).parent.parent.parent.parent / "templates" / template_filename
+
+        if not template_path.exists():
+            raise TemplateNotFoundError(
+                f"Template file not found: {template_path}\n"
+                f"Expected at: templates/{template_filename}"
+            )
+
+        # Load template YAML
+        try:
+            config = ProjectConfig.from_yaml(template_path)
+        except Exception as e:
+            raise ValueError(f"Invalid template YAML in {template_filename}: {e}") from e
+
+        # Override name and description
+        config.project.name = name
+        if description:
+            config.project.description = description
+
+        logger.info(
+            "Template loaded",
+            template=template,
+            name=name,
+            data_sources=len(config.data_sources)
+        )
+
+        return config
 
     async def get_project(self, name: str) -> Optional[ProjectInfo]:
         """Get project information by name.
