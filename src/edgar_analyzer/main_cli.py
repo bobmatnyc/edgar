@@ -486,6 +486,69 @@ def project_delete(ctx, name, yes):
 
 
 # ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
+
+
+def _load_examples_from_config(config: 'ProjectConfig', project_path: Path) -> list:
+    """
+    Load examples from ProjectConfig, supporting both inline and file-based examples.
+
+    Priority:
+    1. Inline examples from project.yaml (config.examples if they're ExampleConfig objects)
+    2. File-based examples from examples/ directory
+
+    Args:
+        config: Loaded ProjectConfig object
+        project_path: Path to project directory
+
+    Returns:
+        List of ExampleConfig objects
+
+    Design Decision:
+        Inline examples take precedence over file-based examples to match
+        template system design (weather template uses inline examples).
+    """
+    from extract_transform_platform.models.project_config import ExampleConfig
+
+    examples = []
+
+    # Priority 1: Check for inline examples in config
+    if hasattr(config, 'examples') and config.examples:
+        for ex in config.examples:
+            if isinstance(ex, ExampleConfig):
+                examples.append(ex)
+            elif isinstance(ex, dict):
+                examples.append(ExampleConfig(**ex))
+
+        if examples:
+            click.echo(f"📝 Loaded {len(examples)} inline examples from project.yaml")
+            return examples
+
+    # Priority 2: Fallback to file-based examples
+    examples_dir = project_path / "examples"
+    if not examples_dir.exists():
+        return []
+
+    example_files = list(examples_dir.glob("*.json"))
+    if not example_files:
+        return []
+
+    for example_file in example_files:
+        try:
+            with open(example_file, 'r') as f:
+                example_data = json.load(f)
+                examples.append(ExampleConfig(**example_data))
+        except Exception as e:
+            click.echo(f"⚠️  Warning: Could not load {example_file.name}: {e}")
+
+    if examples:
+        click.echo(f"📁 Loaded {len(examples)} examples from files")
+
+    return examples
+
+
+# ============================================================================
 # WORKFLOW COMMANDS
 # ============================================================================
 
@@ -510,7 +573,6 @@ def analyze_project(ctx, project_path):
         try:
             from edgar_analyzer.models.project_config import ProjectConfig
             from edgar_analyzer.services.example_parser import ExampleParser
-            from extract_transform_platform.models.project_config import ExampleConfig
 
             verbose = ctx.obj.get('verbose', False)
 
@@ -525,32 +587,12 @@ def analyze_project(ctx, project_path):
 
             config = ProjectConfig.from_yaml(config_path)
 
-            # Load examples and convert to ExampleConfig objects
-            examples = []
-            examples_dir = project_path / "examples"
-
-            if not examples_dir.exists():
-                click.echo(f"❌ Error: examples/ directory not found in {project_path}")
-                sys.exit(1)
-
-            for example_file in examples_dir.glob("*.json"):
-                if verbose:
-                    click.echo(f"Loading example: {example_file.name}")
-                try:
-                    with open(example_file, 'r') as f:
-                        example_data = json.load(f)
-                        # Convert dict to ExampleConfig object
-                        example_config = ExampleConfig(**example_data)
-                        examples.append(example_config)
-                except Exception as e:
-                    click.echo(f"❌ Error loading {example_file.name}: {e}")
-                    if verbose:
-                        import traceback
-                        traceback.print_exc()
-                    sys.exit(1)
+            # Load examples (inline or file-based)
+            examples = _load_examples_from_config(config, project_path)
 
             if not examples:
-                click.echo(f"❌ Error: No example files found in {examples_dir}")
+                click.echo("❌ Error: No examples found (neither inline nor in examples/ directory)")
+                click.echo("   Add examples to project.yaml or create examples/*.json files")
                 sys.exit(1)
 
             click.echo(f"\n📊 Analyzing {len(examples)} examples...")
@@ -608,7 +650,6 @@ def generate_code(ctx, project_path, validate):
         try:
             from edgar_analyzer.models.project_config import ProjectConfig
             from edgar_analyzer.services.code_generator import CodeGeneratorService
-            from extract_transform_platform.models.project_config import ExampleConfig
 
             verbose = ctx.obj.get('verbose', False)
 
@@ -620,18 +661,12 @@ def generate_code(ctx, project_path, validate):
 
             config = ProjectConfig.from_yaml(config_path)
 
-            # Load examples and convert to ExampleConfig objects
-            examples = []
-            examples_dir = project_path / "examples"
-            for example_file in examples_dir.glob("*.json"):
-                with open(example_file, 'r') as f:
-                    example_data = json.load(f)
-                    # Convert dict to ExampleConfig object
-                    example_config = ExampleConfig(**example_data)
-                    examples.append(example_config)
+            # Load examples (inline or file-based)
+            examples = _load_examples_from_config(config, project_path)
 
             if not examples:
-                click.echo(f"❌ Error: No example files found in {examples_dir}")
+                click.echo("❌ Error: No examples found (neither inline nor in examples/ directory)")
+                click.echo("   Add examples to project.yaml or create examples/*.json files")
                 sys.exit(1)
 
             click.echo(f"\n🔧 Generating code for {config.project.name}...")
