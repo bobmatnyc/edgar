@@ -608,6 +608,7 @@ def generate_code(ctx, project_path, validate):
         try:
             from edgar_analyzer.models.project_config import ProjectConfig
             from edgar_analyzer.services.code_generator import CodeGeneratorService
+            from extract_transform_platform.models.project_config import ExampleConfig
 
             verbose = ctx.obj.get('verbose', False)
 
@@ -619,12 +620,15 @@ def generate_code(ctx, project_path, validate):
 
             config = ProjectConfig.from_yaml(config_path)
 
-            # Load examples
+            # Load examples and convert to ExampleConfig objects
             examples = []
             examples_dir = project_path / "examples"
             for example_file in examples_dir.glob("*.json"):
                 with open(example_file, 'r') as f:
-                    examples.append(json.load(f))
+                    example_data = json.load(f)
+                    # Convert dict to ExampleConfig object
+                    example_config = ExampleConfig(**example_data)
+                    examples.append(example_config)
 
             if not examples:
                 click.echo(f"❌ Error: No example files found in {examples_dir}")
