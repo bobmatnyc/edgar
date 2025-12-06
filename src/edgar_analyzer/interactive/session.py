@@ -177,7 +177,7 @@ class InteractiveExtractionSession:
         """
         # Welcome message
         self.console.print("[bold blue]🔍 EDGAR Interactive Extraction Session[/bold blue]")
-        self.console.print("Type 'help' for available commands, 'exit' to quit\n")
+        self.console.print("Type naturally or use /commands (e.g., /help, /exit)\n")
 
         # Auto-load project if path provided
         if self.project_path:
@@ -204,31 +204,50 @@ class InteractiveExtractionSession:
                 if not user_input:
                     continue
 
-                # Check if input looks like natural language
-                word_count = len(user_input.split())
-                is_natural = word_count > 3 or "?" in user_input or (user_input and user_input[0].isupper())
-
-                if is_natural:
-                    # Parse with NL understanding
-                    command, args = await self._parse_natural_language(user_input)
-                    if command != user_input.split()[0].lower():  # Only show if interpreted differently
-                        self.console.print(f"[dim]→ Interpreted as: {command} {args}[/dim]")
-                else:
-                    # Traditional command parsing
-                    parts = user_input.split(maxsplit=1)
+                # Check if input starts with / (slash command)
+                if user_input.startswith('/'):
+                    # System command - direct routing (bypass NL parsing)
+                    parts = user_input[1:].split(maxsplit=1)  # Remove leading /
                     command = parts[0].lower()
                     args = parts[1] if len(parts) > 1 else ""
 
-                logger.debug("command_received", command=command, args=args)
+                    logger.debug("slash_command_received", command=command, args=args)
 
-                # Execute command
-                if command in self.commands:
-                    result = await self.commands[command](args)
-                    if result == "exit":
-                        break
+                    # Execute command directly
+                    if command in self.commands:
+                        result = await self.commands[command](args)
+                        if result == "exit":
+                            break
+                    else:
+                        # Unknown slash command - show error (don't route to AI)
+                        self.console.print(f"[red]❌ Unknown command: /{command}[/red]")
+                        self.console.print("[dim]Type '/help' to see available commands[/dim]")
                 else:
-                    # Route unknown commands to conversational AI
-                    await self.cmd_chat(user_input)
+                    # Check if input looks like natural language
+                    word_count = len(user_input.split())
+                    is_natural = word_count > 3 or "?" in user_input or (user_input and user_input[0].isupper())
+
+                    if is_natural:
+                        # Parse with NL understanding
+                        command, args = await self._parse_natural_language(user_input)
+                        if command != user_input.split()[0].lower():  # Only show if interpreted differently
+                            self.console.print(f"[dim]→ Interpreted as: {command} {args}[/dim]")
+                    else:
+                        # Traditional command parsing
+                        parts = user_input.split(maxsplit=1)
+                        command = parts[0].lower()
+                        args = parts[1] if len(parts) > 1 else ""
+
+                    logger.debug("command_received", command=command, args=args)
+
+                    # Execute command
+                    if command in self.commands:
+                        result = await self.commands[command](args)
+                        if result == "exit":
+                            break
+                    else:
+                        # Route unknown commands to conversational AI
+                        await self.cmd_chat(user_input)
 
             except KeyboardInterrupt:
                 # Ctrl+C - just continue
@@ -255,29 +274,30 @@ class InteractiveExtractionSession:
         table = Table(
             title="💡 Available Commands",
             show_header=True,
-            header_style="bold magenta"
+            header_style="bold magenta",
+            caption="Commands can be typed directly or prefixed with /\nExamples: help, /help, analyze, /analyze"
         )
         table.add_column("Command", style="cyan", width=20)
         table.add_column("Arguments", style="yellow", width=15)
         table.add_column("Description", style="white", width=50)
 
         commands_info = [
-            ("help", "", "Show this help message"),
-            ("chat", "<message>", "Ask the AI assistant a question"),
-            ("load", "<path>", "Load project from path"),
-            ("show", "", "Show current project status"),
-            ("examples", "", "List loaded examples with preview"),
-            ("analyze", "", "Analyze project and detect patterns"),
-            ("patterns", "", "Show detected transformation patterns"),
-            ("generate", "", "Generate extraction code from patterns"),
-            ("validate", "", "Validate generated code quality"),
-            ("extract", "", "Run extraction on project data"),
-            ("confidence", "<0.0-1.0>", "Set confidence threshold and re-analyze"),
-            ("threshold", "", "Show current confidence threshold"),
-            ("save", "[name]", "Save current session (default: 'last')"),
-            ("resume", "[name]", "Resume saved session (default: 'last')"),
-            ("sessions", "", "List all saved sessions"),
-            ("exit", "", "Exit interactive session (auto-saves)"),
+            ("/help", "", "Show this help message"),
+            ("/chat", "<message>", "Ask the AI assistant a question"),
+            ("/load", "<path>", "Load project from path"),
+            ("/show", "", "Show current project status"),
+            ("/examples", "", "List loaded examples with preview"),
+            ("/analyze", "", "Analyze project and detect patterns"),
+            ("/patterns", "", "Show detected transformation patterns"),
+            ("/generate", "", "Generate extraction code from patterns"),
+            ("/validate", "", "Validate generated code quality"),
+            ("/extract", "", "Run extraction on project data"),
+            ("/confidence", "<0.0-1.0>", "Set confidence threshold and re-analyze"),
+            ("/threshold", "", "Show current confidence threshold"),
+            ("/save", "[name]", "Save current session (default: 'last')"),
+            ("/resume", "[name]", "Resume saved session (default: 'last')"),
+            ("/sessions", "", "List all saved sessions"),
+            ("/exit", "", "Exit interactive session (auto-saves)"),
         ]
 
         for cmd, args_str, desc in commands_info:
