@@ -44,9 +44,16 @@ dependencies = [
     "pyyaml>=6.0.0", # Project configuration
     "python-docx>=0.8.11", # DOCX report generation
     "python-pptx>=0.6.21", # PPTX report generation
+    "openai>=2.9.0",
 ]
 
 [project.optional-dependencies]
+interactive = [
+    "prompt-toolkit>=3.0.43",
+    "rich>=13.7.0",
+    "pygments>=2.17.2",
+]
+
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
@@ -58,6 +65,9 @@ dev = [
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
     "reportlab>=4.0.0",
+    "prompt-toolkit>=3.0.43",
+    "rich>=13.7.0",
+    "pygments>=2.17.2",
 ]
 
 [project.scripts]

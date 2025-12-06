@@ -827,6 +827,63 @@ def run_extraction(ctx, project_path, output_format):
     asyncio.run(run_extract())
 
 
+@cli.command()
+@click.option('--project', type=click.Path(exists=True), help='Project directory path')
+@click.pass_context
+def chat(ctx, project):
+    """Start interactive extraction session.
+
+    This command launches an Auggie-style interactive REPL for data extraction
+    workflows. It provides a stateful, conversational interface with command history,
+    tab completion, and rich terminal UI.
+
+    Features:
+    • Tab completion for commands (try pressing Tab)
+    • Command history (Ctrl+R to search)
+    • Rich tables and progress indicators
+    • Persistent session state
+    • Integration with all platform services
+
+    Examples:
+        edgar-analyzer chat
+        edgar-analyzer chat --project projects/weather_test/
+
+    Available Commands (once in session):
+        help      - Show available commands
+        load      - Load project from path
+        show      - Display project status
+        examples  - List project examples
+        analyze   - Analyze patterns in examples
+        patterns  - Show detected patterns
+        generate  - Generate extraction code
+        extract   - Run data extraction
+        exit      - Exit interactive mode
+    """
+    import asyncio
+    from pathlib import Path
+
+    from edgar_analyzer.interactive import InteractiveExtractionSession
+
+    async def start_chat():
+        verbose = ctx.obj.get('verbose', False)
+
+        if verbose:
+            click.echo("🚀 Starting interactive chat session...")
+
+        try:
+            project_path = Path(project) if project else None
+            session = InteractiveExtractionSession(project_path=project_path)
+            await session.start()
+
+        except Exception as e:
+            click.echo(f"❌ Error starting chat session: {e}")
+            if verbose:
+                import traceback
+                traceback.print_exc()
+
+    asyncio.run(start_chat())
+
+
 # Add traditional CLI commands as subcommands
 def create_integrated_cli():
     """Create integrated CLI with both conversational and traditional commands."""
