@@ -42,31 +42,38 @@ load_dotenv()
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
 @click.option('--enable-web-search/--disable-web-search', default=True, help='Enable/disable web search capabilities (enabled by default)')
 @click.option('--cli', 'bypass_interactive', is_flag=True, help='Bypass interactive mode, show CLI help')
+@click.option('--project', type=click.Path(exists=True), help='Project directory path (for chat mode)')
+@click.option('--resume', type=str, default=None, help='Resume saved session by name (for chat mode)')
+@click.option('--list-sessions', is_flag=True, help='List all saved sessions and exit (for chat mode)')
 @click.pass_context
-def cli(ctx, mode, verbose, enable_web_search, bypass_interactive):
+def cli(ctx, mode, verbose, enable_web_search, bypass_interactive, project, resume, list_sessions):
     """
-    EDGAR Analyzer - Intelligent Executive Compensation Analysis
+    EDGAR - General-Purpose Data Extraction & Transformation Platform
 
-    A revolutionary CLI that combines conversational AI with traditional commands
-    for analyzing SEC EDGAR filings and extracting executive compensation data.
+    A powerful platform that combines AI-driven pattern detection with traditional
+    data extraction for analyzing SEC EDGAR filings, transforming files (Excel, PDF),
+    and extracting structured data from web sources.
 
-    By default, starts in interactive conversational mode. Use subcommands for
-    specific operations or traditional CLI functionality.
+    By default, starts in interactive chat mode for iterative extraction workflows.
+    Use subcommands for specific operations or traditional CLI functionality.
 
     Features:
+    • Interactive chat REPL for iterative extraction (DEFAULT)
+    • AI-powered pattern detection from examples
+    • File transformation (Excel, PDF, DOCX, PPTX → JSON)
+    • Web scraping support (JS-heavy sites via Jina.ai)
+    • Project-based workflows with templates
     • Self-improving code with LLM quality assurance
-    • Conversational interface with natural language processing (DEFAULT)
-    • Traditional CLI fallback for automation and scripting
-    • Real-time context injection from codebase analysis
-    • Subprocess monitoring with automatic fallback to exec()
-    • Web search capabilities enabled by default (use --disable-web-search to disable)
 
     Examples:
-        edgar-cli                                    # Start interactive mode with web search (default)
-        edgar-cli --cli                             # Show CLI help (bypass interactive)
-        edgar-cli --disable-web-search              # Interactive without web search
-        edgar-cli extract --cik 0000320193          # Traditional command
-        edgar-cli --mode traditional interactive    # Force traditional CLI
+        edgar                                       # Start interactive chat mode (default)
+        edgar --cli                                 # Show CLI help (bypass chat)
+        edgar --project projects/my_api/            # Start chat with project loaded
+        edgar --resume last                         # Resume last chat session
+        edgar chat --project projects/my_api/       # Explicit chat with project
+        edgar project list                          # List all projects
+        edgar extract --cik 0000320193              # EDGAR data extraction
+        edgar analyze-project projects/my_api/      # Analyze project patterns
     """
     ctx.ensure_object(dict)
     ctx.obj['mode'] = mode
@@ -81,11 +88,11 @@ def cli(ctx, mode, verbose, enable_web_search, bypass_interactive):
     # If no subcommand is provided, decide what to do
     if ctx.invoked_subcommand is None:
         if bypass_interactive:
-            # Show CLI help instead of starting interactive mode
+            # Show CLI help instead of starting chat mode
             click.echo(ctx.get_help())
         else:
-            # Start interactive mode by default
-            ctx.invoke(interactive)
+            # Start chat mode by default, passing through chat-specific options
+            ctx.invoke(chat, project=project, resume=resume, list_sessions=list_sessions)
 
 
 @cli.command()
@@ -833,11 +840,13 @@ def run_extraction(ctx, project_path, output_format):
 @click.option('--list-sessions', is_flag=True, help='List all saved sessions and exit')
 @click.pass_context
 def chat(ctx, project, resume, list_sessions):
-    """Start interactive extraction session with REPL interface.
+    """Start interactive extraction session with REPL interface (DEFAULT).
 
     This command launches an Auggie-style interactive REPL for data extraction
     workflows. It provides a stateful, conversational interface with command history,
     tab completion, natural language understanding, and rich terminal UI.
+
+    This is the default mode when running 'edgar' with no arguments.
 
     Features:
     • Natural language command understanding
@@ -849,20 +858,23 @@ def chat(ctx, project, resume, list_sessions):
     • Integration with all platform services
 
     Examples:
-        # Start fresh session
-        edgar-analyzer chat
+        # Start fresh session (default)
+        edgar
+        edgar chat
 
         # Start with project loaded
-        edgar-analyzer chat --project projects/weather_test/
+        edgar chat --project projects/weather_test/
+        edgar --project projects/weather_test/
 
         # Resume last session
-        edgar-analyzer chat --resume last
+        edgar chat --resume last
+        edgar --resume last
 
         # Resume specific session
-        edgar-analyzer chat --resume my_session
+        edgar chat --resume my_session
 
         # List all saved sessions
-        edgar-analyzer chat --list-sessions
+        edgar chat --list-sessions
 
     Available Commands (once in session):
         help       - Show available commands
