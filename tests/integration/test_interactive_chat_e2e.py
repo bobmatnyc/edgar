@@ -23,35 +23,40 @@ def test_project(tmp_path):
     project_dir = tmp_path / "test_project"
     project_dir.mkdir()
 
-    # Create project.yaml
+    # Create project.yaml with valid schema (matches ProjectConfig model)
     config = {
         "project": {"name": "test_project", "version": "1.0.0"},
-        "data_source": {
-            "type": "excel",
-            "config": {"file_path": "data.xlsx", "sheet_name": 0},
+        "data_sources": [
+            {
+                "name": "test_file",
+                "type": "file",
+                "file_path": "data.xlsx",
+                "options": {"format": "excel"},
+            }
+        ],
+        "examples": [
+            {
+                "input": {"name": "John", "age": 30, "city": "NYC"},
+                "output": {"full_name": "John", "age_years": 30, "location": "NYC"},
+            },
+            {
+                "input": {"name": "Jane", "age": 25, "city": "LA"},
+                "output": {"full_name": "Jane", "age_years": 25, "location": "LA"},
+            },
+        ],
+        "output": {
+            "formats": [
+                {"type": "json", "path": "output/results.json"}
+            ]
         },
-        "examples": ["example1.json", "example2.json"],
         "confidence_threshold": 0.7,
     }
 
     with open(project_dir / "project.yaml", "w") as f:
         yaml.dump(config, f)
 
-    # Create examples
-    examples = [
-        {
-            "input_data": {"name": "John", "age": 30, "city": "NYC"},
-            "output_data": {"full_name": "John", "age_years": 30, "location": "NYC"},
-        },
-        {
-            "input_data": {"name": "Jane", "age": 25, "city": "LA"},
-            "output_data": {"full_name": "Jane", "age_years": 25, "location": "LA"},
-        },
-    ]
-
-    for idx, example in enumerate(examples, 1):
-        with open(project_dir / f"example{idx}.json", "w") as f:
-            json.dump(example, f)
+    # Create output directory
+    (project_dir / "output").mkdir()
 
     return project_dir
 
@@ -373,7 +378,7 @@ async def test_chat_command_exists():
 @pytest.mark.asyncio
 async def test_chat_empty_message():
     """Test chat with empty message shows warning."""
-    session = InteractiveExtractionSession()
+    session = InteractiveExtractionSession(test_mode=True)
     await session.cmd_chat("")
     # Should show warning, not crash
 
@@ -381,18 +386,15 @@ async def test_chat_empty_message():
 @pytest.mark.asyncio
 async def test_chat_without_api_key():
     """Test chat without API key shows graceful error."""
-    session = InteractiveExtractionSession()
+    session = InteractiveExtractionSession(test_mode=True)
     # Force openrouter_client to None to simulate missing API key
     session.openrouter_client = None
     await session.cmd_chat("Hello")
-    # Should show graceful error, not crash
+    # Should show graceful error, not crash (no interactive setup in test mode)
 
 
 @pytest.mark.asyncio
-@pytest.mark.skipif(
-    not pytest.config.getoption("--run-slow", default=False),
-    reason="Requires API key and makes actual API calls"
-)
+@pytest.mark.slow
 async def test_chat_with_api_key():
     """Test chat with API key (requires OPENROUTER_API_KEY)."""
     import os
@@ -400,7 +402,7 @@ async def test_chat_with_api_key():
     if not os.getenv("OPENROUTER_API_KEY"):
         pytest.skip("OPENROUTER_API_KEY not set")
 
-    session = InteractiveExtractionSession()
+    session = InteractiveExtractionSession(test_mode=True)
     if not session.openrouter_client:
         pytest.skip("OpenRouter client not initialized")
 
@@ -419,11 +421,11 @@ async def test_chat_alias_ask():
 @pytest.mark.asyncio
 async def test_unknown_command_routes_to_chat():
     """Test unknown commands route to chat handler."""
-    session = InteractiveExtractionSession()
+    session = InteractiveExtractionSession(test_mode=True)
     # Force openrouter_client to None to avoid API call
     session.openrouter_client = None
 
     # This should route to chat (which will show API key error)
-    # but should not crash
+    # but should not crash (no interactive setup in test mode)
     await session.cmd_chat("unknown_command_test")
     # Should complete without crash

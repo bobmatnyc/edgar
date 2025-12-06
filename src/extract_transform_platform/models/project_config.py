@@ -666,6 +666,12 @@ class ProjectConfig(BaseModel):
         default_factory=RuntimeConfig,
         description="Runtime execution configuration"
     )
+    confidence_threshold: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="Minimum confidence threshold for pattern detection (0.0-1.0)"
+    )
 
     @field_validator('data_sources')
     @classmethod
