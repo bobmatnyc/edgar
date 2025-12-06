@@ -865,8 +865,11 @@ def run_extraction(ctx, project_path, output_format):
 @click.option('--project', type=click.Path(exists=True), help='Project directory path')
 @click.option('--resume', type=str, default=None, help='Resume saved session by name')
 @click.option('--list-sessions', is_flag=True, help='List all saved sessions and exit')
+@click.option('--exec', '-e', 'exec_command', type=str, default=None, help='Execute single command without REPL (one-shot mode)')
+@click.option('--session', '-s', 'session_id', type=str, default=None, help='Session ID to resume (for one-shot mode)')
+@click.option('--output-format', type=click.Choice(['text', 'json'], case_sensitive=False), default='text', help='Output format for one-shot mode')
 @click.pass_context
-def chat(ctx, project, resume, list_sessions):
+def chat(ctx, project, resume, list_sessions, exec_command, session_id, output_format):
     """Start interactive extraction session with REPL interface (DEFAULT).
 
     This command launches an Auggie-style interactive REPL for data extraction
@@ -883,6 +886,7 @@ def chat(ctx, project, resume, list_sessions):
     • Persistent session state with save/resume
     • Confidence threshold tuning
     • Integration with all platform services
+    • One-shot command execution (--exec flag)
 
     Examples:
         # Start fresh session (default)
@@ -902,6 +906,16 @@ def chat(ctx, project, resume, list_sessions):
 
         # List all saved sessions
         edgar chat --list-sessions
+
+        # ONE-SHOT MODE: Execute single command without REPL
+        edgar chat --exec "help"
+        edgar chat --exec "analyze" --project projects/weather_test/
+
+        # Resume session and execute command
+        edgar chat --session edgar-20251206-143000-a1b2c3d4 --exec "patterns"
+
+        # JSON output for automation
+        edgar chat --exec "patterns" --output-format json
 
     Available Commands (once in session):
         help       - Show available commands
@@ -925,8 +939,16 @@ def chat(ctx, project, resume, list_sessions):
         • "What patterns did you detect?"
         • "Show me the examples"
         • "Generate the code"
+
+    One-Shot Mode:
+        Use --exec to execute a single command without entering REPL:
+        • --exec <command>: Command to execute
+        • --session <id>: Session ID to resume (optional)
+        • --output-format: 'text' (default) or 'json'
+        • Returns session ID for subsequent commands
     """
     import asyncio
+    import json
     from pathlib import Path
 
     from edgar_analyzer.interactive import InteractiveExtractionSession
@@ -940,6 +962,69 @@ def chat(ctx, project, resume, list_sessions):
         asyncio.run(list_all_sessions())
         return
 
+    # Handle one-shot execution mode (--exec)
+    if exec_command:
+        async def execute_oneshot():
+            verbose = ctx.obj.get('verbose', False)
+
+            if verbose:
+                click.echo(f"🚀 Executing one-shot command: {exec_command}")
+
+            try:
+                project_path = Path(project) if project else None
+
+                # Create or resume session
+                session = InteractiveExtractionSession(
+                    project_path=project_path,
+                    session_id=session_id
+                )
+
+                # If session_id provided, try to resume that session
+                if session_id:
+                    await session.cmd_resume_session(session_id)
+
+                # Execute command
+                result = await session.execute_command_oneshot(exec_command)
+
+                # Output results based on format
+                if output_format.lower() == 'json':
+                    # JSON output
+                    click.echo(json.dumps(result, indent=2))
+                else:
+                    # Text output
+                    click.echo(f"Session: {result['session_id']}")
+                    click.echo(result['output'])
+
+                    if result['error']:
+                        click.echo(f"❌ Error: {result['error']}")
+
+                # Exit with appropriate code
+                if not result['success']:
+                    ctx.exit(1)
+                # If successful, just return normally (don't call ctx.exit(0))
+                return
+
+            except Exception as e:
+                if output_format.lower() == 'json':
+                    error_result = {
+                        "session_id": session_id or "unknown",
+                        "command": exec_command,
+                        "success": False,
+                        "output": "",
+                        "error": str(e)
+                    }
+                    click.echo(json.dumps(error_result, indent=2))
+                else:
+                    click.echo(f"❌ Error executing command: {e}")
+                    if verbose:
+                        import traceback
+                        traceback.print_exc()
+                ctx.exit(1)
+
+        asyncio.run(execute_oneshot())
+        return
+
+    # Normal interactive REPL mode
     async def start_chat():
         verbose = ctx.obj.get('verbose', False)
 

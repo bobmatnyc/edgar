@@ -8,6 +8,7 @@ with dependency injection capabilities for input/output modification.
 import ast
 import sys
 import io
+import json
 import time
 import traceback
 import subprocess
@@ -169,7 +170,7 @@ class DynamicScriptingEngine(ScriptExecutor):
         
         # Dangerous operations to block
         self.blocked_operations = {
-            'eval', 'exec', 'compile', '__import__', 'open', 'file',
+            'eval', 'exec', 'compile', '__import__', 'file',
             'input', 'raw_input', 'reload', 'vars', 'globals', 'locals',
             'dir', 'hasattr', 'getattr', 'setattr', 'delattr'
         }
@@ -481,7 +482,7 @@ class DynamicScriptingEngine(ScriptExecutor):
                 'range': range, 'enumerate': enumerate, 'zip': zip,
                 'map': map, 'filter': filter, 'sorted': sorted,
                 'sum': sum, 'min': min, 'max': max, 'abs': abs, 'round': round,
-                'print': print,
+                'print': print, 'open': open,
                 # Safe exceptions
                 'Exception': Exception, 'ValueError': ValueError,
                 'TypeError': TypeError, 'KeyError': KeyError, 'IndexError': IndexError,
