@@ -1,0 +1,19 @@
+{
+  "input": {
+    "employee_id": "E1003",
+    "first_name": "Carol",
+    "last_name": "Williams",
+    "department": "Marketing",
+    "hire_date": "2019-11-10",
+    "salary": 82000,
+    "is_manager": "Yes"
+  },
+  "output": {
+    "id": "E1003",
+    "full_name": "Carol Williams",
+    "dept": "Marketing",
+    "hired": "2019-11-10",
+    "annual_salary_usd": 82000.0,
+    "manager": true
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "input": {
+    "Item": "Service B",
+    "Quantity": "1",
+    "Unit Price": "$50.00",
+    "Total": "$50.00"
+  },
+  "output": {
+    "product": "Service B",
+    "qty": 1,
+    "unit_price_usd": 50.00,
+    "line_total_usd": 50.00
+  }
+}

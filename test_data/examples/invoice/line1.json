@@ -1,0 +1,14 @@
+{
+  "input": {
+    "Item": "Widget A",
+    "Quantity": "2",
+    "Unit Price": "$15.00",
+    "Total": "$30.00"
+  },
+  "output": {
+    "product": "Widget A",
+    "qty": 2,
+    "unit_price_usd": 15.00,
+    "line_total_usd": 30.00
+  }
+}

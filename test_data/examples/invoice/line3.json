@@ -1,0 +1,14 @@
+{
+  "input": {
+    "Item": "Product C",
+    "Quantity": "5",
+    "Unit Price": "$8.50",
+    "Total": "$42.50"
+  },
+  "output": {
+    "product": "Product C",
+    "qty": 5,
+    "unit_price_usd": 8.50,
+    "line_total_usd": 42.50
+  }
+}
