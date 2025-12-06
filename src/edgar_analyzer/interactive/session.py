@@ -433,7 +433,9 @@ Your response:"""
         table.add_column("Value", style="white")
 
         table.add_row("Name", self.project_config.project.name)
-        table.add_row("Data Source", self.project_config.data_source.type)
+        # Get first data source type (project always has at least one)
+        data_source_type = self.project_config.data_sources[0].type if self.project_config.data_sources else "N/A"
+        table.add_row("Data Source", data_source_type)
 
         # Count examples (either inline or file-based)
         example_count = 0
@@ -513,7 +515,7 @@ Your response:"""
                     )
             # Handle inline examples
             elif isinstance(example_path, ExampleConfig):
-                example_data = example_path.output_data
+                example_data = example_path.output
                 field_count = len(example_data) if isinstance(example_data, dict) else "N/A"
 
                 if isinstance(example_data, dict):
@@ -575,11 +577,19 @@ Your response:"""
                         if full_path.exists():
                             with open(full_path, 'r') as f:
                                 example_data = json.load(f)
-                                # Convert to ExampleConfig format
-                                if 'input_data' in example_data and 'output_data' in example_data:
+                                # Convert to ExampleConfig format (support both old and new formats)
+                                if 'input' in example_data and 'output' in example_data:
+                                    # New format
                                     example_config = ExampleConfig(
-                                        input_data=example_data['input_data'],
-                                        output_data=example_data['output_data']
+                                        input=example_data['input'],
+                                        output=example_data['output']
+                                    )
+                                    parsed_examples.append(example_config)
+                                elif 'input_data' in example_data and 'output_data' in example_data:
+                                    # Legacy format - convert to new format
+                                    example_config = ExampleConfig(
+                                        input=example_data['input_data'],
+                                        output=example_data['output_data']
                                     )
                                     parsed_examples.append(example_config)
                     # Handle inline examples
@@ -595,8 +605,8 @@ Your response:"""
                         {
                             "type": p.type.value if hasattr(p.type, 'value') else str(p.type),
                             "confidence": p.confidence,
-                            "source_field": p.source_field,
-                            "target_field": p.target_field,
+                            "source_path": p.source_path,
+                            "target_path": p.target_path,
                             "description": getattr(p, 'description', '') or f"{p.type} transformation"
                         }
                         for p in parsed_result.patterns
@@ -604,7 +614,7 @@ Your response:"""
                     "input_schema": parsed_result.input_schema.dict() if hasattr(parsed_result.input_schema, 'dict') else {},
                     "output_schema": parsed_result.output_schema.dict() if hasattr(parsed_result.output_schema, 'dict') else {},
                     "confidence_scores": {
-                        p.target_field: p.confidence for p in parsed_result.patterns
+                        p.target_path: p.confidence for p in parsed_result.patterns
                     },
                 }
 
@@ -668,8 +678,8 @@ Your response:"""
         for pattern in patterns:
             pattern_type = pattern.get("type", "UNKNOWN")
             confidence = pattern.get("confidence", 0.0)
-            source_field = pattern.get("source_field", "?")
-            target_field = pattern.get("target_field", "?")
+            source_path = pattern.get("source_path", "?")
+            target_path = pattern.get("target_path", "?")
             description = pattern.get("description", "No description")
 
             # Color code confidence
@@ -681,7 +691,7 @@ Your response:"""
                 confidence_str = f"[red]{confidence:.1%}[/red]"
 
             # Format source → target
-            mapping = f"{source_field} → {target_field}"
+            mapping = f"{source_path} → {target_path}"
 
             table.add_row(
                 pattern_type,
@@ -734,9 +744,10 @@ Your response:"""
                     pattern_type = PatternType(p_dict["type"]) if isinstance(p_dict["type"], str) else p_dict["type"]
                     pattern = Pattern(
                         type=pattern_type,
-                        source_field=p_dict["source_field"],
-                        target_field=p_dict["target_field"],
-                        confidence=p_dict["confidence"]
+                        source_path=p_dict["source_path"],
+                        target_path=p_dict["target_path"],
+                        confidence=p_dict["confidence"],
+                        transformation=p_dict.get("description", f"{pattern_type} transformation")
                     )
                     pattern_objects.append(pattern)
 
@@ -801,8 +812,8 @@ class GeneratedExtractor:
 '''
         # Add transformation code for each pattern
         for pattern in patterns:
-            source = pattern.source_field
-            target = pattern.target_field
+            source = pattern.source_path
+            target = pattern.target_path
             code += f'        # Pattern: {pattern.type} ({pattern.confidence:.1%} confidence)\n'
             code += f'        result["{target}"] = data.get("{source}")\n\n'
 
