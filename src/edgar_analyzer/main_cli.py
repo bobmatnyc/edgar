@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-EDGAR Analyzer CLI Entry Point
+"""EDGAR Analyzer CLI - Main Entry Point
 
 Main command-line interface that integrates:
 - Conversational CLI Chatbot Controller
@@ -11,9 +10,13 @@ Main command-line interface that integrates:
 - Platform workflow commands (project, analyze, generate, extract)
 
 Usage:
-    python -m edgar_analyzer.cli
-    python -m edgar_analyzer.cli --help
-    python -m edgar_analyzer.cli analyze --query "CEO compensation"
+    python -m edgar_analyzer.main_cli
+    python -m edgar_analyzer.main_cli --help
+    edgar --log-level DEBUG  # Enable debug logging
+    edgar chat --project projects/my_api/
+
+CRITICAL: Logging must be configured BEFORE any module imports to prevent
+early log messages during module initialization.
 """
 
 import asyncio
@@ -28,25 +31,40 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import click
 from dotenv import load_dotenv
 
+# Load environment variables from .env.local if it exists (BEFORE other imports)
+env_file = Path(".env.local")
+if env_file.exists():
+    load_dotenv(env_file)
+else:
+    # Fallback to .env
+    load_dotenv()
+
+# Configure logging to quiet mode by default (BEFORE importing logging modules)
+# This will be reconfigured based on CLI flags after parsing
+from edgar_analyzer.config.logging_config import configure_logging
+configure_logging(None)  # Start in quiet mode
+
+# Now safe to import modules that use logging
 from edgar_analyzer.services.llm_service import LLMService
 from cli_chatbot.core.controller import ChatbotController
 from cli_chatbot.fallback.traditional_cli import create_fallback_cli
-
-# Load environment variables
-load_dotenv()
 
 
 @click.group(invoke_without_command=True)
 @click.option('--mode', type=click.Choice(['auto', 'chatbot', 'traditional']),
               default='auto', help='CLI interface mode')
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
+@click.option('--log-level', '-l',
+              type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], case_sensitive=False),
+              default=None,
+              help='Set logging level (default: quiet - no logging)')
 @click.option('--enable-web-search/--disable-web-search', default=True, help='Enable/disable web search capabilities (enabled by default)')
 @click.option('--cli', 'bypass_interactive', is_flag=True, help='Bypass interactive mode, show CLI help')
 @click.option('--project', type=click.Path(exists=True), help='Project directory path (for chat mode)')
 @click.option('--resume', type=str, default=None, help='Resume saved session by name (for chat mode)')
 @click.option('--list-sessions', is_flag=True, help='List all saved sessions and exit (for chat mode)')
 @click.pass_context
-def cli(ctx, mode, verbose, enable_web_search, bypass_interactive, project, resume, list_sessions):
+def cli(ctx, mode, verbose, log_level, enable_web_search, bypass_interactive, project, resume, list_sessions):
     """
     EDGAR - General-Purpose Data Extraction & Transformation Platform
 
@@ -66,7 +84,10 @@ def cli(ctx, mode, verbose, enable_web_search, bypass_interactive, project, resu
     • Self-improving code with LLM quality assurance
 
     Examples:
-        edgar                                       # Start interactive chat mode (default)
+        edgar                                       # Start interactive chat mode (quiet)
+        edgar --log-level INFO                      # Start with INFO logging enabled
+        edgar --log-level DEBUG                     # Start with DEBUG logging enabled
+        edgar -l WARNING                            # Short form
         edgar --cli                                 # Show CLI help (bypass chat)
         edgar --project projects/my_api/            # Start chat with project loaded
         edgar --resume last                         # Resume last chat session
@@ -75,13 +96,19 @@ def cli(ctx, mode, verbose, enable_web_search, bypass_interactive, project, resu
         edgar extract --cik 0000320193              # EDGAR data extraction
         edgar analyze-project projects/my_api/      # Analyze project patterns
     """
+    # Configure logging FIRST (before any other imports or operations)
+    configure_logging(log_level)
+
     ctx.ensure_object(dict)
     ctx.obj['mode'] = mode
     ctx.obj['verbose'] = verbose
+    ctx.obj['log_level'] = log_level
     ctx.obj['enable_web_search'] = enable_web_search
 
     if verbose:
         click.echo(f"🔧 EDGAR CLI starting in {mode} mode")
+        if log_level:
+            click.echo(f"📊 Logging level: {log_level}")
         if enable_web_search:
             click.echo("🔍 Web search capabilities enabled")
 
