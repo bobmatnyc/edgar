@@ -18,7 +18,9 @@ Removal: Planned for Phase 3 (after EDGAR migration complete)
 import warnings
 
 # Import from platform version
-from extract_transform_platform.data_sources.web.jina_source import JinaDataSource as _PlatformJinaDataSource
+from extract_transform_platform.data_sources.web.jina_source import (
+    JinaDataSource as _PlatformJinaDataSource,
+)
 
 
 class JinaDataSource(_PlatformJinaDataSource):

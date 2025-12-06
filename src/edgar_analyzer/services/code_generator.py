@@ -27,18 +27,18 @@ import ast
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
 import structlog
 
 from edgar_analyzer.agents.sonnet45_agent import Sonnet45Agent
 from edgar_analyzer.models.patterns import ParsedExamples, Pattern
-from edgar_analyzer.models.project_config import ProjectConfig
 from edgar_analyzer.models.plan import (
+    CodeValidationResult,
     GeneratedCode,
     GenerationContext,
-    CodeValidationResult,
 )
+from edgar_analyzer.models.project_config import ProjectConfig
 from edgar_analyzer.services.example_parser import ExampleParser
 
 logger = structlog.get_logger(__name__)
@@ -73,16 +73,13 @@ class CodeValidator:
         """
         logger.debug("Validating generated code")
 
-        result = CodeValidationResult(
-            is_valid=True,
-            syntax_valid=True
-        )
+        result = CodeValidationResult(is_valid=True, syntax_valid=True)
 
         # Check syntax validity
         for name, code_str in [
             ("extractor", code.extractor_code),
             ("models", code.models_code),
-            ("tests", code.tests_code)
+            ("tests", code.tests_code),
         ]:
             if not self._check_syntax(code_str):
                 result.syntax_valid = False
@@ -109,8 +106,8 @@ class CodeValidator:
 
         # Check interface implementation
         result.implements_interface = (
-            "IDataExtractor" in code.extractor_code and
-            "async def extract" in code.extractor_code
+            "IDataExtractor" in code.extractor_code
+            and "async def extract" in code.extractor_code
         )
         if not result.implements_interface:
             result.add_issue("Extractor does not implement IDataExtractor interface")
@@ -121,7 +118,7 @@ class CodeValidator:
             is_valid=result.is_valid,
             quality_score=result.quality_score,
             issues=len(result.issues),
-            recommendations=len(result.recommendations)
+            recommendations=len(result.recommendations),
         )
 
         return result
@@ -179,10 +176,7 @@ class CodeWriter:
         self.base_dir = base_dir or Path("./generated")
 
     def write(
-        self,
-        code: GeneratedCode,
-        project_name: str,
-        backup: bool = True
+        self, code: GeneratedCode, project_name: str, backup: bool = True
     ) -> Dict[str, Path]:
         """
         Write generated code to files.
@@ -211,18 +205,20 @@ class CodeWriter:
         for name, content in [
             ("extractor", code.extractor_code),
             ("models", code.models_code),
-            ("test_extractor", code.tests_code)
+            ("test_extractor", code.tests_code),
         ]:
             file_path = project_dir / f"{name}.py"
 
             # Backup existing file
             if backup and file_path.exists():
-                backup_path = file_path.with_suffix(f".py.bak.{int(datetime.now().timestamp())}")
+                backup_path = file_path.with_suffix(
+                    f".py.bak.{int(datetime.now().timestamp())}"
+                )
                 file_path.rename(backup_path)
                 logger.debug(f"Backed up existing {name}.py", backup=str(backup_path))
 
             # Write new file
-            with open(file_path, 'w') as f:
+            with open(file_path, "w") as f:
                 f.write(content)
 
             paths[name] = file_path
@@ -230,14 +226,12 @@ class CodeWriter:
 
         # Write __init__.py
         init_path = project_dir / "__init__.py"
-        with open(init_path, 'w') as f:
+        with open(init_path, "w") as f:
             f.write(f'"""Generated extractor for {project_name}"""\n')
         paths["init"] = init_path
 
         logger.info(
-            "Code writing completed",
-            project_dir=str(project_dir),
-            files=len(paths)
+            "Code writing completed", project_dir=str(project_dir), files=len(paths)
         )
 
         return paths
@@ -274,7 +268,7 @@ class CodeGeneratorService:
         self,
         api_key: Optional[str] = None,
         output_dir: Optional[Path] = None,
-        model: str = "anthropic/claude-sonnet-4.5"
+        model: str = "anthropic/claude-sonnet-4.5",
     ):
         """
         Initialize code generator service.
@@ -292,7 +286,7 @@ class CodeGeneratorService:
         logger.info(
             "CodeGeneratorService initialized",
             model=model,
-            output_dir=str(output_dir or "./generated")
+            output_dir=str(output_dir or "./generated"),
         )
 
     async def generate(
@@ -301,7 +295,7 @@ class CodeGeneratorService:
         project_config: ProjectConfig,
         validate: bool = True,
         write_files: bool = True,
-        max_retries: int = 3
+        max_retries: int = 3,
     ) -> GenerationContext:
         """
         Generate code from examples and configuration with iterative refinement.
@@ -339,14 +333,14 @@ class CodeGeneratorService:
             "Starting code generation",
             project=project_config.project.name,
             examples=len(examples),
-            max_retries=max_retries
+            max_retries=max_retries,
         )
 
         # Create generation context
         context = GenerationContext(
             project_name=project_config.project.name,
             num_patterns=0,
-            num_examples=len(examples)
+            num_examples=len(examples),
         )
 
         try:
@@ -361,7 +355,7 @@ class CodeGeneratorService:
                 "Examples parsed",
                 patterns=len(parsed.patterns),
                 input_fields=len(parsed.input_schema.fields),
-                output_fields=len(parsed.output_schema.fields)
+                output_fields=len(parsed.output_schema.fields),
             )
 
             # Step 2: PM mode planning
@@ -373,7 +367,7 @@ class CodeGeneratorService:
             logger.info(
                 "Plan created",
                 classes=len(plan.classes),
-                dependencies=len(plan.dependencies)
+                dependencies=len(plan.dependencies),
             )
 
             # Step 3: Coder mode implementation with iterative refinement
@@ -386,7 +380,7 @@ class CodeGeneratorService:
                 logger.info(
                     "Code generation attempt",
                     attempt=attempt + 1,
-                    max_retries=max_retries
+                    max_retries=max_retries,
                 )
 
                 # Generate code (passing validation errors from previous attempt if any)
@@ -399,21 +393,16 @@ class CodeGeneratorService:
                         plan,
                         parsed.patterns,
                         examples,
-                        validation_errors=validation_result
+                        validation_errors=validation_result,
                     )
 
                 logger.info(
-                    "Code generated",
-                    attempt=attempt + 1,
-                    total_lines=code.total_lines
+                    "Code generated", attempt=attempt + 1, total_lines=code.total_lines
                 )
 
                 # Validate if enabled
                 if validate:
-                    logger.info(
-                        "Validating generated code",
-                        attempt=attempt + 1
-                    )
+                    logger.info("Validating generated code", attempt=attempt + 1)
                     validation_result = self.validator.validate(code)
 
                     if validation_result.is_valid:
@@ -421,7 +410,7 @@ class CodeGeneratorService:
                         logger.info(
                             "Code generation successful",
                             attempt=attempt + 1,
-                            quality_score=validation_result.quality_score
+                            quality_score=validation_result.quality_score,
                         )
                         code.add_metadata("generation_attempts", attempt + 1)
                         code.validation_notes = f"Quality score: {validation_result.quality_score} (attempt {attempt + 1})"
@@ -432,7 +421,7 @@ class CodeGeneratorService:
                             "Validation failed",
                             attempt=attempt + 1,
                             issues=len(validation_result.issues),
-                            max_retries=max_retries
+                            max_retries=max_retries,
                         )
 
                         if attempt == max_retries - 1:
@@ -442,14 +431,14 @@ class CodeGeneratorService:
                             logger.error(
                                 "Code generation failed after max retries",
                                 max_retries=max_retries,
-                                final_issues=validation_result.issues
+                                final_issues=validation_result.issues,
                             )
                             raise ValueError(error_msg)
                         else:
                             logger.info(
                                 "Retrying code generation with validation feedback",
                                 attempt=attempt + 1,
-                                next_attempt=attempt + 2
+                                next_attempt=attempt + 2,
                             )
                 else:
                     # Validation disabled, accept code on first attempt
@@ -461,18 +450,20 @@ class CodeGeneratorService:
 
             logger.info(
                 "Code validated",
-                quality_score=validation_result.quality_score if validation_result else None,
+                quality_score=(
+                    validation_result.quality_score if validation_result else None
+                ),
                 issues=len(validation_result.issues) if validation_result else 0,
-                recommendations=len(validation_result.recommendations) if validation_result else 0
+                recommendations=(
+                    len(validation_result.recommendations) if validation_result else 0
+                ),
             )
 
             # Step 5: Write files (if enabled)
             if write_files:
                 logger.info("Step 5: Writing files")
                 paths = self.writer.write(
-                    code,
-                    project_config.project.name,
-                    backup=True
+                    code, project_config.project.name, backup=True
                 )
 
                 code.add_metadata("output_paths", {k: str(v) for k, v in paths.items()})
@@ -480,7 +471,7 @@ class CodeGeneratorService:
                 logger.info(
                     "Files written",
                     files=len(paths),
-                    directory=str(self.writer.base_dir / project_config.project.name)
+                    directory=str(self.writer.base_dir / project_config.project.name),
                 )
 
             # Record completion time
@@ -490,7 +481,7 @@ class CodeGeneratorService:
             logger.info(
                 "Code generation completed successfully",
                 duration_seconds=duration,
-                total_lines=code.total_lines
+                total_lines=code.total_lines,
             )
 
             return context
@@ -507,7 +498,7 @@ class CodeGeneratorService:
                 "Code generation failed",
                 error=str(e),
                 error_type=type(e).__name__,
-                duration_seconds=duration
+                duration_seconds=duration,
             )
 
             raise
@@ -517,7 +508,7 @@ class CodeGeneratorService:
         parsed: ParsedExamples,
         project_config: ProjectConfig,
         validate: bool = True,
-        write_files: bool = True
+        write_files: bool = True,
     ) -> GenerationContext:
         """
         Generate code from pre-parsed examples.
@@ -543,13 +534,13 @@ class CodeGeneratorService:
         logger.info(
             "Starting code generation from parsed patterns",
             project=project_config.project.name,
-            patterns=len(parsed.patterns)
+            patterns=len(parsed.patterns),
         )
 
         context = GenerationContext(
             project_name=project_config.project.name,
             num_patterns=len(parsed.patterns),
-            num_examples=parsed.num_examples
+            num_examples=parsed.num_examples,
         )
 
         try:

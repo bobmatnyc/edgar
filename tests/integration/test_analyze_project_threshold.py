@@ -20,19 +20,20 @@ Test coverage:
 """
 
 import json
-import pytest
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 from click.testing import CliRunner
 
 from edgar_analyzer.cli.commands.project import project
-from extract_transform_platform.services.analysis import ExampleParser
 from extract_transform_platform.models.patterns import (
     ParsedExamples,
     Pattern,
     PatternType,
     Schema,
 )
+from extract_transform_platform.services.analysis import ExampleParser
 
 
 @pytest.fixture
@@ -44,7 +45,7 @@ def cli_runner():
 @pytest.fixture
 def mock_project_manager():
     """Mock ProjectManager for testing."""
-    with patch('edgar_analyzer.config.container.Container.project_manager') as mock:
+    with patch("edgar_analyzer.config.container.Container.project_manager") as mock:
         manager = MagicMock()
         mock.return_value = manager
         yield manager
@@ -53,7 +54,7 @@ def mock_project_manager():
 @pytest.fixture
 def mock_code_generator():
     """Mock CodeGeneratorService for testing."""
-    with patch('edgar_analyzer.config.container.Container.code_generator') as mock:
+    with patch("edgar_analyzer.config.container.Container.code_generator") as mock:
         generator = MagicMock()
         mock.return_value = generator
         yield generator
@@ -124,7 +125,12 @@ class TestConfidenceThresholdCLIFlag:
     """Test --confidence-threshold CLI flag (non-interactive mode)."""
 
     def test_generate_with_threshold_flag(
-        self, cli_runner, mock_project_manager, mock_code_generator, sample_project_config, tmp_path
+        self,
+        cli_runner,
+        mock_project_manager,
+        mock_code_generator,
+        sample_project_config,
+        tmp_path,
     ):
         """Test using --confidence-threshold flag for non-interactive mode."""
         # Setup mock project
@@ -167,9 +173,13 @@ class TestConfidenceThresholdCLIFlag:
         call_kwargs = mock_generator_instance.generate.call_args[1]
         assert call_kwargs["confidence_threshold"] == 0.8
 
-
     def test_generate_without_threshold_flag_skips_prompt(
-        self, cli_runner, mock_project_manager, mock_code_generator, sample_project_config, tmp_path
+        self,
+        cli_runner,
+        mock_project_manager,
+        mock_code_generator,
+        sample_project_config,
+        tmp_path,
     ):
         """Test that omitting --confidence-threshold flag triggers interactive prompt."""
         # Setup mock project (same as above)
@@ -196,7 +206,9 @@ class TestConfidenceThresholdCLIFlag:
         mock_code_generator.return_value = mock_generator_instance
 
         # Mock the interactive prompt to return 0.9
-        with patch('edgar_analyzer.cli.prompts.confidence_threshold.ConfidenceThresholdPrompt') as mock_prompt_class:
+        with patch(
+            "edgar_analyzer.cli.prompts.confidence_threshold.ConfidenceThresholdPrompt"
+        ) as mock_prompt_class:
             mock_prompt = Mock()
             mock_prompt.prompt_for_threshold.return_value = 0.9
             mock_prompt_class.return_value = mock_prompt
@@ -222,7 +234,9 @@ class TestPatternFilteringIntegration:
 
     def test_high_confidence_threshold_filters_patterns(self, sample_parsed_examples):
         """Test that high threshold (0.9) filters out low-confidence patterns."""
-        from extract_transform_platform.services.analysis.pattern_filter import PatternFilterService
+        from extract_transform_platform.services.analysis.pattern_filter import (
+            PatternFilterService,
+        )
 
         filter_service = PatternFilterService()
         result = filter_service.filter_patterns(sample_parsed_examples, threshold=0.9)
@@ -235,10 +249,11 @@ class TestPatternFilteringIntegration:
         assert len(result.excluded_patterns) == 2
         assert all(p.confidence < 0.9 for p in result.excluded_patterns)
 
-
     def test_medium_confidence_threshold_filters_patterns(self, sample_parsed_examples):
         """Test that medium threshold (0.75) filters out only low patterns."""
-        from extract_transform_platform.services.analysis.pattern_filter import PatternFilterService
+        from extract_transform_platform.services.analysis.pattern_filter import (
+            PatternFilterService,
+        )
 
         filter_service = PatternFilterService()
         result = filter_service.filter_patterns(sample_parsed_examples, threshold=0.75)
@@ -251,10 +266,13 @@ class TestPatternFilteringIntegration:
         assert len(result.excluded_patterns) == 1
         assert result.excluded_patterns[0].confidence == 0.5
 
-
-    def test_low_confidence_threshold_includes_all_patterns(self, sample_parsed_examples):
+    def test_low_confidence_threshold_includes_all_patterns(
+        self, sample_parsed_examples
+    ):
         """Test that low threshold (0.3) includes all patterns."""
-        from extract_transform_platform.services.analysis.pattern_filter import PatternFilterService
+        from extract_transform_platform.services.analysis.pattern_filter import (
+            PatternFilterService,
+        )
 
         filter_service = PatternFilterService()
         result = filter_service.filter_patterns(sample_parsed_examples, threshold=0.3)
@@ -302,7 +320,9 @@ class TestEdgeCases:
         mock_code_generator.return_value = mock_generator_instance
 
         # Mock ExampleParser to return no patterns
-        with patch('edgar_analyzer.cli.commands.project.ExampleParser') as mock_parser_class:
+        with patch(
+            "edgar_analyzer.cli.commands.project.ExampleParser"
+        ) as mock_parser_class:
             mock_parser = Mock()
             mock_parsed = ParsedExamples(
                 input_schema=Schema(fields=[]),
@@ -321,12 +341,16 @@ class TestEdgeCases:
 
             # Should succeed but skip threshold prompt
             assert result.exit_code == 0
-            assert "No patterns detected" in result.output or "skipping threshold" in result.output
-
+            assert (
+                "No patterns detected" in result.output
+                or "skipping threshold" in result.output
+            )
 
     def test_all_patterns_excluded_still_generates_code(self, sample_parsed_examples):
         """Test that excluding all patterns still allows code generation."""
-        from extract_transform_platform.services.analysis.pattern_filter import PatternFilterService
+        from extract_transform_platform.services.analysis.pattern_filter import (
+            PatternFilterService,
+        )
 
         filter_service = PatternFilterService()
 
@@ -341,7 +365,9 @@ class TestEdgeCases:
         # So let's test the boundary: threshold = 1.0 includes the 1.0 pattern
 
         # Alternative: Test with threshold that excludes most patterns
-        result_high = filter_service.filter_patterns(sample_parsed_examples, threshold=0.95)
+        result_high = filter_service.filter_patterns(
+            sample_parsed_examples, threshold=0.95
+        )
 
         # Should include only the 1.0 confidence pattern
         assert len(result_high.included_patterns) == 1
@@ -355,7 +381,12 @@ class TestBackwardCompatibility:
     """Test that changes don't break existing functionality."""
 
     def test_generate_without_threshold_still_works(
-        self, cli_runner, mock_project_manager, mock_code_generator, sample_project_config, tmp_path
+        self,
+        cli_runner,
+        mock_project_manager,
+        mock_code_generator,
+        sample_project_config,
+        tmp_path,
     ):
         """Test that existing generate workflow works without threshold parameter."""
         project_path = tmp_path / "test_project"
@@ -381,7 +412,9 @@ class TestBackwardCompatibility:
         mock_code_generator.return_value = mock_generator_instance
 
         # Mock prompt to avoid interactive input
-        with patch('edgar_analyzer.cli.prompts.confidence_threshold.ConfidenceThresholdPrompt') as mock_prompt_class:
+        with patch(
+            "edgar_analyzer.cli.prompts.confidence_threshold.ConfidenceThresholdPrompt"
+        ) as mock_prompt_class:
             mock_prompt = Mock()
             mock_prompt.prompt_for_threshold.return_value = 0.8
             mock_prompt_class.return_value = mock_prompt

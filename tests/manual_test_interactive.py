@@ -50,9 +50,21 @@ async def test_commands():
     session = InteractiveExtractionSession()
 
     expected_commands = {
-        "help", "load", "show", "examples", "analyze", "patterns",
-        "generate", "validate", "extract", "save", "resume",
-        "sessions", "confidence", "threshold", "exit"
+        "help",
+        "load",
+        "show",
+        "examples",
+        "analyze",
+        "patterns",
+        "generate",
+        "validate",
+        "extract",
+        "save",
+        "resume",
+        "sessions",
+        "confidence",
+        "threshold",
+        "exit",
     }
 
     actual_commands = set(session.commands.keys())

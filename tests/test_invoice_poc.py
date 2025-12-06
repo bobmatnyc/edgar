@@ -13,9 +13,10 @@ Validates:
 """
 
 import json
+from pathlib import Path
+
 import pytest
 import yaml
-from pathlib import Path
 
 # Test imports
 from edgar_analyzer.data_sources import PDFDataSource
@@ -33,7 +34,7 @@ class TestInvoicePOC:
     def project_config(self, project_root):
         """Load project.yaml configuration."""
         config_path = project_root / "project.yaml"
-        with open(config_path, 'r') as f:
+        with open(config_path, "r") as f:
             return yaml.safe_load(f)
 
     @pytest.fixture
@@ -42,7 +43,7 @@ class TestInvoicePOC:
         examples_dir = project_root / "examples"
         examples = {}
         for example_file in examples_dir.glob("*.json"):
-            with open(example_file, 'r') as f:
+            with open(example_file, "r") as f:
                 example_data = json.load(f)
                 examples[example_file.stem] = example_data
         return examples
@@ -56,11 +57,17 @@ class TestInvoicePOC:
 
         # Required files
         assert (project_root / "project.yaml").exists(), "project.yaml missing"
-        assert (project_root / "input" / "invoice_001.pdf").exists(), "invoice_001.pdf missing"
+        assert (
+            project_root / "input" / "invoice_001.pdf"
+        ).exists(), "invoice_001.pdf missing"
 
         # Example files
-        assert (project_root / "examples" / "invoice_001.json").exists(), "invoice_001.json missing"
-        assert (project_root / "examples" / "invoice_002.json").exists(), "invoice_002.json missing"
+        assert (
+            project_root / "examples" / "invoice_001.json"
+        ).exists(), "invoice_001.json missing"
+        assert (
+            project_root / "examples" / "invoice_002.json"
+        ).exists(), "invoice_002.json missing"
 
     def test_project_configuration(self, project_config):
         """Test that project.yaml has correct structure."""
@@ -118,9 +125,7 @@ class TestInvoicePOC:
 
         # Initialize data source
         data_source = PDFDataSource(
-            file_path=pdf_file,
-            page_number=0,
-            table_strategy="lines"
+            file_path=pdf_file, page_number=0, table_strategy="lines"
         )
 
         # Fetch data
@@ -155,9 +160,7 @@ class TestInvoicePOC:
         pdf_file = project_root / "input" / "invoice_001.pdf"
 
         data_source = PDFDataSource(
-            file_path=pdf_file,
-            page_number=0,
-            table_strategy="lines"
+            file_path=pdf_file, page_number=0, table_strategy="lines"
         )
 
         result = await data_source.fetch()
@@ -223,9 +226,7 @@ class TestInvoicePOC:
         pdf_file = project_root / "input" / "invoice_001.pdf"
 
         data_source = PDFDataSource(
-            file_path=pdf_file,
-            page_number=0,
-            table_strategy="lines"
+            file_path=pdf_file, page_number=0, table_strategy="lines"
         )
 
         result = await data_source.fetch()
@@ -246,9 +247,7 @@ class TestInvoicePOC:
         pdf_file = project_root / "input" / "invoice_001.pdf"
 
         data_source = PDFDataSource(
-            file_path=pdf_file,
-            page_number=0,
-            table_strategy="lines"
+            file_path=pdf_file, page_number=0, table_strategy="lines"
         )
 
         result = await data_source.fetch()
@@ -297,9 +296,7 @@ class TestInvoicePOC:
 
         # 1. Extract data from PDF
         data_source = PDFDataSource(
-            file_path=pdf_file,
-            page_number=0,
-            table_strategy="lines"
+            file_path=pdf_file, page_number=0, table_strategy="lines"
         )
 
         result = await data_source.fetch()
@@ -324,7 +321,9 @@ class TestInvoicePOC:
         assert "$10.00" in result["rows"][0]["Price"]
         assert "$50.00" in result["rows"][0]["Total"]
 
-        print(f"✅ Invoice POC validation passed: {len(result['rows'])} line items extracted")
+        print(
+            f"✅ Invoice POC validation passed: {len(result['rows'])} line items extracted"
+        )
         print(f"   Columns: {result['columns']}")
         print(f"   First item: {result['rows'][0]}")
 

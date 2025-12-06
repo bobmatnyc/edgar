@@ -31,7 +31,6 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
-
 # ============================================================================
 # PM MODE OUTPUTS
 # ============================================================================
@@ -50,29 +49,22 @@ class MethodSpec(BaseModel):
         ... )
     """
 
-    name: str = Field(
-        ...,
-        description="Method name"
-    )
+    name: str = Field(..., description="Method name")
 
-    purpose: str = Field(
-        ...,
-        description="What this method does"
-    )
+    purpose: str = Field(..., description="What this method does")
 
     parameters: List[str] = Field(
         default_factory=list,
-        description="Method parameters with type hints (e.g., 'self', 'data: Dict')"
+        description="Method parameters with type hints (e.g., 'self', 'data: Dict')",
     )
 
     return_type: str = Field(
         default="None",
-        description="Return type annotation (e.g., 'Optional[Dict[str, Any]]')"
+        description="Return type annotation (e.g., 'Optional[Dict[str, Any]]')",
     )
 
     notes: Optional[str] = Field(
-        None,
-        description="Additional notes about implementation"
+        None, description="Additional notes about implementation"
     )
 
 
@@ -88,37 +80,29 @@ class ClassSpec(BaseModel):
         ... )
     """
 
-    name: str = Field(
-        ...,
-        description="Class name (PascalCase recommended)"
-    )
+    name: str = Field(..., description="Class name (PascalCase recommended)")
 
     purpose: str = Field(
-        ...,
-        description="High-level description of what this class does"
+        ..., description="High-level description of what this class does"
     )
 
     base_classes: List[str] = Field(
         default_factory=list,
-        description="Base classes and interfaces (e.g., ['IDataExtractor'])"
+        description="Base classes and interfaces (e.g., ['IDataExtractor'])",
     )
 
     methods: List[MethodSpec] = Field(
-        default_factory=list,
-        description="Methods to implement"
+        default_factory=list, description="Methods to implement"
     )
 
     attributes: List[str] = Field(
         default_factory=list,
-        description="Instance attributes (e.g., 'api_key: str', 'base_url: str')"
+        description="Instance attributes (e.g., 'api_key: str', 'base_url: str')",
     )
 
-    notes: Optional[str] = Field(
-        None,
-        description="Additional notes about the class"
-    )
+    notes: Optional[str] = Field(None, description="Additional notes about the class")
 
-    @field_validator('name')
+    @field_validator("name")
     @classmethod
     def validate_class_name(cls, v: str) -> str:
         """Ensure class name is valid Python identifier."""
@@ -126,7 +110,7 @@ class ClassSpec(BaseModel):
             raise ValueError("Class name cannot be empty")
         if not v[0].isupper():
             raise ValueError("Class name should start with uppercase letter")
-        if not v.replace('_', '').isalnum():
+        if not v.replace("_", "").isalnum():
             raise ValueError("Class name must be alphanumeric (underscores allowed)")
         return v
 
@@ -148,42 +132,32 @@ class PlanSpec(BaseModel):
         ... )
     """
 
-    strategy: str = Field(
-        ...,
-        description="High-level extraction strategy description"
-    )
+    strategy: str = Field(..., description="High-level extraction strategy description")
 
     classes: List[ClassSpec] = Field(
-        default_factory=list,
-        description="Classes to generate"
+        default_factory=list, description="Classes to generate"
     )
 
     dependencies: List[str] = Field(
         default_factory=list,
-        description="Required imports and packages (e.g., 'requests', 'pydantic')"
+        description="Required imports and packages (e.g., 'requests', 'pydantic')",
     )
 
     error_handling: str = Field(
-        ...,
-        description="Error handling approach and strategies"
+        ..., description="Error handling approach and strategies"
     )
 
-    testing_strategy: str = Field(
-        ...,
-        description="How to test the implementation"
-    )
+    testing_strategy: str = Field(..., description="How to test the implementation")
 
     data_flow: Optional[str] = Field(
-        None,
-        description="Data flow from source to output (optional)"
+        None, description="Data flow from source to output (optional)"
     )
 
     notes: Optional[str] = Field(
-        None,
-        description="Additional implementation notes and considerations"
+        None, description="Additional implementation notes and considerations"
     )
 
-    @field_validator('classes')
+    @field_validator("classes")
     @classmethod
     def validate_at_least_one_class(cls, v: List[ClassSpec]) -> List[ClassSpec]:
         """Ensure at least one class is specified."""
@@ -191,12 +165,15 @@ class PlanSpec(BaseModel):
             raise ValueError("Plan must specify at least one class to generate")
         return v
 
-    @field_validator('dependencies')
+    @field_validator("dependencies")
     @classmethod
     def validate_dependencies(cls, v: List[str]) -> List[str]:
         """Ensure dependencies are valid package names."""
         for dep in v:
-            if not dep or not dep.replace('-', '').replace('_', '').replace('.', '').isalnum():
+            if (
+                not dep
+                or not dep.replace("-", "").replace("_", "").replace(".", "").isalnum()
+            ):
                 raise ValueError(f"Invalid dependency name: {dep}")
         return v
 
@@ -225,32 +202,24 @@ class GeneratedCode(BaseModel):
         ... )
     """
 
-    extractor_code: str = Field(
-        ...,
-        description="Main extractor class implementation"
-    )
+    extractor_code: str = Field(..., description="Main extractor class implementation")
 
     models_code: str = Field(
-        ...,
-        description="Pydantic models for input/output schemas"
+        ..., description="Pydantic models for input/output schemas"
     )
 
-    tests_code: str = Field(
-        ...,
-        description="Unit tests for the extractor"
-    )
+    tests_code: str = Field(..., description="Unit tests for the extractor")
 
     metadata: Dict[str, Any] = Field(
         default_factory=dict,
-        description="Generation metadata (timestamps, model info, etc.)"
+        description="Generation metadata (timestamps, model info, etc.)",
     )
 
     validation_notes: Optional[str] = Field(
-        None,
-        description="Notes about code quality and validation"
+        None, description="Notes about code quality and validation"
     )
 
-    @field_validator('extractor_code', 'models_code', 'tests_code')
+    @field_validator("extractor_code", "models_code", "tests_code")
     @classmethod
     def validate_non_empty(cls, v: str) -> str:
         """Ensure code is not empty."""
@@ -262,9 +231,9 @@ class GeneratedCode(BaseModel):
     def total_lines(self) -> int:
         """Get total lines of code generated."""
         return (
-            len(self.extractor_code.splitlines()) +
-            len(self.models_code.splitlines()) +
-            len(self.tests_code.splitlines())
+            len(self.extractor_code.splitlines())
+            + len(self.models_code.splitlines())
+            + len(self.tests_code.splitlines())
         )
 
     def add_metadata(self, key: str, value: Any) -> None:
@@ -297,51 +266,34 @@ class GenerationContext(BaseModel):
         ... )
     """
 
-    project_name: str = Field(
-        ...,
-        description="Project name from ProjectConfig"
-    )
+    project_name: str = Field(..., description="Project name from ProjectConfig")
 
-    num_patterns: int = Field(
-        ...,
-        ge=0,
-        description="Number of patterns analyzed"
-    )
+    num_patterns: int = Field(..., ge=0, description="Number of patterns analyzed")
 
-    num_examples: int = Field(
-        ...,
-        ge=0,
-        description="Number of examples provided"
-    )
+    num_examples: int = Field(..., ge=0, description="Number of examples provided")
 
     plan: Optional[PlanSpec] = Field(
-        None,
-        description="PM mode output (if PM step completed)"
+        None, description="PM mode output (if PM step completed)"
     )
 
     generated_code: Optional[GeneratedCode] = Field(
-        None,
-        description="Coder mode output (if Coder step completed)"
+        None, description="Coder mode output (if Coder step completed)"
     )
 
     generation_timestamp: datetime = Field(
-        default_factory=datetime.now,
-        description="When code generation started"
+        default_factory=datetime.now, description="When code generation started"
     )
 
     generation_duration_seconds: Optional[float] = Field(
-        None,
-        description="Total generation time in seconds"
+        None, description="Total generation time in seconds"
     )
 
     errors: List[str] = Field(
-        default_factory=list,
-        description="Errors encountered during generation"
+        default_factory=list, description="Errors encountered during generation"
     )
 
     warnings: List[str] = Field(
-        default_factory=list,
-        description="Warnings generated during process"
+        default_factory=list, description="Warnings generated during process"
     )
 
     @property
@@ -382,44 +334,30 @@ class CodeValidationResult(BaseModel):
         ... )
     """
 
-    is_valid: bool = Field(
-        ...,
-        description="Overall validation status"
-    )
+    is_valid: bool = Field(..., description="Overall validation status")
 
-    syntax_valid: bool = Field(
-        ...,
-        description="Whether code has valid Python syntax"
-    )
+    syntax_valid: bool = Field(..., description="Whether code has valid Python syntax")
 
     has_type_hints: bool = Field(
-        default=False,
-        description="Whether code includes type hints"
+        default=False, description="Whether code includes type hints"
     )
 
     has_docstrings: bool = Field(
-        default=False,
-        description="Whether code includes docstrings"
+        default=False, description="Whether code includes docstrings"
     )
 
-    has_tests: bool = Field(
-        default=False,
-        description="Whether tests are included"
-    )
+    has_tests: bool = Field(default=False, description="Whether tests are included")
 
     implements_interface: bool = Field(
-        default=False,
-        description="Whether extractor implements IDataExtractor"
+        default=False, description="Whether extractor implements IDataExtractor"
     )
 
     issues: List[str] = Field(
-        default_factory=list,
-        description="Validation issues found"
+        default_factory=list, description="Validation issues found"
     )
 
     recommendations: List[str] = Field(
-        default_factory=list,
-        description="Recommendations for improvement"
+        default_factory=list, description="Recommendations for improvement"
     )
 
     @property
@@ -505,50 +443,36 @@ class GenerationProgress(BaseModel):
     """
 
     current_step: int = Field(
-        ...,
-        ge=1,
-        description="Current pipeline step (1-indexed)"
+        ..., ge=1, description="Current pipeline step (1-indexed)"
     )
 
-    total_steps: int = Field(
-        ...,
-        ge=1,
-        description="Total number of pipeline steps"
-    )
+    total_steps: int = Field(..., ge=1, description="Total number of pipeline steps")
 
-    step_name: str = Field(
-        ...,
-        description="Human-readable name of current step"
-    )
+    step_name: str = Field(..., description="Human-readable name of current step")
 
     status: str = Field(
         ...,
-        description="Step status (pending, in_progress, completed, failed, skipped)"
+        description="Step status (pending, in_progress, completed, failed, skipped)",
     )
 
     elapsed_time: float = Field(
-        default=0.0,
-        ge=0.0,
-        description="Elapsed time in seconds since pipeline start"
+        default=0.0, ge=0.0, description="Elapsed time in seconds since pipeline start"
     )
 
     message: Optional[str] = Field(
-        None,
-        description="Optional status message (error details, warnings, etc.)"
+        None, description="Optional status message (error details, warnings, etc.)"
     )
 
-    @field_validator('status')
+    @field_validator("status")
     @classmethod
     def validate_status(cls, v: str) -> str:
         """Ensure status is one of the allowed values."""
         allowed = {"pending", "in_progress", "completed", "failed", "skipped"}
         if v not in allowed:
-            raise ValueError(
-                f"Status must be one of {allowed}, got '{v}'"
-            )
+            raise ValueError(f"Status must be one of {allowed}, got '{v}'")
         return v
 
-    @field_validator('current_step')
+    @field_validator("current_step")
     @classmethod
     def validate_current_step(cls, v: int, info) -> int:
         """Ensure current_step doesn't exceed total_steps."""

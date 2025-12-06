@@ -93,7 +93,13 @@ class TestProjectCreate:
 
         result = runner.invoke(
             create,
-            ["test-project", "--template", "minimal", "--output-dir", str(temp_projects_dir)],
+            [
+                "test-project",
+                "--template",
+                "minimal",
+                "--output-dir",
+                str(temp_projects_dir),
+            ],
         )
 
         # Check command succeeded
@@ -117,8 +123,11 @@ class TestProjectCreate:
             config = yaml.safe_load(f)
         assert config["project"]["name"] == "test-project"
 
-    def test_create_project_with_description(self, runner, temp_projects_dir, templates_dir, monkeypatch):
+    def test_create_project_with_description(
+        self, runner, temp_projects_dir, templates_dir, monkeypatch
+    ):
         """Test creating a project with a description."""
+
         # Setup templates directory mock
         def get_templates_dir():
             return templates_dir
@@ -128,9 +137,12 @@ class TestProjectCreate:
             create,
             [
                 "my-api",
-                "--template", "minimal",
-                "--description", "My custom API project",
-                "--output-dir", str(temp_projects_dir),
+                "--template",
+                "minimal",
+                "--description",
+                "My custom API project",
+                "--output-dir",
+                str(temp_projects_dir),
             ],
         )
 

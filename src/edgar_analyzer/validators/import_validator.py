@@ -7,7 +7,7 @@ Checks for forbidden imports that could pose security risks or violate architect
 import ast
 from typing import List
 
-from edgar_analyzer.models.validation import Violation, Severity, ConstraintConfig
+from edgar_analyzer.models.validation import ConstraintConfig, Severity, Violation
 
 
 class ImportValidator:

@@ -7,7 +7,7 @@ Detects dangerous code patterns that could introduce security vulnerabilities.
 import ast
 from typing import List
 
-from edgar_analyzer.models.validation import Violation, Severity, ConstraintConfig
+from edgar_analyzer.models.validation import ConstraintConfig, Severity, Violation
 
 
 class SecurityValidator:

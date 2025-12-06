@@ -16,39 +16,27 @@ Migration Status: COMPLETE (1M-378, T3)
 """
 
 # Re-export all models from platform package
-from extract_transform_platform.models.project_config import (
-    # Enumerations
-    DataSourceType,
-    AuthType,
-    OutputFormat,
-    ErrorStrategy,
-    FieldType,
-    # Authentication
-    AuthConfig,
-    # Caching
-    CacheConfig,
-    # Rate Limiting
-    RateLimitConfig,
-    # Data Sources
-    DataSourceConfig,
-    # Examples
-    ExampleConfig,
-    # Validation
-    FieldConstraint,
-    ValidationConfig,
-    # Output
-    OutputDestinationConfig,
-    OutputConfig,
-    # Runtime
-    RuntimeConfig,
-    # Project Metadata
-    ProjectMetadata,
-    # Root Config
-    ProjectConfig,
-    # Schema Version
+from extract_transform_platform.models.project_config import (  # Enumerations; Authentication; Caching; Rate Limiting; Data Sources; Examples; Validation; Output; Runtime; Project Metadata; Root Config; Schema Version
     SCHEMA_VERSION,
-    SUPPORTED_SOURCE_TYPES,
     SUPPORTED_OUTPUT_FORMATS,
+    SUPPORTED_SOURCE_TYPES,
+    AuthConfig,
+    AuthType,
+    CacheConfig,
+    DataSourceConfig,
+    DataSourceType,
+    ErrorStrategy,
+    ExampleConfig,
+    FieldConstraint,
+    FieldType,
+    OutputConfig,
+    OutputDestinationConfig,
+    OutputFormat,
+    ProjectConfig,
+    ProjectMetadata,
+    RateLimitConfig,
+    RuntimeConfig,
+    ValidationConfig,
 )
 
 __all__ = [

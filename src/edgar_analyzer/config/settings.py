@@ -14,9 +14,7 @@ class EdgarSettings(BaseModel):
     """EDGAR API settings."""
 
     base_url: str = Field(default="https://data.sec.gov")
-    user_agent: str = Field(
-        default="Edgar Analyzer Tool contact@example.com"
-    )
+    user_agent: str = Field(default="Edgar Analyzer Tool contact@example.com")
     rate_limit_delay: float = Field(default=0.1)
     max_retries: int = Field(default=3)
     timeout: int = Field(default=30)
@@ -36,9 +34,7 @@ class LoggingSettings(BaseModel):
     """Logging settings."""
 
     level: str = Field(default="INFO")
-    format: str = Field(
-        default="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    format: str = Field(default="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     file_enabled: bool = Field(default=True)
     file_path: str = Field(default="logs/edgar_analyzer.log")
     console_enabled: bool = Field(default=True)
@@ -62,7 +58,7 @@ class AppSettings(BaseModel):
     # Base directory for all artifacts (from EDGAR_ARTIFACTS_DIR env var)
     artifacts_base_dir: Optional[Path] = Field(
         default=None,
-        description="Base directory for artifacts (env: EDGAR_ARTIFACTS_DIR)"
+        description="Base directory for artifacts (env: EDGAR_ARTIFACTS_DIR)",
     )
 
     # Relative paths (resolved relative to artifacts_base_dir if set)
@@ -121,9 +117,7 @@ class ConfigService:
         if self._settings.artifacts_base_dir:
             base_path = self._settings.artifacts_base_dir
             if not base_path.exists():
-                logger.warning(
-                    f"Creating external artifacts directory: {base_path}"
-                )
+                logger.warning(f"Creating external artifacts directory: {base_path}")
                 try:
                     base_path.mkdir(parents=True, exist_ok=True)
                 except (PermissionError, OSError) as e:
@@ -145,13 +139,11 @@ class ConfigService:
             try:
                 directory.mkdir(parents=True, exist_ok=True)
             except (PermissionError, OSError) as e:
-                raise RuntimeError(
-                    f"Cannot create directory {directory}: {e}"
-                ) from e
+                raise RuntimeError(f"Cannot create directory {directory}: {e}") from e
 
     def get(self, key: str, default: Any = None) -> Any:
         """Get configuration value by dot notation key."""
-        keys = key.split('.')
+        keys = key.split(".")
         value = self._settings
 
         try:
@@ -198,6 +190,7 @@ class ConfigService:
 
 
 # Helper functions for testing and CLI usage
+
 
 def get_artifacts_dir() -> Path:
     """Get the base artifacts directory.

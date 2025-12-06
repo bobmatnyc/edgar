@@ -27,14 +27,13 @@ Research: docs/research/code-validator-test-gap-analysis-2025-12-03.md
 
 import pytest
 
+from extract_transform_platform.models.plan import (
+    CodeValidationResult,
+    GeneratedCode,
+)
 from extract_transform_platform.services.codegen.code_generator import (
     CodeValidator,
 )
-from extract_transform_platform.models.plan import (
-    GeneratedCode,
-    CodeValidationResult,
-)
-
 
 # ============================================================================
 # FIXTURES
@@ -105,7 +104,7 @@ def test_weather_validation():
         extractor_code=extractor_code,
         models_code=models_code,
         tests_code=tests_code,
-        metadata={"test": "valid"}
+        metadata={"test": "valid"},
     )
 
 
@@ -121,33 +120,36 @@ class TestSyntaxValidation:
         """Test that syntax errors in extractor code fail validation."""
         # Arrange: Code with missing colon on function definition
         code = GeneratedCode(
-            extractor_code='''
+            extractor_code="""
 def broken_function()  # Missing colon
     return "invalid"
-''',
-            models_code='class Model: pass',
-            tests_code='def test_example(): pass'
+""",
+            models_code="class Model: pass",
+            tests_code="def test_example(): pass",
         )
 
         # Act
         result = validator.validate(code)
 
         # Assert
-        assert result.is_valid is False, "Code with syntax errors should fail validation"
+        assert (
+            result.is_valid is False
+        ), "Code with syntax errors should fail validation"
         assert result.syntax_valid is False, "syntax_valid should be False"
-        assert "extractor.py has syntax errors" in result.issues, \
-            "Should report extractor syntax error"
+        assert (
+            "extractor.py has syntax errors" in result.issues
+        ), "Should report extractor syntax error"
 
     def test_validate_invalid_syntax_in_tests(self, validator):
         """Test that syntax errors in test code fail validation."""
         # Arrange: Tests with unclosed string
         code = GeneratedCode(
-            extractor_code='class Extractor: pass',
-            models_code='class Model: pass',
-            tests_code='''
+            extractor_code="class Extractor: pass",
+            models_code="class Model: pass",
+            tests_code="""
 def test_broken():
     return "unclosed string
-'''
+""",
         )
 
         # Act
@@ -179,8 +181,8 @@ class MyExtractor(IDataExtractor):
         """Extract data."""
         return {"result": data}
 ''',
-            models_code='class Model: pass',
-            tests_code='def test_example(): pass'
+            models_code="class Model: pass",
+            tests_code="def test_example(): pass",
         )
 
         # Act
@@ -189,8 +191,9 @@ class MyExtractor(IDataExtractor):
         # Assert
         # Missing type hints is a recommendation, not a failure
         assert result.has_type_hints is False, "Should detect missing type hints"
-        assert "Add type hints to all methods" in result.recommendations, \
-            "Should recommend adding type hints"
+        assert (
+            "Add type hints to all methods" in result.recommendations
+        ), "Should recommend adding type hints"
         # Note: Code is valid despite missing type hints (non-critical)
 
     def test_validate_with_type_hints(self, validator):
@@ -219,15 +222,17 @@ class MyExtractor(IDataExtractor):
         """Helper with type hints."""
         return str(x)
 ''',
-            models_code='class Model: pass',
-            tests_code='def test_example(): pass'
+            models_code="class Model: pass",
+            tests_code="def test_example(): pass",
         )
 
         # Act
         result = validator.validate(code)
 
         # Assert
-        assert result.has_type_hints is True, "Should detect type hints when return annotation present"
+        assert (
+            result.has_type_hints is True
+        ), "Should detect type hints when return annotation present"
         assert "Add type hints to all methods" not in result.recommendations
 
 
@@ -243,14 +248,14 @@ class TestTestsValidation:
         """Test that missing test functions fail validation."""
         # Arrange: Test file without test_ functions
         code = GeneratedCode(
-            extractor_code='''
+            extractor_code="""
 from extract_transform_platform.core import IDataExtractor
 
 class MyExtractor(IDataExtractor):
     async def extract(self, data):
         return data
-''',
-            models_code='class Model: pass',
+""",
+            models_code="class Model: pass",
             tests_code='''
 import pytest
 
@@ -258,7 +263,7 @@ import pytest
 def helper_function():
     """Helper function."""
     pass
-'''
+''',
         )
 
         # Act
@@ -267,8 +272,7 @@ def helper_function():
         # Assert
         assert result.is_valid is False, "Code without tests should fail validation"
         assert result.has_tests is False, "has_tests should be False"
-        assert "No test functions found" in result.issues, \
-            "Should report missing tests"
+        assert "No test functions found" in result.issues, "Should report missing tests"
 
     def test_validate_with_tests(self, validator, valid_generated_code):
         """Test that test functions are detected when present."""
@@ -302,8 +306,8 @@ class MyExtractor:  # No IDataExtractor inheritance
         """Extract data."""
         return data
 ''',
-            models_code='class Model: pass',
-            tests_code='def test_example(): pass'
+            models_code="class Model: pass",
+            tests_code="def test_example(): pass",
         )
 
         # Act
@@ -311,9 +315,12 @@ class MyExtractor:  # No IDataExtractor inheritance
 
         # Assert
         assert result.is_valid is False, "Code without interface should fail validation"
-        assert result.implements_interface is False, "implements_interface should be False"
-        assert "Extractor does not implement IDataExtractor interface" in result.issues, \
-            "Should report missing interface"
+        assert (
+            result.implements_interface is False
+        ), "implements_interface should be False"
+        assert (
+            "Extractor does not implement IDataExtractor interface" in result.issues
+        ), "Should report missing interface"
 
     def test_validate_missing_async_extract(self, validator):
         """Test that missing async extract method fails validation."""
@@ -329,8 +336,8 @@ class MyExtractor(IDataExtractor):
         """Extract data."""
         return data
 ''',
-            models_code='class Model: pass',
-            tests_code='def test_example(): pass'
+            models_code="class Model: pass",
+            tests_code="def test_example(): pass",
         )
 
         # Act
@@ -354,17 +361,17 @@ class TestMultipleFailures:
         """Test that multiple failures are all detected and reported."""
         # Arrange: Code with syntax error + missing tests + no interface
         code = GeneratedCode(
-            extractor_code='''
+            extractor_code="""
 # Syntax error: missing colon
 def broken_function()
     return "invalid"
-''',
-            models_code='class Model: pass',
-            tests_code='''
+""",
+            models_code="class Model: pass",
+            tests_code="""
 # No test functions
 def helper():
     pass
-'''
+""",
         )
 
         # Act
@@ -373,16 +380,18 @@ def helper():
         # Assert
         assert result.is_valid is False, "Code with multiple failures should fail"
         assert result.quality_score == 0.0, "Quality score should be 0 when invalid"
-        assert len(result.issues) >= 2, \
-            "Should report multiple issues (syntax + tests + interface)"
+        assert (
+            len(result.issues) >= 2
+        ), "Should report multiple issues (syntax + tests + interface)"
 
         # Check specific issues
-        assert any("syntax errors" in issue for issue in result.issues), \
-            "Should report syntax errors"
-        assert "No test functions found" in result.issues, \
-            "Should report missing tests"
-        assert "Extractor does not implement IDataExtractor interface" in result.issues, \
-            "Should report missing interface"
+        assert any(
+            "syntax errors" in issue for issue in result.issues
+        ), "Should report syntax errors"
+        assert "No test functions found" in result.issues, "Should report missing tests"
+        assert (
+            "Extractor does not implement IDataExtractor interface" in result.issues
+        ), "Should report missing interface"
 
 
 # ============================================================================
@@ -397,16 +406,16 @@ class TestDocstringsValidation:
         """Test that missing docstrings are detected and recommended."""
         # Arrange: Code without docstrings
         code = GeneratedCode(
-            extractor_code='''
+            extractor_code="""
 from extract_transform_platform.core import IDataExtractor
 from typing import Dict, Any
 
 class MyExtractor(IDataExtractor):
     async def extract(self, data: Dict[str, Any]) -> Dict[str, Any]:
         return data
-''',
-            models_code='class Model: pass',
-            tests_code='def test_example(): pass'
+""",
+            models_code="class Model: pass",
+            tests_code="def test_example(): pass",
         )
 
         # Act
@@ -414,8 +423,9 @@ class MyExtractor(IDataExtractor):
 
         # Assert
         assert result.has_docstrings is False, "Should detect missing docstrings"
-        assert "Add docstrings to all public methods" in result.recommendations, \
-            "Should recommend adding docstrings"
+        assert (
+            "Add docstrings to all public methods" in result.recommendations
+        ), "Should recommend adding docstrings"
 
     def test_validate_with_docstrings(self, validator, valid_generated_code):
         """Test that docstrings are detected when present."""
@@ -468,7 +478,7 @@ class Model:
 def test_example():
     """Test function."""
     assert True
-'''
+''',
         )
 
         # Act
@@ -482,16 +492,17 @@ def test_example():
         assert result.has_tests is True, "Should have tests"
         assert result.implements_interface is True, "Should implement interface"
         # Use pytest.approx for floating point comparison
-        assert result.quality_score == pytest.approx(1.0, abs=0.01), \
-            f"Quality score should be 1.0 when all checks pass, got {result.quality_score}"
+        assert result.quality_score == pytest.approx(
+            1.0, abs=0.01
+        ), f"Quality score should be 1.0 when all checks pass, got {result.quality_score}"
 
     def test_quality_score_zero_when_invalid(self, validator):
         """Test quality score is 0.0 when validation fails."""
         # Arrange: Code with syntax error
         code = GeneratedCode(
-            extractor_code='def broken(): invalid syntax',
-            models_code='class Model: pass',
-            tests_code='def test(): pass'
+            extractor_code="def broken(): invalid syntax",
+            models_code="class Model: pass",
+            tests_code="def test(): pass",
         )
 
         # Act
@@ -499,8 +510,9 @@ def test_example():
 
         # Assert
         assert result.is_valid is False
-        assert result.quality_score == 0.0, \
-            "Quality score should be 0.0 when validation fails"
+        assert (
+            result.quality_score == 0.0
+        ), "Quality score should be 0.0 when validation fails"
 
     def test_quality_score_partial_pass(self, validator):
         """Test quality score calculation with some checks failing."""
@@ -525,7 +537,7 @@ class Model:
 def test_example():
     """Test example."""
     assert True
-'''
+''',
         )
 
         # Act
@@ -537,5 +549,6 @@ def test_example():
         # Missing: type_hints(0.2)
         assert result.is_valid is True, "Code should pass validation"
         # Use pytest.approx for floating point comparison
-        assert result.quality_score == pytest.approx(0.8, abs=0.01), \
-            f"Quality score should be 0.8 (missing type hints), got {result.quality_score}"
+        assert result.quality_score == pytest.approx(
+            0.8, abs=0.01
+        ), f"Quality score should be 0.8 (missing type hints), got {result.quality_score}"

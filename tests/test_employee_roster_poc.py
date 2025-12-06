@@ -6,9 +6,10 @@ and can be processed by the ExcelDataSource.
 """
 
 import json
+from pathlib import Path
+
 import pytest
 import yaml
-from pathlib import Path
 
 # Test imports
 from edgar_analyzer.data_sources.excel_source import ExcelDataSource
@@ -26,7 +27,7 @@ class TestEmployeeRosterPOC:
     def project_config(self, project_root):
         """Load project.yaml configuration."""
         config_path = project_root / "project.yaml"
-        with open(config_path, 'r') as f:
+        with open(config_path, "r") as f:
             return yaml.safe_load(f)
 
     @pytest.fixture
@@ -35,7 +36,7 @@ class TestEmployeeRosterPOC:
         examples_dir = project_root / "examples"
         examples = {}
         for example_file in examples_dir.glob("*.json"):
-            with open(example_file, 'r') as f:
+            with open(example_file, "r") as f:
                 example_data = json.load(f)
                 examples[example_file.stem] = example_data
         return examples
@@ -50,7 +51,9 @@ class TestEmployeeRosterPOC:
         # Required files
         assert (project_root / "project.yaml").exists(), "project.yaml missing"
         assert (project_root / "README.md").exists(), "README.md missing"
-        assert (project_root / "input" / "hr_roster.xlsx").exists(), "hr_roster.xlsx missing"
+        assert (
+            project_root / "input" / "hr_roster.xlsx"
+        ).exists(), "hr_roster.xlsx missing"
 
         # Example files
         assert (project_root / "examples" / "alice.json").exists(), "alice.json missing"
@@ -116,9 +119,7 @@ class TestEmployeeRosterPOC:
 
         # Initialize data source
         data_source = ExcelDataSource(
-            file_path=str(excel_file),
-            sheet_name=0,
-            header_row=0
+            file_path=str(excel_file), sheet_name=0, header_row=0
         )
 
         # Fetch data
@@ -147,7 +148,9 @@ class TestEmployeeRosterPOC:
         assert alice["input"]["employee_id"] == alice["output"]["id"]
 
         # String concatenation: first_name + last_name → full_name
-        expected_full_name = f"{alice['input']['first_name']} {alice['input']['last_name']}"
+        expected_full_name = (
+            f"{alice['input']['first_name']} {alice['input']['last_name']}"
+        )
         assert alice["output"]["full_name"] == expected_full_name
 
         # Field rename: department → dept
@@ -182,9 +185,7 @@ class TestEmployeeRosterPOC:
         excel_file = project_root / "input" / "hr_roster.xlsx"
 
         data_source = ExcelDataSource(
-            file_path=str(excel_file),
-            sheet_name=0,
-            header_row=0
+            file_path=str(excel_file), sheet_name=0, header_row=0
         )
 
         result = data_source.fetch()
@@ -192,8 +193,13 @@ class TestEmployeeRosterPOC:
 
         # All records should have all required fields
         required_fields = [
-            "employee_id", "first_name", "last_name",
-            "department", "hire_date", "salary", "is_manager"
+            "employee_id",
+            "first_name",
+            "last_name",
+            "department",
+            "hire_date",
+            "salary",
+            "is_manager",
         ]
 
         for i, record in enumerate(records):
@@ -207,9 +213,7 @@ class TestEmployeeRosterPOC:
         excel_file = project_root / "input" / "hr_roster.xlsx"
 
         data_source = ExcelDataSource(
-            file_path=str(excel_file),
-            sheet_name=0,
-            header_row=0
+            file_path=str(excel_file), sheet_name=0, header_row=0
         )
 
         result = data_source.fetch()

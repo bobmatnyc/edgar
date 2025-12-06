@@ -27,7 +27,6 @@ import pytest
 
 from extract_transform_platform.data_sources.file.file_source import FileDataSource
 
-
 # ============================================================================
 # Test Fixtures
 # ============================================================================
@@ -419,7 +418,9 @@ class TestFileDataSourceConfiguration:
         assert is_valid is False
 
     @pytest.mark.asyncio
-    async def test_validate_config_permission_error(self, simple_json_file, monkeypatch):
+    async def test_validate_config_permission_error(
+        self, simple_json_file, monkeypatch
+    ):
         """Test validate_config returns False on PermissionError.
 
         Coverage: Lines 269-271 (validate_config → PermissionError handler)
@@ -437,7 +438,9 @@ class TestFileDataSourceConfiguration:
         assert is_valid is False
 
     @pytest.mark.asyncio
-    async def test_validate_config_generic_exception(self, simple_json_file, monkeypatch):
+    async def test_validate_config_generic_exception(
+        self, simple_json_file, monkeypatch
+    ):
         """Test validate_config returns False on unexpected exception.
 
         Coverage: Lines 272-274 (validate_config → Exception handler)

@@ -7,8 +7,9 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from edgar_analyzer.cli.commands.setup import setup
 from click.testing import CliRunner
+
+from edgar_analyzer.cli.commands.setup import setup
 
 
 def test_setup_command_registered():
@@ -24,11 +25,9 @@ def test_setup_command_registered():
 
     # Test non-interactive mode
     with runner.isolated_filesystem():
-        result = runner.invoke(setup, [
-            "--key", "openrouter",
-            "--value", "test-key",
-            "--no-validate"
-        ])
+        result = runner.invoke(
+            setup, ["--key", "openrouter", "--value", "test-key", "--no-validate"]
+        )
         print("\nNon-interactive setup:")
         print(result.output)
         assert result.exit_code == 0

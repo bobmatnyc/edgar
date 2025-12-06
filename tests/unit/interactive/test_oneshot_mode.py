@@ -5,8 +5,9 @@ Tests the execute_command_oneshot() method and session GUID functionality.
 """
 
 import json
-import pytest
 from pathlib import Path
+
+import pytest
 
 from edgar_analyzer.interactive.session import InteractiveExtractionSession
 
@@ -99,11 +100,13 @@ async def test_session_id_persistence():
     result = await session.execute_command_oneshot("help")
 
     # Check that session file was created
-    session_file = Path.home() / ".edgar" / "sessions" / f"{result['session_id']}_session.json"
+    session_file = (
+        Path.home() / ".edgar" / "sessions" / f"{result['session_id']}_session.json"
+    )
     assert session_file.exists()
 
     # Check that session file contains session_id
-    with open(session_file, 'r') as f:
+    with open(session_file, "r") as f:
         session_data = json.load(f)
 
     assert session_data["session_id"] == result["session_id"]

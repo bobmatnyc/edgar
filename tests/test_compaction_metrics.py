@@ -34,9 +34,7 @@ async def test_compaction_metrics():
 
     # Create memory with low threshold
     memory = SimpleChatbotMemory(
-        token_threshold=5000,
-        recent_keep_count=10,
-        llm_client=mock_llm_client
+        token_threshold=5000, recent_keep_count=10, llm_client=mock_llm_client
     )
 
     print("Step 1: Adding exchanges to exceed threshold...")
@@ -44,9 +42,10 @@ async def test_compaction_metrics():
     for i in range(50):
         await memory.add_exchange(
             user_input=f"Query {i}: " + ("Tell me about executive compensation " * 10),
-            controller_response=f"Response {i}: " + ("Here is detailed information about the data " * 20),
+            controller_response=f"Response {i}: "
+            + ("Here is detailed information about the data " * 20),
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
     # Capture BEFORE compaction
@@ -75,7 +74,11 @@ async def test_compaction_metrics():
 
     # Calculate reduction
     token_reduction = tokens_before_compaction - tokens_after_compaction
-    reduction_percent = (token_reduction / tokens_before_compaction * 100) if tokens_before_compaction > 0 else 0
+    reduction_percent = (
+        (token_reduction / tokens_before_compaction * 100)
+        if tokens_before_compaction > 0
+        else 0
+    )
 
     print("Step 4: Token Reduction Analysis...")
     print(f"  Token reduction: {token_reduction:,} tokens")
@@ -96,14 +99,20 @@ async def test_compaction_metrics():
 
     # Check 2: Tokens reduced
     if tokens_after_compaction < tokens_before_compaction:
-        print(f"  ✅ Tokens reduced: {tokens_before_compaction:,} → {tokens_after_compaction:,}")
+        print(
+            f"  ✅ Tokens reduced: {tokens_before_compaction:,} → {tokens_after_compaction:,}"
+        )
         checks_passed += 1
     else:
-        print(f"  ❌ Tokens INCREASED: {tokens_before_compaction:,} → {tokens_after_compaction:,}")
+        print(
+            f"  ❌ Tokens INCREASED: {tokens_before_compaction:,} → {tokens_after_compaction:,}"
+        )
 
     # Check 3: Summary created
     if memory.conversation_summary:
-        print(f"  ✅ Summary created with {len(memory.conversation_summary.get('key_facts', []))} key facts")
+        print(
+            f"  ✅ Summary created with {len(memory.conversation_summary.get('key_facts', []))} key facts"
+        )
         checks_passed += 1
     else:
         print(f"  ❌ No summary created")
@@ -136,7 +145,7 @@ async def test_multiple_compactions():
     memory = SimpleChatbotMemory(
         token_threshold=3000,  # Even lower threshold
         recent_keep_count=10,
-        llm_client=mock_llm_client
+        llm_client=mock_llm_client,
     )
 
     print("Adding 100 exchanges in batches with compaction...")
@@ -148,10 +157,12 @@ async def test_multiple_compactions():
         # Add 20 exchanges
         for i in range(20):
             await memory.add_exchange(
-                user_input=f"Batch {batch} Query {i}: " + ("executive compensation analysis " * 8),
-                controller_response=f"Batch {batch} Response {i}: " + ("detailed analysis results " * 15),
+                user_input=f"Batch {batch} Query {i}: "
+                + ("executive compensation analysis " * 8),
+                controller_response=f"Batch {batch} Response {i}: "
+                + ("detailed analysis results " * 15),
                 context_used=[],
-                scripts_executed=[]
+                scripts_executed=[],
             )
 
         # Check if compaction needed
@@ -162,12 +173,14 @@ async def test_multiple_compactions():
             tokens_after = memory.get_token_count()
             reduction = tokens_before - tokens_after
             print(f"  Compacted: {reduction:,} tokens saved")
-            compaction_results.append({
-                'batch': batch + 1,
-                'before': tokens_before,
-                'after': tokens_after,
-                'reduction': reduction
-            })
+            compaction_results.append(
+                {
+                    "batch": batch + 1,
+                    "before": tokens_before,
+                    "after": tokens_after,
+                    "reduction": reduction,
+                }
+            )
         else:
             print(f"  No compaction needed (tokens: {tokens_before:,})")
 
@@ -175,8 +188,14 @@ async def test_multiple_compactions():
     print()
     print("Compaction Summary:")
     for result in compaction_results:
-        reduction_pct = (result['reduction'] / result['before'] * 100) if result['before'] > 0 else 0
-        print(f"  Batch {result['batch']}: {result['reduction']:,} tokens saved ({reduction_pct:.1f}%)")
+        reduction_pct = (
+            (result["reduction"] / result["before"] * 100)
+            if result["before"] > 0
+            else 0
+        )
+        print(
+            f"  Batch {result['batch']}: {result['reduction']:,} tokens saved ({reduction_pct:.1f}%)"
+        )
 
     print()
     final_stats = memory.get_compaction_stats()
@@ -186,7 +205,7 @@ async def test_multiple_compactions():
     print(f"  Current tokens: {final_stats['current_tokens']:,}")
     print(f"  Summary tokens: {final_stats['summary_tokens']:,}")
 
-    if final_stats['compaction_count'] >= 2:
+    if final_stats["compaction_count"] >= 2:
         print("\n✅ Multiple compactions working correctly")
         return 0
     else:

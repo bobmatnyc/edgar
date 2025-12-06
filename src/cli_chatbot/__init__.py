@@ -14,25 +14,25 @@ Features:
 
 Usage:
     from cli_chatbot import ChatbotController
-    
+
     controller = ChatbotController(
         application_root="path/to/your/app",
         llm_client=your_llm_client,
         scripting_enabled=True
     )
-    
+
     await controller.start_conversation()
 """
 
-from .core.controller import ChatbotController
 from .core.context_injector import DynamicContextInjector
-from .core.scripting_engine import DynamicScriptingEngine
+from .core.controller import ChatbotController
 from .core.interfaces import (
-    LLMClient,
     ContextProvider,
+    InputOutputModifier,
+    LLMClient,
     ScriptExecutor,
-    InputOutputModifier
 )
+from .core.scripting_engine import DynamicScriptingEngine
 from .fallback.traditional_cli import TraditionalCLI, create_fallback_cli
 
 __version__ = "1.0.0"
@@ -47,5 +47,5 @@ __all__ = [
     "ScriptExecutor",
     "InputOutputModifier",
     "TraditionalCLI",
-    "create_fallback_cli"
+    "create_fallback_cli",
 ]

@@ -61,6 +61,7 @@ class SchemaAnalyzer(_PlatformSchemaAnalyzer):
         >>> # NEW (preferred)
         >>> from extract_transform_platform.services.analysis import SchemaAnalyzer
     """
+
     pass
 
 
@@ -68,8 +69,8 @@ class SchemaAnalyzer(_PlatformSchemaAnalyzer):
 from edgar_analyzer.models.patterns import (  # noqa: E402
     FieldTypeEnum,
     Schema,
-    SchemaField,
     SchemaDifference,
+    SchemaField,
 )
 
 __all__ = [

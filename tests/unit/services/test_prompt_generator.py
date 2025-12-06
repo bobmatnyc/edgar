@@ -41,7 +41,7 @@ class TestPromptGenerator:
                     required=True,
                     nullable=False,
                     nested_level=0,
-                    sample_values=["London", "Tokyo"]
+                    sample_values=["London", "Tokyo"],
                 ),
                 SchemaField(
                     path="main.temp",
@@ -49,11 +49,11 @@ class TestPromptGenerator:
                     required=True,
                     nullable=False,
                     nested_level=1,
-                    sample_values=[15.5, 22.3]
-                )
+                    sample_values=[15.5, 22.3],
+                ),
             ],
             is_nested=True,
-            has_arrays=False
+            has_arrays=False,
         )
 
         output_schema = Schema(
@@ -64,7 +64,7 @@ class TestPromptGenerator:
                     required=True,
                     nullable=False,
                     nested_level=0,
-                    sample_values=["London", "Tokyo"]
+                    sample_values=["London", "Tokyo"],
                 ),
                 SchemaField(
                     path="temperature_c",
@@ -72,11 +72,11 @@ class TestPromptGenerator:
                     required=True,
                     nullable=False,
                     nested_level=0,
-                    sample_values=[15.5, 22.3]
-                )
+                    sample_values=[15.5, 22.3],
+                ),
             ],
             is_nested=False,
-            has_arrays=False
+            has_arrays=False,
         )
 
         patterns = [
@@ -88,7 +88,7 @@ class TestPromptGenerator:
                 transformation="Direct copy with rename",
                 examples=[("London", "London"), ("Tokyo", "Tokyo")],
                 source_type=FieldTypeEnum.STRING,
-                target_type=FieldTypeEnum.STRING
+                target_type=FieldTypeEnum.STRING,
             ),
             Pattern(
                 type=PatternType.FIELD_EXTRACTION,
@@ -98,8 +98,8 @@ class TestPromptGenerator:
                 transformation="Extract nested field 'temp' from 'main' object",
                 examples=[({"temp": 15.5}, 15.5), ({"temp": 22.3}, 22.3)],
                 source_type=FieldTypeEnum.FLOAT,
-                target_type=FieldTypeEnum.FLOAT
-            )
+                target_type=FieldTypeEnum.FLOAT,
+            ),
         ]
 
         return ParsedExamples(
@@ -107,7 +107,7 @@ class TestPromptGenerator:
             output_schema=output_schema,
             patterns=patterns,
             num_examples=2,
-            warnings=[]
+            warnings=[],
         )
 
     def test_generate_prompt_basic(self, generator, sample_parsed_examples):
@@ -161,7 +161,7 @@ class TestPromptGenerator:
                     required=True,
                     nullable=False,
                     nested_level=0,
-                    sample_values=["value1"]
+                    sample_values=["value1"],
                 ),
                 SchemaField(
                     path="field2",
@@ -169,8 +169,8 @@ class TestPromptGenerator:
                     required=False,
                     nullable=True,
                     nested_level=0,
-                    sample_values=[42]
-                )
+                    sample_values=[42],
+                ),
             ]
         )
 
@@ -186,7 +186,9 @@ class TestPromptGenerator:
         prompt = generator.generate_prompt(sample_parsed_examples)
 
         # Should have detail sections for each pattern
-        pattern_sections = [s for s in prompt.sections if "Pattern" in s.title and ":" in s.title]
+        pattern_sections = [
+            s for s in prompt.sections if "Pattern" in s.title and ":" in s.title
+        ]
         assert len(pattern_sections) == 2
 
     def test_pattern_confidence_shown(self, generator, sample_parsed_examples):
@@ -205,13 +207,14 @@ class TestPromptGenerator:
         # Should include example values
         assert "London" in text or "Tokyo" in text
 
-    def test_implementation_requirements_section(self, generator, sample_parsed_examples):
+    def test_implementation_requirements_section(
+        self, generator, sample_parsed_examples
+    ):
         """Test implementation requirements section."""
         prompt = generator.generate_prompt(sample_parsed_examples)
 
         req_section = next(
-            (s for s in prompt.sections if "Requirements" in s.title),
-            None
+            (s for s in prompt.sections if "Requirements" in s.title), None
         )
 
         assert req_section is not None
@@ -225,14 +228,13 @@ class TestPromptGenerator:
             output_schema=Schema(fields=[]),
             patterns=[],
             num_examples=1,
-            warnings=["Warning 1", "Warning 2"]
+            warnings=["Warning 1", "Warning 2"],
         )
 
         prompt = generator.generate_prompt(parsed)
 
         warning_section = next(
-            (s for s in prompt.sections if "Warning" in s.title),
-            None
+            (s for s in prompt.sections if "Warning" in s.title), None
         )
 
         assert warning_section is not None
@@ -256,7 +258,7 @@ class TestPromptGenerator:
                 transformation="Map field",
                 examples=[("a", "a")],
                 source_type=FieldTypeEnum.STRING,
-                target_type=FieldTypeEnum.STRING
+                target_type=FieldTypeEnum.STRING,
             )
         ]
 
@@ -264,7 +266,7 @@ class TestPromptGenerator:
             input_schema=Schema(fields=[]),
             output_schema=Schema(fields=[]),
             patterns=patterns,
-            num_examples=1
+            num_examples=1,
         )
 
         prompt = generator.generate_prompt(parsed)
@@ -283,7 +285,7 @@ class TestPromptGenerator:
             transformation="Extract first element",
             examples=[([1, 2, 3], 1)],
             source_type=FieldTypeEnum.LIST,
-            target_type=FieldTypeEnum.INTEGER
+            target_type=FieldTypeEnum.INTEGER,
         )
 
         guidance = generator._get_implementation_guidance(pattern)
@@ -302,14 +304,14 @@ class TestPromptGenerator:
             transformation="int to str",
             examples=[(42, "42")],
             source_type=FieldTypeEnum.INTEGER,
-            target_type=FieldTypeEnum.STRING
+            target_type=FieldTypeEnum.STRING,
         )
 
         parsed = ParsedExamples(
             input_schema=Schema(fields=[]),
             output_schema=Schema(fields=[]),
             patterns=[safe_pattern],
-            num_examples=1
+            num_examples=1,
         )
 
         prompt = generator.generate_prompt(parsed)
@@ -320,7 +322,9 @@ class TestPromptGenerator:
 
     def test_project_name_included(self, generator, sample_parsed_examples):
         """Test that project name is included in prompt."""
-        prompt = generator.generate_prompt(sample_parsed_examples, project_name="weather_api")
+        prompt = generator.generate_prompt(
+            sample_parsed_examples, project_name="weather_api"
+        )
 
         assert prompt.metadata["project_name"] == "weather_api"
         text = prompt.to_text()
@@ -344,10 +348,10 @@ class TestPromptGenerator:
                     path="nested.field",
                     field_type=FieldTypeEnum.STRING,
                     nested_level=1,
-                    sample_values=["value"]
+                    sample_values=["value"],
                 )
             ],
-            is_nested=True
+            is_nested=True,
         )
 
         section = generator._create_input_schema_section(schema)
@@ -364,10 +368,10 @@ class TestPromptGenerator:
                     field_type=FieldTypeEnum.STRING,
                     is_array=True,
                     array_item_type=FieldTypeEnum.STRING,
-                    sample_values=["value"]
+                    sample_values=["value"],
                 )
             ],
-            has_arrays=True
+            has_arrays=True,
         )
 
         section = generator._create_input_schema_section(schema)
@@ -389,19 +393,34 @@ class TestPromptGeneration:
         # Simulate weather API transformation
         input_schema = Schema(
             fields=[
-                SchemaField(path="name", field_type=FieldTypeEnum.STRING, nested_level=0),
-                SchemaField(path="main.temp", field_type=FieldTypeEnum.FLOAT, nested_level=1),
-                SchemaField(path="weather[0].description", field_type=FieldTypeEnum.STRING, nested_level=1, is_array=True)
+                SchemaField(
+                    path="name", field_type=FieldTypeEnum.STRING, nested_level=0
+                ),
+                SchemaField(
+                    path="main.temp", field_type=FieldTypeEnum.FLOAT, nested_level=1
+                ),
+                SchemaField(
+                    path="weather[0].description",
+                    field_type=FieldTypeEnum.STRING,
+                    nested_level=1,
+                    is_array=True,
+                ),
             ],
             is_nested=True,
-            has_arrays=True
+            has_arrays=True,
         )
 
         output_schema = Schema(
             fields=[
-                SchemaField(path="city", field_type=FieldTypeEnum.STRING, nested_level=0),
-                SchemaField(path="temperature_c", field_type=FieldTypeEnum.FLOAT, nested_level=0),
-                SchemaField(path="conditions", field_type=FieldTypeEnum.STRING, nested_level=0)
+                SchemaField(
+                    path="city", field_type=FieldTypeEnum.STRING, nested_level=0
+                ),
+                SchemaField(
+                    path="temperature_c", field_type=FieldTypeEnum.FLOAT, nested_level=0
+                ),
+                SchemaField(
+                    path="conditions", field_type=FieldTypeEnum.STRING, nested_level=0
+                ),
             ]
         )
 
@@ -412,7 +431,7 @@ class TestPromptGeneration:
                 source_path="name",
                 target_path="city",
                 transformation="Direct copy",
-                examples=[("London", "London")]
+                examples=[("London", "London")],
             ),
             Pattern(
                 type=PatternType.FIELD_EXTRACTION,
@@ -420,7 +439,7 @@ class TestPromptGeneration:
                 source_path="main.temp",
                 target_path="temperature_c",
                 transformation="Extract nested temp",
-                examples=[({"temp": 15.5}, 15.5)]
+                examples=[({"temp": 15.5}, 15.5)],
             ),
             Pattern(
                 type=PatternType.ARRAY_FIRST,
@@ -428,15 +447,15 @@ class TestPromptGeneration:
                 source_path="weather[0].description",
                 target_path="conditions",
                 transformation="First array element",
-                examples=[([{"description": "rain"}], "rain")]
-            )
+                examples=[([{"description": "rain"}], "rain")],
+            ),
         ]
 
         parsed = ParsedExamples(
             input_schema=input_schema,
             output_schema=output_schema,
             patterns=patterns,
-            num_examples=3
+            num_examples=3,
         )
 
         prompt = generator.generate_prompt(parsed, project_name="weather_api")

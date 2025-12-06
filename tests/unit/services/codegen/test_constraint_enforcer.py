@@ -24,21 +24,22 @@ Testing error paths ensures robust error handling and meaningful error messages.
 Performance: Test suite executes in ~2-3 seconds (fast feedback)
 """
 
-import pytest
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
+
+from extract_transform_platform.models.validation import (
+    ConstraintConfig,
+    Severity,
+    ValidationResult,
+    Violation,
+)
 
 # CRITICAL: Use platform import path, NOT edgar_analyzer
 from extract_transform_platform.services.codegen.constraint_enforcer import (
     ConstraintEnforcer,
 )
-from extract_transform_platform.models.validation import (
-    ConstraintConfig,
-    ValidationResult,
-    Violation,
-    Severity,
-)
-
 
 # ============================================================================
 # FIXTURES
@@ -369,7 +370,9 @@ class TestConstraintEnforcerValidateCode:
         assert result.valid is True  # Empty code is technically valid
         assert len(result.violations) == 0
 
-    def test_validate_code_validator_exception(self, constraint_enforcer, valid_python_code):
+    def test_validate_code_validator_exception(
+        self, constraint_enforcer, valid_python_code
+    ):
         """
         Test that validator exceptions are caught and reported as violations.
 
@@ -465,7 +468,9 @@ class TestConstraintEnforcerValidateFile:
 
             # Check for file read error
             file_errors = [
-                v for v in result.violations if v.code in ("FILE_READ_ERROR", "FILE_NOT_FOUND")
+                v
+                for v in result.violations
+                if v.code in ("FILE_READ_ERROR", "FILE_NOT_FOUND")
             ]
             assert len(file_errors) >= 1
         finally:
@@ -493,7 +498,9 @@ class TestConstraintEnforcerValidateFile:
 
         # Should detect forbidden imports (os, subprocess)
         violation_codes = [v.code for v in result.violations]
-        assert any("FORBIDDEN_IMPORT" in code or "IMPORT" in code for code in violation_codes)
+        assert any(
+            "FORBIDDEN_IMPORT" in code or "IMPORT" in code for code in violation_codes
+        )
 
     def test_validate_file_encoding(self, constraint_enforcer, tmp_path):
         """

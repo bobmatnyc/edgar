@@ -18,6 +18,7 @@ History:
 """
 
 import warnings
+
 from extract_transform_platform.utils.rate_limiter import RateLimiter
 
 # Emit deprecation warning on import
@@ -26,7 +27,7 @@ warnings.warn(
     "Import from extract_transform_platform.utils instead:\n"
     "  from extract_transform_platform.utils import RateLimiter",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
-__all__ = ['RateLimiter']
+__all__ = ["RateLimiter"]

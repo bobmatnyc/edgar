@@ -11,8 +11,8 @@ This script verifies that slash commands work correctly:
 """
 
 import asyncio
-from unittest.mock import AsyncMock, patch, MagicMock
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from edgar_analyzer.interactive.session import InteractiveExtractionSession
 
@@ -39,7 +39,7 @@ async def test_slash_commands():
         print(f"Input: '{user_input}'")
 
         # Parse the input according to session logic
-        if user_input.startswith('/'):
+        if user_input.startswith("/"):
             # Slash command
             parts = user_input[1:].split(maxsplit=1)
             command = parts[0].lower()
@@ -52,7 +52,11 @@ async def test_slash_commands():
         else:
             # Check if natural language
             word_count = len(user_input.split())
-            is_natural = word_count > 3 or "?" in user_input or (user_input and user_input[0].isupper())
+            is_natural = (
+                word_count > 3
+                or "?" in user_input
+                or (user_input and user_input[0].isupper())
+            )
 
             if is_natural:
                 print(f"  🗣️  Natural language detected → routes to AI chat")
@@ -70,12 +74,12 @@ async def test_slash_commands():
         print()
 
     # Test actual command execution
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing actual command execution...")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
     # Mock the console to suppress output
-    with patch.object(session.console, 'print'):
+    with patch.object(session.console, "print"):
         # Test /help
         print("Testing: /help")
         await session.cmd_help("")
@@ -93,11 +97,11 @@ async def test_backward_compatibility():
     """Test that old command syntax still works."""
     session = InteractiveExtractionSession()
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Testing backward compatibility...")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
-    with patch.object(session.console, 'print'):
+    with patch.object(session.console, "print"):
         # Test that 'help' (no slash) still works
         print("Testing: help (no slash)")
         await session.cmd_help("")
@@ -112,16 +116,16 @@ async def test_backward_compatibility():
 
 async def main():
     """Run all tests."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SLASH COMMAND TEST SUITE")
-    print("="*60)
+    print("=" * 60)
 
     await test_slash_commands()
     await test_backward_compatibility()
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("✅ ALL TESTS PASSED")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
     print("Summary:")
     print("- Slash commands (/help, /exit, etc.) route correctly")

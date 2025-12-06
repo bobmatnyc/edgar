@@ -18,6 +18,7 @@ History:
 """
 
 import warnings
+
 from extract_transform_platform.core.base import BaseDataSource, IDataSource
 
 # Emit deprecation warning on import
@@ -26,11 +27,12 @@ warnings.warn(
     "Import from extract_transform_platform.core instead:\n"
     "  from extract_transform_platform.core import BaseDataSource, IDataSource",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
-__all__ = ['BaseDataSource', 'IDataSource']
+__all__ = ["BaseDataSource", "IDataSource"]
 
 # Legacy logger for any existing code that references it
 import logging
+
 logger = logging.getLogger(__name__)

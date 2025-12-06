@@ -20,12 +20,12 @@ class Company(BaseModel):
     market_cap: Optional[Decimal] = Field(None, description="Market capitalization")
     fortune_rank: Optional[int] = Field(None, description="Fortune 500 ranking")
 
-    @validator('cik')
+    @validator("cik")
     def validate_cik(cls, v: str) -> str:
         """Ensure CIK is 10 digits with leading zeros."""
         return str(v).zfill(10)
 
-    @validator('ticker')
+    @validator("ticker")
     def validate_ticker(cls, v: Optional[str]) -> Optional[str]:
         """Normalize ticker symbol."""
         return v.upper() if v else None
@@ -43,9 +43,13 @@ class ExecutiveCompensation(BaseModel):
     bonus: Optional[Decimal] = Field(None, description="Bonus")
     stock_awards: Optional[Decimal] = Field(None, description="Stock awards")
     option_awards: Optional[Decimal] = Field(None, description="Option awards")
-    other_compensation: Optional[Decimal] = Field(None, description="Other compensation")
+    other_compensation: Optional[Decimal] = Field(
+        None, description="Other compensation"
+    )
     filing_date: Optional[datetime] = Field(None, description="Filing date")
-    source_filing: Optional[str] = Field(None, description="Source filing accession number")
+    source_filing: Optional[str] = Field(
+        None, description="Source filing accession number"
+    )
 
 
 class TaxExpense(BaseModel):
@@ -55,12 +59,22 @@ class TaxExpense(BaseModel):
     fiscal_year: int = Field(..., description="Fiscal year")
     period: str = Field(..., description="Reporting period (annual/quarterly)")
     total_tax_expense: Decimal = Field(..., description="Total income tax expense")
-    current_tax_expense: Optional[Decimal] = Field(None, description="Current tax expense")
-    deferred_tax_expense: Optional[Decimal] = Field(None, description="Deferred tax expense")
-    federal_tax_expense: Optional[Decimal] = Field(None, description="Federal tax expense")
-    state_local_tax_expense: Optional[Decimal] = Field(None, description="State/local tax expense")
+    current_tax_expense: Optional[Decimal] = Field(
+        None, description="Current tax expense"
+    )
+    deferred_tax_expense: Optional[Decimal] = Field(
+        None, description="Deferred tax expense"
+    )
+    federal_tax_expense: Optional[Decimal] = Field(
+        None, description="Federal tax expense"
+    )
+    state_local_tax_expense: Optional[Decimal] = Field(
+        None, description="State/local tax expense"
+    )
     filing_date: Optional[datetime] = Field(None, description="Filing date")
-    source_filing: Optional[str] = Field(None, description="Source filing accession number")
+    source_filing: Optional[str] = Field(
+        None, description="Source filing accession number"
+    )
     form_type: Optional[str] = Field(None, description="Form type (10-K, 10-Q)")
 
 
@@ -86,7 +100,7 @@ class CompanyAnalysis(BaseModel):
         for comp in self.executive_compensations:
             year = comp.fiscal_year
             if year not in compensation_by_year:
-                compensation_by_year[year] = Decimal('0')
+                compensation_by_year[year] = Decimal("0")
             compensation_by_year[year] += comp.total_compensation
         return compensation_by_year
 
@@ -139,7 +153,9 @@ class AnalysisReport(BaseModel):
         return {
             "total_companies": total,
             "companies_with_higher_compensation": higher_comp,
-            "percentage_higher_compensation": (higher_comp / total * 100) if total > 0 else 0,
+            "percentage_higher_compensation": (
+                (higher_comp / total * 100) if total > 0 else 0
+            ),
             "target_year": self.target_year,
             "report_date": self.report_date,
         }

@@ -13,9 +13,11 @@ Tests cover:
 Coverage Target: Improve from 78% to 95%+
 """
 
-import pytest
 from typing import Any, Dict
 
+import pytest
+
+from edgar_analyzer.models.project_config import ExampleConfig
 from extract_transform_platform.models.patterns import (
     FieldTypeEnum,
     ParsedExamples,
@@ -24,8 +26,6 @@ from extract_transform_platform.models.patterns import (
 )
 from extract_transform_platform.services.analysis.example_parser import ExampleParser
 from extract_transform_platform.services.analysis.schema_analyzer import SchemaAnalyzer
-from edgar_analyzer.models.project_config import ExampleConfig
-
 
 # ============================================================================
 # FIXTURES
@@ -75,12 +75,7 @@ class TestExampleParserBasics:
 
     def test_parse_examples_single_example(self, parser):
         """Test parsing with single example (should warn)."""
-        examples = [
-            ExampleConfig(
-                input={"name": "London"},
-                output={"city": "London"}
-            )
-        ]
+        examples = [ExampleConfig(input={"name": "London"}, output={"city": "London"})]
 
         result = parser.parse_examples(examples)
 
@@ -93,16 +88,16 @@ class TestExampleParserBasics:
         examples = [
             ExampleConfig(
                 input={"name": "London", "temp": 15.5},
-                output={"city": "London", "temperature": 15.5}
+                output={"city": "London", "temperature": 15.5},
             ),
             ExampleConfig(
                 input={"name": "Tokyo", "temp": 22.3},
-                output={"city": "Tokyo", "temperature": 22.3}
+                output={"city": "Tokyo", "temperature": 22.3},
             ),
             ExampleConfig(
                 input={"name": "Paris", "temp": 18.0},
-                output={"city": "Paris", "temperature": 18.0}
-            )
+                output={"city": "Paris", "temperature": 18.0},
+            ),
         ]
 
         result = parser.parse_examples(examples)
@@ -116,7 +111,7 @@ class TestExampleParserBasics:
         examples = [
             ExampleConfig(
                 input={"name": "London", "temp": 15.5},
-                output={"city": "London", "temperature": 15.5}
+                output={"city": "London", "temperature": 15.5},
             )
         ]
 
@@ -132,7 +127,7 @@ class TestExampleParserBasics:
         examples = [
             ExampleConfig(
                 input={"name": "London", "extra_field": "value", "another": 42},
-                output={"city": "London"}
+                output={"city": "London"},
             )
         ]
 
@@ -152,14 +147,8 @@ class TestFieldPatterns:
     def test_field_mapping_direct_copy(self, parser):
         """Test FIELD_MAPPING pattern (same field name)."""
         examples = [
-            ExampleConfig(
-                input={"name": "London"},
-                output={"name": "London"}
-            ),
-            ExampleConfig(
-                input={"name": "Tokyo"},
-                output={"name": "Tokyo"}
-            )
+            ExampleConfig(input={"name": "London"}, output={"name": "London"}),
+            ExampleConfig(input={"name": "Tokyo"}, output={"name": "Tokyo"}),
         ]
 
         result = parser.parse_examples(examples)
@@ -174,14 +163,8 @@ class TestFieldPatterns:
     def test_field_mapping_rename(self, parser):
         """Test FIELD_MAPPING pattern (field rename)."""
         examples = [
-            ExampleConfig(
-                input={"old_name": "value1"},
-                output={"new_name": "value1"}
-            ),
-            ExampleConfig(
-                input={"old_name": "value2"},
-                output={"new_name": "value2"}
-            )
+            ExampleConfig(input={"old_name": "value1"}, output={"new_name": "value1"}),
+            ExampleConfig(input={"old_name": "value2"}, output={"new_name": "value2"}),
         ]
 
         result = parser.parse_examples(examples)
@@ -196,14 +179,8 @@ class TestFieldPatterns:
     def test_field_extraction_single_level(self, parser):
         """Test FIELD_EXTRACTION pattern (single-level nesting)."""
         examples = [
-            ExampleConfig(
-                input={"main": {"temp": 15.5}},
-                output={"temperature": 15.5}
-            ),
-            ExampleConfig(
-                input={"main": {"temp": 22.3}},
-                output={"temperature": 22.3}
-            )
+            ExampleConfig(input={"main": {"temp": 15.5}}, output={"temperature": 15.5}),
+            ExampleConfig(input={"main": {"temp": 22.3}}, output={"temperature": 22.3}),
         ]
 
         result = parser.parse_examples(examples)
@@ -219,12 +196,12 @@ class TestFieldPatterns:
         examples = [
             ExampleConfig(
                 input={"data": {"metrics": {"temperature": {"celsius": 15.5}}}},
-                output={"temp_c": 15.5}
+                output={"temp_c": 15.5},
             ),
             ExampleConfig(
                 input={"data": {"metrics": {"temperature": {"celsius": 22.3}}}},
-                output={"temp_c": 22.3}
-            )
+                output={"temp_c": 22.3},
+            ),
         ]
 
         result = parser.parse_examples(examples)
@@ -238,13 +215,11 @@ class TestFieldPatterns:
         """Test when source path is inconsistent across examples."""
         examples = [
             ExampleConfig(
-                input={"path_a": 15.5, "path_b": 100},
-                output={"value": 15.5}
+                input={"path_a": 15.5, "path_b": 100}, output={"value": 15.5}
             ),
             ExampleConfig(
-                input={"path_a": 200, "path_b": 22.3},
-                output={"value": 22.3}
-            )
+                input={"path_a": 200, "path_b": 22.3}, output={"value": 22.3}
+            ),
         ]
 
         result = parser.parse_examples(examples)
@@ -265,14 +240,8 @@ class TestArrayPatterns:
     def test_array_first_simple(self, parser):
         """Test ARRAY_FIRST pattern (simple values)."""
         examples = [
-            ExampleConfig(
-                input={"items": [1, 2, 3]},
-                output={"first": 1}
-            ),
-            ExampleConfig(
-                input={"items": [10, 20, 30]},
-                output={"first": 10}
-            )
+            ExampleConfig(input={"items": [1, 2, 3]}, output={"first": 1}),
+            ExampleConfig(input={"items": [10, 20, 30]}, output={"first": 10}),
         ]
 
         result = parser.parse_examples(examples)
@@ -286,13 +255,18 @@ class TestArrayPatterns:
         """Test ARRAY_FIRST with nested objects."""
         examples = [
             ExampleConfig(
-                input={"weather": [{"description": "light rain"}, {"description": "clouds"}]},
-                output={"conditions": "light rain"}
+                input={
+                    "weather": [
+                        {"description": "light rain"},
+                        {"description": "clouds"},
+                    ]
+                },
+                output={"conditions": "light rain"},
             ),
             ExampleConfig(
                 input={"weather": [{"description": "clear sky"}]},
-                output={"conditions": "clear sky"}
-            )
+                output={"conditions": "clear sky"},
+            ),
         ]
 
         result = parser.parse_examples(examples)
@@ -306,14 +280,8 @@ class TestArrayPatterns:
         # Note: SchemaAnalyzer may have issues with empty arrays
         # This test verifies we handle the edge case gracefully
         examples = [
-            ExampleConfig(
-                input={"items": [1, 2, 3]},
-                output={"first": 1}
-            ),
-            ExampleConfig(
-                input={"items": [4, 5, 6]},
-                output={"first": 4}
-            )
+            ExampleConfig(input={"items": [1, 2, 3]}, output={"first": 1}),
+            ExampleConfig(input={"items": [4, 5, 6]}, output={"first": 4}),
         ]
 
         result = parser.parse_examples(examples)
@@ -324,8 +292,7 @@ class TestArrayPatterns:
         """Test arrays with mixed types."""
         examples = [
             ExampleConfig(
-                input={"data": [1, "string", 3.14, True]},
-                output={"first": 1}
+                input={"data": [1, "string", 3.14, True]}, output={"first": 1}
             )
         ]
 
@@ -345,14 +312,8 @@ class TestTypeConversionPatterns:
     def test_type_conversion_string_to_int(self, parser):
         """Test TYPE_CONVERSION pattern (string → int)."""
         examples = [
-            ExampleConfig(
-                input={"count": "42"},
-                output={"total": 42}
-            ),
-            ExampleConfig(
-                input={"count": "100"},
-                output={"total": 100}
-            )
+            ExampleConfig(input={"count": "42"}, output={"total": 42}),
+            ExampleConfig(input={"count": "100"}, output={"total": 100}),
         ]
 
         result = parser.parse_examples(examples)
@@ -366,14 +327,8 @@ class TestTypeConversionPatterns:
     def test_type_conversion_int_to_float(self, parser):
         """Test TYPE_CONVERSION pattern (int → float)."""
         examples = [
-            ExampleConfig(
-                input={"int_value": 42},
-                output={"float_value": 42.0}
-            ),
-            ExampleConfig(
-                input={"int_value": 100},
-                output={"float_value": 100.0}
-            )
+            ExampleConfig(input={"int_value": 42}, output={"float_value": 42.0}),
+            ExampleConfig(input={"int_value": 100}, output={"float_value": 100.0}),
         ]
 
         result = parser.parse_examples(examples)
@@ -387,14 +342,8 @@ class TestTypeConversionPatterns:
     def test_type_conversion_int_to_string(self, parser):
         """Test TYPE_CONVERSION pattern (int → string)."""
         examples = [
-            ExampleConfig(
-                input={"code": 404},
-                output={"code": "404"}
-            ),
-            ExampleConfig(
-                input={"code": 200},
-                output={"code": "200"}
-            )
+            ExampleConfig(input={"code": 404}, output={"code": "404"}),
+            ExampleConfig(input={"code": 200}, output={"code": "200"}),
         ]
 
         result = parser.parse_examples(examples)
@@ -415,18 +364,9 @@ class TestConstantAndComplexPatterns:
     def test_constant_value_pattern(self, parser):
         """Test CONSTANT pattern (all outputs same, inputs vary)."""
         examples = [
-            ExampleConfig(
-                input={"name": "London"},
-                output={"source": "openweather"}
-            ),
-            ExampleConfig(
-                input={"name": "Tokyo"},
-                output={"source": "openweather"}
-            ),
-            ExampleConfig(
-                input={"name": "Paris"},
-                output={"source": "openweather"}
-            )
+            ExampleConfig(input={"name": "London"}, output={"source": "openweather"}),
+            ExampleConfig(input={"name": "Tokyo"}, output={"source": "openweather"}),
+            ExampleConfig(input={"name": "Paris"}, output={"source": "openweather"}),
         ]
 
         result = parser.parse_examples(examples)
@@ -440,14 +380,8 @@ class TestConstantAndComplexPatterns:
     def test_complex_transformation_calculation(self, parser):
         """Test COMPLEX pattern (calculations not auto-detected)."""
         examples = [
-            ExampleConfig(
-                input={"celsius": 0},
-                output={"fahrenheit": 32}
-            ),
-            ExampleConfig(
-                input={"celsius": 100},
-                output={"fahrenheit": 212}
-            )
+            ExampleConfig(input={"celsius": 0}, output={"fahrenheit": 32}),
+            ExampleConfig(input={"celsius": 100}, output={"fahrenheit": 212}),
         ]
 
         result = parser.parse_examples(examples)
@@ -462,13 +396,11 @@ class TestConstantAndComplexPatterns:
         """Test COMPLEX pattern (string manipulation)."""
         examples = [
             ExampleConfig(
-                input={"name": "john doe"},
-                output={"formatted_name": "John Doe"}
+                input={"name": "john doe"}, output={"formatted_name": "John Doe"}
             ),
             ExampleConfig(
-                input={"name": "jane smith"},
-                output={"formatted_name": "Jane Smith"}
-            )
+                input={"name": "jane smith"}, output={"formatted_name": "Jane Smith"}
+            ),
         ]
 
         result = parser.parse_examples(examples)
@@ -477,7 +409,11 @@ class TestConstantAndComplexPatterns:
         assert pattern is not None
         # May detect as TYPE_CONVERSION or COMPLEX since string transformation
         # isn't auto-detected (title case)
-        assert pattern.type in [PatternType.COMPLEX, PatternType.TYPE_CONVERSION, PatternType.FIELD_MAPPING]
+        assert pattern.type in [
+            PatternType.COMPLEX,
+            PatternType.TYPE_CONVERSION,
+            PatternType.FIELD_MAPPING,
+        ]
 
 
 # ============================================================================
@@ -650,14 +586,8 @@ class TestPatternDetectionPriority:
     def test_nested_extraction_over_direct_copy(self, parser):
         """Test that nested extraction is detected before direct copy."""
         examples = [
-            ExampleConfig(
-                input={"main": {"temp": 15.5}},
-                output={"temp": 15.5}
-            ),
-            ExampleConfig(
-                input={"main": {"temp": 22.3}},
-                output={"temp": 22.3}
-            )
+            ExampleConfig(input={"main": {"temp": 15.5}}, output={"temp": 15.5}),
+            ExampleConfig(input={"main": {"temp": 22.3}}, output={"temp": 22.3}),
         ]
 
         result = parser.parse_examples(examples)
@@ -671,14 +601,8 @@ class TestPatternDetectionPriority:
     def test_constant_over_type_conversion(self, parser):
         """Test that constant is detected over type conversion."""
         examples = [
-            ExampleConfig(
-                input={"value": 1},
-                output={"status": "active"}
-            ),
-            ExampleConfig(
-                input={"value": 2},
-                output={"status": "active"}
-            )
+            ExampleConfig(input={"value": 1}, output={"status": "active"}),
+            ExampleConfig(input={"value": 2}, output={"status": "active"}),
         ]
 
         result = parser.parse_examples(examples)
@@ -691,14 +615,8 @@ class TestPatternDetectionPriority:
     def test_array_first_over_direct_copy(self, parser):
         """Test that array first is detected correctly."""
         examples = [
-            ExampleConfig(
-                input={"items": [1, 2, 3]},
-                output={"first": 1}
-            ),
-            ExampleConfig(
-                input={"items": [10, 20, 30]},
-                output={"first": 10}
-            )
+            ExampleConfig(input={"items": [1, 2, 3]}, output={"first": 1}),
+            ExampleConfig(input={"items": [10, 20, 30]}, output={"first": 10}),
         ]
 
         result = parser.parse_examples(examples)
@@ -721,14 +639,8 @@ class TestWarningGeneration:
         """Test warning when patterns have low confidence."""
         # Create examples with inconsistent mapping
         examples = [
-            ExampleConfig(
-                input={"field_a": 1, "field_b": 100},
-                output={"value": 1}
-            ),
-            ExampleConfig(
-                input={"field_a": 200, "field_b": 2},
-                output={"value": 2}
-            )
+            ExampleConfig(input={"field_a": 1, "field_b": 100}, output={"value": 1}),
+            ExampleConfig(input={"field_a": 200, "field_b": 2}, output={"value": 2}),
         ]
 
         result = parser.parse_examples(examples)
@@ -738,12 +650,7 @@ class TestWarningGeneration:
 
     def test_warning_few_examples(self, parser):
         """Test warning when only 1-2 examples provided."""
-        examples = [
-            ExampleConfig(
-                input={"name": "London"},
-                output={"city": "London"}
-            )
-        ]
+        examples = [ExampleConfig(input={"name": "London"}, output={"city": "London"})]
 
         result = parser.parse_examples(examples)
 
@@ -753,14 +660,8 @@ class TestWarningGeneration:
     def test_warning_complex_patterns(self, parser):
         """Test warning when complex patterns detected."""
         examples = [
-            ExampleConfig(
-                input={"celsius": 0},
-                output={"fahrenheit": 32}
-            ),
-            ExampleConfig(
-                input={"celsius": 100},
-                output={"fahrenheit": 212}
-            )
+            ExampleConfig(input={"celsius": 0}, output={"fahrenheit": 32}),
+            ExampleConfig(input={"celsius": 100}, output={"fahrenheit": 212}),
         ]
 
         result = parser.parse_examples(examples)
@@ -782,13 +683,11 @@ class TestEdgeCases:
         """Test handling of null values in input."""
         examples = [
             ExampleConfig(
-                input={"name": "London", "optional": None},
-                output={"city": "London"}
+                input={"name": "London", "optional": None}, output={"city": "London"}
             ),
             ExampleConfig(
-                input={"name": "Tokyo", "optional": "value"},
-                output={"city": "Tokyo"}
-            )
+                input={"name": "Tokyo", "optional": "value"}, output={"city": "Tokyo"}
+            ),
         ]
 
         result = parser.parse_examples(examples)
@@ -802,7 +701,7 @@ class TestEdgeCases:
         examples = [
             ExampleConfig(
                 input={"name": "London", "optional": "value"},
-                output={"city": "London", "optional_out": None}
+                output={"city": "London", "optional_out": None},
             )
         ]
 
@@ -814,14 +713,8 @@ class TestEdgeCases:
     def test_mixed_types_in_examples(self, parser):
         """Test examples with different type values for same field."""
         examples = [
-            ExampleConfig(
-                input={"value": 42},
-                output={"formatted": "42"}
-            ),
-            ExampleConfig(
-                input={"value": "string"},
-                output={"formatted": "string"}
-            )
+            ExampleConfig(input={"value": 42}, output={"formatted": "42"}),
+            ExampleConfig(input={"value": "string"}, output={"formatted": "string"}),
         ]
 
         result = parser.parse_examples(examples)
@@ -833,18 +726,8 @@ class TestEdgeCases:
         """Test handling of very deep nesting."""
         examples = [
             ExampleConfig(
-                input={
-                    "level1": {
-                        "level2": {
-                            "level3": {
-                                "level4": {
-                                    "value": 42
-                                }
-                            }
-                        }
-                    }
-                },
-                output={"result": 42}
+                input={"level1": {"level2": {"level3": {"level4": {"value": 42}}}}},
+                output={"result": 42},
             )
         ]
 
@@ -859,8 +742,7 @@ class TestEdgeCases:
         """Test handling of arrays containing arrays."""
         examples = [
             ExampleConfig(
-                input={"matrix": [[1, 2], [3, 4]]},
-                output={"first_row": [1, 2]}
+                input={"matrix": [[1, 2], [3, 4]]}, output={"first_row": [1, 2]}
             )
         ]
 
@@ -872,14 +754,8 @@ class TestEdgeCases:
     def test_empty_string_values(self, parser):
         """Test handling of empty strings."""
         examples = [
-            ExampleConfig(
-                input={"name": ""},
-                output={"name": ""}
-            ),
-            ExampleConfig(
-                input={"name": "London"},
-                output={"name": "London"}
-            )
+            ExampleConfig(input={"name": ""}, output={"name": ""}),
+            ExampleConfig(input={"name": "London"}, output={"name": "London"}),
         ]
 
         result = parser.parse_examples(examples)
@@ -890,14 +766,8 @@ class TestEdgeCases:
     def test_boolean_values(self, parser):
         """Test handling of boolean values."""
         examples = [
-            ExampleConfig(
-                input={"active": True},
-                output={"is_active": True}
-            ),
-            ExampleConfig(
-                input={"active": False},
-                output={"is_active": False}
-            )
+            ExampleConfig(input={"active": True}, output={"is_active": True}),
+            ExampleConfig(input={"active": False}, output={"is_active": False}),
         ]
 
         result = parser.parse_examples(examples)
@@ -910,14 +780,8 @@ class TestEdgeCases:
     def test_numeric_zero_values(self, parser):
         """Test handling of zero values."""
         examples = [
-            ExampleConfig(
-                input={"count": 0},
-                output={"total": 0}
-            ),
-            ExampleConfig(
-                input={"count": 10},
-                output={"total": 10}
-            )
+            ExampleConfig(input={"count": 0}, output={"total": 0}),
+            ExampleConfig(input={"count": 10}, output={"total": 10}),
         ]
 
         result = parser.parse_examples(examples)
@@ -930,8 +794,7 @@ class TestEdgeCases:
         """Test handling of unicode/emoji in strings."""
         examples = [
             ExampleConfig(
-                input={"text": "Hello 世界 🌍"},
-                output={"message": "Hello 世界 🌍"}
+                input={"text": "Hello 世界 🌍"}, output={"message": "Hello 世界 🌍"}
             )
         ]
 
@@ -944,10 +807,7 @@ class TestEdgeCases:
         """Test handling of very long string values."""
         long_string = "x" * 1000
         examples = [
-            ExampleConfig(
-                input={"text": long_string},
-                output={"message": long_string}
-            )
+            ExampleConfig(input={"text": long_string}, output={"message": long_string})
         ]
 
         result = parser.parse_examples(examples)
@@ -967,18 +827,9 @@ class TestConfidenceCalculation:
     def test_perfect_confidence_all_match(self, parser):
         """Test confidence = 1.0 when all examples match pattern."""
         examples = [
-            ExampleConfig(
-                input={"name": "London"},
-                output={"city": "London"}
-            ),
-            ExampleConfig(
-                input={"name": "Tokyo"},
-                output={"city": "Tokyo"}
-            ),
-            ExampleConfig(
-                input={"name": "Paris"},
-                output={"city": "Paris"}
-            )
+            ExampleConfig(input={"name": "London"}, output={"city": "London"}),
+            ExampleConfig(input={"name": "Tokyo"}, output={"city": "Tokyo"}),
+            ExampleConfig(input={"name": "Paris"}, output={"city": "Paris"}),
         ]
 
         result = parser.parse_examples(examples)
@@ -992,16 +843,16 @@ class TestConfidenceCalculation:
         examples = [
             ExampleConfig(
                 input={"name": "London", "temp": 15.5},
-                output={"city": "London", "temperature": 15.5}
+                output={"city": "London", "temperature": 15.5},
             ),
             ExampleConfig(
                 input={"name": "Tokyo", "temp": 22.3},
-                output={"city": "Tokyo", "temperature": 22.3}
+                output={"city": "Tokyo", "temperature": 22.3},
             ),
             ExampleConfig(
                 input={"name": "Paris", "temp": 18.0},
-                output={"city": "Paris", "temperature": 18.0}
-            )
+                output={"city": "Paris", "temperature": 18.0},
+            ),
         ]
 
         result = parser.parse_examples(examples)
@@ -1030,7 +881,7 @@ class TestIdentifyPatterns:
         examples = [
             ExampleConfig(
                 input={"name": "London", "temp": 15.5, "humidity": 80},
-                output={"city": "London", "temperature": 15.5, "humidity_pct": 80}
+                output={"city": "London", "temperature": 15.5, "humidity_pct": 80},
             )
         ]
 
@@ -1048,12 +899,7 @@ class TestIdentifyPatterns:
         examples = [
             ExampleConfig(
                 input={"name": "London", "temp": 15.5},
-                output={
-                    "location": "London",
-                    "weather": {
-                        "temperature": 15.5
-                    }
-                }
+                output={"location": "London", "weather": {"temperature": 15.5}},
             )
         ]
 
@@ -1074,14 +920,8 @@ class TestPatternExamples:
     def test_pattern_includes_examples(self, parser):
         """Test that patterns include example value pairs."""
         examples = [
-            ExampleConfig(
-                input={"name": "London"},
-                output={"city": "London"}
-            ),
-            ExampleConfig(
-                input={"name": "Tokyo"},
-                output={"city": "Tokyo"}
-            )
+            ExampleConfig(input={"name": "London"}, output={"city": "London"}),
+            ExampleConfig(input={"name": "Tokyo"}, output={"city": "Tokyo"}),
         ]
 
         result = parser.parse_examples(examples)
@@ -1095,18 +935,9 @@ class TestPatternExamples:
     def test_pattern_examples_match_count(self, parser):
         """Test pattern examples match number of input examples."""
         examples = [
-            ExampleConfig(
-                input={"temp": 15.5},
-                output={"temperature": 15.5}
-            ),
-            ExampleConfig(
-                input={"temp": 22.3},
-                output={"temperature": 22.3}
-            ),
-            ExampleConfig(
-                input={"temp": 18.0},
-                output={"temperature": 18.0}
-            )
+            ExampleConfig(input={"temp": 15.5}, output={"temperature": 15.5}),
+            ExampleConfig(input={"temp": 22.3}, output={"temperature": 22.3}),
+            ExampleConfig(input={"temp": 18.0}, output={"temperature": 18.0}),
         ]
 
         result = parser.parse_examples(examples)
@@ -1132,7 +963,7 @@ class TestComplexScenarios:
                     "name": "London",
                     "main": {"temp": 15.5, "humidity": 80},
                     "weather": [{"description": "light rain"}],
-                    "sys": {"country": "GB"}
+                    "sys": {"country": "GB"},
                 },
                 output={
                     "city": "London",
@@ -1140,15 +971,15 @@ class TestComplexScenarios:
                     "humidity_percent": 80,
                     "conditions": "light rain",
                     "country": "GB",
-                    "source": "openweather"
-                }
+                    "source": "openweather",
+                },
             ),
             ExampleConfig(
                 input={
                     "name": "Tokyo",
                     "main": {"temp": 22.3, "humidity": 65},
                     "weather": [{"description": "clear sky"}],
-                    "sys": {"country": "JP"}
+                    "sys": {"country": "JP"},
                 },
                 output={
                     "city": "Tokyo",
@@ -1156,9 +987,9 @@ class TestComplexScenarios:
                     "humidity_percent": 65,
                     "conditions": "clear sky",
                     "country": "JP",
-                    "source": "openweather"
-                }
-            )
+                    "source": "openweather",
+                },
+            ),
         ]
 
         result = parser.parse_examples(examples)
@@ -1187,19 +1018,11 @@ class TestComplexScenarios:
                 input={
                     "data": {
                         "user": {
-                            "profile": {
-                                "personal": {
-                                    "name": "John Doe",
-                                    "age": 30
-                                }
-                            }
+                            "profile": {"personal": {"name": "John Doe", "age": 30}}
                         }
                     }
                 },
-                output={
-                    "user_name": "John Doe",
-                    "user_age": 30
-                }
+                output={"user_name": "John Doe", "user_age": 30},
             )
         ]
 
@@ -1223,16 +1046,16 @@ class TestComplexScenarios:
                     "temp": "15.5",
                     "main": {"humidity": 80},
                     "items": [1, 2, 3],
-                    "status": 1
+                    "status": 1,
                 },
                 output={
-                    "city": "London",          # FIELD_MAPPING (rename)
-                    "temperature": 15.5,       # TYPE_CONVERSION (str → float)
-                    "humidity": 80,            # FIELD_EXTRACTION (nested)
-                    "first_item": 1,           # ARRAY_FIRST or FIELD_EXTRACTION
-                    "source": "api",           # CONSTANT
-                    "active": True             # COMPLEX or CONSTANT
-                }
+                    "city": "London",  # FIELD_MAPPING (rename)
+                    "temperature": 15.5,  # TYPE_CONVERSION (str → float)
+                    "humidity": 80,  # FIELD_EXTRACTION (nested)
+                    "first_item": 1,  # ARRAY_FIRST or FIELD_EXTRACTION
+                    "source": "api",  # CONSTANT
+                    "active": True,  # COMPLEX or CONSTANT
+                },
             )
         ]
 

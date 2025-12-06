@@ -34,6 +34,14 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 
+from extract_transform_platform.models.patterns import (
+    FieldTypeEnum,
+    ParsedExamples,
+    Pattern,
+    PatternType,
+    Schema,
+    SchemaField,
+)
 from extract_transform_platform.models.plan import (
     ClassSpec,
     CodeValidationResult,
@@ -42,27 +50,18 @@ from extract_transform_platform.models.plan import (
     MethodSpec,
     PlanSpec,
 )
-from extract_transform_platform.models.patterns import (
-    ParsedExamples,
-    Pattern,
-    PatternType,
-    Schema,
-    SchemaField,
-    FieldTypeEnum,
-)
 from extract_transform_platform.models.project_config import (
-    ProjectConfig,
-    ProjectMetadata,
     OutputConfig,
     OutputDestinationConfig,
     OutputFormat,
+    ProjectConfig,
+    ProjectMetadata,
 )
 from extract_transform_platform.services.codegen.code_generator import (
     CodeGeneratorService,
     CodeValidator,
     CodeWriter,
 )
-
 
 # ============================================================================
 # FIXTURES
@@ -112,7 +111,7 @@ import pytest
 def test_weather_extraction():
     """Test weather extraction."""
     assert True
-'''
+''',
     )
 
 
@@ -186,9 +185,9 @@ def sample_plan():
                         name="extract",
                         purpose="Extract data",
                         parameters=["self", "data: Dict[str, Any]"],
-                        return_type="Dict[str, Any]"
+                        return_type="Dict[str, Any]",
                     )
-                ]
+                ],
             )
         ],
         dependencies=["typing"],
@@ -205,7 +204,9 @@ def sample_plan():
 class TestCodeWriter:
     """Test CodeWriter file operations and backup mechanism."""
 
-    def test_write_creates_directory_structure(self, code_writer, sample_generated_code, temp_dir):
+    def test_write_creates_directory_structure(
+        self, code_writer, sample_generated_code, temp_dir
+    ):
         """Test that writer creates project directory and files."""
         # Act
         paths = code_writer.write(sample_generated_code, "test_project", backup=False)
@@ -215,7 +216,9 @@ class TestCodeWriter:
         assert project_dir.exists(), "Project directory should be created"
         assert (project_dir / "extractor.py").exists(), "extractor.py should exist"
         assert (project_dir / "models.py").exists(), "models.py should exist"
-        assert (project_dir / "test_extractor.py").exists(), "test_extractor.py should exist"
+        assert (
+            project_dir / "test_extractor.py"
+        ).exists(), "test_extractor.py should exist"
         assert (project_dir / "__init__.py").exists(), "__init__.py should exist"
 
         # Verify paths dictionary
@@ -224,7 +227,9 @@ class TestCodeWriter:
         assert "test_extractor" in paths
         assert "init" in paths
 
-    def test_write_backs_up_existing_files(self, code_writer, sample_generated_code, temp_dir):
+    def test_write_backs_up_existing_files(
+        self, code_writer, sample_generated_code, temp_dir
+    ):
         """Test that writer backs up existing files with timestamp."""
         # Arrange: Create existing file
         project_dir = temp_dir / "test_project"
@@ -240,14 +245,17 @@ class TestCodeWriter:
         # Verify backup created with timestamp
         backup_files = list(project_dir.glob("extractor.py.bak.*"))
         assert len(backup_files) == 1, "Should create exactly one backup file"
-        assert backup_files[0].read_text() == original_content, \
-            "Backup should contain original content"
+        assert (
+            backup_files[0].read_text() == original_content
+        ), "Backup should contain original content"
 
         # Verify new file written
-        assert extractor_file.read_text() != original_content, \
-            "File should be updated with new content"
-        assert "WeatherExtractor" in extractor_file.read_text(), \
-            "New content should be present"
+        assert (
+            extractor_file.read_text() != original_content
+        ), "File should be updated with new content"
+        assert (
+            "WeatherExtractor" in extractor_file.read_text()
+        ), "New content should be present"
 
     def test_write_returns_file_paths(self, code_writer, sample_generated_code):
         """Test that writer returns dictionary of file paths."""
@@ -256,11 +264,16 @@ class TestCodeWriter:
 
         # Assert
         assert isinstance(paths, dict), "Should return dictionary"
-        assert all(isinstance(p, Path) for p in paths.values()), \
-            "All values should be Path objects"
-        assert len(paths) == 4, "Should return 4 file paths (extractor, models, test, init)"
+        assert all(
+            isinstance(p, Path) for p in paths.values()
+        ), "All values should be Path objects"
+        assert (
+            len(paths) == 4
+        ), "Should return 4 file paths (extractor, models, test, init)"
 
-    def test_write_generates_init_file(self, code_writer, sample_generated_code, temp_dir):
+    def test_write_generates_init_file(
+        self, code_writer, sample_generated_code, temp_dir
+    ):
         """Test that __init__.py is generated with docstring."""
         # Act
         paths = code_writer.write(sample_generated_code, "my_extractor", backup=False)
@@ -289,15 +302,17 @@ class TestGenerateFromParsed:
         sample_project_config,
         sample_plan,
         sample_generated_code,
-        temp_dir
+        temp_dir,
     ):
         """Test generate_from_parsed() with validation enabled."""
         # Arrange
         service = CodeGeneratorService(output_dir=temp_dir)
 
         # Mock agent methods
-        with patch.object(service.agent, 'plan', new_callable=AsyncMock) as mock_plan:
-            with patch.object(service.agent, 'code', new_callable=AsyncMock) as mock_code:
+        with patch.object(service.agent, "plan", new_callable=AsyncMock) as mock_plan:
+            with patch.object(
+                service.agent, "code", new_callable=AsyncMock
+            ) as mock_code:
                 mock_plan.return_value = sample_plan
                 mock_code.return_value = sample_generated_code
 
@@ -306,7 +321,7 @@ class TestGenerateFromParsed:
                     parsed=sample_parsed_examples,
                     project_config=sample_project_config,
                     validate=True,
-                    write_files=False
+                    write_files=False,
                 )
 
         # Assert
@@ -321,11 +336,7 @@ class TestGenerateFromParsed:
 
     @pytest.mark.asyncio
     async def test_generate_from_parsed_validation_failure(
-        self,
-        sample_parsed_examples,
-        sample_project_config,
-        sample_plan,
-        temp_dir
+        self, sample_parsed_examples, sample_project_config, sample_plan, temp_dir
     ):
         """Test generate_from_parsed() raises on validation failure."""
         # Arrange
@@ -334,12 +345,14 @@ class TestGenerateFromParsed:
         invalid_code = GeneratedCode(
             extractor_code="invalid syntax here",
             models_code="class Model: pass",
-            tests_code="# no tests"
+            tests_code="# no tests",
         )
 
         # Mock agent and validator
-        with patch.object(service.agent, 'plan', new_callable=AsyncMock) as mock_plan:
-            with patch.object(service.agent, 'code', new_callable=AsyncMock) as mock_code:
+        with patch.object(service.agent, "plan", new_callable=AsyncMock) as mock_plan:
+            with patch.object(
+                service.agent, "code", new_callable=AsyncMock
+            ) as mock_code:
                 mock_plan.return_value = sample_plan
                 mock_code.return_value = invalid_code
 
@@ -349,7 +362,7 @@ class TestGenerateFromParsed:
                         parsed=sample_parsed_examples,
                         project_config=sample_project_config,
                         validate=True,
-                        write_files=False
+                        write_files=False,
                     )
 
     @pytest.mark.asyncio
@@ -359,15 +372,17 @@ class TestGenerateFromParsed:
         sample_project_config,
         sample_plan,
         sample_generated_code,
-        temp_dir
+        temp_dir,
     ):
         """Test generate_from_parsed() with write_files=False (dry-run)."""
         # Arrange
         service = CodeGeneratorService(output_dir=temp_dir)
 
         # Mock agent methods
-        with patch.object(service.agent, 'plan', new_callable=AsyncMock) as mock_plan:
-            with patch.object(service.agent, 'code', new_callable=AsyncMock) as mock_code:
+        with patch.object(service.agent, "plan", new_callable=AsyncMock) as mock_plan:
+            with patch.object(
+                service.agent, "code", new_callable=AsyncMock
+            ) as mock_code:
                 mock_plan.return_value = sample_plan
                 mock_code.return_value = sample_generated_code
 
@@ -376,7 +391,7 @@ class TestGenerateFromParsed:
                     parsed=sample_parsed_examples,
                     project_config=sample_project_config,
                     validate=False,
-                    write_files=False
+                    write_files=False,
                 )
 
         # Assert
@@ -384,7 +399,9 @@ class TestGenerateFromParsed:
 
         # Verify no files written
         project_dir = temp_dir / sample_project_config.project.name
-        assert not project_dir.exists(), "Should not create project directory in dry-run"
+        assert (
+            not project_dir.exists()
+        ), "Should not create project directory in dry-run"
 
 
 # ============================================================================
@@ -397,67 +414,57 @@ class TestEdgeCases:
 
     @pytest.mark.asyncio
     async def test_generate_with_parser_exception(
-        self,
-        sample_project_config,
-        temp_dir
+        self, sample_project_config, temp_dir
     ):
         """Test that parser exceptions are propagated correctly."""
         # Arrange
         service = CodeGeneratorService(output_dir=temp_dir)
 
         # Mock parser to raise exception
-        with patch.object(service.parser, 'parse_examples') as mock_parser:
+        with patch.object(service.parser, "parse_examples") as mock_parser:
             mock_parser.side_effect = ValueError("Invalid example format")
 
             # Act & Assert
             with pytest.raises(ValueError, match="Invalid example format"):
                 await service.generate(
                     examples=[{"input": {}, "output": {}}],
-                    project_config=sample_project_config
+                    project_config=sample_project_config,
                 )
 
     @pytest.mark.asyncio
     async def test_generate_from_parsed_with_exception(
-        self,
-        sample_parsed_examples,
-        sample_project_config,
-        temp_dir
+        self, sample_parsed_examples, sample_project_config, temp_dir
     ):
         """Test that exceptions in generate_from_parsed are tracked."""
         # Arrange
         service = CodeGeneratorService(output_dir=temp_dir)
 
         # Mock agent to raise exception
-        with patch.object(service.agent, 'plan', new_callable=AsyncMock) as mock_plan:
+        with patch.object(service.agent, "plan", new_callable=AsyncMock) as mock_plan:
             mock_plan.side_effect = RuntimeError("Agent failure")
 
             # Act & Assert
             with pytest.raises(RuntimeError, match="Agent failure"):
                 await service.generate_from_parsed(
-                    parsed=sample_parsed_examples,
-                    project_config=sample_project_config
+                    parsed=sample_parsed_examples, project_config=sample_project_config
                 )
 
     @pytest.mark.asyncio
     async def test_generate_from_parsed_records_duration_on_failure(
-        self,
-        sample_parsed_examples,
-        sample_project_config,
-        temp_dir
+        self, sample_parsed_examples, sample_project_config, temp_dir
     ):
         """Test that duration is recorded even when generation fails."""
         # Arrange
         service = CodeGeneratorService(output_dir=temp_dir)
 
         # Mock agent to raise exception
-        with patch.object(service.agent, 'plan', new_callable=AsyncMock) as mock_plan:
+        with patch.object(service.agent, "plan", new_callable=AsyncMock) as mock_plan:
             mock_plan.side_effect = ValueError("Generation failed")
 
             # Act
             try:
                 context = await service.generate_from_parsed(
-                    parsed=sample_parsed_examples,
-                    project_config=sample_project_config
+                    parsed=sample_parsed_examples, project_config=sample_project_config
                 )
             except ValueError:
                 pass  # Expected
@@ -483,7 +490,7 @@ class TestCodeWriterEdgeCases:
         code = GeneratedCode(
             extractor_code="class E: pass",
             models_code="class M: pass",
-            tests_code="def test(): pass"
+            tests_code="def test(): pass",
         )
 
         # Act
@@ -518,7 +525,9 @@ class TestCodeWriterEdgeCases:
 class TestCodeWriterFileContent:
     """Test that CodeWriter writes correct content to files."""
 
-    def test_write_extractor_content(self, code_writer, sample_generated_code, temp_dir):
+    def test_write_extractor_content(
+        self, code_writer, sample_generated_code, temp_dir
+    ):
         """Test that extractor code is written correctly."""
         # Act
         paths = code_writer.write(sample_generated_code, "test_project", backup=False)
@@ -568,14 +577,16 @@ class TestGenerationContextTracking:
         sample_project_config,
         sample_plan,
         sample_generated_code,
-        temp_dir
+        temp_dir,
     ):
         """Test that pattern count is tracked in context."""
         # Arrange
         service = CodeGeneratorService(output_dir=temp_dir)
 
-        with patch.object(service.agent, 'plan', new_callable=AsyncMock) as mock_plan:
-            with patch.object(service.agent, 'code', new_callable=AsyncMock) as mock_code:
+        with patch.object(service.agent, "plan", new_callable=AsyncMock) as mock_plan:
+            with patch.object(
+                service.agent, "code", new_callable=AsyncMock
+            ) as mock_code:
                 mock_plan.return_value = sample_plan
                 mock_code.return_value = sample_generated_code
 
@@ -584,14 +595,16 @@ class TestGenerationContextTracking:
                     parsed=sample_parsed_examples,
                     project_config=sample_project_config,
                     validate=False,
-                    write_files=False
+                    write_files=False,
                 )
 
         # Assert
-        assert context.num_patterns == len(sample_parsed_examples.patterns), \
-            "Should track number of patterns"
-        assert context.num_examples == sample_parsed_examples.num_examples, \
-            "Should track number of examples"
+        assert context.num_patterns == len(
+            sample_parsed_examples.patterns
+        ), "Should track number of patterns"
+        assert (
+            context.num_examples == sample_parsed_examples.num_examples
+        ), "Should track number of examples"
 
     @pytest.mark.asyncio
     async def test_generate_from_parsed_tracks_duration(
@@ -600,14 +613,16 @@ class TestGenerationContextTracking:
         sample_project_config,
         sample_plan,
         sample_generated_code,
-        temp_dir
+        temp_dir,
     ):
         """Test that generation duration is tracked."""
         # Arrange
         service = CodeGeneratorService(output_dir=temp_dir)
 
-        with patch.object(service.agent, 'plan', new_callable=AsyncMock) as mock_plan:
-            with patch.object(service.agent, 'code', new_callable=AsyncMock) as mock_code:
+        with patch.object(service.agent, "plan", new_callable=AsyncMock) as mock_plan:
+            with patch.object(
+                service.agent, "code", new_callable=AsyncMock
+            ) as mock_code:
                 mock_plan.return_value = sample_plan
                 mock_code.return_value = sample_generated_code
 
@@ -616,11 +631,13 @@ class TestGenerationContextTracking:
                     parsed=sample_parsed_examples,
                     project_config=sample_project_config,
                     validate=False,
-                    write_files=False
+                    write_files=False,
                 )
 
         # Assert
-        assert context.generation_duration_seconds is not None, \
-            "Should track generation duration"
-        assert context.generation_duration_seconds >= 0, \
-            "Duration should be non-negative"
+        assert (
+            context.generation_duration_seconds is not None
+        ), "Should track generation duration"
+        assert (
+            context.generation_duration_seconds >= 0
+        ), "Duration should be non-negative"

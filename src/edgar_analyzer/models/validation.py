@@ -17,10 +17,10 @@ Migration Status: COMPLETE (1M-378, T3)
 
 # Re-export all models from platform package
 from extract_transform_platform.models.validation import (
-    Severity,
-    Violation,
-    ValidationResult,
     ConstraintConfig,
+    Severity,
+    ValidationResult,
+    Violation,
 )
 
 __all__ = [

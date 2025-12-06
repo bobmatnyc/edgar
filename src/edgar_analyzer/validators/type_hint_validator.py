@@ -7,7 +7,7 @@ Ensures all methods have proper type annotations for parameters and return value
 import ast
 from typing import List
 
-from edgar_analyzer.models.validation import Violation, Severity, ConstraintConfig
+from edgar_analyzer.models.validation import ConstraintConfig, Severity, Violation
 
 
 class TypeHintValidator:

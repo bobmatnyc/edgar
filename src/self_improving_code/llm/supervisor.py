@@ -6,7 +6,8 @@ the OpenAI-compatible chat completions API.
 """
 
 import json
-from typing import Dict, Any, Callable, List
+from typing import Any, Callable, Dict, List
+
 import structlog
 
 from ..core.interfaces import SupervisorLLM
@@ -17,11 +18,11 @@ logger = structlog.get_logger(__name__)
 class LLMSupervisor(SupervisorLLM):
     """
     LLM-based Supervisor + QA implementation.
-    
+
     This class can work with any LLM that supports chat completions
     (OpenAI, Anthropic via OpenRouter, local models, etc.)
     """
-    
+
     def __init__(
         self,
         llm_client: Callable,
@@ -29,7 +30,7 @@ class LLMSupervisor(SupervisorLLM):
         domain_expertise: str = "general software quality",
         quality_standards: Dict[str, Any] = None,
         enable_web_search: bool = False,
-        web_search_client: Callable = None
+        web_search_client: Callable = None,
     ):
         """
         Initialize LLM Supervisor.
@@ -52,21 +53,21 @@ class LLMSupervisor(SupervisorLLM):
         self.quality_standards = quality_standards or {
             "pass_threshold": 0.8,
             "conditional_threshold": 0.5,
-            "fail_threshold": 0.0
+            "fail_threshold": 0.0,
         }
         self.enable_web_search = enable_web_search
         self.web_search_client = web_search_client
-        
-        logger.info("LLM Supervisor initialized", 
-                   model=model_name, 
-                   domain=domain_expertise)
-    
+
+        logger.info(
+            "LLM Supervisor initialized", model=model_name, domain=domain_expertise
+        )
+
     async def evaluate_results(
         self,
         test_results: Dict[str, Any],
         iteration: int,
         context: Dict[str, Any],
-        enable_search_for_validation: bool = False
+        enable_search_for_validation: bool = False,
     ) -> Dict[str, Any]:
         """
         Evaluate test results using LLM as Supervisor + QA with optional web search.
@@ -84,36 +85,44 @@ class LLMSupervisor(SupervisorLLM):
         Returns:
             Evaluation results with quality assessment
         """
-        
+
         # Build context-aware prompt
-        domain_context = context.get('domain', 'software development')
-        requirements = context.get('requirements', 'general quality standards')
+        domain_context = context.get("domain", "software development")
+        requirements = context.get("requirements", "general quality standards")
 
         # Perform web search validation if enabled and needed
         web_search_context = ""
-        if (enable_search_for_validation and
-            self.enable_web_search and
-            self.web_search_client):
+        if (
+            enable_search_for_validation
+            and self.enable_web_search
+            and self.web_search_client
+        ):
 
             try:
                 # Generate search queries based on domain and results
-                search_queries = self._generate_validation_queries(test_results, domain_context)
+                search_queries = self._generate_validation_queries(
+                    test_results, domain_context
+                )
 
                 if search_queries:
-                    logger.info("Performing web search validation",
-                               queries=search_queries)
+                    logger.info(
+                        "Performing web search validation", queries=search_queries
+                    )
 
                     search_results = []
                     for query in search_queries[:3]:  # Limit to 3 searches
                         try:
                             result = await self.web_search_client(
                                 query=query,
-                                context=f"Validating {domain_context} results"
+                                context=f"Validating {domain_context} results",
                             )
-                            search_results.append(f"Query: {query}\nResults: {result}\n")
+                            search_results.append(
+                                f"Query: {query}\nResults: {result}\n"
+                            )
                         except Exception as e:
-                            logger.warning("Search validation failed",
-                                         query=query, error=str(e))
+                            logger.warning(
+                                "Search validation failed", query=query, error=str(e)
+                            )
 
                     if search_results:
                         web_search_context = f"""
@@ -124,7 +133,7 @@ Use this real-time information to validate the test results against current stan
 """
             except Exception as e:
                 logger.warning("Web search validation failed", error=str(e))
-        
+
         prompt = f"""You are the SUPERVISOR + QA ANALYST in a self-improving code system with access to real-time information.
 
 DOMAIN EXPERTISE: {self.domain_expertise}
@@ -181,22 +190,24 @@ OUTPUT (JSON only):
         try:
             messages = [
                 {
-                    "role": "system", 
-                    "content": f"You are an expert {self.domain_expertise} Supervisor + QA Analyst using {self.model_name}. Provide rigorous, professional-grade quality assessment."
+                    "role": "system",
+                    "content": f"You are an expert {self.domain_expertise} Supervisor + QA Analyst using {self.model_name}. Provide rigorous, professional-grade quality assessment.",
                 },
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
             ]
-            
+
             response = await self.llm_client(messages)
             evaluation = self._parse_json_response(response)
-            
-            logger.info("Supervisor evaluation complete",
-                       quality_score=evaluation.get('quality_score', 0),
-                       qa_status=evaluation.get('qa_status', 'UNKNOWN'),
-                       needs_improvement=evaluation.get('needs_improvement', True))
-            
+
+            logger.info(
+                "Supervisor evaluation complete",
+                quality_score=evaluation.get("quality_score", 0),
+                qa_status=evaluation.get("qa_status", "UNKNOWN"),
+                needs_improvement=evaluation.get("needs_improvement", True),
+            )
+
             return evaluation
-            
+
         except Exception as e:
             logger.error("Supervisor evaluation failed", error=str(e))
             return {
@@ -206,36 +217,36 @@ OUTPUT (JSON only):
                 "issues_found": [f"Evaluation error: {str(e)}"],
                 "improvement_directions": ["Manual review required"],
                 "priority": "high",
-                "confidence": 0.0
+                "confidence": 0.0,
             }
-    
+
     def _parse_json_response(self, response: str) -> Dict[str, Any]:
         """Parse JSON from LLM response, handling various formats."""
         try:
             # Remove markdown formatting
-            if response.startswith('```json'):
+            if response.startswith("```json"):
                 response = response[7:]
-            if response.endswith('```'):
+            if response.endswith("```"):
                 response = response[:-3]
-            
+
             # Try to extract JSON from response
-            json_start = response.find('{')
-            json_end = response.rfind('}') + 1
-            
+            json_start = response.find("{")
+            json_end = response.rfind("}") + 1
+
             if json_start >= 0 and json_end > json_start:
                 json_content = response[json_start:json_end]
                 return json.loads(json_content)
             else:
                 return json.loads(response)
-                
+
         except json.JSONDecodeError as e:
-            logger.warning("Failed to parse JSON response", error=str(e), response=response[:200])
+            logger.warning(
+                "Failed to parse JSON response", error=str(e), response=response[:200]
+            )
             raise
 
     def _generate_validation_queries(
-        self,
-        test_results: Dict[str, Any],
-        domain_context: str
+        self, test_results: Dict[str, Any], domain_context: str
     ) -> List[str]:
         """
         Generate web search queries for validation based on test results.
@@ -254,32 +265,38 @@ OUTPUT (JSON only):
         queries = []
 
         # Extract key information from test results
-        if 'compensations' in test_results:
+        if "compensations" in test_results:
             # For executive compensation analysis
-            queries.extend([
-                f"{domain_context} executive compensation best practices 2024",
-                "SEC proxy filing compensation disclosure requirements",
-                "executive compensation data quality standards"
-            ])
+            queries.extend(
+                [
+                    f"{domain_context} executive compensation best practices 2024",
+                    "SEC proxy filing compensation disclosure requirements",
+                    "executive compensation data quality standards",
+                ]
+            )
 
-        if 'extraction_method' in test_results:
+        if "extraction_method" in test_results:
             # For data extraction validation
-            queries.extend([
-                f"{domain_context} data extraction best practices",
-                "automated data extraction quality standards",
-                "data validation techniques 2024"
-            ])
+            queries.extend(
+                [
+                    f"{domain_context} data extraction best practices",
+                    "automated data extraction quality standards",
+                    "data validation techniques 2024",
+                ]
+            )
 
-        if 'code_quality' in test_results:
+        if "code_quality" in test_results:
             # For code quality validation
-            queries.extend([
-                f"{domain_context} code quality standards 2024",
-                "software engineering best practices",
-                "code review quality metrics"
-            ])
+            queries.extend(
+                [
+                    f"{domain_context} code quality standards 2024",
+                    "software engineering best practices",
+                    "code review quality metrics",
+                ]
+            )
 
         # Add general validation queries
-        if domain_context and domain_context != 'software development':
+        if domain_context and domain_context != "software development":
             queries.append(f"{domain_context} industry standards 2024")
 
         # Remove duplicates and limit

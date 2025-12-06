@@ -34,12 +34,8 @@ from extract_transform_platform.services.analysis.schema_analyzer import SchemaA
 # Test backward compatibility imports (will generate warnings)
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
-    from edgar_analyzer.models.patterns import (
-        FieldTypeEnum as LegacyFieldTypeEnum,
-    )
-    from edgar_analyzer.models.patterns import (
-        PatternType as LegacyPatternType,
-    )
+    from edgar_analyzer.models.patterns import FieldTypeEnum as LegacyFieldTypeEnum
+    from edgar_analyzer.models.patterns import PatternType as LegacyPatternType
     from edgar_analyzer.services.example_parser import (
         ExampleParser as LegacyExampleParser,
     )
@@ -138,7 +134,9 @@ class TestBackwardCompatibility:
         with pytest.warns(
             DeprecationWarning, match="edgar_analyzer.services.example_parser"
         ):
-            from edgar_analyzer.services.example_parser import ExampleParser  # noqa: F401
+            from edgar_analyzer.services.example_parser import (  # noqa: F401
+                ExampleParser,
+            )
 
     def test_pattern_types_identical(self) -> None:
         """Verify pattern types are identical between platform and wrapper."""
@@ -211,9 +209,7 @@ class TestEndToEndPatternDetection:
 
         # Verify type conversion detected
         type_patterns = [
-            p
-            for p in result.patterns
-            if p.pattern_type == PatternType.TYPE_CONVERSION
+            p for p in result.patterns if p.pattern_type == PatternType.TYPE_CONVERSION
         ]
         assert len(type_patterns) > 0
         pattern = type_patterns[0]
@@ -269,9 +265,9 @@ class TestEndToEndPatternDetection:
 
         # Verify all confidence scores are valid
         for pattern in result.patterns:
-            assert 0.0 <= pattern.confidence <= 1.0, (
-                f"Invalid confidence: {pattern.confidence}"
-            )
+            assert (
+                0.0 <= pattern.confidence <= 1.0
+            ), f"Invalid confidence: {pattern.confidence}"
 
 
 class TestSchemaAnalysis:

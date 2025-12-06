@@ -34,8 +34,8 @@ from typing import Any, Dict, List, Optional, Set
 from extract_transform_platform.models.patterns import (
     FieldTypeEnum,
     Schema,
-    SchemaField,
     SchemaDifference,
+    SchemaField,
 )
 
 logger = logging.getLogger(__name__)

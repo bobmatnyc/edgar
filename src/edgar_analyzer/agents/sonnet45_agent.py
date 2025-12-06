@@ -24,21 +24,21 @@ Usage:
 import json
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
 import structlog
 from pydantic import ValidationError
 
 from edgar_analyzer.clients.openrouter_client import OpenRouterClient
-from edgar_analyzer.models.patterns import Pattern, ParsedExamples
-from edgar_analyzer.models.project_config import ProjectConfig
+from edgar_analyzer.models.patterns import ParsedExamples, Pattern
 from edgar_analyzer.models.plan import (
-    PlanSpec,
+    ClassSpec,
     GeneratedCode,
     GenerationContext,
     MethodSpec,
-    ClassSpec,
+    PlanSpec,
 )
+from edgar_analyzer.models.project_config import ProjectConfig
 
 logger = structlog.get_logger(__name__)
 
@@ -88,17 +88,17 @@ class PromptLoader:
         if not template_path.exists():
             raise FileNotFoundError(f"Prompt template not found: {template_path}")
 
-        with open(template_path, 'r') as f:
+        with open(template_path, "r") as f:
             content = f.read()
 
-        logger.debug("Loaded prompt template", template=template_name, size=len(content))
+        logger.debug(
+            "Loaded prompt template", template=template_name, size=len(content)
+        )
 
         return content
 
     def render_pm_prompt(
-        self,
-        patterns: List[Pattern],
-        project_config: ProjectConfig
+        self, patterns: List[Pattern], project_config: ProjectConfig
     ) -> str:
         """
         Render PM mode prompt with patterns and configuration.
@@ -117,25 +117,20 @@ class PromptLoader:
         patterns_json = json.dumps(patterns_data, indent=2)
 
         # Serialize project config to JSON (use mode='json' to handle datetimes)
-        config_json = json.dumps(project_config.model_dump(mode='json'), indent=2)
+        config_json = json.dumps(project_config.model_dump(mode="json"), indent=2)
 
         # Replace placeholders
         prompt = template.replace("{{patterns_json}}", patterns_json)
         prompt = prompt.replace("{{project_config_json}}", config_json)
 
         logger.debug(
-            "Rendered PM prompt",
-            pattern_count=len(patterns),
-            prompt_length=len(prompt)
+            "Rendered PM prompt", pattern_count=len(patterns), prompt_length=len(prompt)
         )
 
         return prompt
 
     def render_coder_prompt(
-        self,
-        plan: PlanSpec,
-        patterns: List[Pattern],
-        examples: List[Dict[str, Any]]
+        self, plan: PlanSpec, patterns: List[Pattern], examples: List[Dict[str, Any]]
     ) -> str:
         """
         Render Coder mode prompt with plan and examples.
@@ -157,28 +152,30 @@ class PromptLoader:
         # Convert examples to dicts if they're ExampleConfig objects
         examples_dicts = []
         for ex in examples:
-            if hasattr(ex, 'model_dump'):
+            if hasattr(ex, "model_dump"):
                 examples_dicts.append(ex.model_dump())
-            elif hasattr(ex, 'dict'):
+            elif hasattr(ex, "dict"):
                 examples_dicts.append(ex.dict())
             else:
                 examples_dicts.append(ex)
 
         patterns_and_examples = {
             "patterns": [p.model_dump() for p in patterns],
-            "examples": examples_dicts
+            "examples": examples_dicts,
         }
         patterns_examples_json = json.dumps(patterns_and_examples, indent=2)
 
         # Replace placeholders
         prompt = template.replace("{{plan_spec_json}}", plan_json)
-        prompt = prompt.replace("{{patterns_and_examples_json}}", patterns_examples_json)
+        prompt = prompt.replace(
+            "{{patterns_and_examples_json}}", patterns_examples_json
+        )
 
         logger.debug(
             "Rendered Coder prompt",
             pattern_count=len(patterns),
             example_count=len(examples),
-            prompt_length=len(prompt)
+            prompt_length=len(prompt),
         )
 
         return prompt
@@ -188,7 +185,7 @@ class PromptLoader:
         plan: PlanSpec,
         patterns: List[Pattern],
         examples: List[Dict[str, Any]],
-        validation_errors: Any
+        validation_errors: Any,
     ) -> str:
         """
         Render Coder mode retry prompt with validation errors.
@@ -211,16 +208,16 @@ class PromptLoader:
         # Convert examples to dicts if they're ExampleConfig objects
         examples_dicts = []
         for ex in examples:
-            if hasattr(ex, 'model_dump'):
+            if hasattr(ex, "model_dump"):
                 examples_dicts.append(ex.model_dump())
-            elif hasattr(ex, 'dict'):
+            elif hasattr(ex, "dict"):
                 examples_dicts.append(ex.dict())
             else:
                 examples_dicts.append(ex)
 
         patterns_and_examples = {
             "patterns": [p.model_dump() for p in patterns],
-            "examples": examples_dicts
+            "examples": examples_dicts,
         }
         patterns_examples_json = json.dumps(patterns_and_examples, indent=2)
 
@@ -229,15 +226,21 @@ class PromptLoader:
 
         # Replace placeholders
         prompt = template.replace("{{plan_spec_json}}", plan_json)
-        prompt = prompt.replace("{{patterns_and_examples_json}}", patterns_examples_json)
+        prompt = prompt.replace(
+            "{{patterns_and_examples_json}}", patterns_examples_json
+        )
         prompt = prompt.replace("{{validation_errors}}", validation_errors_text)
 
         logger.debug(
             "Rendered Coder retry prompt",
             pattern_count=len(patterns),
             example_count=len(examples),
-            validation_issues=len(validation_errors.issues) if hasattr(validation_errors, 'issues') else 0,
-            prompt_length=len(prompt)
+            validation_issues=(
+                len(validation_errors.issues)
+                if hasattr(validation_errors, "issues")
+                else 0
+            ),
+            prompt_length=len(prompt),
         )
 
         return prompt
@@ -252,7 +255,7 @@ class PromptLoader:
         Returns:
             Formatted error text
         """
-        if not hasattr(validation_result, 'issues'):
+        if not hasattr(validation_result, "issues"):
             return str(validation_result)
 
         formatted = []
@@ -260,7 +263,9 @@ class PromptLoader:
         formatted.append("")
 
         if not validation_result.is_valid:
-            formatted.append(f"**Overall Status**: INVALID (Quality Score: {validation_result.quality_score})")
+            formatted.append(
+                f"**Overall Status**: INVALID (Quality Score: {validation_result.quality_score})"
+            )
             formatted.append("")
 
         if validation_result.issues:
@@ -269,7 +274,10 @@ class PromptLoader:
                 formatted.append(f"{i}. {issue}")
             formatted.append("")
 
-        if hasattr(validation_result, 'recommendations') and validation_result.recommendations:
+        if (
+            hasattr(validation_result, "recommendations")
+            and validation_result.recommendations
+        ):
             formatted.append("### Recommendations (Should Fix)")
             for i, rec in enumerate(validation_result.recommendations, 1):
                 formatted.append(f"{i}. {rec}")
@@ -277,11 +285,21 @@ class PromptLoader:
 
         # Add quality metrics
         formatted.append("### Quality Metrics")
-        formatted.append(f"- Syntax Valid: {'✅' if validation_result.syntax_valid else '❌'}")
-        formatted.append(f"- Has Type Hints: {'✅' if validation_result.has_type_hints else '❌'}")
-        formatted.append(f"- Has Docstrings: {'✅' if validation_result.has_docstrings else '❌'}")
-        formatted.append(f"- Has Tests: {'✅' if validation_result.has_tests else '❌'}")
-        formatted.append(f"- Implements Interface: {'✅' if validation_result.implements_interface else '❌'}")
+        formatted.append(
+            f"- Syntax Valid: {'✅' if validation_result.syntax_valid else '❌'}"
+        )
+        formatted.append(
+            f"- Has Type Hints: {'✅' if validation_result.has_type_hints else '❌'}"
+        )
+        formatted.append(
+            f"- Has Docstrings: {'✅' if validation_result.has_docstrings else '❌'}"
+        )
+        formatted.append(
+            f"- Has Tests: {'✅' if validation_result.has_tests else '❌'}"
+        )
+        formatted.append(
+            f"- Implements Interface: {'✅' if validation_result.implements_interface else '❌'}"
+        )
 
         return "\n".join(formatted)
 
@@ -317,7 +335,7 @@ class Sonnet45Agent:
         model: str = "anthropic/claude-sonnet-4.5",
         pm_temperature: float = 0.3,
         coder_temperature: float = 0.2,
-        max_retries: int = 3
+        max_retries: int = 3,
     ):
         """
         Initialize Sonnet 4.5 agent.
@@ -340,9 +358,7 @@ class Sonnet45Agent:
 
         # Initialize OpenRouter client
         self.client = OpenRouterClient(
-            api_key=api_key,
-            model=model,
-            max_retries=max_retries
+            api_key=api_key, model=model, max_retries=max_retries
         )
 
         # Initialize prompt loader
@@ -352,14 +368,10 @@ class Sonnet45Agent:
             "Sonnet45Agent initialized",
             model=self.model,
             pm_temperature=self.pm_temperature,
-            coder_temperature=self.coder_temperature
+            coder_temperature=self.coder_temperature,
         )
 
-    async def plan(
-        self,
-        patterns: List[Pattern],
-        project: ProjectConfig
-    ) -> PlanSpec:
+    async def plan(self, patterns: List[Pattern], project: ProjectConfig) -> PlanSpec:
         """
         PM Mode: Analyze patterns and create implementation plan.
 
@@ -392,20 +404,15 @@ class Sonnet45Agent:
         messages = [
             {
                 "role": "system",
-                "content": "You are an expert software architect. Respond with ONLY valid JSON following the exact schema provided."
+                "content": "You are an expert software architect. Respond with ONLY valid JSON following the exact schema provided.",
             },
-            {
-                "role": "user",
-                "content": prompt
-            }
+            {"role": "user", "content": prompt},
         ]
 
         # Call API
         try:
             response = await self.client.chat_completion_json(
-                messages=messages,
-                temperature=self.pm_temperature,
-                max_tokens=8000
+                messages=messages, temperature=self.pm_temperature, max_tokens=8000
             )
 
             logger.debug("PM mode API response received", response_length=len(response))
@@ -435,13 +442,17 @@ class Sonnet45Agent:
                 "PM mode planning completed",
                 classes=len(plan.classes),
                 dependencies=len(plan.dependencies),
-                strategy_length=len(plan.strategy)
+                strategy_length=len(plan.strategy),
             )
 
             return plan
 
         except json.JSONDecodeError as e:
-            logger.error("PM mode response is not valid JSON", error=str(e), response=response[:500])
+            logger.error(
+                "PM mode response is not valid JSON",
+                error=str(e),
+                response=response[:500],
+            )
             raise ValueError(f"PM mode returned invalid JSON: {e}")
 
         except ValidationError as e:
@@ -453,7 +464,7 @@ class Sonnet45Agent:
         plan: PlanSpec,
         patterns: List[Pattern],
         examples: Optional[List[Dict[str, Any]]] = None,
-        validation_errors: Optional[Any] = None
+        validation_errors: Optional[Any] = None,
     ) -> GeneratedCode:
         """
         Coder Mode: Generate production code from plan with optional validation feedback.
@@ -485,7 +496,7 @@ class Sonnet45Agent:
         logger.info(
             "Starting Coder mode generation",
             classes=len(plan.classes),
-            is_retry=validation_errors is not None
+            is_retry=validation_errors is not None,
         )
 
         # Extract examples from patterns if not provided
@@ -493,20 +504,19 @@ class Sonnet45Agent:
             examples = []
             for pattern in patterns:
                 for input_val, output_val in pattern.examples:
-                    examples.append({
-                        "input": input_val,
-                        "output": output_val,
-                        "pattern": pattern.type
-                    })
+                    examples.append(
+                        {
+                            "input": input_val,
+                            "output": output_val,
+                            "pattern": pattern.type,
+                        }
+                    )
 
         # Render Coder prompt (with or without validation errors)
         if validation_errors is not None:
             # Retry prompt with validation errors
             prompt = self.prompt_loader.render_coder_retry_prompt(
-                plan,
-                patterns,
-                examples,
-                validation_errors
+                plan, patterns, examples, validation_errors
             )
         else:
             # First attempt prompt
@@ -516,23 +526,20 @@ class Sonnet45Agent:
         messages = [
             {
                 "role": "system",
-                "content": "You are an expert Python developer. Generate production-ready code following the specification exactly."
+                "content": "You are an expert Python developer. Generate production-ready code following the specification exactly.",
             },
-            {
-                "role": "user",
-                "content": prompt
-            }
+            {"role": "user", "content": prompt},
         ]
 
         # Call API
         try:
             response = await self.client.chat_completion(
-                messages=messages,
-                temperature=self.coder_temperature,
-                max_tokens=8000
+                messages=messages, temperature=self.coder_temperature, max_tokens=8000
             )
 
-            logger.debug("Coder mode API response received", response_length=len(response))
+            logger.debug(
+                "Coder mode API response received", response_length=len(response)
+            )
 
         except Exception as e:
             logger.error("Coder mode API call failed", error=str(e))
@@ -553,7 +560,7 @@ class Sonnet45Agent:
                 total_lines=code.total_lines,
                 extractor_lines=len(code.extractor_code.splitlines()),
                 models_lines=len(code.models_code.splitlines()),
-                tests_lines=len(code.tests_code.splitlines())
+                tests_lines=len(code.tests_code.splitlines()),
             )
 
             return code
@@ -566,7 +573,7 @@ class Sonnet45Agent:
         self,
         patterns: List[Pattern],
         project: ProjectConfig,
-        examples: Optional[List[Dict[str, Any]]] = None
+        examples: Optional[List[Dict[str, Any]]] = None,
     ) -> GeneratedCode:
         """
         End-to-end: PM planning + Coder implementation.
@@ -594,7 +601,7 @@ class Sonnet45Agent:
         logger.info(
             "Starting end-to-end code generation",
             pattern_count=len(patterns),
-            project=project.project.name
+            project=project.project.name,
         )
 
         # Step 1: PM planning
@@ -608,10 +615,7 @@ class Sonnet45Agent:
         # Add plan reference to metadata
         code.add_metadata("plan_strategy", plan.strategy)
 
-        logger.info(
-            "End-to-end generation completed",
-            total_lines=code.total_lines
-        )
+        logger.info("End-to-end generation completed", total_lines=code.total_lines)
 
         return code
 
@@ -636,20 +640,19 @@ class Sonnet45Agent:
         models_marker = "# FILE: models.py"
         tests_marker = "# FILE: test_extractor.py"
 
-        if all(marker in response for marker in [extractor_marker, models_marker, tests_marker]):
+        if all(
+            marker in response
+            for marker in [extractor_marker, models_marker, tests_marker]
+        ):
             # Structured response - parse by markers
             logger.debug("Parsing structured code response")
 
             # Find code for each file by looking between markers
             extractor_code = self._extract_between_markers(
-                response,
-                extractor_marker,
-                models_marker
+                response, extractor_marker, models_marker
             )
             models_code = self._extract_between_markers(
-                response,
-                models_marker,
-                tests_marker
+                response, models_marker, tests_marker
             )
             tests_code = self._extract_after_marker(response, tests_marker)
 
@@ -676,10 +679,12 @@ class Sonnet45Agent:
             extractor_code=extractor_code,
             models_code=models_code,
             tests_code=tests_code,
-            metadata={}
+            metadata={},
         )
 
-    def _extract_between_markers(self, response: str, start_marker: str, end_marker: str) -> str:
+    def _extract_between_markers(
+        self, response: str, start_marker: str, end_marker: str
+    ) -> str:
         """Extract code between two markers."""
         try:
             start_idx = response.index(start_marker) + len(start_marker)
@@ -701,10 +706,11 @@ class Sonnet45Agent:
     def _extract_code_block(self, section: str) -> str:
         """Extract Python code from a section."""
         # Remove file marker line and section separators
-        lines = section.split('\n')
+        lines = section.split("\n")
         code_lines = [
-            line for line in lines
-            if not line.startswith('# FILE:') and not line.startswith('# ===')
+            line
+            for line in lines
+            if not line.startswith("# FILE:") and not line.startswith("# ===")
         ]
 
         # Find code block boundaries
@@ -712,10 +718,10 @@ class Sonnet45Agent:
         code = []
 
         for line in code_lines:
-            if line.strip().startswith('```python'):
+            if line.strip().startswith("```python"):
                 in_code = True
                 continue
-            elif line.strip().startswith('```'):
+            elif line.strip().startswith("```"):
                 in_code = False
                 continue
 
@@ -723,10 +729,10 @@ class Sonnet45Agent:
             if in_code:
                 code.append(line)
             # Or if it looks like Python code (not a comment-only line)
-            elif line.strip() and not line.strip().startswith('#'):
+            elif line.strip() and not line.strip().startswith("#"):
                 code.append(line)
 
-        return '\n'.join(code).strip()
+        return "\n".join(code).strip()
 
     def _extract_all_code_blocks(self, response: str) -> List[str]:
         """Extract all Python code blocks from response."""
@@ -734,14 +740,14 @@ class Sonnet45Agent:
         in_block = False
         current_block = []
 
-        for line in response.split('\n'):
-            if line.strip().startswith('```python'):
+        for line in response.split("\n"):
+            if line.strip().startswith("```python"):
                 in_block = True
                 current_block = []
                 continue
-            elif line.strip().startswith('```'):
+            elif line.strip().startswith("```"):
                 if in_block and current_block:
-                    blocks.append('\n'.join(current_block).strip())
+                    blocks.append("\n".join(current_block).strip())
                 in_block = False
                 current_block = []
                 continue

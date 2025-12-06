@@ -15,56 +15,56 @@ Status: Week 1, Phase 1 - T3 Complete
 
 # Pattern models (T3 - Extract Schema Analyzer)
 from extract_transform_platform.models.patterns import (
+    FieldTypeEnum,
+    FilteredParsedExamples,
+    GeneratedPrompt,
+    ParsedExamples,
     Pattern,
     PatternType,
-    FieldTypeEnum,
-    SchemaField,
+    PromptSection,
     Schema,
     SchemaDifference,
-    ParsedExamples,
-    FilteredParsedExamples,
-    PromptSection,
-    GeneratedPrompt,
+    SchemaField,
+)
+
+# Plan models (T3 - Migrated from EDGAR)
+from extract_transform_platform.models.plan import (
+    ClassSpec,
+    CodeValidationResult,
+    GeneratedCode,
+    GenerationContext,
+    GenerationProgress,
+    MethodSpec,
+    PlanSpec,
 )
 
 # Project configuration models (T3 - Migrated from EDGAR)
 from extract_transform_platform.models.project_config import (
-    ProjectConfig,
-    ProjectMetadata,
-    DataSourceConfig,
-    DataSourceType,
     AuthConfig,
     AuthType,
     CacheConfig,
-    RateLimitConfig,
+    DataSourceConfig,
+    DataSourceType,
+    ErrorStrategy,
     ExampleConfig,
-    ValidationConfig,
     FieldConstraint,
     FieldType,
     OutputConfig,
     OutputDestinationConfig,
     OutputFormat,
+    ProjectConfig,
+    ProjectMetadata,
+    RateLimitConfig,
     RuntimeConfig,
-    ErrorStrategy,
-)
-
-# Plan models (T3 - Migrated from EDGAR)
-from extract_transform_platform.models.plan import (
-    MethodSpec,
-    ClassSpec,
-    PlanSpec,
-    GeneratedCode,
-    GenerationContext,
-    CodeValidationResult,
-    GenerationProgress,
+    ValidationConfig,
 )
 
 # Validation models (T3 - Migrated from EDGAR)
 from extract_transform_platform.models.validation import (
-    Severity,
-    Violation,
-    ValidationResult,
     ConstraintConfig,
+    Severity,
+    ValidationResult,
+    Violation,
 )
 
 # TODO: from extract_transform_platform.models.transformation_pattern import TransformationPattern

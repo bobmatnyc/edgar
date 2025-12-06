@@ -2,12 +2,13 @@
 
 import asyncio
 import os
-import click
 from pathlib import Path
 from typing import Optional
+
+import click
 import httpx
 from rich.console import Console
-from rich.prompt import Prompt, Confirm
+from rich.prompt import Confirm, Prompt
 from rich.table import Table
 
 console = Console()
@@ -16,9 +17,9 @@ __all__ = ["setup", "_test_openrouter", "_test_jina"]
 
 
 @click.command()
-@click.option('--key', type=str, help='API key to configure (openrouter, jina, edgar)')
-@click.option('--value', type=str, help='API key value (non-interactive mode)')
-@click.option('--validate/--no-validate', default=True, help='Validate API key')
+@click.option("--key", type=str, help="API key to configure (openrouter, jina, edgar)")
+@click.option("--value", type=str, help="API key value (non-interactive mode)")
+@click.option("--validate/--no-validate", default=True, help="Validate API key")
 def setup(key: Optional[str], value: Optional[str], validate: bool) -> None:
     """Configure API keys and settings for the platform."""
 
@@ -43,7 +44,11 @@ def _interactive_setup() -> None:
 
     # Prompt for each key
     keys_to_configure = [
-        ("openrouter", "OpenRouter API Key", "Get your key from https://openrouter.ai/keys"),
+        (
+            "openrouter",
+            "OpenRouter API Key",
+            "Get your key from https://openrouter.ai/keys",
+        ),
         ("jina", "Jina.ai API Key (optional)", "Get your key from https://jina.ai"),
         ("edgar", "SEC EDGAR User Agent", "Format: YourName email@example.com"),
     ]
@@ -57,7 +62,7 @@ def _interactive_setup() -> None:
             value = Prompt.ask(
                 f"Enter {display_name}",
                 password=(key_name != "edgar"),
-                default=current_config.get(key_name, "")
+                default=current_config.get(key_name, ""),
             )
 
             if value:
@@ -80,7 +85,7 @@ def _setup_single_key(key: str, value: str, validate: bool) -> None:
     key_mapping = {
         "openrouter": "OPENROUTER_API_KEY",
         "jina": "JINA_API_KEY",
-        "edgar": "EDGAR_USER_AGENT"
+        "edgar": "EDGAR_USER_AGENT",
     }
 
     if key not in key_mapping:
@@ -185,7 +190,7 @@ def _validate_openrouter(api_key: str) -> bool:
         with httpx.Client(timeout=10.0) as client:
             response = client.get(
                 "https://openrouter.ai/api/v1/models",
-                headers={"Authorization": f"Bearer {api_key}"}
+                headers={"Authorization": f"Bearer {api_key}"},
             )
             return response.status_code == 200
     except Exception:
@@ -199,7 +204,7 @@ def _validate_jina(api_key: str) -> bool:
             # Simple test with Jina reader
             response = client.get(
                 "https://r.jina.ai/https://example.com",
-                headers={"Authorization": f"Bearer {api_key}"}
+                headers={"Authorization": f"Bearer {api_key}"},
             )
             return response.status_code == 200
     except Exception:
@@ -217,7 +222,7 @@ def _save_to_env_file(env_file: Path, updates: dict) -> None:
     key_mapping = {
         "openrouter": "OPENROUTER_API_KEY",
         "jina": "JINA_API_KEY",
-        "edgar": "EDGAR_USER_AGENT"
+        "edgar": "EDGAR_USER_AGENT",
     }
 
     # Read existing file
@@ -282,11 +287,13 @@ def _test_openrouter() -> bool:
         # Test with simple completion request
         client = OpenRouterClient(api_key=api_key)
         # Use asyncio to run the async method
-        response = asyncio.run(client.chat_completion(
-            messages=[{"role": "user", "content": "Test"}],
-            model="anthropic/claude-sonnet-4.5",
-            max_tokens=10
-        ))
+        response = asyncio.run(
+            client.chat_completion(
+                messages=[{"role": "user", "content": "Test"}],
+                model="anthropic/claude-sonnet-4.5",
+                max_tokens=10,
+            )
+        )
 
         if response:
             console.print("[green]✅ OpenRouter connection successful[/green]")
@@ -320,14 +327,16 @@ def _test_jina() -> bool:
         with httpx.Client(timeout=10.0) as client:
             response = client.get(
                 "https://r.jina.ai/https://example.com",
-                headers={"Authorization": f"Bearer {api_key}"}
+                headers={"Authorization": f"Bearer {api_key}"},
             )
 
             if response.status_code == 200:
                 console.print("[green]✅ Jina.ai connection successful[/green]")
                 return True
             else:
-                console.print(f"[red]❌ Jina.ai returned status {response.status_code}[/red]")
+                console.print(
+                    f"[red]❌ Jina.ai returned status {response.status_code}[/red]"
+                )
                 return False
 
     except Exception as e:

@@ -103,7 +103,9 @@ def create(
 
         # Check if project already exists
         if project_path.exists():
-            console.print(f"[red]Error:[/red] Project '{name}' already exists at {project_path}")
+            console.print(
+                f"[red]Error:[/red] Project '{name}' already exists at {project_path}"
+            )
             raise click.Abort()
 
         # Determine template file
@@ -180,24 +182,31 @@ See the main EDGAR Analyzer documentation for details on:
 
         # Copy template examples if using weather template
         if template == "weather":
-            weather_examples = Path(__file__).parent.parent.parent.parent.parent / "projects" / "weather_api" / "examples"
+            weather_examples = (
+                Path(__file__).parent.parent.parent.parent.parent
+                / "projects"
+                / "weather_api"
+                / "examples"
+            )
             if weather_examples.exists():
                 for example_file in weather_examples.glob("*.json"):
                     shutil.copy(example_file, project_path / "examples")
 
         # Success message
         console.print()
-        console.print(Panel.fit(
-            f"[green]✓[/green] Project '{name}' created successfully!\n\n"
-            f"Location: {project_path}\n"
-            f"Template: {template}\n\n"
-            f"Next steps:\n"
-            f"1. cd {project_path}\n"
-            f"2. Add example data to examples/\n"
-            f"3. Run: edgar-analyzer generate {name}",
-            title="Project Created",
-            border_style="green",
-        ))
+        console.print(
+            Panel.fit(
+                f"[green]✓[/green] Project '{name}' created successfully!\n\n"
+                f"Location: {project_path}\n"
+                f"Template: {template}\n\n"
+                f"Next steps:\n"
+                f"1. cd {project_path}\n"
+                f"2. Add example data to examples/\n"
+                f"3. Run: edgar-analyzer generate {name}",
+                title="Project Created",
+                border_style="green",
+            )
+        )
 
     except Exception as e:
         console.print(f"[red]Error creating project:[/red] {e}")
@@ -233,7 +242,9 @@ def list(output_dir: Optional[str], format: str):
         output_path = Path(output_dir) if output_dir else get_projects_dir()
 
         if not output_path.exists():
-            console.print(f"[yellow]No projects directory found at {output_path}[/yellow]")
+            console.print(
+                f"[yellow]No projects directory found at {output_path}[/yellow]"
+            )
             return
 
         # Find all projects (directories with project.yaml)
@@ -243,13 +254,15 @@ def list(output_dir: Optional[str], format: str):
                 with open(item / "project.yaml") as f:
                     config = yaml.safe_load(f)
 
-                projects.append({
-                    "name": config.get("project", {}).get("name", item.name),
-                    "path": str(item),
-                    "description": config.get("project", {}).get("description", ""),
-                    "version": config.get("project", {}).get("version", "0.1.0"),
-                    "template": config.get("project", {}).get("template", "custom"),
-                })
+                projects.append(
+                    {
+                        "name": config.get("project", {}).get("name", item.name),
+                        "path": str(item),
+                        "description": config.get("project", {}).get("description", ""),
+                        "version": config.get("project", {}).get("version", "0.1.0"),
+                        "template": config.get("project", {}).get("template", "custom"),
+                    }
+                )
 
         if not projects:
             console.print(f"[yellow]No projects found in {output_path}[/yellow]")
@@ -264,7 +277,7 @@ def list(output_dir: Optional[str], format: str):
             for p in projects:
                 project_node = tree.add(f"[cyan]{p['name']}[/cyan] ({p['version']})")
                 project_node.add(f"[dim]Path:[/dim] {p['path']}")
-                if p['description']:
+                if p["description"]:
                     project_node.add(f"[dim]Description:[/dim] {p['description']}")
                 project_node.add(f"[dim]Template:[/dim] {p['template']}")
             console.print(tree)
@@ -278,10 +291,14 @@ def list(output_dir: Optional[str], format: str):
 
             for p in projects:
                 table.add_row(
-                    p['name'],
-                    p['version'],
-                    p['template'],
-                    p['description'][:50] + "..." if len(p['description']) > 50 else p['description'],
+                    p["name"],
+                    p["version"],
+                    p["template"],
+                    (
+                        p["description"][:50] + "..."
+                        if len(p["description"]) > 50
+                        else p["description"]
+                    ),
                 )
 
             console.print(table)
@@ -321,19 +338,27 @@ def delete(name: str, output_dir: Optional[str], force: bool):
         project_path = output_path / name
 
         if not project_path.exists():
-            console.print(f"[red]Error:[/red] Project '{name}' not found at {project_path}")
+            console.print(
+                f"[red]Error:[/red] Project '{name}' not found at {project_path}"
+            )
             raise click.Abort()
 
         if not (project_path / "project.yaml").exists():
-            console.print(f"[red]Error:[/red] '{name}' is not a valid project (no project.yaml)")
+            console.print(
+                f"[red]Error:[/red] '{name}' is not a valid project (no project.yaml)"
+            )
             raise click.Abort()
 
         # Confirm deletion
         if not force:
-            console.print(f"\n[yellow]Warning:[/yellow] You are about to delete project '{name}'")
+            console.print(
+                f"\n[yellow]Warning:[/yellow] You are about to delete project '{name}'"
+            )
             console.print(f"Location: {project_path}")
 
-            if not click.confirm("\nAre you sure you want to delete this project?", default=False):
+            if not click.confirm(
+                "\nAre you sure you want to delete this project?", default=False
+            ):
                 console.print("[cyan]Deletion cancelled[/cyan]")
                 return
 
@@ -377,7 +402,9 @@ def validate(name: str, output_dir: Optional[str], verbose: bool):
         project_path = output_path / name
 
         if not project_path.exists():
-            console.print(f"[red]Error:[/red] Project '{name}' not found at {project_path}")
+            console.print(
+                f"[red]Error:[/red] Project '{name}' not found at {project_path}"
+            )
             raise click.Abort()
 
         config_path = project_path / "project.yaml"
@@ -412,7 +439,9 @@ def validate(name: str, output_dir: Optional[str], verbose: bool):
         examples_dir = project_path / "examples"
         if examples_dir.exists():
             # Use os.listdir instead of Path.glob to avoid Click parser conflict
-            example_files = [f for f in os.listdir(str(examples_dir)) if (examples_dir / f).is_file()]
+            example_files = [
+                f for f in os.listdir(str(examples_dir)) if (examples_dir / f).is_file()
+            ]
             if not example_files:
                 warnings.append("No example files found in examples/")
 

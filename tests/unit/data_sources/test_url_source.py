@@ -34,7 +34,6 @@ import pytest
 
 from extract_transform_platform.data_sources.web.url_source import URLDataSource
 
-
 # ============================================================================
 # Test Fixtures
 # ============================================================================
@@ -447,15 +446,11 @@ class TestCacheIntegration:
             mock_get.return_value = mock_json_response
 
             # First fetch - cache miss
-            result1 = await url_source_with_cache.fetch(
-                url="https://example.com/data"
-            )
+            result1 = await url_source_with_cache.fetch(url="https://example.com/data")
             assert mock_get.call_count == 1
 
             # Second fetch - cache hit
-            result2 = await url_source_with_cache.fetch(
-                url="https://example.com/data"
-            )
+            result2 = await url_source_with_cache.fetch(url="https://example.com/data")
             assert mock_get.call_count == 1  # No new request
             assert result1 == result2
 
@@ -465,9 +460,7 @@ class TestCacheIntegration:
         with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
             mock_get.return_value = mock_json_response
 
-            result = await url_source_with_cache.fetch(
-                url="https://example.com/data"
-            )
+            result = await url_source_with_cache.fetch(url="https://example.com/data")
 
             assert result is not None
             assert mock_get.call_count == 1
@@ -494,15 +487,11 @@ class TestCacheIntegration:
         with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
             # First URL returns JSON
             mock_get.return_value = mock_json_response
-            result1 = await url_source_with_cache.fetch(
-                url="https://example.com/data1"
-            )
+            result1 = await url_source_with_cache.fetch(url="https://example.com/data1")
 
             # Second URL returns text
             mock_get.return_value = mock_text_response
-            result2 = await url_source_with_cache.fetch(
-                url="https://example.com/data2"
-            )
+            result2 = await url_source_with_cache.fetch(url="https://example.com/data2")
 
             assert mock_get.call_count == 2
             assert result1 != result2

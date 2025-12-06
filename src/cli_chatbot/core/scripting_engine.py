@@ -6,21 +6,22 @@ with dependency injection capabilities for input/output modification.
 """
 
 import ast
-import sys
 import io
 import json
+import os
+import queue
+import subprocess
+import sys
+import tempfile
+import threading
 import time
 import traceback
-import subprocess
-import tempfile
-import os
-import threading
-import queue
-from typing import Dict, Any, List, Optional, Callable
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
+from typing import Any, Callable, Dict, List, Optional
+
 import structlog
 
-from .interfaces import ScriptExecutor, ScriptResult, InputOutputModifier
+from .interfaces import InputOutputModifier, ScriptExecutor, ScriptResult
 
 logger = structlog.get_logger(__name__)
 
@@ -39,7 +40,7 @@ class ProcessMonitor:
     def _read_output(self, stream, output_queue):
         """Read output from stream in a separate thread."""
         try:
-            for line in iter(stream.readline, ''):
+            for line in iter(stream.readline, ""):
                 if line:
                     # Line is already a string in text mode
                     clean_line = line.rstrip()
@@ -55,12 +56,10 @@ class ProcessMonitor:
 
         # Start output reading threads
         stdout_thread = threading.Thread(
-            target=self._read_output,
-            args=(self.process.stdout, self.output_queue)
+            target=self._read_output, args=(self.process.stdout, self.output_queue)
         )
         stderr_thread = threading.Thread(
-            target=self._read_output,
-            args=(self.process.stderr, self.error_queue)
+            target=self._read_output, args=(self.process.stderr, self.error_queue)
         )
 
         stdout_thread.daemon = True
@@ -87,12 +86,12 @@ class ProcessMonitor:
                 self.stderr_lines.append(self.error_queue.get_nowait())
 
             return {
-                'success': return_code == 0,
-                'return_code': return_code,
-                'stdout': '\n'.join(self.stdout_lines),
-                'stderr': '\n'.join(self.stderr_lines),
-                'execution_time': execution_time,
-                'timeout': False
+                "success": return_code == 0,
+                "return_code": return_code,
+                "stdout": "\n".join(self.stdout_lines),
+                "stderr": "\n".join(self.stderr_lines),
+                "execution_time": execution_time,
+                "timeout": False,
             }
 
         except subprocess.TimeoutExpired:
@@ -107,34 +106,35 @@ class ProcessMonitor:
             execution_time = time.time() - start_time
 
             return {
-                'success': False,
-                'return_code': -1,
-                'stdout': '\n'.join(self.stdout_lines),
-                'stderr': f"Process timed out after {self.timeout} seconds",
-                'execution_time': execution_time,
-                'timeout': True
+                "success": False,
+                "return_code": -1,
+                "stdout": "\n".join(self.stdout_lines),
+                "stderr": f"Process timed out after {self.timeout} seconds",
+                "execution_time": execution_time,
+                "timeout": True,
             }
 
         except Exception as e:
             execution_time = time.time() - start_time
 
             return {
-                'success': False,
-                'return_code': -1,
-                'stdout': '\n'.join(self.stdout_lines),
-                'stderr': f"Process monitoring error: {str(e)}",
-                'execution_time': execution_time,
-                'timeout': False
+                "success": False,
+                "return_code": -1,
+                "stdout": "\n".join(self.stdout_lines),
+                "stderr": f"Process monitoring error: {str(e)}",
+                "execution_time": execution_time,
+                "timeout": False,
             }
+
 
 class DynamicScriptingEngine(ScriptExecutor):
     """
     Dynamic scripting engine with safety checks and dependency injection.
-    
+
     Provides secure execution of dynamically generated Python code with
     input/output modification capabilities and comprehensive safety validation.
     """
-    
+
     def __init__(
         self,
         allowed_imports: List[str] = None,
@@ -142,7 +142,7 @@ class DynamicScriptingEngine(ScriptExecutor):
         input_modifiers: List[InputOutputModifier] = None,
         output_modifiers: List[InputOutputModifier] = None,
         prefer_subprocess: bool = True,
-        python_executable: str = None
+        python_executable: str = None,
     ):
         """
         Initialize the dynamic scripting engine.
@@ -156,8 +156,19 @@ class DynamicScriptingEngine(ScriptExecutor):
             python_executable: Path to Python executable (defaults to sys.executable)
         """
         self.allowed_imports = allowed_imports or [
-            'json', 'datetime', 'math', 'random', 'os', 'sys', 'pathlib',
-            'collections', 'itertools', 'functools', 're', 'typing', 'time'
+            "json",
+            "datetime",
+            "math",
+            "random",
+            "os",
+            "sys",
+            "pathlib",
+            "collections",
+            "itertools",
+            "functools",
+            "re",
+            "typing",
+            "time",
         ]
         self.max_execution_time = max_execution_time
         self.input_modifiers = input_modifiers or []
@@ -167,40 +178,60 @@ class DynamicScriptingEngine(ScriptExecutor):
 
         # Test subprocess availability
         self.subprocess_available = self._test_subprocess_availability()
-        
+
         # Dangerous operations to block
         self.blocked_operations = {
-            'eval', 'exec', 'compile', '__import__', 'file',
-            'input', 'raw_input', 'reload', 'vars', 'globals', 'locals',
-            'dir', 'hasattr', 'getattr', 'setattr', 'delattr'
+            "eval",
+            "exec",
+            "compile",
+            "__import__",
+            "file",
+            "input",
+            "raw_input",
+            "reload",
+            "vars",
+            "globals",
+            "locals",
+            "dir",
+            "hasattr",
+            "getattr",
+            "setattr",
+            "delattr",
         }
-        
-        logger.info("Dynamic Scripting Engine initialized",
-                   allowed_imports=len(self.allowed_imports),
-                   max_execution_time=max_execution_time,
-                   subprocess_available=self.subprocess_available,
-                   prefer_subprocess=prefer_subprocess)
+
+        logger.info(
+            "Dynamic Scripting Engine initialized",
+            allowed_imports=len(self.allowed_imports),
+            max_execution_time=max_execution_time,
+            subprocess_available=self.subprocess_available,
+            prefer_subprocess=prefer_subprocess,
+        )
 
     def _test_subprocess_availability(self) -> bool:
         """Test if subprocess execution is available and working."""
         try:
             # Simple test - run Python with a basic command
             result = subprocess.run(
-                [self.python_executable, '-c', 'print("test")'],
+                [self.python_executable, "-c", 'print("test")'],
                 capture_output=True,
                 text=True,
-                timeout=5.0
+                timeout=5.0,
             )
 
             success = result.returncode == 0 and result.stdout.strip() == "test"
 
             if success:
-                logger.info("Subprocess execution available", python_executable=self.python_executable)
+                logger.info(
+                    "Subprocess execution available",
+                    python_executable=self.python_executable,
+                )
             else:
-                logger.warning("Subprocess test failed",
-                             returncode=result.returncode,
-                             stdout=result.stdout,
-                             stderr=result.stderr)
+                logger.warning(
+                    "Subprocess test failed",
+                    returncode=result.returncode,
+                    stdout=result.stdout,
+                    stderr=result.stderr,
+                )
 
             return success
 
@@ -209,10 +240,7 @@ class DynamicScriptingEngine(ScriptExecutor):
             return False
 
     async def execute_script(
-        self,
-        script_code: str,
-        context: Dict[str, Any],
-        safety_checks: bool = True
+        self, script_code: str, context: Dict[str, Any], safety_checks: bool = True
     ) -> ScriptResult:
         """Execute dynamic script code with context and safety checks."""
 
@@ -234,28 +262,31 @@ class DynamicScriptingEngine(ScriptExecutor):
                 output="",
                 error="Script failed safety validation",
                 execution_time=time.time() - start_time,
-                side_effects=[]
+                side_effects=[],
             )
 
         # Choose execution method
         if self.prefer_subprocess and self.subprocess_available:
             logger.debug("Using subprocess execution")
-            return await self._execute_with_subprocess(script_code, modified_context, start_time)
+            return await self._execute_with_subprocess(
+                script_code, modified_context, start_time
+            )
         else:
             logger.debug("Using exec() execution")
-            return await self._execute_with_exec(script_code, modified_context, start_time)
+            return await self._execute_with_exec(
+                script_code, modified_context, start_time
+            )
 
     async def _execute_with_subprocess(
-        self,
-        script_code: str,
-        context: Dict[str, Any],
-        start_time: float
+        self, script_code: str, context: Dict[str, Any], start_time: float
     ) -> ScriptResult:
         """Execute script using subprocess with real-time monitoring."""
 
         try:
             # Create temporary script file
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as temp_file:
+            with tempfile.NamedTemporaryFile(
+                mode="w", suffix=".py", delete=False
+            ) as temp_file:
                 # Write context setup and script code
                 temp_file.write("import json\n")
                 temp_file.write("import sys\n")
@@ -285,7 +316,7 @@ class DynamicScriptingEngine(ScriptExecutor):
                 stderr=subprocess.PIPE,
                 text=True,
                 bufsize=1,
-                universal_newlines=True
+                universal_newlines=True,
             )
 
             # Monitor execution
@@ -299,15 +330,15 @@ class DynamicScriptingEngine(ScriptExecutor):
                 logger.warning("Failed to clean up temp file", error=str(e))
 
             # Parse results
-            stdout = execution_result['stdout']
-            stderr = execution_result['stderr']
+            stdout = execution_result["stdout"]
+            stderr = execution_result["stderr"]
 
             # Extract result if present
             result = None
             output_lines = []
 
-            for line in stdout.split('\n'):
-                if line.startswith('__RESULT__:'):
+            for line in stdout.split("\n"):
+                if line.startswith("__RESULT__:"):
                     try:
                         result_json = line[11:]  # Remove '__RESULT__:' prefix
                         result = json.loads(result_json)
@@ -316,7 +347,7 @@ class DynamicScriptingEngine(ScriptExecutor):
                 else:
                     output_lines.append(line)
 
-            clean_output = '\n'.join(output_lines).strip()
+            clean_output = "\n".join(output_lines).strip()
 
             # Apply output modifiers
             for modifier in self.output_modifiers:
@@ -328,12 +359,12 @@ class DynamicScriptingEngine(ScriptExecutor):
             execution_time = time.time() - start_time
 
             return ScriptResult(
-                success=execution_result['success'],
+                success=execution_result["success"],
                 result=result,
                 output=clean_output,
-                error=stderr if not execution_result['success'] else None,
+                error=stderr if not execution_result["success"] else None,
                 execution_time=execution_time,
-                side_effects=[f"Subprocess execution: PID {process.pid}"]
+                side_effects=[f"Subprocess execution: PID {process.pid}"],
             )
 
         except Exception as e:
@@ -346,10 +377,7 @@ class DynamicScriptingEngine(ScriptExecutor):
             return await self._execute_with_exec(script_code, context, start_time)
 
     async def _execute_with_exec(
-        self,
-        script_code: str,
-        context: Dict[str, Any],
-        start_time: float
+        self, script_code: str, context: Dict[str, Any], start_time: float
     ) -> ScriptResult:
         """Execute script using exec() with output capture."""
 
@@ -367,7 +395,7 @@ class DynamicScriptingEngine(ScriptExecutor):
                 exec(script_code, safe_globals, safe_locals)
 
             # Get the result (look for 'result' variable or last expression)
-            result = safe_locals.get('result', None)
+            result = safe_locals.get("result", None)
 
             # Apply output modifiers
             for modifier in self.output_modifiers:
@@ -384,16 +412,16 @@ class DynamicScriptingEngine(ScriptExecutor):
                 output=stdout_capture.getvalue(),
                 error=None,
                 execution_time=execution_time,
-                side_effects=self._detect_side_effects(safe_locals, context)
+                side_effects=self._detect_side_effects(safe_locals, context),
             )
 
         except Exception as e:
             execution_time = time.time() - start_time
             error_output = stderr_capture.getvalue()
 
-            logger.error("Exec() execution failed",
-                        error=str(e),
-                        execution_time=execution_time)
+            logger.error(
+                "Exec() execution failed", error=str(e), execution_time=execution_time
+            )
 
             return ScriptResult(
                 success=False,
@@ -401,7 +429,7 @@ class DynamicScriptingEngine(ScriptExecutor):
                 output=stdout_capture.getvalue(),
                 error=f"{str(e)}\n{error_output}",
                 execution_time=execution_time,
-                side_effects=[]
+                side_effects=[],
             )
 
     def set_execution_mode(self, prefer_subprocess: bool = True):
@@ -412,61 +440,76 @@ class DynamicScriptingEngine(ScriptExecutor):
             prefer_subprocess: Whether to prefer subprocess over exec()
         """
         self.prefer_subprocess = prefer_subprocess
-        logger.info("Execution mode changed",
-                   prefer_subprocess=prefer_subprocess,
-                   subprocess_available=self.subprocess_available)
+        logger.info(
+            "Execution mode changed",
+            prefer_subprocess=prefer_subprocess,
+            subprocess_available=self.subprocess_available,
+        )
 
     def get_execution_info(self) -> Dict[str, Any]:
         """Get information about current execution capabilities."""
         return {
-            'subprocess_available': self.subprocess_available,
-            'prefer_subprocess': self.prefer_subprocess,
-            'python_executable': self.python_executable,
-            'max_execution_time': self.max_execution_time,
-            'current_mode': 'subprocess' if (self.prefer_subprocess and self.subprocess_available) else 'exec',
-            'allowed_imports': self.allowed_imports,
-            'input_modifiers': len(self.input_modifiers),
-            'output_modifiers': len(self.output_modifiers)
+            "subprocess_available": self.subprocess_available,
+            "prefer_subprocess": self.prefer_subprocess,
+            "python_executable": self.python_executable,
+            "max_execution_time": self.max_execution_time,
+            "current_mode": (
+                "subprocess"
+                if (self.prefer_subprocess and self.subprocess_available)
+                else "exec"
+            ),
+            "allowed_imports": self.allowed_imports,
+            "input_modifiers": len(self.input_modifiers),
+            "output_modifiers": len(self.output_modifiers),
         }
 
     def validate_script_safety(self, script_code: str) -> bool:
         """Validate that script code is safe to execute."""
-        
+
         try:
             # Parse the AST
             tree = ast.parse(script_code)
-            
+
             # Check for dangerous operations
             for node in ast.walk(tree):
                 # Check for dangerous function calls
                 if isinstance(node, ast.Call):
                     if isinstance(node.func, ast.Name):
                         if node.func.id in self.blocked_operations:
-                            logger.warning("Blocked dangerous operation", operation=node.func.id)
+                            logger.warning(
+                                "Blocked dangerous operation", operation=node.func.id
+                            )
                             return False
-                
+
                 # Check for dangerous imports
                 elif isinstance(node, ast.Import):
                     for alias in node.names:
                         if alias.name not in self.allowed_imports:
                             logger.warning("Blocked import", module=alias.name)
                             return False
-                
+
                 elif isinstance(node, ast.ImportFrom):
                     if node.module and node.module not in self.allowed_imports:
                         logger.warning("Blocked import from", module=node.module)
                         return False
-                
+
                 # Check for attribute access to dangerous modules
                 elif isinstance(node, ast.Attribute):
                     if isinstance(node.value, ast.Name):
-                        if node.value.id in ['os', 'sys'] and node.attr in ['system', 'exit', 'quit']:
-                            logger.warning("Blocked dangerous attribute access", 
-                                         module=node.value.id, attr=node.attr)
+                        if node.value.id in ["os", "sys"] and node.attr in [
+                            "system",
+                            "exit",
+                            "quit",
+                        ]:
+                            logger.warning(
+                                "Blocked dangerous attribute access",
+                                module=node.value.id,
+                                attr=node.attr,
+                            )
                             return False
-            
+
             return True
-            
+
         except SyntaxError as e:
             logger.warning("Script has syntax error", error=str(e))
             return False
@@ -475,17 +518,36 @@ class DynamicScriptingEngine(ScriptExecutor):
         """Create a safe globals dictionary for script execution."""
 
         safe_globals = {
-            '__builtins__': {
+            "__builtins__": {
                 # Safe built-in functions
-                'len': len, 'str': str, 'int': int, 'float': float, 'bool': bool,
-                'list': list, 'dict': dict, 'tuple': tuple, 'set': set,
-                'range': range, 'enumerate': enumerate, 'zip': zip,
-                'map': map, 'filter': filter, 'sorted': sorted,
-                'sum': sum, 'min': min, 'max': max, 'abs': abs, 'round': round,
-                'print': print, 'open': open,
+                "len": len,
+                "str": str,
+                "int": int,
+                "float": float,
+                "bool": bool,
+                "list": list,
+                "dict": dict,
+                "tuple": tuple,
+                "set": set,
+                "range": range,
+                "enumerate": enumerate,
+                "zip": zip,
+                "map": map,
+                "filter": filter,
+                "sorted": sorted,
+                "sum": sum,
+                "min": min,
+                "max": max,
+                "abs": abs,
+                "round": round,
+                "print": print,
+                "open": open,
                 # Safe exceptions
-                'Exception': Exception, 'ValueError': ValueError,
-                'TypeError': TypeError, 'KeyError': KeyError, 'IndexError': IndexError,
+                "Exception": Exception,
+                "ValueError": ValueError,
+                "TypeError": TypeError,
+                "KeyError": KeyError,
+                "IndexError": IndexError,
             }
         }
 
@@ -499,7 +561,9 @@ class DynamicScriptingEngine(ScriptExecutor):
 
         return safe_globals
 
-    def _detect_side_effects(self, final_locals: Dict[str, Any], initial_context: Dict[str, Any]) -> List[str]:
+    def _detect_side_effects(
+        self, final_locals: Dict[str, Any], initial_context: Dict[str, Any]
+    ) -> List[str]:
         """Detect side effects from script execution."""
 
         side_effects = []

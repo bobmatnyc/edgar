@@ -33,7 +33,6 @@ import pytest
 
 from extract_transform_platform.data_sources.web.api_source import APIDataSource
 
-
 # ============================================================================
 # Test Fixtures
 # ============================================================================
@@ -630,9 +629,7 @@ class TestAPIDataSourceValidation:
         """Test validate_config returns False for timeout."""
         with patch("httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
-            mock_client.get = AsyncMock(
-                side_effect=httpx.TimeoutException("Timeout")
-            )
+            mock_client.get = AsyncMock(side_effect=httpx.TimeoutException("Timeout"))
             mock_client_class.return_value.__aenter__.return_value = mock_client
 
             is_valid = await api_source.validate_config()

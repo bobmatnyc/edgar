@@ -30,7 +30,6 @@ from edgar_analyzer.data_sources import (
 )
 from edgar_analyzer.utils.rate_limiter import RateLimiter
 
-
 # ============================================================================
 # Test RateLimiter
 # ============================================================================
@@ -316,7 +315,9 @@ class TestAPIDataSource:
                 return_value=mock_response
             )
 
-            result = await api.fetch(endpoint="users/123", params={"include": "profile"})
+            result = await api.fetch(
+                endpoint="users/123", params={"include": "profile"}
+            )
 
             assert result == {"result": "success"}
 
@@ -342,7 +343,7 @@ class TestAPIDataSource:
         mock_response = Mock()
         mock_response.json.return_value = {}
         mock_response.status_code = 200
-        mock_response.content = b'{}'
+        mock_response.content = b"{}"
         mock_response.raise_for_status = Mock()
 
         with patch("httpx.AsyncClient") as mock_client:
@@ -531,9 +532,7 @@ class TestFileDataSource:
     @pytest.mark.asyncio
     async def test_file_fetch_json(self):
         """Test fetching JSON file."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".json", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump({"name": "Alice", "age": 30}, f)
             file_path = Path(f.name)
 
@@ -551,9 +550,7 @@ class TestFileDataSource:
         """Test fetching YAML file."""
         pytest.importorskip("yaml")  # Skip if PyYAML not installed
 
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yaml", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write("name: Bob\nage: 25\n")
             file_path = Path(f.name)
 

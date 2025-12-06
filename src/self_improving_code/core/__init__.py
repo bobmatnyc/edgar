@@ -2,18 +2,18 @@
 
 from .controller import SelfImprovingController
 from .interfaces import (
-    TestFunction,
-    QualityEvaluator, 
-    SupervisorLLM,
     EngineerLLM,
-    ImprovementResult
+    ImprovementResult,
+    QualityEvaluator,
+    SupervisorLLM,
+    TestFunction,
 )
 
 __all__ = [
     "SelfImprovingController",
     "TestFunction",
     "QualityEvaluator",
-    "SupervisorLLM", 
+    "SupervisorLLM",
     "EngineerLLM",
-    "ImprovementResult"
+    "ImprovementResult",
 ]

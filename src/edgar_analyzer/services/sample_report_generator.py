@@ -18,66 +18,68 @@ logger = structlog.get_logger(__name__)
 
 class SampleReportGenerator:
     """Generate reports that match the sample report format exactly."""
-    
+
     def __init__(self, output_dir: str = "output"):
         """Initialize sample report generator."""
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        logger.info("Sample report generator initialized", output_dir=str(self.output_dir))
-    
+        logger.info(
+            "Sample report generator initialized", output_dir=str(self.output_dir)
+        )
+
     async def generate_sample_format_report(
-        self, 
+        self,
         report: AnalysisReport,
-        output_filename: str = "corporations_pay_executives_more_than_taxes.xlsx"
+        output_filename: str = "corporations_pay_executives_more_than_taxes.xlsx",
     ) -> Path:
         """Generate a report that matches the sample format exactly."""
-        
+
         logger.info("Generating sample format report", companies=len(report.companies))
-        
+
         # Prepare data for the main analysis
         main_data = self._prepare_main_analysis_data(report)
-        
+
         # Create Excel workbook
         wb = Workbook()
         wb.remove(wb.active)  # Remove default sheet
-        
+
         # Create the main chart sheet (Chart-2 equivalent)
         self._create_main_chart_sheet(wb, main_data)
-        
+
         # Create summary sheet (Chart-1 equivalent)
         self._create_summary_sheet(wb, main_data)
-        
+
         # Create key findings sheet
         self._create_key_findings_sheet(wb, report)
-        
+
         # Create executive list sheet
         self._create_executive_list_sheet(wb, report)
-        
+
         # Save the workbook
         output_path = self.output_dir / output_filename
         wb.save(output_path)
-        
+
         logger.info("Sample format report generated", output_path=str(output_path))
         return output_path
-    
+
     def _prepare_main_analysis_data(self, report: AnalysisReport) -> List[Dict]:
         """Prepare data in the format matching the sample report."""
         main_data = []
-        
+
         for analysis in report.companies:
             company = analysis.company
-            
+
             # Calculate 5-year totals (2019-2023)
             total_tax_expense = 0
             total_executive_compensation = 0
             years_with_data = 0
-            
+
             # Sum tax expenses
             for tax_expense in analysis.tax_expenses:
                 if 2019 <= tax_expense.fiscal_year <= 2023:
                     total_tax_expense += float(tax_expense.total_tax_expense)
                     years_with_data += 1
-            
+
             # Sum executive compensation by year
             comp_by_year = {}
             for comp in analysis.executive_compensations:
@@ -86,42 +88,55 @@ class SampleReportGenerator:
                     if year not in comp_by_year:
                         comp_by_year[year] = 0
                     comp_by_year[year] += float(comp.total_compensation)
-            
+
             total_executive_compensation = sum(comp_by_year.values())
-            
+
             # Calculate domestic pre-tax profits (estimated from tax data)
             # Using a reverse calculation: if ETR = tax/profit, then profit = tax/ETR
             # Assume average ETR of 15% for estimation
-            estimated_pretax_profits = total_tax_expense / 0.15 if total_tax_expense > 0 else 0
-            
+            estimated_pretax_profits = (
+                total_tax_expense / 0.15 if total_tax_expense > 0 else 0
+            )
+
             # Calculate effective tax rate
-            effective_tax_rate = total_tax_expense / estimated_pretax_profits if estimated_pretax_profits > 0 else 0
-            
+            effective_tax_rate = (
+                total_tax_expense / estimated_pretax_profits
+                if estimated_pretax_profits > 0
+                else 0
+            )
+
             # Include all companies with sufficient data
             if years_with_data >= 3:
                 company_data = {
-                    'company_name': company.name,
-                    'domestic_pretax_profits': estimated_pretax_profits / 1_000_000,  # Convert to millions
-                    'federal_income_taxes': total_tax_expense / 1_000_000,  # Convert to millions
-                    'effective_tax_rate': effective_tax_rate,
-                    'executive_pay': total_executive_compensation / 1_000_000,  # Convert to millions
-                    'stock_buybacks': 0,  # Placeholder - would need additional data
-                    'dividend_payouts': 0,  # Placeholder - would need additional data
-                    'fortune_rank': company.fortune_rank or 999
+                    "company_name": company.name,
+                    "domestic_pretax_profits": estimated_pretax_profits
+                    / 1_000_000,  # Convert to millions
+                    "federal_income_taxes": total_tax_expense
+                    / 1_000_000,  # Convert to millions
+                    "effective_tax_rate": effective_tax_rate,
+                    "executive_pay": total_executive_compensation
+                    / 1_000_000,  # Convert to millions
+                    "stock_buybacks": 0,  # Placeholder - would need additional data
+                    "dividend_payouts": 0,  # Placeholder - would need additional data
+                    "fortune_rank": company.fortune_rank or 999,
                 }
                 main_data.append(company_data)
-        
+
         # Sort by Fortune rank
-        main_data.sort(key=lambda x: x['fortune_rank'])
-        
+        main_data.sort(key=lambda x: x["fortune_rank"])
+
         return main_data
-    
-    def _create_main_chart_sheet(self, workbook: Workbook, main_data: List[Dict]) -> None:
+
+    def _create_main_chart_sheet(
+        self, workbook: Workbook, main_data: List[Dict]
+    ) -> None:
         """Create the main chart sheet matching Chart-2 format."""
         ws = workbook.create_sheet("Chart-2")
-        
+
         # Count companies where exec pay > taxes
-        companies_exec_over_tax = sum(1 for d in main_data if d['executive_pay'] > d['federal_income_taxes'])
+        companies_exec_over_tax = sum(
+            1 for d in main_data if d["executive_pay"] > d["federal_income_taxes"]
+        )
 
         # Header row 1 (title)
         if companies_exec_over_tax > 0:
@@ -129,36 +144,72 @@ class SampleReportGenerator:
         else:
             title = f"{len(main_data)} Fortune 500 corporations - Executive compensation vs Federal income taxes analysis (2019-2023)"
 
-        ws.append([title, "Domestic Pre-Tax Profits", "Federal Income Taxes", "Effective Tax Rate", "Executive Pay", "Stock Buybacks", "Dividend Payouts"])
+        ws.append(
+            [
+                title,
+                "Domestic Pre-Tax Profits",
+                "Federal Income Taxes",
+                "Effective Tax Rate",
+                "Executive Pay",
+                "Stock Buybacks",
+                "Dividend Payouts",
+            ]
+        )
 
         # Header row 2 (subtitle with clear units)
-        ws.append([None, "Five-Year Total, 2019 to 2023", "Five-Year Total, 2019 to 2023", "Five-Year Average", "Five-Year Total, 2019 to 2023", "Five-Year Total, 2019 to 2023", "Five-Year Total, 2019 to 2023"])
+        ws.append(
+            [
+                None,
+                "Five-Year Total, 2019 to 2023",
+                "Five-Year Total, 2019 to 2023",
+                "Five-Year Average",
+                "Five-Year Total, 2019 to 2023",
+                "Five-Year Total, 2019 to 2023",
+                "Five-Year Total, 2019 to 2023",
+            ]
+        )
 
         # Header row 3 (units)
-        ws.append([None, "(millions of dollars)", "(millions of dollars)", "(percentage)", "(millions of dollars)", "(millions of dollars)", "(millions of dollars)"])
-        
+        ws.append(
+            [
+                None,
+                "(millions of dollars)",
+                "(millions of dollars)",
+                "(percentage)",
+                "(millions of dollars)",
+                "(millions of dollars)",
+                "(millions of dollars)",
+            ]
+        )
+
         # Data rows with proper formatting
         for company_data in main_data:
-            ws.append([
-                company_data['company_name'],
-                company_data['domestic_pretax_profits'],  # Will be formatted by Excel styling
-                company_data['federal_income_taxes'],
-                company_data['effective_tax_rate'],
-                company_data['executive_pay'],
-                company_data['stock_buybacks'],
-                company_data['dividend_payouts']
-            ])
-        
+            ws.append(
+                [
+                    company_data["company_name"],
+                    company_data[
+                        "domestic_pretax_profits"
+                    ],  # Will be formatted by Excel styling
+                    company_data["federal_income_taxes"],
+                    company_data["effective_tax_rate"],
+                    company_data["executive_pay"],
+                    company_data["stock_buybacks"],
+                    company_data["dividend_payouts"],
+                ]
+            )
+
         # Style the sheet
         self._style_main_chart_sheet(ws)
-    
+
     def _style_main_chart_sheet(self, worksheet) -> None:
         """Apply styling to match the sample format."""
         from openpyxl.styles import NamedStyle
 
         # Header styling
         header_font = Font(bold=True, size=11)
-        header_fill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
+        header_fill = PatternFill(
+            start_color="D9E1F2", end_color="D9E1F2", fill_type="solid"
+        )
 
         # Style first row (title row)
         for cell in worksheet[1]:
@@ -179,28 +230,30 @@ class SampleReportGenerator:
         # Format data rows with proper number formatting
         for row_num in range(4, worksheet.max_row + 1):
             # Company name (column A) - left aligned
-            worksheet.cell(row=row_num, column=1).alignment = Alignment(horizontal="left")
+            worksheet.cell(row=row_num, column=1).alignment = Alignment(
+                horizontal="left"
+            )
 
             # Financial columns (B, C, E, F, G) - number format with commas, 1 decimal place
             for col in [2, 3, 5, 6, 7]:  # Skip column 4 (effective tax rate)
                 cell = worksheet.cell(row=row_num, column=col)
-                cell.number_format = '#,##0.0'
+                cell.number_format = "#,##0.0"
                 cell.alignment = Alignment(horizontal="right")
 
             # Effective tax rate (column D) - percentage format
             tax_rate_cell = worksheet.cell(row=row_num, column=4)
-            tax_rate_cell.number_format = '0.000%'
+            tax_rate_cell.number_format = "0.000%"
             tax_rate_cell.alignment = Alignment(horizontal="right")
 
         # Set column widths for better readability
         column_widths = {
-            'A': 35,  # Company name
-            'B': 20,  # Domestic pre-tax profits
-            'C': 20,  # Federal income taxes
-            'D': 18,  # Effective tax rate
-            'E': 20,  # Executive pay
-            'F': 18,  # Stock buybacks
-            'G': 18   # Dividend payouts
+            "A": 35,  # Company name
+            "B": 20,  # Domestic pre-tax profits
+            "C": 20,  # Federal income taxes
+            "D": 18,  # Effective tax rate
+            "E": 20,  # Executive pay
+            "F": 18,  # Stock buybacks
+            "G": 18,  # Dividend payouts
         }
 
         for column_letter, width in column_widths.items():
@@ -211,37 +264,65 @@ class SampleReportGenerator:
         ws = workbook.create_sheet("Chart-1")
 
         # Calculate totals
-        total_pretax_profits = sum(d['domestic_pretax_profits'] for d in main_data)
-        total_federal_taxes = sum(d['federal_income_taxes'] for d in main_data)
-        total_executive_pay = sum(d['executive_pay'] for d in main_data)
-        total_stock_buybacks = sum(d['stock_buybacks'] for d in main_data)
-        total_dividend_payouts = sum(d['dividend_payouts'] for d in main_data)
+        total_pretax_profits = sum(d["domestic_pretax_profits"] for d in main_data)
+        total_federal_taxes = sum(d["federal_income_taxes"] for d in main_data)
+        total_executive_pay = sum(d["executive_pay"] for d in main_data)
+        total_stock_buybacks = sum(d["stock_buybacks"] for d in main_data)
+        total_dividend_payouts = sum(d["dividend_payouts"] for d in main_data)
 
-        overall_effective_rate = total_federal_taxes / total_pretax_profits if total_pretax_profits > 0 else 0
+        overall_effective_rate = (
+            total_federal_taxes / total_pretax_profits
+            if total_pretax_profits > 0
+            else 0
+        )
 
         # Header
-        ws.append([None, "Domestic Pre-Tax Profits", "Federal Income Taxes", "Effective Tax Rate", "Executive Pay", "Stock Buybacks", "Dividend Payouts"])
+        ws.append(
+            [
+                None,
+                "Domestic Pre-Tax Profits",
+                "Federal Income Taxes",
+                "Effective Tax Rate",
+                "Executive Pay",
+                "Stock Buybacks",
+                "Dividend Payouts",
+            ]
+        )
 
         # Units row
-        ws.append([None, "(millions of dollars)", "(millions of dollars)", "(percentage)", "(millions of dollars)", "(millions of dollars)", "(millions of dollars)"])
+        ws.append(
+            [
+                None,
+                "(millions of dollars)",
+                "(millions of dollars)",
+                "(percentage)",
+                "(millions of dollars)",
+                "(millions of dollars)",
+                "(millions of dollars)",
+            ]
+        )
 
         # Count companies where exec pay > taxes
-        companies_exec_over_tax = sum(1 for d in main_data if d['executive_pay'] > d['federal_income_taxes'])
+        companies_exec_over_tax = sum(
+            1 for d in main_data if d["executive_pay"] > d["federal_income_taxes"]
+        )
 
         # Summary row
         if companies_exec_over_tax > 0:
             summary_title = f"{companies_exec_over_tax} Profitable Corporations That Paid More To Executives Than In Federal Taxes"
         else:
             summary_title = f"{len(main_data)} Fortune 500 Corporations - Executive Compensation vs Federal Tax Analysis"
-        ws.append([
-            summary_title,
-            total_pretax_profits,
-            total_federal_taxes,
-            overall_effective_rate,
-            total_executive_pay,
-            total_stock_buybacks,
-            total_dividend_payouts
-        ])
+        ws.append(
+            [
+                summary_title,
+                total_pretax_profits,
+                total_federal_taxes,
+                overall_effective_rate,
+                total_executive_pay,
+                total_stock_buybacks,
+                total_dividend_payouts,
+            ]
+        )
 
         # Empty row
         ws.append([None, None, None, None, None, None, None])
@@ -253,7 +334,9 @@ class SampleReportGenerator:
         """Style the summary sheet."""
         # Header styling
         header_font = Font(bold=True, size=11)
-        header_fill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
+        header_fill = PatternFill(
+            start_color="D9E1F2", end_color="D9E1F2", fill_type="solid"
+        )
 
         # Style header row
         for cell in worksheet[1]:
@@ -278,37 +361,44 @@ class SampleReportGenerator:
         # Financial columns (B, C, E, F, G) - number format with commas, 1 decimal place
         for col in [2, 3, 5, 6, 7]:  # Skip column 4 (effective tax rate)
             cell = worksheet.cell(row=3, column=col)
-            cell.number_format = '#,##0.0'
+            cell.number_format = "#,##0.0"
             cell.alignment = Alignment(horizontal="right")
 
         # Effective tax rate (column D) - percentage format
         tax_rate_cell = worksheet.cell(row=3, column=4)
-        tax_rate_cell.number_format = '0.000%'
+        tax_rate_cell.number_format = "0.000%"
         tax_rate_cell.alignment = Alignment(horizontal="right")
 
         # Set column widths for better readability
         column_widths = {
-            'A': 45,  # Company summary title
-            'B': 20,  # Domestic pre-tax profits
-            'C': 20,  # Federal income taxes
-            'D': 18,  # Effective tax rate
-            'E': 20,  # Executive pay
-            'F': 18,  # Stock buybacks
-            'G': 18   # Dividend payouts
+            "A": 45,  # Company summary title
+            "B": 20,  # Domestic pre-tax profits
+            "C": 20,  # Federal income taxes
+            "D": 18,  # Effective tax rate
+            "E": 20,  # Executive pay
+            "F": 18,  # Stock buybacks
+            "G": 18,  # Dividend payouts
         }
 
         for column_letter, width in column_widths.items():
             worksheet.column_dimensions[column_letter].width = width
 
-    def _create_key_findings_sheet(self, workbook: Workbook, report: AnalysisReport) -> None:
+    def _create_key_findings_sheet(
+        self, workbook: Workbook, report: AnalysisReport
+    ) -> None:
         """Create key findings sheet."""
         ws = workbook.create_sheet("Key Findings")
 
         # Headers
         headers = [
-            "Rank", "Corporation", "Home State", "Fortune Rank",
-            "5-Year Executive Pay (millions)", "5-Year Federal Taxes (millions)",
-            "Executive Pay vs Tax Ratio", "Effective Tax Rate"
+            "Rank",
+            "Corporation",
+            "Home State",
+            "Fortune Rank",
+            "5-Year Executive Pay (millions)",
+            "5-Year Federal Taxes (millions)",
+            "Executive Pay vs Tax Ratio",
+            "Effective Tax Rate",
         ]
         ws.append(headers)
 
@@ -318,25 +408,36 @@ class SampleReportGenerator:
             company = analysis.company
 
             # Calculate totals
-            total_tax = sum(float(tax.total_tax_expense) for tax in analysis.tax_expenses) / 1_000_000
-            total_comp = sum(float(comp.total_compensation) for comp in analysis.executive_compensations) / 1_000_000
+            total_tax = (
+                sum(float(tax.total_tax_expense) for tax in analysis.tax_expenses)
+                / 1_000_000
+            )
+            total_comp = (
+                sum(
+                    float(comp.total_compensation)
+                    for comp in analysis.executive_compensations
+                )
+                / 1_000_000
+            )
 
-            ratio = total_comp / total_tax if total_tax > 0 else float('inf')
+            ratio = total_comp / total_tax if total_tax > 0 else float("inf")
             etr = total_tax / (total_tax / 0.15) if total_tax > 0 else 0  # Estimated
 
             # Get company home state
             home_state = self._get_company_home_state(company.name)
 
-            findings_data.append([
-                i,
-                company.name,
-                home_state,
-                company.fortune_rank or 999,
-                total_comp,  # Will be formatted by Excel
-                total_tax,
-                ratio,
-                etr  # Will be formatted as percentage
-            ])
+            findings_data.append(
+                [
+                    i,
+                    company.name,
+                    home_state,
+                    company.fortune_rank or 999,
+                    total_comp,  # Will be formatted by Excel
+                    total_tax,
+                    ratio,
+                    etr,  # Will be formatted as percentage
+                ]
+            )
 
         # Add data rows
         for row_data in findings_data:
@@ -349,7 +450,9 @@ class SampleReportGenerator:
         """Style the key findings sheet."""
         # Header styling
         header_font = Font(bold=True, size=11)
-        header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
+        header_fill = PatternFill(
+            start_color="366092", end_color="366092", fill_type="solid"
+        )
 
         for cell in worksheet[1]:
             cell.font = Font(bold=True, color="FFFFFF")
@@ -359,47 +462,55 @@ class SampleReportGenerator:
         # Format data rows
         for row_num in range(2, worksheet.max_row + 1):
             # Rank (column A) - center aligned
-            worksheet.cell(row=row_num, column=1).alignment = Alignment(horizontal="center")
+            worksheet.cell(row=row_num, column=1).alignment = Alignment(
+                horizontal="center"
+            )
 
             # Corporation (column B) - left aligned
-            worksheet.cell(row=row_num, column=2).alignment = Alignment(horizontal="left")
+            worksheet.cell(row=row_num, column=2).alignment = Alignment(
+                horizontal="left"
+            )
 
             # Home State (column C) - center aligned
-            worksheet.cell(row=row_num, column=3).alignment = Alignment(horizontal="center")
+            worksheet.cell(row=row_num, column=3).alignment = Alignment(
+                horizontal="center"
+            )
 
             # Fortune Rank (column D) - center aligned
-            worksheet.cell(row=row_num, column=4).alignment = Alignment(horizontal="center")
+            worksheet.cell(row=row_num, column=4).alignment = Alignment(
+                horizontal="center"
+            )
 
             # Executive Pay (column E) - currency format
             exec_pay_cell = worksheet.cell(row=row_num, column=5)
-            exec_pay_cell.number_format = '#,##0.0'
+            exec_pay_cell.number_format = "#,##0.0"
             exec_pay_cell.alignment = Alignment(horizontal="right")
 
             # Federal Taxes (column F) - currency format
             tax_cell = worksheet.cell(row=row_num, column=6)
-            tax_cell.number_format = '#,##0.0'
+            tax_cell.number_format = "#,##0.0"
             tax_cell.alignment = Alignment(horizontal="right")
 
             # Ratio (column G) - number format
             ratio_cell = worksheet.cell(row=row_num, column=7)
-            ratio_cell.number_format = '#,##0.0'
+            ratio_cell.number_format = "#,##0.0"
             ratio_cell.alignment = Alignment(horizontal="right")
 
             # Effective Tax Rate (column H) - percentage format
             etr_cell = worksheet.cell(row=row_num, column=8)
-            etr_cell.number_format = '0.0%'
+            etr_cell.number_format = "0.0%"
             etr_cell.alignment = Alignment(horizontal="right")
 
         # Set column widths for better readability
         column_widths = {
-            'A': 8,   # Rank
-            'B': 35,  # Corporation
-            'C': 12,  # Home State
-            'D': 12,  # Fortune Rank
-            'E': 18,  # Executive Pay
-            'F': 18,  # Federal Taxes
-            'G': 15,  # Ratio
-            'H': 15   # Effective Tax Rate
+            "A": 8,  # Rank
+            "B": 35,  # Corporation
+            "C": 12,  # Home State
+            "D": 12,  # Fortune Rank
+            "E": 18,  # Executive Pay
+            "F": 18,  # Federal Taxes
+            "G": 15,  # Ratio
+            "H": 15,  # Effective Tax Rate
         }
 
         for column_letter, width in column_widths.items():
@@ -420,7 +531,6 @@ class SampleReportGenerator:
             "Alphabet Inc.": "DE",
             "McKesson Corporation": "CA",
             "Cencora Inc.": "PA",
-
             # 11-20
             "Costco Wholesale Corporation": "WA",
             "JPMorgan Chase & Co.": "NY",
@@ -432,7 +542,6 @@ class SampleReportGenerator:
             "Elevance Health, Inc.": "IN",
             "Fannie Mae": "DC",
             "Home Depot, Inc.": "GA",
-
             # 21-30
             "Marathon Petroleum Corporation": "OH",
             "Phillips 66": "TX",
@@ -444,7 +553,6 @@ class SampleReportGenerator:
             "Energy Transfer LP": "TX",
             "Procter & Gamble Company": "OH",
             "Johnson & Johnson": "NJ",
-
             # 31-40
             "Dell Technologies Inc.": "TX",
             "FedEx Corporation": "TN",
@@ -456,7 +564,6 @@ class SampleReportGenerator:
             "AbbVie Inc.": "IL",
             "Caterpillar Inc.": "IL",
             "Comcast Corporation": "PA",
-
             # 41-50
             "Tesla, Inc.": "TX",
             "IBM Corporation": "NY",
@@ -468,7 +575,6 @@ class SampleReportGenerator:
             "Verizon Communications Inc.": "NY",
             "AT&T Inc.": "TX",
             "Meta Platforms, Inc.": "DE",
-
             # Additional common companies
             "General Dynamics Corporation": "VA",
             "Raytheon Technologies Corporation": "MA",
@@ -489,7 +595,7 @@ class SampleReportGenerator:
             "Walt Disney Company": "DE",
             "Nike, Inc.": "OR",
             "Starbucks Corporation": "WA",
-            "McDonald's Corporation": "DE"
+            "McDonald's Corporation": "DE",
         }
 
         # Clean company name for lookup (remove common suffixes)
@@ -508,13 +614,16 @@ class SampleReportGenerator:
             clean_name.replace(" LLC", ""),
             clean_name.replace(" LP", ""),
             clean_name.replace(", Inc.", ""),
-            clean_name.replace(" Incorporated", "")
+            clean_name.replace(" Incorporated", ""),
         ]
 
         for variation in variations:
             variation = variation.strip()
             for known_company, state in company_states.items():
-                if variation.lower() in known_company.lower() or known_company.lower() in variation.lower():
+                if (
+                    variation.lower() in known_company.lower()
+                    or known_company.lower() in variation.lower()
+                ):
                     return state
 
         # Default fallback - try to guess based on common patterns
@@ -529,14 +638,23 @@ class SampleReportGenerator:
 
         return "DE"  # Most Fortune 500 companies are incorporated in Delaware
 
-    def _create_executive_list_sheet(self, workbook: Workbook, report: AnalysisReport) -> None:
+    def _create_executive_list_sheet(
+        self, workbook: Workbook, report: AnalysisReport
+    ) -> None:
         """Create executive list sheet matching the sample format."""
         ws = workbook.create_sheet("List of Executives")
 
         # Headers
         headers = [
-            "Billionaires", "Executives", "Corporate Allegiance",
-            "Five-Year Executive Pay", "2023", "2022", "2021", "2020", "2019"
+            "Billionaires",
+            "Executives",
+            "Corporate Allegiance",
+            "Five-Year Executive Pay",
+            "2023",
+            "2022",
+            "2021",
+            "2020",
+            "2019",
         ]
         ws.append(headers)
 
@@ -553,31 +671,33 @@ class SampleReportGenerator:
 
                 if exec_name not in exec_data:
                     exec_data[exec_name] = {
-                        'name': exec_name,
-                        'company': company.name,
-                        'title': comp.title,
-                        'years': {}
+                        "name": exec_name,
+                        "company": company.name,
+                        "title": comp.title,
+                        "years": {},
                     }
 
-                exec_data[exec_name]['years'][year] = float(comp.total_compensation) / 1_000_000
+                exec_data[exec_name]["years"][year] = (
+                    float(comp.total_compensation) / 1_000_000
+                )
 
             # Add executives to the list
             for exec_info in exec_data.values():
-                five_year_total = sum(exec_info['years'].values())
+                five_year_total = sum(exec_info["years"].values())
 
                 # Determine if billionaire (simplified check)
                 is_billionaire = "Yes" if five_year_total > 1000 else ""
 
                 row_data = [
                     is_billionaire,
-                    exec_info['name'],
-                    exec_info['company'],
+                    exec_info["name"],
+                    exec_info["company"],
                     round(five_year_total, 3),
-                    round(exec_info['years'].get(2023, 0), 3),
-                    round(exec_info['years'].get(2022, 0), 3),
-                    round(exec_info['years'].get(2021, 0), 3),
-                    round(exec_info['years'].get(2020, 0), 3),
-                    round(exec_info['years'].get(2019, 0), 3)
+                    round(exec_info["years"].get(2023, 0), 3),
+                    round(exec_info["years"].get(2022, 0), 3),
+                    round(exec_info["years"].get(2021, 0), 3),
+                    round(exec_info["years"].get(2020, 0), 3),
+                    round(exec_info["years"].get(2019, 0), 3),
                 ]
                 all_executives.append((five_year_total, row_data))
 
@@ -595,7 +715,9 @@ class SampleReportGenerator:
         """Style the executive list sheet."""
         # Header styling
         header_font = Font(bold=True, size=11)
-        header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
+        header_fill = PatternFill(
+            start_color="366092", end_color="366092", fill_type="solid"
+        )
 
         for cell in worksheet[1]:
             cell.font = Font(bold=True, color="FFFFFF")
@@ -606,7 +728,9 @@ class SampleReportGenerator:
         for row in worksheet.iter_rows(min_row=2):
             if row[0].value == "Yes":  # Billionaire column
                 for cell in row:
-                    cell.fill = PatternFill(start_color="FFE699", end_color="FFE699", fill_type="solid")
+                    cell.fill = PatternFill(
+                        start_color="FFE699", end_color="FFE699", fill_type="solid"
+                    )
 
         # Auto-adjust column widths
         for column in worksheet.columns:

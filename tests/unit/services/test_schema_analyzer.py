@@ -27,7 +27,7 @@ class TestSchemaAnalyzer:
         """Test inference of simple flat schema."""
         examples = [
             {"name": "London", "temp": 15.5, "count": 10},
-            {"name": "Tokyo", "temp": 22.3, "count": 20}
+            {"name": "Tokyo", "temp": 22.3, "count": 20},
         ]
 
         schema = analyzer.infer_schema(examples)
@@ -51,7 +51,7 @@ class TestSchemaAnalyzer:
                 "float_field": 3.14,
                 "bool_field": True,
                 "list_field": [1, 2, 3],
-                "dict_field": {"nested": "value"}
+                "dict_field": {"nested": "value"},
             }
         ]
 
@@ -67,14 +67,7 @@ class TestSchemaAnalyzer:
 
     def test_nested_structure_inference(self, analyzer):
         """Test inference of nested dictionary structures."""
-        examples = [
-            {
-                "main": {
-                    "temp": 15.5,
-                    "humidity": 80
-                }
-            }
-        ]
+        examples = [{"main": {"temp": 15.5, "humidity": 80}}]
 
         schema = analyzer.infer_schema(examples)
 
@@ -91,11 +84,7 @@ class TestSchemaAnalyzer:
 
     def test_array_field_detection(self, analyzer):
         """Test detection of array fields."""
-        examples = [
-            {
-                "items": [{"name": "item1"}, {"name": "item2"}]
-            }
-        ]
+        examples = [{"items": [{"name": "item1"}, {"name": "item2"}]}]
 
         schema = analyzer.infer_schema(examples)
 
@@ -109,7 +98,7 @@ class TestSchemaAnalyzer:
         """Test detection of nullable fields."""
         examples = [
             {"required": "value", "optional": "present"},
-            {"required": "value", "optional": None}
+            {"required": "value", "optional": None},
         ]
 
         schema = analyzer.infer_schema(examples)
@@ -126,7 +115,7 @@ class TestSchemaAnalyzer:
         """Test detection of required vs optional fields."""
         examples = [
             {"always_present": "value1", "sometimes_present": "value"},
-            {"always_present": "value2"}
+            {"always_present": "value2"},
         ]
 
         schema = analyzer.infer_schema(examples)
@@ -141,11 +130,7 @@ class TestSchemaAnalyzer:
 
     def test_sample_values_collection(self, analyzer):
         """Test that sample values are collected."""
-        examples = [
-            {"field": "value1"},
-            {"field": "value2"},
-            {"field": "value3"}
-        ]
+        examples = [{"field": "value1"}, {"field": "value2"}, {"field": "value3"}]
 
         schema = analyzer.infer_schema(examples)
 
@@ -159,12 +144,7 @@ class TestSchemaAnalyzer:
         examples = [
             {
                 "level0": "value",
-                "level1": {
-                    "field": "value",
-                    "level2": {
-                        "deep": "value"
-                    }
-                }
+                "level1": {"field": "value", "level2": {"deep": "value"}},
             }
         ]
 
@@ -221,7 +201,7 @@ class TestSchemaComparison:
     def test_type_change_detection(self, analyzer):
         """Test detection of field type changes."""
         input_examples = [{"field": "42"}]  # string
-        output_examples = [{"field": 42}]   # int
+        output_examples = [{"field": 42}]  # int
 
         input_schema = analyzer.infer_schema(input_examples)
         output_schema = analyzer.infer_schema(output_examples)
@@ -234,14 +214,8 @@ class TestSchemaComparison:
 
     def test_field_rename_detection(self, analyzer):
         """Test detection of probable field renames."""
-        input_examples = [
-            {"old_name": "value1"},
-            {"old_name": "value2"}
-        ]
-        output_examples = [
-            {"new_name": "value1"},
-            {"new_name": "value2"}
-        ]
+        input_examples = [{"old_name": "value1"}, {"old_name": "value2"}]
+        output_examples = [{"new_name": "value1"}, {"new_name": "value2"}]
 
         input_schema = analyzer.infer_schema(input_examples)
         output_schema = analyzer.infer_schema(output_examples)
@@ -290,10 +264,7 @@ class TestEdgeCases:
 
     def test_inconsistent_types_across_examples(self, analyzer):
         """Test handling when field has different types across examples."""
-        examples = [
-            {"field": "string"},
-            {"field": 42}
-        ]
+        examples = [{"field": "string"}, {"field": 42}]
 
         schema = analyzer.infer_schema(examples)
 
@@ -304,17 +275,7 @@ class TestEdgeCases:
 
     def test_deeply_nested_structure(self, analyzer):
         """Test handling of deeply nested structures."""
-        examples = [
-            {
-                "level1": {
-                    "level2": {
-                        "level3": {
-                            "value": 42
-                        }
-                    }
-                }
-            }
-        ]
+        examples = [{"level1": {"level2": {"level3": {"value": 42}}}}]
 
         schema = analyzer.infer_schema(examples)
 
@@ -328,9 +289,7 @@ class TestEdgeCases:
 
     def test_array_of_primitives(self, analyzer):
         """Test handling of arrays containing primitive values."""
-        examples = [
-            {"numbers": [1, 2, 3, 4, 5]}
-        ]
+        examples = [{"numbers": [1, 2, 3, 4, 5]}]
 
         schema = analyzer.infer_schema(examples)
 
@@ -339,14 +298,7 @@ class TestEdgeCases:
 
     def test_mixed_nested_and_flat_fields(self, analyzer):
         """Test schema with both flat and nested fields."""
-        examples = [
-            {
-                "flat_field": "value",
-                "nested": {
-                    "field": "value"
-                }
-            }
-        ]
+        examples = [{"flat_field": "value", "nested": {"field": "value"}}]
 
         schema = analyzer.infer_schema(examples)
 

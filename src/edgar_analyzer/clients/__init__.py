@@ -17,9 +17,9 @@ Usage (unchanged):
 
 # Import from platform (migration complete)
 from extract_transform_platform.ai import (
+    ModelCapabilities,
     OpenRouterClient,
     OpenRouterConfig,
-    ModelCapabilities,
 )
 
 __all__ = [

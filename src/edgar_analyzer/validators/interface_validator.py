@@ -7,7 +7,7 @@ Ensures that extractor classes implement the IDataExtractor interface.
 import ast
 from typing import List
 
-from edgar_analyzer.models.validation import Violation, Severity, ConstraintConfig
+from edgar_analyzer.models.validation import ConstraintConfig, Severity, Violation
 
 
 class InterfaceValidator:

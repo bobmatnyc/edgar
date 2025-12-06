@@ -7,7 +7,7 @@ Ensures that __init__ methods use the @inject decorator for DI container.
 import ast
 from typing import List
 
-from edgar_analyzer.models.validation import Violation, Severity, ConstraintConfig
+from edgar_analyzer.models.validation import ConstraintConfig, Severity, Violation
 
 
 class DependencyInjectionValidator:

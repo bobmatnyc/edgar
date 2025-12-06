@@ -28,7 +28,7 @@ Migration Notes:
 
 import asyncio
 import os
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
 import structlog
 from openai import AsyncOpenAI
@@ -53,30 +53,19 @@ class OpenRouterConfig(BaseModel):
         ... )
     """
 
-    api_key: str = Field(
-        ...,
-        description="OpenRouter API key"
-    )
+    api_key: str = Field(..., description="OpenRouter API key")
 
     base_url: str = Field(
-        default="https://openrouter.ai/api/v1",
-        description="OpenRouter API base URL"
+        default="https://openrouter.ai/api/v1", description="OpenRouter API base URL"
     )
 
     model: str = Field(
-        default="anthropic/claude-sonnet-4.5",
-        description="Default model identifier"
+        default="anthropic/claude-sonnet-4.5", description="Default model identifier"
     )
 
-    timeout: int = Field(
-        default=120,
-        description="Request timeout in seconds"
-    )
+    timeout: int = Field(default=120, description="Request timeout in seconds")
 
-    max_retries: int = Field(
-        default=3,
-        description="Maximum retry attempts"
-    )
+    max_retries: int = Field(default=3, description="Maximum retry attempts")
 
 
 class ModelCapabilities(BaseModel):
@@ -91,29 +80,20 @@ class ModelCapabilities(BaseModel):
         ... )
     """
 
-    max_tokens: int = Field(
-        ...,
-        description="Maximum tokens the model can generate"
-    )
+    max_tokens: int = Field(..., description="Maximum tokens the model can generate")
 
-    context_window: int = Field(
-        ...,
-        description="Maximum context window size"
-    )
+    context_window: int = Field(..., description="Maximum context window size")
 
     supports_tools: bool = Field(
-        default=False,
-        description="Whether model supports tool use"
+        default=False, description="Whether model supports tool use"
     )
 
     supports_web_search: bool = Field(
-        default=False,
-        description="Whether model supports web search"
+        default=False, description="Whether model supports web search"
     )
 
     supports_json_mode: bool = Field(
-        default=False,
-        description="Whether model supports JSON output mode"
+        default=False, description="Whether model supports JSON output mode"
     )
 
 
@@ -151,21 +131,21 @@ class OpenRouterClient:
             context_window=1000000,
             supports_tools=True,
             supports_web_search=True,
-            supports_json_mode=True
+            supports_json_mode=True,
         ),
         "anthropic/claude-3.5-sonnet": ModelCapabilities(
             max_tokens=8192,
             context_window=200000,
             supports_tools=True,
             supports_web_search=True,
-            supports_json_mode=True
+            supports_json_mode=True,
         ),
         "x-ai/grok-4.1-fast": ModelCapabilities(
             max_tokens=4000,
             context_window=131072,
             supports_tools=True,
             supports_web_search=True,
-            supports_json_mode=False
+            supports_json_mode=False,
         ),
     }
 
@@ -176,7 +156,7 @@ class OpenRouterClient:
         base_url: str = "https://openrouter.ai/api/v1",
         timeout: int = 120,
         max_retries: int = 3,
-        custom_capabilities: Optional[Dict[str, ModelCapabilities]] = None
+        custom_capabilities: Optional[Dict[str, ModelCapabilities]] = None,
     ):
         """
         Initialize OpenRouter client.
@@ -212,9 +192,7 @@ class OpenRouterClient:
 
         # Initialize AsyncOpenAI client
         self.client = AsyncOpenAI(
-            api_key=self.api_key,
-            base_url=self.base_url,
-            timeout=timeout
+            api_key=self.api_key, base_url=self.base_url, timeout=timeout
         )
 
         logger.info(
@@ -222,7 +200,7 @@ class OpenRouterClient:
             model=self.model,
             base_url=self.base_url,
             timeout=self.timeout,
-            available_models=len(self.model_capabilities)
+            available_models=len(self.model_capabilities),
         )
 
     def get_capabilities(self, model: Optional[str] = None) -> ModelCapabilities:
@@ -247,8 +225,8 @@ class OpenRouterClient:
                 context_window=4096,
                 supports_tools=False,
                 supports_web_search=False,
-                supports_json_mode=False
-            )
+                supports_json_mode=False,
+            ),
         )
 
     async def chat_completion(
@@ -257,7 +235,7 @@ class OpenRouterClient:
         temperature: float = 0.7,
         max_tokens: Optional[int] = None,
         model: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> str:
         """
         Make a chat completion request.
@@ -298,7 +276,7 @@ class OpenRouterClient:
             "messages": messages,
             "temperature": temperature,
             "max_tokens": max_tokens,
-            **kwargs
+            **kwargs,
         }
 
         logger.debug(
@@ -306,7 +284,7 @@ class OpenRouterClient:
             model=target_model,
             temperature=temperature,
             max_tokens=max_tokens,
-            message_count=len(messages)
+            message_count=len(messages),
         )
 
         # Retry logic
@@ -326,7 +304,7 @@ class OpenRouterClient:
                     "Chat completion successful",
                     model=target_model,
                     response_length=len(content),
-                    attempt=attempt + 1
+                    attempt=attempt + 1,
                 )
 
                 return content
@@ -339,12 +317,12 @@ class OpenRouterClient:
                     attempt=attempt + 1,
                     max_attempts=self.max_retries,
                     error=str(e),
-                    error_type=type(e).__name__
+                    error_type=type(e).__name__,
                 )
 
                 # Wait before retry (exponential backoff)
                 if attempt < self.max_retries - 1:
-                    wait_time = 2 ** attempt  # 1s, 2s, 4s
+                    wait_time = 2**attempt  # 1s, 2s, 4s
                     logger.debug(f"Waiting {wait_time}s before retry")
                     await asyncio.sleep(wait_time)
 
@@ -353,7 +331,7 @@ class OpenRouterClient:
             "Chat completion failed after all retries",
             model=target_model,
             max_attempts=self.max_retries,
-            final_error=str(last_error)
+            final_error=str(last_error),
         )
         raise last_error
 
@@ -363,7 +341,7 @@ class OpenRouterClient:
         temperature: float = 0.7,
         max_tokens: Optional[int] = None,
         model: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> str:
         """
         Make a chat completion request with JSON output mode.
@@ -394,23 +372,22 @@ class OpenRouterClient:
         if capabilities.supports_json_mode:
             kwargs["response_format"] = {"type": "json_object"}
 
-            logger.debug(
-                "Using JSON output mode",
-                model=target_model
-            )
+            logger.debug("Using JSON output mode", model=target_model)
         else:
             # Fallback: Add JSON instruction to system message
             if messages and messages[0].get("role") == "system":
                 messages[0]["content"] += "\n\nPlease respond with valid JSON only."
             else:
-                messages.insert(0, {
-                    "role": "system",
-                    "content": "Please respond with valid JSON only."
-                })
+                messages.insert(
+                    0,
+                    {
+                        "role": "system",
+                        "content": "Please respond with valid JSON only.",
+                    },
+                )
 
             logger.debug(
-                "JSON mode not supported, using prompt instruction",
-                model=target_model
+                "JSON mode not supported, using prompt instruction", model=target_model
             )
 
         return await self.chat_completion(
@@ -418,7 +395,7 @@ class OpenRouterClient:
             temperature=temperature,
             max_tokens=max_tokens,
             model=target_model,
-            **kwargs
+            **kwargs,
         )
 
     async def stream_completion(
@@ -427,7 +404,7 @@ class OpenRouterClient:
         temperature: float = 0.7,
         max_tokens: Optional[int] = None,
         model: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Make a streaming chat completion request.
@@ -458,14 +435,14 @@ class OpenRouterClient:
             "temperature": temperature,
             "max_tokens": max_tokens,
             "stream": True,
-            **kwargs
+            **kwargs,
         }
 
         logger.debug(
             "Starting streaming completion",
             model=target_model,
             temperature=temperature,
-            max_tokens=max_tokens
+            max_tokens=max_tokens,
         )
 
         stream = await self.client.chat.completions.create(**request_params)
@@ -505,5 +482,5 @@ class OpenRouterClient:
             "Registered new model",
             model=model,
             max_tokens=capabilities.max_tokens,
-            context_window=capabilities.context_window
+            context_window=capabilities.context_window,
         )

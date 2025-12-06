@@ -44,11 +44,7 @@ def test_project(tmp_path):
                 "output": {"full_name": "Jane", "age_years": 25, "location": "LA"},
             },
         ],
-        "output": {
-            "formats": [
-                {"type": "json", "path": "output/results.json"}
-            ]
-        },
+        "output": {"formats": [{"type": "json", "path": "output/results.json"}]},
         "confidence_threshold": 0.7,
     }
 

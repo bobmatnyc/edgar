@@ -11,30 +11,32 @@ Created: 2025-11-30 (T10 validation)
 """
 
 import asyncio
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import List
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from extract_transform_platform.services.codegen.code_generator import CodeGeneratorService
-from extract_transform_platform.models.plan import GenerationProgress, GenerationContext
+from extract_transform_platform.models.plan import GenerationContext, GenerationProgress
 from extract_transform_platform.models.project_config import (
-    ProjectConfig,
-    ProjectMetadata,
+    ExampleConfig,
     OutputConfig,
     OutputDestinationConfig,
     OutputFormat,
-    ExampleConfig,
+    ProjectConfig,
+    ProjectMetadata,
+)
+from extract_transform_platform.services.codegen.code_generator import (
+    CodeGeneratorService,
 )
 
 
 async def validate_progress_tracking():
     """Test progress tracking with minimal example."""
-    print("="*80)
+    print("=" * 80)
     print("T10 VALIDATION: Progress Tracking")
-    print("="*80)
+    print("=" * 80)
 
     # Create minimal project config
     config = ProjectConfig(
@@ -71,9 +73,11 @@ async def validate_progress_tracking():
     def on_progress(progress: GenerationProgress):
         """Capture progress updates."""
         progress_updates.append(progress)
-        print(f"[{progress.current_step}/{progress.total_steps}] "
-              f"{progress.step_name} - {progress.status} "
-              f"({progress.progress_percentage:.1f}%)")
+        print(
+            f"[{progress.current_step}/{progress.total_steps}] "
+            f"{progress.step_name} - {progress.status} "
+            f"({progress.progress_percentage:.1f}%)"
+        )
         if progress.message:
             print(f"    Message: {progress.message}")
 
@@ -128,12 +132,13 @@ async def validate_progress_tracking():
     except Exception as e:
         print(f"\n❌ Error during generation: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
-    print("\n"+"="*80)
+    print("\n" + "=" * 80)
     print("VALIDATION COMPLETE")
-    print("="*80)
+    print("=" * 80)
     return True
 
 

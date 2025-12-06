@@ -15,20 +15,20 @@ import ast
 import logging
 from typing import List, Optional
 
+from edgar_analyzer.validators import (
+    ComplexityValidator,
+    DependencyInjectionValidator,
+    ImportValidator,
+    InterfaceValidator,
+    LoggingValidator,
+    SecurityValidator,
+    TypeHintValidator,
+)
 from extract_transform_platform.models.validation import (
-    Violation,
-    ValidationResult,
     ConstraintConfig,
     Severity,
-)
-from edgar_analyzer.validators import (
-    InterfaceValidator,
-    DependencyInjectionValidator,
-    TypeHintValidator,
-    ImportValidator,
-    ComplexityValidator,
-    SecurityValidator,
-    LoggingValidator,
+    ValidationResult,
+    Violation,
 )
 
 logger = logging.getLogger(__name__)
@@ -153,9 +153,7 @@ class ConstraintEnforcer:
                 )
 
         # Determine overall validity (no ERROR-level violations)
-        error_count = sum(
-            1 for v in violations if v.severity == Severity.ERROR
-        )
+        error_count = sum(1 for v in violations if v.severity == Severity.ERROR)
         valid = error_count == 0
 
         logger.info(

@@ -8,8 +8,8 @@ import pytest
 
 from edgar_analyzer.models.validation import (
     ConstraintConfig,
-    ValidationResult,
     Severity,
+    ValidationResult,
 )
 from edgar_analyzer.services.constraint_enforcer import ConstraintEnforcer
 
@@ -64,15 +64,17 @@ class WeatherExtractor(IDataExtractor):
             raise
 '''
         result = self.enforcer.validate_code(valid_code)
-        assert result.valid, f"Valid code should pass, got violations: {result.violations}"
+        assert (
+            result.valid
+        ), f"Valid code should pass, got violations: {result.violations}"
         assert len(result.violations) == 0
 
     def test_syntax_error_detected(self):
         """Test that syntax errors are detected."""
-        invalid_code = '''
+        invalid_code = """
 def broken_syntax(
     # Missing closing parenthesis
-'''
+"""
         result = self.enforcer.validate_code(invalid_code)
         assert not result.valid
         assert len(result.violations) == 1
@@ -93,13 +95,13 @@ class WeatherExtractor:
 
     def test_missing_inject_decorator_detected(self):
         """Test that missing @inject decorator is detected."""
-        code_without_inject = '''
+        code_without_inject = """
 from edgar_analyzer.interfaces.data_extractor import IDataExtractor
 
 class WeatherExtractor(IDataExtractor):
     def __init__(self, api_client):
         self.api_client = api_client
-'''
+"""
         result = self.enforcer.validate_code(code_without_inject)
         assert not result.valid
         violations = [v for v in result.violations if v.code == "MISSING_DECORATOR"]
@@ -108,7 +110,7 @@ class WeatherExtractor(IDataExtractor):
 
     def test_missing_type_hints_detected(self):
         """Test that missing type hints are detected."""
-        code_without_types = '''
+        code_without_types = """
 from edgar_analyzer.interfaces.data_extractor import IDataExtractor
 from dependency_injector.wiring import inject
 
@@ -119,7 +121,7 @@ class WeatherExtractor(IDataExtractor):
 
     def extract(self, params):
         return {}
-'''
+"""
         result = self.enforcer.validate_code(code_without_types)
         assert not result.valid
         type_violations = [
@@ -131,7 +133,7 @@ class WeatherExtractor(IDataExtractor):
 
     def test_forbidden_import_detected(self):
         """Test that forbidden imports are detected."""
-        code_with_forbidden_import = '''
+        code_with_forbidden_import = """
 import os
 import subprocess
 
@@ -140,7 +142,7 @@ from edgar_analyzer.interfaces.data_extractor import IDataExtractor
 class WeatherExtractor(IDataExtractor):
     def extract(self):
         os.system("ls")
-'''
+"""
         result = self.enforcer.validate_code(code_with_forbidden_import)
         assert not result.valid
         violations = [v for v in result.violations if v.code == "FORBIDDEN_IMPORT"]
@@ -176,14 +178,14 @@ class WeatherExtractor(IDataExtractor):
 
     def test_print_statement_detected(self):
         """Test that print() statements are detected."""
-        code_with_print = '''
+        code_with_print = """
 from edgar_analyzer.interfaces.data_extractor import IDataExtractor
 
 class WeatherExtractor(IDataExtractor):
     def extract(self):
         print("Debug message")
         return {}
-'''
+"""
         result = self.enforcer.validate_code(code_with_print)
         assert not result.valid
         violations = [v for v in result.violations if v.code == "PRINT_STATEMENT"]
@@ -191,14 +193,14 @@ class WeatherExtractor(IDataExtractor):
 
     def test_dangerous_function_detected(self):
         """Test that dangerous functions like eval are detected."""
-        code_with_eval = '''
+        code_with_eval = """
 from edgar_analyzer.interfaces.data_extractor import IDataExtractor
 
 class WeatherExtractor(IDataExtractor):
     def extract(self, code: str):
         result = eval(code)
         return result
-'''
+"""
         result = self.enforcer.validate_code(code_with_eval)
         assert not result.valid
         violations = [v for v in result.violations if v.code == "DANGEROUS_FUNCTION"]
@@ -207,7 +209,7 @@ class WeatherExtractor(IDataExtractor):
 
     def test_sql_injection_detected(self):
         """Test that SQL injection patterns are detected."""
-        code_with_sql_injection = '''
+        code_with_sql_injection = """
 from edgar_analyzer.interfaces.data_extractor import IDataExtractor
 
 class WeatherExtractor(IDataExtractor):
@@ -215,7 +217,7 @@ class WeatherExtractor(IDataExtractor):
         # SQL injection vulnerability
         query = f"SELECT * FROM users WHERE id = {user_id}"
         cursor.execute(query)
-'''
+"""
         result = self.enforcer.validate_code(code_with_sql_injection)
         assert not result.valid
         violations = [v for v in result.violations if v.code == "SQL_INJECTION_RISK"]
@@ -223,14 +225,14 @@ class WeatherExtractor(IDataExtractor):
 
     def test_hardcoded_credential_detected(self):
         """Test that hardcoded credentials are detected."""
-        code_with_credentials = '''
+        code_with_credentials = """
 from edgar_analyzer.interfaces.data_extractor import IDataExtractor
 
 class WeatherExtractor(IDataExtractor):
     def __init__(self):
         self.api_key = "sk_live_1234567890abcdef"
         self.password = "SuperSecret123"
-'''
+"""
         result = self.enforcer.validate_code(code_with_credentials)
         assert not result.valid
         violations = [v for v in result.violations if v.code == "HARDCODED_CREDENTIAL"]
@@ -238,7 +240,7 @@ class WeatherExtractor(IDataExtractor):
 
     def test_severity_levels(self):
         """Test that violations have appropriate severity levels."""
-        code_with_multiple_issues = '''
+        code_with_multiple_issues = """
 import os  # ERROR
 
 from edgar_analyzer.interfaces.data_extractor import IDataExtractor
@@ -246,7 +248,7 @@ from edgar_analyzer.interfaces.data_extractor import IDataExtractor
 class WeatherExtractor(IDataExtractor):
     def extract(self):  # WARNING - missing logging
         pass
-'''
+"""
         result = self.enforcer.validate_code(code_with_multiple_issues)
         assert not result.valid
 
@@ -268,7 +270,7 @@ class WeatherExtractor(IDataExtractor):
         enforcer = ConstraintEnforcer(config=custom_config)
 
         # Code with print should now pass
-        code_with_print = '''
+        code_with_print = """
 from edgar_analyzer.interfaces.data_extractor import IDataExtractor
 from dependency_injector.wiring import inject
 from typing import Dict, Any
@@ -281,19 +283,19 @@ class WeatherExtractor(IDataExtractor):
     def extract(self, params: Dict[str, Any]) -> Dict[str, Any]:
         print("Allowed now")
         return {}
-'''
+"""
         result = enforcer.validate_code(code_with_print)
         print_violations = [v for v in result.violations if v.code == "PRINT_STATEMENT"]
         assert len(print_violations) == 0  # Print should be allowed
 
     def test_validation_result_string_representation(self):
         """Test that ValidationResult has useful string representation."""
-        code_with_issues = '''
+        code_with_issues = """
 import os
 
 class BadExtractor:
     pass
-'''
+"""
         result = self.enforcer.validate_code(code_with_issues)
         result_str = str(result)
 
@@ -362,7 +364,7 @@ class TestValidationModels:
 
     def test_violation_string_representation(self):
         """Test Violation string representation."""
-        from edgar_analyzer.models.validation import Violation, Severity
+        from edgar_analyzer.models.validation import Severity, Violation
 
         violation = Violation(
             code="TEST_VIOLATION",
@@ -381,9 +383,9 @@ class TestValidationModels:
     def test_validation_result_counts(self):
         """Test ValidationResult violation counts."""
         from edgar_analyzer.models.validation import (
+            Severity,
             ValidationResult,
             Violation,
-            Severity,
         )
 
         violations = [

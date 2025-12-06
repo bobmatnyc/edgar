@@ -30,6 +30,14 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 
+from extract_transform_platform.models.patterns import (
+    FieldTypeEnum,
+    ParsedExamples,
+    Pattern,
+    PatternType,
+    Schema,
+    SchemaField,
+)
 from extract_transform_platform.models.plan import (
     ClassSpec,
     CodeValidationResult,
@@ -39,27 +47,18 @@ from extract_transform_platform.models.plan import (
     MethodSpec,
     PlanSpec,
 )
-from extract_transform_platform.models.patterns import (
-    ParsedExamples,
-    Pattern,
-    PatternType,
-    Schema,
-    SchemaField,
-    FieldTypeEnum,
-)
 from extract_transform_platform.models.project_config import (
-    ProjectConfig,
-    ProjectMetadata,
     OutputConfig,
     OutputDestinationConfig,
     OutputFormat,
+    ProjectConfig,
+    ProjectMetadata,
 )
 from extract_transform_platform.services.codegen.code_generator import (
     CodeGeneratorService,
     CodeValidator,
     CodeWriter,
 )
-
 
 # ============================================================================
 # TEST FIXTURES
@@ -152,9 +151,7 @@ def sample_parsed_examples():
                     field_type=FieldTypeEnum.FLOAT,
                     path="temperature",
                 ),
-                SchemaField(
-                    name="city", field_type=FieldTypeEnum.STRING, path="city"
-                ),
+                SchemaField(name="city", field_type=FieldTypeEnum.STRING, path="city"),
             ]
         ),
         output_schema=Schema(
@@ -262,9 +259,7 @@ class TestGenerationProgress:
             step_name="Generate code",
             status="completed",
         )
-        assert progress_completed.progress_percentage == pytest.approx(
-            42.86, rel=0.01
-        )
+        assert progress_completed.progress_percentage == pytest.approx(42.86, rel=0.01)
 
     def test_is_complete_property(self):
         """Test is_complete property."""
@@ -347,16 +342,12 @@ class TestProgressCallbacks:
                 ) as mock_validator_class:
                     # Setup mocks
                     mock_parser = MagicMock()
-                    mock_parser.parse_examples.return_value = (
-                        sample_parsed_examples
-                    )
+                    mock_parser.parse_examples.return_value = sample_parsed_examples
                     mock_parser_class.return_value = mock_parser
 
                     mock_agent = MagicMock()
                     mock_agent.plan = AsyncMock(return_value=sample_plan)
-                    mock_agent.code = AsyncMock(
-                        return_value=sample_generated_code
-                    )
+                    mock_agent.code = AsyncMock(return_value=sample_generated_code)
                     mock_agent_class.return_value = mock_agent
 
                     mock_validator = MagicMock()
@@ -368,9 +359,7 @@ class TestProgressCallbacks:
                         has_tests=True,
                         implements_interface=True,
                     )
-                    mock_validator.validate.return_value = (
-                        mock_validation_result
-                    )
+                    mock_validator.validate.return_value = mock_validation_result
                     mock_validator_class.return_value = mock_validator
 
                     # Create service and run generation
@@ -415,7 +404,6 @@ class TestProgressCallbacks:
             ]
             assert len(completed_updates) > 0, f"Missing completed for step {i}"
 
-
     @pytest.mark.asyncio
     @pytest.mark.requires_api
     async def test_progress_callback_not_invoked_when_none(
@@ -441,16 +429,12 @@ class TestProgressCallbacks:
                 ) as mock_validator_class:
                     # Setup mocks
                     mock_parser = MagicMock()
-                    mock_parser.parse_examples.return_value = (
-                        sample_parsed_examples
-                    )
+                    mock_parser.parse_examples.return_value = sample_parsed_examples
                     mock_parser_class.return_value = mock_parser
 
                     mock_agent = MagicMock()
                     mock_agent.plan = AsyncMock(return_value=sample_plan)
-                    mock_agent.code = AsyncMock(
-                        return_value=sample_generated_code
-                    )
+                    mock_agent.code = AsyncMock(return_value=sample_generated_code)
                     mock_agent_class.return_value = mock_agent
 
                     mock_validator = MagicMock()
@@ -462,9 +446,7 @@ class TestProgressCallbacks:
                         has_tests=True,
                         implements_interface=True,
                     )
-                    mock_validator.validate.return_value = (
-                        mock_validation_result
-                    )
+                    mock_validator.validate.return_value = mock_validation_result
                     mock_validator_class.return_value = mock_validator
 
                     # Create service and run generation WITHOUT progress callback
@@ -521,16 +503,12 @@ class TestRollbackMechanism:
                 ) as mock_validator_class:
                     # Setup mocks
                     mock_parser = MagicMock()
-                    mock_parser.parse_examples.return_value = (
-                        sample_parsed_examples
-                    )
+                    mock_parser.parse_examples.return_value = sample_parsed_examples
                     mock_parser_class.return_value = mock_parser
 
                     mock_agent = MagicMock()
                     mock_agent.plan = AsyncMock(return_value=sample_plan)
-                    mock_agent.code = AsyncMock(
-                        return_value=sample_generated_code
-                    )
+                    mock_agent.code = AsyncMock(return_value=sample_generated_code)
                     mock_agent_class.return_value = mock_agent
 
                     # Validator always fails
@@ -540,9 +518,7 @@ class TestRollbackMechanism:
                         syntax_valid=False,
                         issues=["Syntax error on line 5"],
                     )
-                    mock_validator.validate.return_value = (
-                        mock_validation_result
-                    )
+                    mock_validator.validate.return_value = mock_validation_result
                     mock_validator_class.return_value = mock_validator
 
                     # Create service
@@ -563,7 +539,9 @@ class TestRollbackMechanism:
 
         # Verify output directory was deleted (rollback)
         project_dir = temp_output_dir / "test_project"
-        assert not project_dir.exists(), "Rollback should have deleted project directory"
+        assert (
+            not project_dir.exists()
+        ), "Rollback should have deleted project directory"
 
         # Verify failure was reported in progress
         failed_updates = [p for p in progress_updates if p.status == "failed"]
@@ -624,9 +602,7 @@ class TestOptionalSteps:
                 )
 
         # Verify validation step was skipped
-        validation_updates = [
-            p for p in progress_updates if p.current_step == 4
-        ]
+        validation_updates = [p for p in progress_updates if p.current_step == 4]
         assert any(
             p.status == "skipped" for p in validation_updates
         ), "Validation should be skipped"
@@ -661,25 +637,19 @@ class TestOptionalSteps:
                 ) as mock_validator_class:
                     # Setup mocks
                     mock_parser = MagicMock()
-                    mock_parser.parse_examples.return_value = (
-                        sample_parsed_examples
-                    )
+                    mock_parser.parse_examples.return_value = sample_parsed_examples
                     mock_parser_class.return_value = mock_parser
 
                     mock_agent = MagicMock()
                     mock_agent.plan = AsyncMock(return_value=sample_plan)
-                    mock_agent.code = AsyncMock(
-                        return_value=sample_generated_code
-                    )
+                    mock_agent.code = AsyncMock(return_value=sample_generated_code)
                     mock_agent_class.return_value = mock_agent
 
                     mock_validator = MagicMock()
                     mock_validation_result = CodeValidationResult(
                         is_valid=True, syntax_valid=True
                     )
-                    mock_validator.validate.return_value = (
-                        mock_validation_result
-                    )
+                    mock_validator.validate.return_value = mock_validation_result
                     mock_validator_class.return_value = mock_validator
 
                     # Create service and run generation WITHOUT file writing
@@ -693,16 +663,16 @@ class TestOptionalSteps:
                     )
 
         # Verify file writing step was skipped
-        file_writing_updates = [
-            p for p in progress_updates if p.current_step == 5
-        ]
+        file_writing_updates = [p for p in progress_updates if p.current_step == 5]
         assert any(
             p.status == "skipped" for p in file_writing_updates
         ), "File writing should be skipped"
 
         # Verify no files were created
         project_dir = temp_output_dir / "test_project"
-        assert not project_dir.exists(), "No files should be created when write_files=False"
+        assert (
+            not project_dir.exists()
+        ), "No files should be created when write_files=False"
 
 
 # ============================================================================
@@ -840,8 +810,7 @@ class TestDryRunMode:
 
         # Should contain dry-run message
         assert any(
-            "Dry-run mode" in msg or "preview only" in msg
-            for msg in progress_messages
+            "Dry-run mode" in msg or "preview only" in msg for msg in progress_messages
         ), f"Expected dry-run message in: {progress_messages}"
 
     @pytest.mark.asyncio

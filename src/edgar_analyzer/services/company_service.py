@@ -8,7 +8,11 @@ import structlog
 
 from edgar_analyzer.config.settings import ConfigService
 from edgar_analyzer.models.company import Company
-from edgar_analyzer.services.interfaces import ICacheService, ICompanyService, IEdgarApiService
+from edgar_analyzer.services.interfaces import (
+    ICacheService,
+    ICompanyService,
+    IEdgarApiService,
+)
 
 logger = structlog.get_logger(__name__)
 
@@ -20,7 +24,7 @@ class CompanyService(ICompanyService):
         self,
         config: ConfigService,
         edgar_api_service: IEdgarApiService,
-        cache_service: Optional[ICacheService] = None
+        cache_service: Optional[ICacheService] = None,
     ):
         """Initialize company service."""
         self._config = config
@@ -29,16 +33,20 @@ class CompanyService(ICompanyService):
         self._companies_file = Path(config.settings.database.companies_file)
         self._companies_cache: Optional[List[Company]] = None
 
-        logger.info("Company service initialized", companies_file=str(self._companies_file))
+        logger.info(
+            "Company service initialized", companies_file=str(self._companies_file)
+        )
 
     async def _load_companies_from_file(self) -> List[Company]:
         """Load companies from JSON file."""
         try:
             if not self._companies_file.exists():
-                logger.warning("Companies file not found", file=str(self._companies_file))
+                logger.warning(
+                    "Companies file not found", file=str(self._companies_file)
+                )
                 return []
 
-            with open(self._companies_file, 'r', encoding='utf-8') as f:
+            with open(self._companies_file, "r", encoding="utf-8") as f:
                 companies_data = json.load(f)
 
             companies = [Company(**company_data) for company_data in companies_data]
@@ -63,28 +71,50 @@ class CompanyService(ICompanyService):
         companies = await self._get_companies_cache()
         for company in companies:
             if company.cik == cik_formatted:
-                logger.debug("Company found in local database", cik=cik_formatted, name=company.name)
+                logger.debug(
+                    "Company found in local database",
+                    cik=cik_formatted,
+                    name=company.name,
+                )
                 return company
 
         # If not found locally, try to fetch from EDGAR API
         try:
-            submissions_data = await self._edgar_api.get_company_submissions(cik_formatted)
+            submissions_data = await self._edgar_api.get_company_submissions(
+                cik_formatted
+            )
 
             if submissions_data:
                 company = Company(
                     cik=cik_formatted,
-                    name=submissions_data.get('name', 'Unknown'),
-                    ticker=submissions_data.get('tickers', [None])[0] if submissions_data.get('tickers') else None,
-                    exchange=submissions_data.get('exchanges', [None])[0] if submissions_data.get('exchanges') else None,
-                    sic=submissions_data.get('sic'),
-                    industry=submissions_data.get('sicDescription'),
+                    name=submissions_data.get("name", "Unknown"),
+                    ticker=(
+                        submissions_data.get("tickers", [None])[0]
+                        if submissions_data.get("tickers")
+                        else None
+                    ),
+                    exchange=(
+                        submissions_data.get("exchanges", [None])[0]
+                        if submissions_data.get("exchanges")
+                        else None
+                    ),
+                    sic=submissions_data.get("sic"),
+                    industry=submissions_data.get("sicDescription"),
                 )
 
-                logger.info("Company fetched from EDGAR API", cik=cik_formatted, name=company.name)
+                logger.info(
+                    "Company fetched from EDGAR API",
+                    cik=cik_formatted,
+                    name=company.name,
+                )
                 return company
 
         except Exception as e:
-            logger.warning("Failed to fetch company from EDGAR API", cik=cik_formatted, error=str(e))
+            logger.warning(
+                "Failed to fetch company from EDGAR API",
+                cik=cik_formatted,
+                error=str(e),
+            )
 
         logger.warning("Company not found", cik=cik_formatted)
         return None
@@ -95,8 +125,7 @@ class CompanyService(ICompanyService):
 
         # Filter companies that have fortune_rank
         fortune_companies = [
-            company for company in companies
-            if company.fortune_rank is not None
+            company for company in companies if company.fortune_rank is not None
         ]
 
         # Sort by Fortune ranking
@@ -125,7 +154,9 @@ class CompanyService(ICompanyService):
                 matching_companies.append(company)
                 continue
 
-        logger.info("Company search completed", query=query, results=len(matching_companies))
+        logger.info(
+            "Company search completed", query=query, results=len(matching_companies)
+        )
         return matching_companies
 
     async def update_company(self, company: Company) -> Company:
@@ -160,7 +191,7 @@ class CompanyService(ICompanyService):
 
             # Convert to dict and save
             companies_data = [company.dict() for company in companies]
-            with open(self._companies_file, 'w', encoding='utf-8') as f:
+            with open(self._companies_file, "w", encoding="utf-8") as f:
                 json.dump(companies_data, f, indent=2, default=str)
 
             logger.info("Companies saved to file", count=len(companies))
@@ -179,10 +210,12 @@ class CompanyService(ICompanyService):
             backup_dir.mkdir(parents=True, exist_ok=True)
 
             from datetime import datetime
+
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             backup_file = backup_dir / f"companies_backup_{timestamp}.json"
 
             import shutil
+
             shutil.copy2(self._companies_file, backup_file)
 
             logger.info("Companies backup created", backup_file=str(backup_file))

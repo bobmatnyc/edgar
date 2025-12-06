@@ -3,8 +3,8 @@ Performance and timing tests for auto-compaction system.
 """
 
 import asyncio
-import time
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -25,10 +25,7 @@ async def test_compaction_performance():
     print("=" * 70)
     print()
 
-    memory = SimpleChatbotMemory(
-        token_threshold=5000,
-        llm_client=mock_llm
-    )
+    memory = SimpleChatbotMemory(token_threshold=5000, llm_client=mock_llm)
 
     # Add exchanges to exceed threshold
     print("Adding 50 exchanges...")
@@ -37,7 +34,7 @@ async def test_compaction_performance():
             user_input=f"Query {i} " * 10,
             controller_response=f"Response {i} " * 20,
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
     print(f"  Token count: {memory.get_token_count():,}")
@@ -84,10 +81,12 @@ async def test_token_counting_performance():
     # Create test exchanges
     exchanges = []
     for i in range(100):
-        exchanges.append({
-            "user_input": f"Test query {i} " * 20,
-            "controller_response": f"Test response {i} " * 40
-        })
+        exchanges.append(
+            {
+                "user_input": f"Test query {i} " * 20,
+                "controller_response": f"Test response {i} " * 40,
+            }
+        )
 
     print(f"Counting tokens for {len(exchanges)} exchanges...")
 
@@ -123,10 +122,7 @@ async def test_memory_overhead():
 
     import sys
 
-    memory = SimpleChatbotMemory(
-        token_threshold=10000,
-        llm_client=mock_llm
-    )
+    memory = SimpleChatbotMemory(token_threshold=10000, llm_client=mock_llm)
 
     # Get baseline size
     baseline_size = sys.getsizeof(memory.history)
@@ -138,7 +134,7 @@ async def test_memory_overhead():
             user_input=f"Query {i}",
             controller_response=f"Response {i}" * 20,
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
     size_before = sys.getsizeof(memory.history)
@@ -154,7 +150,9 @@ async def test_memory_overhead():
 
     size_after = sys.getsizeof(memory.history)
     tokens_after = memory.get_token_count()
-    summary_size = len(str(memory.conversation_summary)) if memory.conversation_summary else 0
+    summary_size = (
+        len(str(memory.conversation_summary)) if memory.conversation_summary else 0
+    )
 
     print(f"\nAfter compaction:")
     print(f"  Exchanges: {len(memory.history)}")
@@ -163,11 +161,15 @@ async def test_memory_overhead():
     print(f"  Summary size: {summary_size:,} bytes")
 
     memory_reduction = size_before - size_after
-    memory_reduction_pct = (memory_reduction / size_before * 100) if size_before > 0 else 0
+    memory_reduction_pct = (
+        (memory_reduction / size_before * 100) if size_before > 0 else 0
+    )
 
     print(f"\nReduction:")
     print(f"  Memory saved: {memory_reduction:,} bytes ({memory_reduction_pct:.1f}%)")
-    print(f"  Tokens saved: {tokens_before - tokens_after:,} ({(tokens_before - tokens_after) / tokens_before * 100:.1f}%)")
+    print(
+        f"  Tokens saved: {tokens_before - tokens_after:,} ({(tokens_before - tokens_after) / tokens_before * 100:.1f}%)"
+    )
 
     print()
     print("  ✅ Memory overhead test complete")
@@ -182,9 +184,7 @@ async def test_large_conversation_performance():
     print()
 
     memory = SimpleChatbotMemory(
-        token_threshold=50000,
-        recent_keep_count=20,
-        llm_client=mock_llm
+        token_threshold=50000, recent_keep_count=20, llm_client=mock_llm
     )
 
     print("Adding 1000 exchanges...")
@@ -195,7 +195,7 @@ async def test_large_conversation_performance():
             user_input=f"Query {i}",
             controller_response=f"Response {i}" * 10,
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
         if (i + 1) % 200 == 0:
@@ -249,10 +249,12 @@ async def test_summarizer_performance():
     # Create exchanges
     exchanges = []
     for i in range(50):
-        exchanges.append({
-            "user_input": f"Query {i}" * 5,
-            "controller_response": f"Response {i}" * 10,
-        })
+        exchanges.append(
+            {
+                "user_input": f"Query {i}" * 5,
+                "controller_response": f"Response {i}" * 10,
+            }
+        )
 
     print(f"Summarizing {len(exchanges)} exchanges...")
     start_time = time.time()

@@ -24,7 +24,12 @@ class TestWeatherAPIIntegration:
                 input={
                     "coord": {"lon": -0.13, "lat": 51.51},
                     "weather": [
-                        {"id": 300, "main": "Drizzle", "description": "light intensity drizzle", "icon": "09d"}
+                        {
+                            "id": 300,
+                            "main": "Drizzle",
+                            "description": "light intensity drizzle",
+                            "icon": "09d",
+                        }
                     ],
                     "main": {
                         "temp": 15.5,
@@ -32,23 +37,28 @@ class TestWeatherAPIIntegration:
                         "temp_min": 14,
                         "temp_max": 17,
                         "pressure": 1012,
-                        "humidity": 82
+                        "humidity": 82,
                     },
-                    "name": "London"
+                    "name": "London",
                 },
                 output={
                     "city": "London",
                     "temperature_c": 15.5,
                     "humidity_percent": 82,
-                    "conditions": "light intensity drizzle"
+                    "conditions": "light intensity drizzle",
                 },
-                description="London weather with drizzle"
+                description="London weather with drizzle",
             ),
             ExampleConfig(
                 input={
                     "coord": {"lon": 139.69, "lat": 35.69},
                     "weather": [
-                        {"id": 800, "main": "Clear", "description": "clear sky", "icon": "01d"}
+                        {
+                            "id": 800,
+                            "main": "Clear",
+                            "description": "clear sky",
+                            "icon": "01d",
+                        }
                     ],
                     "main": {
                         "temp": 22.3,
@@ -56,23 +66,28 @@ class TestWeatherAPIIntegration:
                         "temp_min": 21,
                         "temp_max": 24,
                         "pressure": 1015,
-                        "humidity": 65
+                        "humidity": 65,
                     },
-                    "name": "Tokyo"
+                    "name": "Tokyo",
                 },
                 output={
                     "city": "Tokyo",
                     "temperature_c": 22.3,
                     "humidity_percent": 65,
-                    "conditions": "clear sky"
+                    "conditions": "clear sky",
                 },
-                description="Tokyo weather with clear skies"
+                description="Tokyo weather with clear skies",
             ),
             ExampleConfig(
                 input={
                     "coord": {"lon": -74.01, "lat": 40.71},
                     "weather": [
-                        {"id": 500, "main": "Rain", "description": "light rain", "icon": "10d"}
+                        {
+                            "id": 500,
+                            "main": "Rain",
+                            "description": "light rain",
+                            "icon": "10d",
+                        }
                     ],
                     "main": {
                         "temp": 18.0,
@@ -80,18 +95,18 @@ class TestWeatherAPIIntegration:
                         "temp_min": 16,
                         "temp_max": 20,
                         "pressure": 1010,
-                        "humidity": 75
+                        "humidity": 75,
                     },
-                    "name": "New York"
+                    "name": "New York",
                 },
                 output={
                     "city": "New York",
                     "temperature_c": 18.0,
                     "humidity_percent": 75,
-                    "conditions": "light rain"
+                    "conditions": "light rain",
                 },
-                description="New York weather with light rain"
-            )
+                description="New York weather with light rain",
+            ),
         ]
 
     def test_complete_parsing_flow(self, weather_examples):
@@ -212,7 +227,9 @@ class TestWeatherAPIIntegration:
         assert len(parsed.schema_differences) > 0
 
         # Should detect removed fields (coord, weather.id, etc.)
-        removed = [d for d in parsed.schema_differences if d.difference_type == "removed"]
+        removed = [
+            d for d in parsed.schema_differences if d.difference_type == "removed"
+        ]
         assert len(removed) > 0
 
         # Should detect added fields are actually transformed (not truly "added")
@@ -224,12 +241,7 @@ class TestEdgeCasesIntegration:
 
     def test_minimal_example_set(self):
         """Test with minimal example set (single example)."""
-        examples = [
-            ExampleConfig(
-                input={"field": "value"},
-                output={"result": "value"}
-            )
-        ]
+        examples = [ExampleConfig(input={"field": "value"}, output={"result": "value"})]
 
         parser = ExampleParser(SchemaAnalyzer())
         parsed = parser.parse_examples(examples)
@@ -252,15 +264,12 @@ class TestEdgeCasesIntegration:
                         {
                             "items": [
                                 {"name": "item1", "value": 10},
-                                {"name": "item2", "value": 20}
+                                {"name": "item2", "value": 20},
                             ]
                         }
                     ]
                 },
-                output={
-                    "first_item_name": "item1",
-                    "first_item_value": 10
-                }
+                output={"first_item_name": "item1", "first_item_value": 10},
             )
         ]
 
@@ -276,12 +285,12 @@ class TestEdgeCasesIntegration:
         examples = [
             ExampleConfig(
                 input={"temperature": "15.5", "count": "42"},
-                output={"temperature": 15.5, "count": 42}
+                output={"temperature": 15.5, "count": 42},
             ),
             ExampleConfig(
                 input={"temperature": "22.3", "count": "100"},
-                output={"temperature": 22.3, "count": 100}
-            )
+                output={"temperature": 22.3, "count": 100},
+            ),
         ]
 
         parser = ExampleParser(SchemaAnalyzer())
@@ -304,12 +313,12 @@ class TestEdgeCasesIntegration:
         examples = [
             ExampleConfig(
                 input={"required": "value", "optional": "present"},
-                output={"result": "value"}
+                output={"result": "value"},
             ),
             ExampleConfig(
                 input={"required": "value"},  # optional missing
-                output={"result": "value"}
-            )
+                output={"result": "value"},
+            ),
         ]
 
         parser = ExampleParser(SchemaAnalyzer())
@@ -332,28 +341,28 @@ class TestEndToEndScenarios:
                 input={
                     "name": "London",
                     "main": {"temp": 15.5, "humidity": 82},
-                    "weather": [{"description": "rain"}]
+                    "weather": [{"description": "rain"}],
                 },
                 output={
                     "city": "London",
                     "temperature_c": 15.5,
                     "humidity_percent": 82,
-                    "conditions": "rain"
-                }
+                    "conditions": "rain",
+                },
             ),
             ExampleConfig(
                 input={
                     "name": "Tokyo",
                     "main": {"temp": 22.3, "humidity": 65},
-                    "weather": [{"description": "clear"}]
+                    "weather": [{"description": "clear"}],
                 },
                 output={
                     "city": "Tokyo",
                     "temperature_c": 22.3,
                     "humidity_percent": 65,
-                    "conditions": "clear"
-                }
-            )
+                    "conditions": "clear",
+                },
+            ),
         ]
 
         # Step 2: Parse examples
@@ -390,16 +399,13 @@ class TestEndToEndScenarios:
         # Success criteria
         assert len(markdown) > 1500  # Substantial prompt
         assert len(parsed.warnings) <= 1  # Minimal warnings
-        assert len(parsed.high_confidence_patterns) == len(parsed.patterns)  # All high conf
+        assert len(parsed.high_confidence_patterns) == len(
+            parsed.patterns
+        )  # All high conf
 
     def test_save_prompt_to_file(self, tmp_path):
         """Test saving generated prompt to file."""
-        examples = [
-            ExampleConfig(
-                input={"field": "value"},
-                output={"result": "value"}
-            )
-        ]
+        examples = [ExampleConfig(input={"field": "value"}, output={"result": "value"})]
 
         parser = ExampleParser(SchemaAnalyzer())
         parsed = parser.parse_examples(examples)

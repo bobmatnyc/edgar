@@ -6,8 +6,8 @@ Run this to manually test slash command behavior in a real session.
 """
 
 import asyncio
-from unittest.mock import AsyncMock, patch, MagicMock
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from edgar_analyzer.interactive.session import InteractiveExtractionSession
 
@@ -15,9 +15,9 @@ from edgar_analyzer.interactive.session import InteractiveExtractionSession
 async def simulate_repl_input(session, test_inputs):
     """Simulate REPL loop with test inputs."""
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("SIMULATING INTERACTIVE SESSION WITH SLASH COMMANDS")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     for user_input in test_inputs:
         print(f"User input: '{user_input}'")
@@ -28,7 +28,7 @@ async def simulate_repl_input(session, test_inputs):
             continue
 
         # Simulate the REPL logic
-        if user_input.startswith('/'):
+        if user_input.startswith("/"):
             # System command - direct routing (bypass NL parsing)
             parts = user_input[1:].split(maxsplit=1)
             command = parts[0].lower()
@@ -52,11 +52,17 @@ async def simulate_repl_input(session, test_inputs):
                 print(f"  ❌ Unknown command: /{command}")
                 print(f"  💬 Shows error (NOT routed to AI)")
                 session.console.print(f"[red]❌ Unknown command: /{command}[/red]")
-                session.console.print("[dim]Type '/help' to see available commands[/dim]")
+                session.console.print(
+                    "[dim]Type '/help' to see available commands[/dim]"
+                )
         else:
             # Check if input looks like natural language
             word_count = len(user_input.split())
-            is_natural = word_count > 3 or "?" in user_input or (user_input and user_input[0].isupper())
+            is_natural = (
+                word_count > 3
+                or "?" in user_input
+                or (user_input and user_input[0].isupper())
+            )
 
             if is_natural:
                 print(f"  🗣️  Natural language detected")
@@ -86,7 +92,8 @@ async def main():
 
     # Create session (suppress some logs)
     import logging
-    logging.getLogger('structlog').setLevel(logging.WARNING)
+
+    logging.getLogger("structlog").setLevel(logging.WARNING)
 
     session = InteractiveExtractionSession()
 
@@ -99,17 +106,14 @@ async def main():
         "/analyze",
         "/patterns",
         "/unknown",  # Unknown slash command
-
         # Traditional commands (backward compat)
         "help",
         "analyze",
         "patterns",
-
         # Natural language
         "What patterns did you detect?",
         "Show me the examples",
         "Hello, how are you?",
-
         # Edge cases
         "",  # Empty
         "/",  # Just slash
@@ -117,9 +121,9 @@ async def main():
 
     await simulate_repl_input(session, test_inputs)
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("✅ SIMULATION COMPLETE")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("Summary of slash command behavior:")
     print("  • /command → Direct routing to system command")

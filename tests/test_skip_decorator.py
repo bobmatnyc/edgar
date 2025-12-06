@@ -5,6 +5,7 @@ Tests that API-dependent tests skip gracefully when OPENROUTER_API_KEY is not se
 """
 
 import os
+
 import pytest
 
 

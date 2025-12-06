@@ -27,8 +27,8 @@ Usage:
     ... )
 """
 
-from typing import List, Dict, Any, Optional
 import json
+from typing import Any, Dict, List, Optional
 
 
 class PromptTemplates:
@@ -300,7 +300,7 @@ For each field, identify:
         input_schema: Dict[str, Any],
         output_schema: Dict[str, Any],
         examples: List[Dict[str, Any]],
-        confidence_threshold: Optional[float] = None
+        confidence_threshold: Optional[float] = None,
     ) -> str:
         """
         Render pattern detection prompt.
@@ -332,7 +332,7 @@ For each field, identify:
         prompt = self.PATTERN_DETECTION_TEMPLATE.format(
             input_schema=input_schema_str,
             output_schema=output_schema_str,
-            examples=examples_str
+            examples=examples_str,
         )
 
         # Add confidence threshold note if specified
@@ -343,9 +343,7 @@ For each field, identify:
         return prompt
 
     def render_code_generation(
-        self,
-        patterns: List[Dict[str, Any]],
-        examples: List[Dict[str, Any]]
+        self, patterns: List[Dict[str, Any]], examples: List[Dict[str, Any]]
     ) -> str:
         """
         Render code generation prompt.
@@ -367,14 +365,10 @@ For each field, identify:
         examples_json = json.dumps(examples, indent=2)
 
         return self.CODE_GENERATION_TEMPLATE.format(
-            patterns_json=patterns_json,
-            examples_json=examples_json
+            patterns_json=patterns_json, examples_json=examples_json
         )
 
-    def render_schema_analysis(
-        self,
-        sample_data: List[Dict[str, Any]]
-    ) -> str:
+    def render_schema_analysis(self, sample_data: List[Dict[str, Any]]) -> str:
         """
         Render schema analysis prompt.
 
@@ -391,9 +385,7 @@ For each field, identify:
         """
         sample_data_str = json.dumps(sample_data, indent=2)
 
-        return self.SCHEMA_ANALYSIS_TEMPLATE.format(
-            sample_data=sample_data_str
-        )
+        return self.SCHEMA_ANALYSIS_TEMPLATE.format(sample_data=sample_data_str)
 
     # ========================================================================
     # HELPER METHODS

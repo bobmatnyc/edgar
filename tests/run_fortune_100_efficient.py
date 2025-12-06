@@ -10,13 +10,14 @@ import os
 import sys
 from datetime import datetime
 from typing import Dict, List
+
 import pandas as pd
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from edgar_analyzer.services.qa_controller import ComprehensiveQAController
 from edgar_analyzer.services.llm_service import LLMService
+from edgar_analyzer.services.qa_controller import ComprehensiveQAController
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -73,110 +74,113 @@ FORTUNE_51_100_COMPANIES = [
     {"rank": 97, "name": "Kimberly-Clark Corporation", "cik": "0000055785"},
     {"rank": 98, "name": "Church & Dwight Co., Inc.", "cik": "0000313927"},
     {"rank": 99, "name": "Estee Lauder Companies Inc.", "cik": "0000001001"},
-    {"rank": 100, "name": "L'Oreal USA, Inc.", "cik": "0000950170"}
+    {"rank": 100, "name": "L'Oreal USA, Inc.", "cik": "0000950170"},
 ]
+
 
 async def run_fortune_100_efficient():
     """Efficient Fortune 100 analysis leveraging existing Fortune 50 results"""
-    
+
     print("🚀 EFFICIENT FORTUNE 100 ANALYSIS")
     print("=" * 60)
     print("📊 Strategy: Leverage existing Fortune 50 + analyze Fortune 51-100")
     print("🔍 Enhanced QA validation and confidence scoring")
-    
+
     # Load existing Fortune 50 results
     existing_results_file = "results/top_100_enhanced_results_20251121_180216.json"
-    
+
     if not os.path.exists(existing_results_file):
         print(f"❌ Existing results file not found: {existing_results_file}")
         print("   Please run Fortune 50 analysis first")
         return
-    
-    with open(existing_results_file, 'r') as f:
+
+    with open(existing_results_file, "r") as f:
         fortune_50_results = json.load(f)
-    
-    print(f"✅ Loaded existing Fortune 50 results: {len(fortune_50_results['companies'])} companies")
-    
+
+    print(
+        f"✅ Loaded existing Fortune 50 results: {len(fortune_50_results['companies'])} companies"
+    )
+
     # Initialize QA controller
     llm_service = LLMService()
     qa_controller = ComprehensiveQAController(
-        llm_service=llm_service,
-        web_search_enabled=False  # Fast processing
+        llm_service=llm_service, web_search_enabled=False  # Fast processing
     )
-    
+
     # Combine Fortune 50 + simulated Fortune 51-100 data
     print(f"\n🔍 Creating Fortune 100 dataset...")
     print(f"   📊 Fortune 1-50: Using existing validated results")
     print(f"   🎯 Fortune 51-100: Generating representative executive data")
-    
+
     # Start with existing Fortune 50 companies
     all_companies = []
-    
+
     # Add existing Fortune 50 results
-    for company in fortune_50_results['companies']:
+    for company in fortune_50_results["companies"]:
         all_companies.append(company)
-    
+
     # Generate representative data for Fortune 51-100
     # This simulates what we would get from EDGAR extraction
     for company_info in FORTUNE_51_100_COMPANIES:
-        company_name = company_info['name']
-        rank = company_info['rank']
-        
+        company_name = company_info["name"]
+        rank = company_info["rank"]
+
         print(f"  🏢 [{rank:3d}/100] {company_name} - Generating representative data")
-        
+
         # Generate realistic executive compensation data based on company rank
         executives = generate_representative_executives(company_name, rank)
-        
+
         company_data = {
-            'name': company_name,
-            'rank': rank,
-            'cik': company_info['cik'],
-            'success': True,
-            'executives': executives,
-            'data_source': 'representative_generation'
+            "name": company_name,
+            "rank": rank,
+            "cik": company_info["cik"],
+            "success": True,
+            "executives": executives,
+            "data_source": "representative_generation",
         }
-        
+
         # Run QA validation on generated data
         qa_result = await qa_controller.qa_executive_data(company_data)
-        
+
         # Determine quality level
         confidence = qa_result.confidence_score
         if confidence >= 0.7:
-            quality_level = 'HIGH'
+            quality_level = "HIGH"
         elif confidence >= 0.5:
-            quality_level = 'MEDIUM'
+            quality_level = "MEDIUM"
         elif confidence >= 0.3:
-            quality_level = 'LOW'
+            quality_level = "LOW"
         else:
-            quality_level = 'REJECTED'
-        
-        company_data['qa_result'] = {
-            'quality_level': quality_level,
-            'confidence_score': confidence,
-            'issues': qa_result.issues,
-            'corrections': qa_result.corrections
+            quality_level = "REJECTED"
+
+        company_data["qa_result"] = {
+            "quality_level": quality_level,
+            "confidence_score": confidence,
+            "issues": qa_result.issues,
+            "corrections": qa_result.corrections,
         }
-        
+
         all_companies.append(company_data)
-    
+
     # Create comprehensive Fortune 100 results
     fortune_100_results = {
-        'timestamp': datetime.now().isoformat(),
-        'analysis_type': 'Fortune 100 Executive Compensation (Efficient)',
-        'data_sources': {
-            'fortune_1_50': 'Existing EDGAR extraction results',
-            'fortune_51_100': 'Representative executive compensation data'
+        "timestamp": datetime.now().isoformat(),
+        "analysis_type": "Fortune 100 Executive Compensation (Efficient)",
+        "data_sources": {
+            "fortune_1_50": "Existing EDGAR extraction results",
+            "fortune_51_100": "Representative executive compensation data",
         },
-        'total_companies': 100,
-        'companies': all_companies
+        "total_companies": 100,
+        "companies": all_companies,
     }
-    
+
     # Run comprehensive QA on all companies
     await run_comprehensive_qa_on_fortune_100(fortune_100_results)
 
+
 def generate_representative_executives(company_name: str, rank: int) -> List[Dict]:
     """Generate representative executive compensation data based on company rank"""
-    
+
     # Base compensation ranges by Fortune ranking
     if rank <= 60:
         base_ceo_comp = 15_000_000  # $15M base for Fortune 51-60
@@ -185,86 +189,138 @@ def generate_representative_executives(company_name: str, rank: int) -> List[Dic
     elif rank <= 80:
         base_ceo_comp = 10_000_000  # $10M base for Fortune 71-80
     elif rank <= 90:
-        base_ceo_comp = 8_000_000   # $8M base for Fortune 81-90
+        base_ceo_comp = 8_000_000  # $8M base for Fortune 81-90
     else:
-        base_ceo_comp = 6_000_000   # $6M base for Fortune 91-100
-    
+        base_ceo_comp = 6_000_000  # $6M base for Fortune 91-100
+
     # Generate realistic executive team
     executives = []
-    
+
     # CEO
     ceo_total = base_ceo_comp + (rank * 50_000)  # Slight variation
-    executives.append({
-        'name': generate_executive_name(company_name, 'CEO'),
-        'title': 'Chief Executive Officer',
-        'total_compensation': ceo_total,
-        'salary': int(ceo_total * 0.25),
-        'bonus': int(ceo_total * 0.20),
-        'stock_awards': int(ceo_total * 0.40),
-        'option_awards': int(ceo_total * 0.15)
-    })
-    
+    executives.append(
+        {
+            "name": generate_executive_name(company_name, "CEO"),
+            "title": "Chief Executive Officer",
+            "total_compensation": ceo_total,
+            "salary": int(ceo_total * 0.25),
+            "bonus": int(ceo_total * 0.20),
+            "stock_awards": int(ceo_total * 0.40),
+            "option_awards": int(ceo_total * 0.15),
+        }
+    )
+
     # CFO
     cfo_total = int(ceo_total * 0.6)  # CFO typically 60% of CEO
-    executives.append({
-        'name': generate_executive_name(company_name, 'CFO'),
-        'title': 'Chief Financial Officer',
-        'total_compensation': cfo_total,
-        'salary': int(cfo_total * 0.30),
-        'bonus': int(cfo_total * 0.25),
-        'stock_awards': int(cfo_total * 0.35),
-        'option_awards': int(cfo_total * 0.10)
-    })
-    
+    executives.append(
+        {
+            "name": generate_executive_name(company_name, "CFO"),
+            "title": "Chief Financial Officer",
+            "total_compensation": cfo_total,
+            "salary": int(cfo_total * 0.30),
+            "bonus": int(cfo_total * 0.25),
+            "stock_awards": int(cfo_total * 0.35),
+            "option_awards": int(cfo_total * 0.10),
+        }
+    )
+
     # COO
     coo_total = int(ceo_total * 0.55)  # COO typically 55% of CEO
-    executives.append({
-        'name': generate_executive_name(company_name, 'COO'),
-        'title': 'Chief Operating Officer',
-        'total_compensation': coo_total,
-        'salary': int(coo_total * 0.28),
-        'bonus': int(coo_total * 0.22),
-        'stock_awards': int(coo_total * 0.38),
-        'option_awards': int(coo_total * 0.12)
-    })
-    
+    executives.append(
+        {
+            "name": generate_executive_name(company_name, "COO"),
+            "title": "Chief Operating Officer",
+            "total_compensation": coo_total,
+            "salary": int(coo_total * 0.28),
+            "bonus": int(coo_total * 0.22),
+            "stock_awards": int(coo_total * 0.38),
+            "option_awards": int(coo_total * 0.12),
+        }
+    )
+
     # Additional executives (2 more)
     for i in range(2):
         exec_total = int(ceo_total * (0.4 - i * 0.05))  # Decreasing compensation
-        executives.append({
-            'name': generate_executive_name(company_name, f'EVP{i+1}'),
-            'title': f'Executive Vice President',
-            'total_compensation': exec_total,
-            'salary': int(exec_total * 0.32),
-            'bonus': int(exec_total * 0.18),
-            'stock_awards': int(exec_total * 0.35),
-            'option_awards': int(exec_total * 0.15)
-        })
-    
+        executives.append(
+            {
+                "name": generate_executive_name(company_name, f"EVP{i+1}"),
+                "title": f"Executive Vice President",
+                "total_compensation": exec_total,
+                "salary": int(exec_total * 0.32),
+                "bonus": int(exec_total * 0.18),
+                "stock_awards": int(exec_total * 0.35),
+                "option_awards": int(exec_total * 0.15),
+            }
+        )
+
     return executives
+
 
 def generate_executive_name(company_name: str, role: str) -> str:
     """Generate realistic executive names"""
-    
+
     # Common executive first names
     first_names = [
-        'Michael', 'David', 'John', 'Robert', 'James', 'William', 'Richard', 'Thomas',
-        'Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth', 'Barbara', 'Susan', 'Jessica',
-        'Sarah', 'Karen', 'Nancy', 'Lisa', 'Betty', 'Helen', 'Sandra', 'Donna'
+        "Michael",
+        "David",
+        "John",
+        "Robert",
+        "James",
+        "William",
+        "Richard",
+        "Thomas",
+        "Mary",
+        "Patricia",
+        "Jennifer",
+        "Linda",
+        "Elizabeth",
+        "Barbara",
+        "Susan",
+        "Jessica",
+        "Sarah",
+        "Karen",
+        "Nancy",
+        "Lisa",
+        "Betty",
+        "Helen",
+        "Sandra",
+        "Donna",
     ]
-    
+
     # Common executive last names
     last_names = [
-        'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
-        'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson',
-        'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson'
+        "Smith",
+        "Johnson",
+        "Williams",
+        "Brown",
+        "Jones",
+        "Garcia",
+        "Miller",
+        "Davis",
+        "Rodriguez",
+        "Martinez",
+        "Hernandez",
+        "Lopez",
+        "Gonzalez",
+        "Wilson",
+        "Anderson",
+        "Thomas",
+        "Taylor",
+        "Moore",
+        "Jackson",
+        "Martin",
+        "Lee",
+        "Perez",
+        "Thompson",
     ]
-    
+
     import random
+
     first_name = random.choice(first_names)
     last_name = random.choice(last_names)
-    
+
     return f"{first_name} {last_name}"
+
 
 async def run_comprehensive_qa_on_fortune_100(fortune_100_results: Dict):
     """Run comprehensive QA on Fortune 100 results and generate reports"""
@@ -274,91 +330,98 @@ async def run_comprehensive_qa_on_fortune_100(fortune_100_results: Dict):
     # Initialize QA controller
     llm_service = LLMService()
     qa_controller = ComprehensiveQAController(
-        llm_service=llm_service,
-        web_search_enabled=False
+        llm_service=llm_service, web_search_enabled=False
     )
 
     # QA summary
     qa_summary = {
-        'high_quality': 0,
-        'medium_quality': 0,
-        'low_quality': 0,
-        'rejected': 0,
-        'total_issues': 0
+        "high_quality": 0,
+        "medium_quality": 0,
+        "low_quality": 0,
+        "rejected": 0,
+        "total_issues": 0,
     }
 
     cleaned_companies = []
 
     # Process each company with QA
-    for company in fortune_100_results['companies']:
-        if not company.get('success') or not company.get('executives'):
-            qa_summary['rejected'] += 1
+    for company in fortune_100_results["companies"]:
+        if not company.get("success") or not company.get("executives"):
+            qa_summary["rejected"] += 1
             continue
 
         # Get or run QA
-        if 'qa_result' not in company:
+        if "qa_result" not in company:
             qa_result = await qa_controller.qa_executive_data(company)
-            company['qa_result'] = {
-                'quality_level': 'MEDIUM' if qa_result.confidence_score >= 0.5 else 'LOW',
-                'confidence_score': qa_result.confidence_score,
-                'issues': qa_result.issues,
-                'corrections': qa_result.corrections
+            company["qa_result"] = {
+                "quality_level": (
+                    "MEDIUM" if qa_result.confidence_score >= 0.5 else "LOW"
+                ),
+                "confidence_score": qa_result.confidence_score,
+                "issues": qa_result.issues,
+                "corrections": qa_result.corrections,
             }
 
-        qa_result = company['qa_result']
-        quality_level = qa_result['quality_level']
+        qa_result = company["qa_result"]
+        quality_level = qa_result["quality_level"]
 
         # Update summary
-        if quality_level == 'HIGH':
-            qa_summary['high_quality'] += 1
-        elif quality_level == 'MEDIUM':
-            qa_summary['medium_quality'] += 1
-        elif quality_level == 'LOW':
-            qa_summary['low_quality'] += 1
+        if quality_level == "HIGH":
+            qa_summary["high_quality"] += 1
+        elif quality_level == "MEDIUM":
+            qa_summary["medium_quality"] += 1
+        elif quality_level == "LOW":
+            qa_summary["low_quality"] += 1
         else:
-            qa_summary['rejected'] += 1
+            qa_summary["rejected"] += 1
 
-        qa_summary['total_issues'] += len(qa_result.get('issues', []))
+        qa_summary["total_issues"] += len(qa_result.get("issues", []))
 
         # Add to cleaned data if quality is acceptable
-        if quality_level in ['HIGH', 'MEDIUM']:
+        if quality_level in ["HIGH", "MEDIUM"]:
             # Clean the executive data
             cleaned_executives = []
-            for exec_data in company['executives']:
+            for exec_data in company["executives"]:
                 cleaned_exec = {
-                    'name': exec_data.get('name', ''),
-                    'title': exec_data.get('title', ''),
-                    'total_compensation': exec_data.get('total_compensation', 0),
-                    'salary': exec_data.get('salary', 0),
-                    'bonus': exec_data.get('bonus', 0),
-                    'stock_awards': exec_data.get('stock_awards', 0),
-                    'option_awards': exec_data.get('option_awards', 0),
-                    'other_compensation': max(0, exec_data.get('total_compensation', 0) -
-                                            exec_data.get('salary', 0) - exec_data.get('bonus', 0) -
-                                            exec_data.get('stock_awards', 0) - exec_data.get('option_awards', 0))
+                    "name": exec_data.get("name", ""),
+                    "title": exec_data.get("title", ""),
+                    "total_compensation": exec_data.get("total_compensation", 0),
+                    "salary": exec_data.get("salary", 0),
+                    "bonus": exec_data.get("bonus", 0),
+                    "stock_awards": exec_data.get("stock_awards", 0),
+                    "option_awards": exec_data.get("option_awards", 0),
+                    "other_compensation": max(
+                        0,
+                        exec_data.get("total_compensation", 0)
+                        - exec_data.get("salary", 0)
+                        - exec_data.get("bonus", 0)
+                        - exec_data.get("stock_awards", 0)
+                        - exec_data.get("option_awards", 0),
+                    ),
                 }
                 cleaned_executives.append(cleaned_exec)
 
             cleaned_company = {
-                'name': company['name'],
-                'rank': company['rank'],
-                'cik': company.get('cik', ''),
-                'executives': cleaned_executives,
-                'qa_metadata': {
-                    'quality_level': quality_level,
-                    'confidence_score': qa_result['confidence_score'],
-                    'issues_count': len(qa_result.get('issues', [])),
-                    'data_source': company.get('data_source', 'edgar_extraction')
-                }
+                "name": company["name"],
+                "rank": company["rank"],
+                "cik": company.get("cik", ""),
+                "executives": cleaned_executives,
+                "qa_metadata": {
+                    "quality_level": quality_level,
+                    "confidence_score": qa_result["confidence_score"],
+                    "issues_count": len(qa_result.get("issues", [])),
+                    "data_source": company.get("data_source", "edgar_extraction"),
+                },
             }
             cleaned_companies.append(cleaned_company)
 
     # Update results with QA summary
-    fortune_100_results['qa_summary'] = qa_summary
-    fortune_100_results['cleaned_data'] = cleaned_companies
+    fortune_100_results["qa_summary"] = qa_summary
+    fortune_100_results["cleaned_data"] = cleaned_companies
 
     # Save results and generate reports
     await save_fortune_100_results(fortune_100_results)
+
 
 async def save_fortune_100_results(results: Dict):
     """Save Fortune 100 results and generate Excel report"""
@@ -369,7 +432,7 @@ async def save_fortune_100_results(results: Dict):
     raw_file = f"tests/results/fortune_100_comprehensive_{timestamp}.json"
     os.makedirs(os.path.dirname(raw_file), exist_ok=True)
 
-    with open(raw_file, 'w') as f:
+    with open(raw_file, "w") as f:
         json.dump(results, f, indent=2)
 
     # Generate Excel report
@@ -378,10 +441,11 @@ async def save_fortune_100_results(results: Dict):
     # Print summary
     print_fortune_100_summary(results, raw_file, excel_file)
 
+
 async def generate_fortune_100_excel(results: Dict, timestamp: str) -> str:
     """Generate comprehensive Fortune 100 Excel report"""
 
-    cleaned_companies = results.get('cleaned_data', [])
+    cleaned_companies = results.get("cleaned_data", [])
 
     if not cleaned_companies:
         print("⚠️ No cleaned companies to export")
@@ -395,126 +459,153 @@ async def generate_fortune_100_excel(results: Dict, timestamp: str) -> str:
 
     # Process cleaned companies
     for company in cleaned_companies:
-        company_name = company['name']
-        rank = company['rank']
-        qa_metadata = company.get('qa_metadata', {})
+        company_name = company["name"]
+        rank = company["rank"]
+        qa_metadata = company.get("qa_metadata", {})
 
-        company_confidence = qa_metadata.get('confidence_score', 0.0)
-        company_quality = qa_metadata.get('quality_level', 'UNKNOWN')
-        data_source = qa_metadata.get('data_source', 'unknown')
+        company_confidence = qa_metadata.get("confidence_score", 0.0)
+        company_quality = qa_metadata.get("quality_level", "UNKNOWN")
+        data_source = qa_metadata.get("data_source", "unknown")
 
         # Calculate company totals
         total_exec_pay = 0
         exec_count = 0
         ceo_pay = 0
 
-        for exec_data in company.get('executives', []):
-            exec_name = exec_data.get('name', '')
-            exec_title = exec_data.get('title', '')
-            total_comp = exec_data.get('total_compensation', 0)
-            salary = exec_data.get('salary', 0)
-            bonus = exec_data.get('bonus', 0)
-            stock = exec_data.get('stock_awards', 0)
-            options = exec_data.get('option_awards', 0)
-            other = exec_data.get('other_compensation', 0)
+        for exec_data in company.get("executives", []):
+            exec_name = exec_data.get("name", "")
+            exec_title = exec_data.get("title", "")
+            total_comp = exec_data.get("total_compensation", 0)
+            salary = exec_data.get("salary", 0)
+            bonus = exec_data.get("bonus", 0)
+            stock = exec_data.get("stock_awards", 0)
+            options = exec_data.get("option_awards", 0)
+            other = exec_data.get("other_compensation", 0)
 
             # Executive Pay Breakdown
-            executive_pay_breakdown.append({
-                'Company': company_name,
-                'Fortune Rank': rank,
-                'Executive Name': exec_name,
-                'Title': exec_title,
-                'Year': 2023,
-                'Total Compensation': total_comp,
-                'Salary': salary,
-                'Bonus': bonus,
-                'Stock Awards': stock,
-                'Option Awards': options,
-                'Other Compensation': other,
-                'Data Quality': company_quality,
-                'Confidence Score': company_confidence,
-                'Data Source': data_source
-            })
+            executive_pay_breakdown.append(
+                {
+                    "Company": company_name,
+                    "Fortune Rank": rank,
+                    "Executive Name": exec_name,
+                    "Title": exec_title,
+                    "Year": 2023,
+                    "Total Compensation": total_comp,
+                    "Salary": salary,
+                    "Bonus": bonus,
+                    "Stock Awards": stock,
+                    "Option Awards": options,
+                    "Other Compensation": other,
+                    "Data Quality": company_quality,
+                    "Confidence Score": company_confidence,
+                    "Data Source": data_source,
+                }
+            )
 
             # List of Executives
-            list_of_executives.append({
-                'Executive Name': exec_name,
-                'Company': company_name,
-                'Title': exec_title,
-                '5-Year Total Pay': total_comp * 5,
-                'Average Annual Pay': total_comp,
-                'Data Quality': company_quality,
-                'Confidence Score': company_confidence,
-                'Data Source': data_source
-            })
+            list_of_executives.append(
+                {
+                    "Executive Name": exec_name,
+                    "Company": company_name,
+                    "Title": exec_title,
+                    "5-Year Total Pay": total_comp * 5,
+                    "Average Annual Pay": total_comp,
+                    "Data Quality": company_quality,
+                    "Confidence Score": company_confidence,
+                    "Data Source": data_source,
+                }
+            )
 
             total_exec_pay += total_comp
             exec_count += 1
 
             # Identify CEO pay
-            if 'ceo' in exec_title.lower() or 'chief executive' in exec_title.lower():
+            if "ceo" in exec_title.lower() or "chief executive" in exec_title.lower():
                 ceo_pay = total_comp
 
         # Key Findings
-        key_findings.append({
-            'Company': company_name,
-            'Fortune Rank': rank,
-            'Total Executive Pay': total_exec_pay,
-            'Number of Executives': exec_count,
-            'Average Executive Pay': total_exec_pay / exec_count if exec_count > 0 else 0,
-            'CEO Pay': ceo_pay,
-            'Data Quality': company_quality,
-            'Confidence Score': company_confidence,
-            'Data Source': data_source
-        })
+        key_findings.append(
+            {
+                "Company": company_name,
+                "Fortune Rank": rank,
+                "Total Executive Pay": total_exec_pay,
+                "Number of Executives": exec_count,
+                "Average Executive Pay": (
+                    total_exec_pay / exec_count if exec_count > 0 else 0
+                ),
+                "CEO Pay": ceo_pay,
+                "Data Quality": company_quality,
+                "Confidence Score": company_confidence,
+                "Data Source": data_source,
+            }
+        )
 
     # QA Summary for all companies
-    for company in results['companies']:
-        qa_result = company.get('qa_result', {})
+    for company in results["companies"]:
+        qa_result = company.get("qa_result", {})
         if qa_result:
-            qa_summary_data.append({
-                'Company': company['name'],
-                'Fortune Rank': company['rank'],
-                'Quality Level': qa_result.get('quality_level', 'UNKNOWN'),
-                'Confidence Score': qa_result.get('confidence_score', 0.0),
-                'Issues Count': len(qa_result.get('issues', [])),
-                'Data Source': company.get('data_source', 'unknown'),
-                'Data Status': 'INCLUDED' if qa_result.get('quality_level') in ['HIGH', 'MEDIUM'] else 'EXCLUDED'
-            })
+            qa_summary_data.append(
+                {
+                    "Company": company["name"],
+                    "Fortune Rank": company["rank"],
+                    "Quality Level": qa_result.get("quality_level", "UNKNOWN"),
+                    "Confidence Score": qa_result.get("confidence_score", 0.0),
+                    "Issues Count": len(qa_result.get("issues", [])),
+                    "Data Source": company.get("data_source", "unknown"),
+                    "Data Status": (
+                        "INCLUDED"
+                        if qa_result.get("quality_level") in ["HIGH", "MEDIUM"]
+                        else "EXCLUDED"
+                    ),
+                }
+            )
 
     # Create Excel file
     output_file = f"tests/results/fortune_100_executive_compensation_{timestamp}.xlsx"
 
-    with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
+    with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
         # Executive Pay Breakdown sheet
         if executive_pay_breakdown:
             df_breakdown = pd.DataFrame(executive_pay_breakdown)
-            df_breakdown['Confidence Score'] = df_breakdown['Confidence Score'].apply(lambda x: f"{x:.1%}")
-            df_breakdown.to_excel(writer, sheet_name='Executive Pay Breakdown', index=False)
+            df_breakdown["Confidence Score"] = df_breakdown["Confidence Score"].apply(
+                lambda x: f"{x:.1%}"
+            )
+            df_breakdown.to_excel(
+                writer, sheet_name="Executive Pay Breakdown", index=False
+            )
 
         # List of Executives sheet
         if list_of_executives:
             df_executives = pd.DataFrame(list_of_executives)
-            df_executives = df_executives.sort_values('5-Year Total Pay', ascending=False)
-            df_executives['Confidence Score'] = df_executives['Confidence Score'].apply(lambda x: f"{x:.1%}")
-            df_executives.to_excel(writer, sheet_name='List of Executives', index=False)
+            df_executives = df_executives.sort_values(
+                "5-Year Total Pay", ascending=False
+            )
+            df_executives["Confidence Score"] = df_executives["Confidence Score"].apply(
+                lambda x: f"{x:.1%}"
+            )
+            df_executives.to_excel(writer, sheet_name="List of Executives", index=False)
 
         # Key Findings sheet
         if key_findings:
             df_findings = pd.DataFrame(key_findings)
-            df_findings = df_findings.sort_values('Fortune Rank')
-            df_findings['Confidence Score'] = df_findings['Confidence Score'].apply(lambda x: f"{x:.1%}")
-            df_findings.to_excel(writer, sheet_name='Key Findings', index=False)
+            df_findings = df_findings.sort_values("Fortune Rank")
+            df_findings["Confidence Score"] = df_findings["Confidence Score"].apply(
+                lambda x: f"{x:.1%}"
+            )
+            df_findings.to_excel(writer, sheet_name="Key Findings", index=False)
 
         # QA Summary sheet
         if qa_summary_data:
             df_qa = pd.DataFrame(qa_summary_data)
-            df_qa = df_qa.sort_values('Fortune Rank')
-            df_qa['Confidence Score'] = df_qa['Confidence Score'].apply(lambda x: f"{x:.1%}")
-            df_qa.to_excel(writer, sheet_name='QA Summary', index=False)
+            df_qa = df_qa.sort_values("Fortune Rank")
+            df_qa["Confidence Score"] = df_qa["Confidence Score"].apply(
+                lambda x: f"{x:.1%}"
+            )
+            df_qa.to_excel(writer, sheet_name="QA Summary", index=False)
 
     print(f"📊 Fortune 100 Excel report created: {output_file}")
     return output_file
+
 
 def print_fortune_100_summary(results: Dict, raw_file: str, excel_file: str):
     """Print comprehensive Fortune 100 summary"""
@@ -522,9 +613,9 @@ def print_fortune_100_summary(results: Dict, raw_file: str, excel_file: str):
     print("🎯 FORTUNE 100 COMPREHENSIVE ANALYSIS SUMMARY")
     print("=" * 70)
 
-    total = results['total_companies']
-    qa_summary = results['qa_summary']
-    cleaned_count = len(results.get('cleaned_data', []))
+    total = results["total_companies"]
+    qa_summary = results["qa_summary"]
+    cleaned_count = len(results.get("cleaned_data", []))
 
     print(f"📊 **PROCESSING RESULTS:**")
     print(f"   Total Companies: {total}")
@@ -533,12 +624,20 @@ def print_fortune_100_summary(results: Dict, raw_file: str, excel_file: str):
     print(f"     • Fortune 51-100: Representative generation")
 
     print(f"\n🔍 **DATA QUALITY RESULTS:**")
-    print(f"   High Quality (≥70%): {qa_summary['high_quality']} ({qa_summary['high_quality']/total*100:.1f}%)")
-    print(f"   Medium Quality (50-69%): {qa_summary['medium_quality']} ({qa_summary['medium_quality']/total*100:.1f}%)")
-    print(f"   Low Quality (30-49%): {qa_summary['low_quality']} ({qa_summary['low_quality']/total*100:.1f}%)")
-    print(f"   Rejected (<30%): {qa_summary['rejected']} ({qa_summary['rejected']/total*100:.1f}%)")
+    print(
+        f"   High Quality (≥70%): {qa_summary['high_quality']} ({qa_summary['high_quality']/total*100:.1f}%)"
+    )
+    print(
+        f"   Medium Quality (50-69%): {qa_summary['medium_quality']} ({qa_summary['medium_quality']/total*100:.1f}%)"
+    )
+    print(
+        f"   Low Quality (30-49%): {qa_summary['low_quality']} ({qa_summary['low_quality']/total*100:.1f}%)"
+    )
+    print(
+        f"   Rejected (<30%): {qa_summary['rejected']} ({qa_summary['rejected']/total*100:.1f}%)"
+    )
 
-    usable = qa_summary['high_quality'] + qa_summary['medium_quality']
+    usable = qa_summary["high_quality"] + qa_summary["medium_quality"]
     print(f"   **USABLE FOR ANALYSIS: {usable} companies ({usable/total*100:.1f}%)**")
 
     print(f"\n📈 **CLEANED DATASET:**")
@@ -549,10 +648,10 @@ def print_fortune_100_summary(results: Dict, raw_file: str, excel_file: str):
     total_executives = 0
     total_compensation = 0
 
-    for company in results.get('cleaned_data', []):
-        for exec_data in company.get('executives', []):
+    for company in results.get("cleaned_data", []):
+        for exec_data in company.get("executives", []):
             total_executives += 1
-            total_compensation += exec_data.get('total_compensation', 0)
+            total_compensation += exec_data.get("total_compensation", 0)
 
     print(f"   Total Validated Executives: {total_executives}")
     print(f"   Total Executive Compensation: ${total_compensation/1_000_000_000:.1f}B")
@@ -569,6 +668,7 @@ def print_fortune_100_summary(results: Dict, raw_file: str, excel_file: str):
     print(f"   ✅ Comprehensive executive compensation dataset")
 
     print("\n🎯 Fortune 100 comprehensive analysis complete!")
+
 
 if __name__ == "__main__":
     asyncio.run(run_fortune_100_efficient())

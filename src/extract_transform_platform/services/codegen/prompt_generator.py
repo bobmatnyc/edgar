@@ -106,7 +106,7 @@ class PromptGenerator:
             "num_patterns": len(parsed.patterns),
             "num_examples": parsed.num_examples,
             "high_confidence_patterns": len(parsed.high_confidence_patterns),
-            "project_name": project_name
+            "project_name": project_name,
         }
 
         self.logger.info(
@@ -132,30 +132,20 @@ class PromptGenerator:
 """
 
         return PromptSection(
-            title="Example Parser Output for Sonnet 4.5",
-            content=content,
-            order=1
+            title="Example Parser Output for Sonnet 4.5", content=content, order=1
         )
 
     def _create_input_schema_section(self, schema) -> PromptSection:
         """Create input schema section."""
         content = self._format_schema(schema, "Input")
 
-        return PromptSection(
-            title="Input Schema",
-            content=content,
-            order=2
-        )
+        return PromptSection(title="Input Schema", content=content, order=2)
 
     def _create_output_schema_section(self, schema) -> PromptSection:
         """Create output schema section."""
         content = self._format_schema(schema, "Output")
 
-        return PromptSection(
-            title="Output Schema",
-            content=content,
-            order=3
-        )
+        return PromptSection(title="Output Schema", content=content, order=3)
 
     def _format_schema(self, schema, schema_type: str) -> str:
         """Format schema as readable text.
@@ -199,9 +189,7 @@ class PromptGenerator:
             for field in top_level:
                 nullable = " (nullable)" if field.nullable else ""
                 samples = ", ".join(str(s) for s in field.sample_values[:2])
-                lines.append(
-                    f"- `{field.path}`: {field.field_type.value}{nullable}"
-                )
+                lines.append(f"- `{field.path}`: {field.field_type.value}{nullable}")
                 if samples:
                     lines.append(f"  - Examples: {samples}")
 
@@ -227,7 +215,7 @@ class PromptGenerator:
             "list": "List",
             "dict": "Dict",
             "null": "None",
-            "unknown": "Any"
+            "unknown": "Any",
         }
 
         base_type = type_map.get(field.field_type.value, "Any")
@@ -253,16 +241,16 @@ class PromptGenerator:
             pattern_types[pattern.type].append(pattern)
 
         for pattern_type, type_patterns in sorted(pattern_types.items()):
-            avg_confidence = sum(p.confidence for p in type_patterns) / len(type_patterns)
+            avg_confidence = sum(p.confidence for p in type_patterns) / len(
+                type_patterns
+            )
             lines.append(
                 f"- **{pattern_type.value.replace('_', ' ').title()}**: "
                 f"{len(type_patterns)} patterns (avg confidence: {avg_confidence:.0%})"
             )
 
         return PromptSection(
-            title="Identified Patterns",
-            content="\n".join(lines),
-            order=4
+            title="Identified Patterns", content="\n".join(lines), order=4
         )
 
     def _create_pattern_detail_sections(
@@ -305,7 +293,7 @@ class PromptGenerator:
             f"**Confidence**: {confidence_pct} ({confidence_label})",
             f"**Source**: `{pattern.source_path}`",
             f"**Target**: `{pattern.target_path}`",
-            f"**Transformation**: {pattern.transformation}\n"
+            f"**Transformation**: {pattern.transformation}\n",
         ]
 
         # Add type information
@@ -338,7 +326,7 @@ class PromptGenerator:
         return PromptSection(
             title=f"Pattern {index}: {pattern.target_path}",
             content="\n".join(lines),
-            order=5 + index
+            order=5 + index,
         )
 
     def _get_implementation_guidance(self, pattern: Pattern) -> List[str]:
@@ -354,34 +342,34 @@ class PromptGenerator:
             PatternType.FIELD_MAPPING: [
                 "- Use direct dictionary access",
                 "- Handle missing keys with `.get()` method",
-                f"- Extract: `input_data['{pattern.source_path}']`"
+                f"- Extract: `input_data['{pattern.source_path}']`",
             ],
             PatternType.FIELD_EXTRACTION: [
                 "- Navigate nested structure carefully",
                 "- Check for None at each level",
-                f"- Path: {pattern.source_path}"
+                f"- Path: {pattern.source_path}",
             ],
             PatternType.ARRAY_FIRST: [
                 "- Check if array is non-empty",
                 "- Access first element: `array[0]`",
-                "- Handle empty array case"
+                "- Handle empty array case",
             ],
             PatternType.TYPE_CONVERSION: [
                 f"- Convert {pattern.source_type} to {pattern.target_type}",
                 "- Handle conversion errors gracefully",
-                "- Validate converted value"
+                "- Validate converted value",
             ],
             PatternType.CONSTANT: [
                 f"- Set constant value: `{pattern.examples[0][1]}`",
                 "- No input dependency",
-                "- Always returns same value"
+                "- Always returns same value",
             ],
             PatternType.COMPLEX: [
                 "- ⚠ Complex transformation detected",
                 "- Review examples carefully",
                 "- May require custom logic or calculation",
-                "- Test thoroughly with all examples"
-            ]
+                "- Test thoroughly with all examples",
+            ],
         }
 
         return guidance.get(pattern.type, ["- Implement based on examples"])
@@ -413,13 +401,11 @@ class PromptGenerator:
             "**Testing**:",
             "- Function must pass all provided examples",
             f"- Verify output matches expected structure for all {parsed.num_examples} examples",
-            "- Test edge cases (null values, empty arrays, missing fields)"
+            "- Test edge cases (null values, empty arrays, missing fields)",
         ]
 
         return PromptSection(
-            title="Implementation Requirements",
-            content="\n".join(lines),
-            order=100
+            title="Implementation Requirements", content="\n".join(lines), order=100
         )
 
     def _create_warnings_section(self, warnings: List[str]) -> PromptSection:
@@ -435,8 +421,4 @@ class PromptGenerator:
         for warning in warnings:
             lines.append(f"- {warning}")
 
-        return PromptSection(
-            title="Warnings",
-            content="\n".join(lines),
-            order=101
-        )
+        return PromptSection(title="Warnings", content="\n".join(lines), order=101)

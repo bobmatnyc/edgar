@@ -388,8 +388,12 @@ class TestJinaDataSourceMigration:
         mock_response.status_code = 200
         mock_get.return_value = mock_response
 
-        platform_result = await PlatformJina(api_key="test").fetch(url="https://example.com")
-        wrapper_result = await WrapperJina(api_key="test").fetch(url="https://example.com")
+        platform_result = await PlatformJina(api_key="test").fetch(
+            url="https://example.com"
+        )
+        wrapper_result = await WrapperJina(api_key="test").fetch(
+            url="https://example.com"
+        )
 
         # Results should be identical (ignoring extracted_at timestamp)
         assert platform_result["content"] == wrapper_result["content"]

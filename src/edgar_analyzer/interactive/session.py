@@ -70,17 +70,20 @@ from rich.prompt import Prompt
 from rich.syntax import Syntax
 from rich.table import Table
 
+# Import scripting engine for file operations
+from cli_chatbot.core.scripting_engine import DynamicScriptingEngine
 from edgar_analyzer.models.project_config import ExampleConfig
 from extract_transform_platform.ai.openrouter_client import OpenRouterClient
 from extract_transform_platform.models.project_config import ProjectConfig
 from extract_transform_platform.services.analysis.example_parser import ExampleParser
 from extract_transform_platform.services.analysis.schema_analyzer import SchemaAnalyzer
-from extract_transform_platform.services.codegen.code_generator import CodeGeneratorService
-from extract_transform_platform.services.codegen.constraint_enforcer import ConstraintEnforcer
+from extract_transform_platform.services.codegen.code_generator import (
+    CodeGeneratorService,
+)
+from extract_transform_platform.services.codegen.constraint_enforcer import (
+    ConstraintEnforcer,
+)
 from extract_transform_platform.services.project_manager import ProjectManager
-
-# Import scripting engine for file operations
-from cli_chatbot.core.scripting_engine import DynamicScriptingEngine
 
 logger = structlog.get_logger(__name__)
 
@@ -110,7 +113,12 @@ class InteractiveExtractionSession:
         >>> await session.start()
     """
 
-    def __init__(self, project_path: Optional[Path] = None, test_mode: bool = False, session_id: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        project_path: Optional[Path] = None,
+        test_mode: bool = False,
+        session_id: Optional[str] = None,
+    ) -> None:
         """Initialize interactive session.
 
         Args:
@@ -139,12 +147,25 @@ class InteractiveExtractionSession:
         # Allow safe file operations (os, pathlib, shutil, zipfile)
         self.scripting_engine = DynamicScriptingEngine(
             allowed_imports=[
-                'json', 'datetime', 'math', 'random', 'os', 'sys', 'pathlib',
-                'collections', 'itertools', 'functools', 're', 'typing', 'time',
-                'shutil', 'zipfile', 'glob'  # Add file operation modules
+                "json",
+                "datetime",
+                "math",
+                "random",
+                "os",
+                "sys",
+                "pathlib",
+                "collections",
+                "itertools",
+                "functools",
+                "re",
+                "typing",
+                "time",
+                "shutil",
+                "zipfile",
+                "glob",  # Add file operation modules
             ],
             max_execution_time=30.0,
-            prefer_subprocess=True
+            prefer_subprocess=True,
         )
         logger.debug("scripting_engine_initialized")
 
@@ -182,7 +203,11 @@ class InteractiveExtractionSession:
             "exit": self.cmd_exit,
         }
 
-        logger.info("interactive_session_initialized", project_path=str(project_path), session_id=self.session_id)
+        logger.info(
+            "interactive_session_initialized",
+            project_path=str(project_path),
+            session_id=self.session_id,
+        )
 
     def _generate_session_id(self) -> str:
         """Generate unique session ID: edgar-{YYYYMMDD-HHMMSS}-{8-char-uuid}
@@ -219,7 +244,9 @@ class InteractiveExtractionSession:
         - Command errors: Caught and displayed with details
         """
         # Welcome message
-        self.console.print("[bold blue]🔍 EDGAR Interactive Extraction Session[/bold blue]")
+        self.console.print(
+            "[bold blue]🔍 EDGAR Interactive Extraction Session[/bold blue]"
+        )
         self.console.print("Type naturally or use /commands (e.g., /help, /exit)\n")
 
         # Check API key status
@@ -255,7 +282,7 @@ class InteractiveExtractionSession:
                     continue
 
                 # Check if input starts with / (slash command)
-                if user_input.startswith('/'):
+                if user_input.startswith("/"):
                     # System command - direct routing (bypass NL parsing)
                     parts = user_input[1:].split(maxsplit=1)  # Remove leading /
                     command = parts[0].lower()
@@ -271,17 +298,27 @@ class InteractiveExtractionSession:
                     else:
                         # Unknown slash command - show error (don't route to AI)
                         self.console.print(f"[red]❌ Unknown command: /{command}[/red]")
-                        self.console.print("[dim]Type '/help' to see available commands[/dim]")
+                        self.console.print(
+                            "[dim]Type '/help' to see available commands[/dim]"
+                        )
                 else:
                     # Check if input looks like natural language
                     word_count = len(user_input.split())
-                    is_natural = word_count > 3 or "?" in user_input or (user_input and user_input[0].isupper())
+                    is_natural = (
+                        word_count > 3
+                        or "?" in user_input
+                        or (user_input and user_input[0].isupper())
+                    )
 
                     if is_natural:
                         # Parse with NL understanding
                         command, args = await self._parse_natural_language(user_input)
-                        if command != user_input.split()[0].lower():  # Only show if interpreted differently
-                            self.console.print(f"[dim]→ Interpreted as: {command} {args}[/dim]")
+                        if (
+                            command != user_input.split()[0].lower()
+                        ):  # Only show if interpreted differently
+                            self.console.print(
+                                f"[dim]→ Interpreted as: {command} {args}[/dim]"
+                            )
                     else:
                         # Traditional command parsing
                         parts = user_input.split(maxsplit=1)
@@ -307,28 +344,43 @@ class InteractiveExtractionSession:
                 break
             except AuthenticationError as e:
                 # Auth error in REPL loop - trigger setup (unless in test mode)
-                self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
+                self.console.print(
+                    "\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]"
+                )
                 if not self._test_mode:
                     self.console.print("[dim]Let's set up a new one...[/dim]\n")
                     await self.cmd_setup("")
                 else:
-                    self.console.print("[dim]Run /setup to configure your API key.[/dim]")
+                    self.console.print(
+                        "[dim]Run /setup to configure your API key.[/dim]"
+                    )
                 logger.warning("auth_error_in_repl", error=str(e))
             except Exception as e:
                 # Check for auth-related errors in the message
                 error_str = str(e)
-                if "401" in error_str or "authentication" in error_str.lower() or "User not found" in error_str:
+                if (
+                    "401" in error_str
+                    or "authentication" in error_str.lower()
+                    or "User not found" in error_str
+                ):
                     # Auth error detected - trigger setup (unless in test mode)
-                    self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
+                    self.console.print(
+                        "\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]"
+                    )
                     if not self._test_mode:
                         self.console.print("[dim]Let's set up a new one...[/dim]\n")
                         await self.cmd_setup("")
                     else:
-                        self.console.print("[dim]Run /setup to configure your API key.[/dim]")
+                        self.console.print(
+                            "[dim]Run /setup to configure your API key.[/dim]"
+                        )
                     logger.warning("auth_error_detected_in_repl", error=error_str[:100])
                 else:
                     self.console.print(f"[red]Error executing command: {e}[/red]")
-                    logger.exception("command_error", command=command if 'command' in locals() else "unknown")
+                    logger.exception(
+                        "command_error",
+                        command=command if "command" in locals() else "unknown",
+                    )
 
         self.console.print("[yellow]Session ended[/yellow]")
         logger.info("repl_ended")
@@ -387,12 +439,12 @@ class InteractiveExtractionSession:
             "command": command_str,
             "success": False,
             "output": "",
-            "error": None
+            "error": None,
         }
 
         try:
             # Parse command and args
-            if command_str.startswith('/'):
+            if command_str.startswith("/"):
                 # Slash command - strip leading /
                 parts = command_str[1:].split(maxsplit=1)
             else:
@@ -402,7 +454,12 @@ class InteractiveExtractionSession:
             command = parts[0].lower()
             args = parts[1] if len(parts) > 1 else ""
 
-            logger.debug("oneshot_command_executing", command=command, args=args, session_id=self.session_id)
+            logger.debug(
+                "oneshot_command_executing",
+                command=command,
+                args=args,
+                session_id=self.session_id,
+            )
 
             # Execute command
             if command in self.commands:
@@ -417,14 +474,18 @@ class InteractiveExtractionSession:
             else:
                 # Unknown command
                 capture_console.print(f"[red]❌ Unknown command: {command}[/red]")
-                capture_console.print("[dim]Type 'help' to see available commands[/dim]")
+                capture_console.print(
+                    "[dim]Type 'help' to see available commands[/dim]"
+                )
                 result["error"] = f"Unknown command: {command}"
 
         except Exception as e:
             # Capture error
             capture_console.print(f"[red]❌ Error executing command: {e}[/red]")
             result["error"] = str(e)
-            logger.exception("oneshot_command_error", command=command_str, session_id=self.session_id)
+            logger.exception(
+                "oneshot_command_error", command=command_str, session_id=self.session_id
+            )
 
         finally:
             # Restore original console
@@ -440,12 +501,16 @@ class InteractiveExtractionSession:
             try:
                 await self._save_session_by_id()
             except Exception as e:
-                logger.warning("oneshot_autosave_failed", session_id=self.session_id, error=str(e))
+                logger.warning(
+                    "oneshot_autosave_failed", session_id=self.session_id, error=str(e)
+                )
 
-        logger.info("oneshot_command_complete",
-                   session_id=self.session_id,
-                   command=command_str,
-                   success=result["success"])
+        logger.info(
+            "oneshot_command_complete",
+            session_id=self.session_id,
+            command=command_str,
+            success=result["success"],
+        )
 
         return result
 
@@ -458,19 +523,27 @@ class InteractiveExtractionSession:
         session_data = {
             "session_id": self.session_id,
             "project_path": str(self.project_path) if self.project_path else None,
-            "project_config": self.project_config.model_dump() if self.project_config else None,
+            "project_config": (
+                self.project_config.model_dump() if self.project_config else None
+            ),
             "analysis_results": self.analysis_results,
-            "generated_code_path": str(self.generated_code_path) if self.generated_code_path else None,
-            "extraction_count": len(self.extraction_results) if self.extraction_results else 0,
+            "generated_code_path": (
+                str(self.generated_code_path) if self.generated_code_path else None
+            ),
+            "extraction_count": (
+                len(self.extraction_results) if self.extraction_results else 0
+            ),
             "timestamp": datetime.now().isoformat(),
         }
 
         session_file = self._get_session_file(self.session_id)
 
-        with open(session_file, 'w') as f:
+        with open(session_file, "w") as f:
             json.dump(session_data, f, indent=2)
 
-        logger.debug("session_saved_by_id", session_id=self.session_id, path=str(session_file))
+        logger.debug(
+            "session_saved_by_id", session_id=self.session_id, path=str(session_file)
+        )
 
     async def cmd_help(self, args: str = "") -> None:
         """Show available commands with enhanced Rich formatting.
@@ -485,7 +558,7 @@ class InteractiveExtractionSession:
             title="💡 Available Commands",
             show_header=True,
             header_style="bold magenta",
-            caption="Commands can be typed directly or prefixed with /\nExamples: help, /help, analyze, /analyze"
+            caption="Commands can be typed directly or prefixed with /\nExamples: help, /help, analyze, /analyze",
         )
         table.add_column("Command", style="cyan", width=20)
         table.add_column("Arguments", style="yellow", width=15)
@@ -519,7 +592,7 @@ class InteractiveExtractionSession:
         # Add usage tip
         tip = Panel(
             "[bold cyan]💡 Tip:[/bold cyan] Use [bold]Tab[/bold] for auto-completion and [bold]Ctrl+R[/bold] to search history",
-            border_style="dim"
+            border_style="dim",
         )
         self.console.print(tip)
 
@@ -555,24 +628,25 @@ class InteractiveExtractionSession:
 
             # Ask if they want to update
             update = Prompt.ask(
-                "Do you want to update your API key?",
-                choices=["y", "n"],
-                default="n"
+                "Do you want to update your API key?", choices=["y", "n"], default="n"
             )
 
             if update.lower() != "y":
                 self.console.print("[dim]Setup cancelled[/dim]")
                 return
         else:
-            self.console.print("[red]Current API key status: ❌ Not configured or invalid[/red]")
+            self.console.print(
+                "[red]Current API key status: ❌ Not configured or invalid[/red]"
+            )
 
-        self.console.print("\n[dim]To use AI features, you need an OpenRouter API key.[/dim]")
+        self.console.print(
+            "\n[dim]To use AI features, you need an OpenRouter API key.[/dim]"
+        )
         self.console.print("[dim]Get one at: https://openrouter.ai/keys[/dim]\n")
 
         # Prompt for API key (with password masking)
         api_key = Prompt.ask(
-            "Enter your OpenRouter API key (or 'cancel' to skip)",
-            password=True
+            "Enter your OpenRouter API key (or 'cancel' to skip)", password=True
         )
 
         # Check for cancellation
@@ -582,7 +656,9 @@ class InteractiveExtractionSession:
 
         # Validate API key format
         if not api_key.startswith("sk-or-v1-"):
-            self.console.print("[red]❌ Invalid API key format. OpenRouter keys start with 'sk-or-v1-'[/red]")
+            self.console.print(
+                "[red]❌ Invalid API key format. OpenRouter keys start with 'sk-or-v1-'[/red]"
+            )
             return
 
         # Validate API key by making a test call
@@ -591,7 +667,9 @@ class InteractiveExtractionSession:
         is_valid = await self._validate_api_key(api_key)
 
         if not is_valid:
-            self.console.print("[red]❌ API key validation failed. Please check your key and try again.[/red]")
+            self.console.print(
+                "[red]❌ API key validation failed. Please check your key and try again.[/red]"
+            )
             return
 
         self.console.print("[green]✅ API key is valid![/green]")
@@ -605,7 +683,9 @@ class InteractiveExtractionSession:
             os.environ["OPENROUTER_API_KEY"] = api_key
             self.openrouter_client = OpenRouterClient(api_key=api_key)
 
-            self.console.print("\n[green]AI chat features are now enabled. Try saying hello![/green]")
+            self.console.print(
+                "\n[green]AI chat features are now enabled. Try saying hello![/green]"
+            )
             logger.info("api_key_configured_successfully")
 
         except Exception as e:
@@ -629,7 +709,7 @@ class InteractiveExtractionSession:
             response = await test_client.chat_completion(
                 messages=[{"role": "user", "content": "hi"}],
                 max_tokens=1,
-                temperature=0.0
+                temperature=0.0,
             )
 
             # If we got any response, the key is valid
@@ -658,10 +738,9 @@ class InteractiveExtractionSession:
             if "OPENROUTER_API_KEY=" in content:
                 # Replace existing key
                 import re
+
                 content = re.sub(
-                    r'OPENROUTER_API_KEY=.*',
-                    f'OPENROUTER_API_KEY={api_key}',
-                    content
+                    r"OPENROUTER_API_KEY=.*", f"OPENROUTER_API_KEY={api_key}", content
                 )
             else:
                 # Add new key
@@ -670,7 +749,9 @@ class InteractiveExtractionSession:
             env_path.write_text(content)
         else:
             # Create new .env.local file
-            env_path.write_text(f"# EDGAR Environment Configuration\nOPENROUTER_API_KEY={api_key}\n")
+            env_path.write_text(
+                f"# EDGAR Environment Configuration\nOPENROUTER_API_KEY={api_key}\n"
+            )
 
         logger.info("api_key_saved_to_env", path=str(env_path))
 
@@ -704,7 +785,7 @@ class InteractiveExtractionSession:
             with Progress(
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),
-                console=self.console
+                console=self.console,
             ) as progress:
                 progress.add_task("Thinking...", total=None)
 
@@ -718,9 +799,13 @@ class InteractiveExtractionSession:
                 if self.generated_code:
                     context_info.append("Code generated")
                 if self.extraction_results:
-                    context_info.append(f"Extraction complete ({len(self.extraction_results)} records)")
+                    context_info.append(
+                        f"Extraction complete ({len(self.extraction_results)} records)"
+                    )
 
-                session_context = " | ".join(context_info) if context_info else "No project loaded"
+                session_context = (
+                    " | ".join(context_info) if context_info else "No project loaded"
+                )
 
                 # Create system prompt
                 system_prompt = """You are EDGAR, an LLM-powered ETL (Extract, Transform, Load) assistant.
@@ -824,13 +909,13 @@ Provide a helpful response. If the user is asking how to do something, point the
                 # Call OpenRouter API
                 messages = [
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
+                    {"role": "user", "content": user_prompt},
                 ]
 
                 response = await self.openrouter_client.chat_completion(
                     messages=messages,
                     temperature=0.7,
-                    max_tokens=500  # Keep responses concise
+                    max_tokens=500,  # Keep responses concise
                 )
 
             # Check for executable scripts in response
@@ -850,11 +935,17 @@ Provide a helpful response. If the user is asking how to do something, point the
                     "or ask me about specific features.[/cyan]"
                 )
 
-            logger.info("chat_response_displayed", message_length=len(message), response_length=len(response))
+            logger.info(
+                "chat_response_displayed",
+                message_length=len(message),
+                response_length=len(response),
+            )
 
         except AuthenticationError as e:
             # Auth error - trigger setup flow (unless in test mode or one-shot mode)
-            self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
+            self.console.print(
+                "\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]"
+            )
             if not self._test_mode and not self._oneshot_mode:
                 self.console.print("[dim]Let's set up a new one...[/dim]\n")
                 await self.cmd_setup("")
@@ -866,14 +957,22 @@ Provide a helpful response. If the user is asking how to do something, point the
             # Other errors - show generic message
             error_str = str(e)
             # Check for auth-related errors in the message
-            if "401" in error_str or "authentication" in error_str.lower() or "User not found" in error_str:
+            if (
+                "401" in error_str
+                or "authentication" in error_str.lower()
+                or "User not found" in error_str
+            ):
                 # Auth error detected by message content - trigger setup (unless in test mode or one-shot mode)
-                self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
+                self.console.print(
+                    "\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]"
+                )
                 if not self._test_mode and not self._oneshot_mode:
                     self.console.print("[dim]Let's set up a new one...[/dim]\n")
                     await self.cmd_setup("")
                 else:
-                    self.console.print("[dim]Run /setup to configure your API key.[/dim]")
+                    self.console.print(
+                        "[dim]Run /setup to configure your API key.[/dim]"
+                    )
                 logger.warning("auth_error_detected_by_message", error=error_str[:100])
             else:
                 # Other errors - show generic message
@@ -901,7 +1000,8 @@ Provide a helpful response. If the user is asking how to do something, point the
         """
         # Extract all python:execute code blocks
         import re
-        pattern = r'```python:execute\n(.*?)```'
+
+        pattern = r"```python:execute\n(.*?)```"
         scripts = re.findall(pattern, response, re.DOTALL)
 
         if not scripts:
@@ -913,13 +1013,17 @@ Provide a helpful response. If the user is asking how to do something, point the
                 with Progress(
                     SpinnerColumn(),
                     TextColumn("[progress.description]{task.description}"),
-                    console=self.console
+                    console=self.console,
                 ) as progress:
-                    progress.add_task(f"Executing script {i}/{len(scripts)}...", total=None)
+                    progress.add_task(
+                        f"Executing script {i}/{len(scripts)}...", total=None
+                    )
 
                     # Build execution context
                     context = {
-                        "project_path": str(self.project_path) if self.project_path else None,
+                        "project_path": (
+                            str(self.project_path) if self.project_path else None
+                        ),
                         "session_id": self.session_id,
                     }
 
@@ -927,49 +1031,51 @@ Provide a helpful response. If the user is asking how to do something, point the
                     result = await self.scripting_engine.execute_script(
                         script_code=script_code.strip(),
                         context=context,
-                        safety_checks=True
+                        safety_checks=True,
                     )
 
                 # Display results
                 if result.success:
-                    self.console.print(f"\n[green]✅ Script {i} executed successfully[/green]")
+                    self.console.print(
+                        f"\n[green]✅ Script {i} executed successfully[/green]"
+                    )
 
                     # Show output if present
                     if result.output and result.output.strip():
                         output_panel = Panel(
                             result.output.strip(),
                             title="Script Output",
-                            border_style="green"
+                            border_style="green",
                         )
                         self.console.print(output_panel)
 
                     # Show result if present
                     if result.result is not None:
                         result_panel = Panel(
-                            str(result.result),
-                            title="Result",
-                            border_style="cyan"
+                            str(result.result), title="Result", border_style="cyan"
                         )
                         self.console.print(result_panel)
 
                     # Show execution time
-                    self.console.print(f"[dim]Execution time: {result.execution_time:.2f}s[/dim]\n")
+                    self.console.print(
+                        f"[dim]Execution time: {result.execution_time:.2f}s[/dim]\n"
+                    )
 
                 else:
                     # Script failed - show error
                     self.console.print(f"\n[red]❌ Script {i} failed[/red]")
                     if result.error:
                         error_panel = Panel(
-                            result.error,
-                            title="Error Details",
-                            border_style="red"
+                            result.error, title="Error Details", border_style="red"
                         )
                         self.console.print(error_panel)
 
-                logger.info("script_executed",
-                           script_index=i,
-                           success=result.success,
-                           execution_time=result.execution_time)
+                logger.info(
+                    "script_executed",
+                    script_index=i,
+                    success=result.success,
+                    execution_time=result.execution_time,
+                )
 
             except Exception as e:
                 self.console.print(f"\n[red]❌ Script {i} execution error: {e}[/red]")
@@ -1039,7 +1145,7 @@ Your response:"""
                 response = await self.openrouter_client.chat_completion(
                     messages=[{"role": "user", "content": prompt}],
                     max_tokens=50,
-                    temperature=0.1
+                    temperature=0.1,
                 )
 
                 # Parse response
@@ -1088,20 +1194,24 @@ Your response:"""
             with Progress(
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),
-                console=self.console
+                console=self.console,
             ) as progress:
                 progress.add_task("Loading project...", total=None)
 
                 # Load project configuration
                 config_path = project_path / "project.yaml"
                 if not config_path.exists():
-                    self.console.print(f"[red]❌ Error: project.yaml not found in {project_path}[/red]")
+                    self.console.print(
+                        f"[red]❌ Error: project.yaml not found in {project_path}[/red]"
+                    )
                     return
 
                 self.project_config = ProjectConfig.from_yaml(config_path)
                 self.project_path = project_path
 
-            self.console.print(f"[green]✅ Loaded project: {self.project_config.project.name}[/green]")
+            self.console.print(
+                f"[green]✅ Loaded project: {self.project_config.project.name}[/green]"
+            )
             logger.info("project_loaded", project_name=self.project_config.project.name)
 
         except Exception as e:
@@ -1122,7 +1232,9 @@ Your response:"""
             args: Unused, included for signature consistency
         """
         if not self.project_config:
-            self.console.print("[yellow]⚠️  No project loaded. Use 'load <path>' first.[/yellow]")
+            self.console.print(
+                "[yellow]⚠️  No project loaded. Use 'load <path>' first.[/yellow]"
+            )
             return
 
         table = Table(title="Project Status")
@@ -1131,12 +1243,16 @@ Your response:"""
 
         table.add_row("Name", self.project_config.project.name)
         # Get first data source type (project always has at least one)
-        data_source_type = self.project_config.data_sources[0].type if self.project_config.data_sources else "N/A"
+        data_source_type = (
+            self.project_config.data_sources[0].type
+            if self.project_config.data_sources
+            else "N/A"
+        )
         table.add_row("Data Source", data_source_type)
 
         # Count examples (either inline or file-based)
         example_count = 0
-        if hasattr(self.project_config, 'examples') and self.project_config.examples:
+        if hasattr(self.project_config, "examples") and self.project_config.examples:
             example_count = len(self.project_config.examples)
 
         table.add_row("Examples", str(example_count))
@@ -1158,11 +1274,16 @@ Your response:"""
             self.console.print("[yellow]⚠️  No project loaded[/yellow]")
             return
 
-        if not hasattr(self.project_config, 'examples') or not self.project_config.examples:
+        if (
+            not hasattr(self.project_config, "examples")
+            or not self.project_config.examples
+        ):
             self.console.print("[yellow]⚠️  No examples found in project[/yellow]")
             return
 
-        table = Table(title=f"Loaded Examples ({len(self.project_config.examples)} total)")
+        table = Table(
+            title=f"Loaded Examples ({len(self.project_config.examples)} total)"
+        )
         table.add_column("Index", style="cyan", width=8)
         table.add_column("File", style="white", width=30)
         table.add_column("Fields", style="green", width=12)
@@ -1175,11 +1296,15 @@ Your response:"""
 
                 if full_path.exists():
                     try:
-                        with open(full_path, 'r') as f:
+                        with open(full_path, "r") as f:
                             example_data = json.load(f)
 
                             # Count fields
-                            field_count = len(example_data) if isinstance(example_data, dict) else "N/A"
+                            field_count = (
+                                len(example_data)
+                                if isinstance(example_data, dict)
+                                else "N/A"
+                            )
 
                             # Create preview (first 2 keys)
                             if isinstance(example_data, dict):
@@ -1194,26 +1319,28 @@ Your response:"""
                                 str(idx),
                                 Path(example_path).name,
                                 str(field_count),
-                                preview
+                                preview,
                             )
                     except Exception as e:
                         table.add_row(
                             str(idx),
                             Path(example_path).name,
                             "[red]Error[/red]",
-                            f"[red]{str(e)[:40]}[/red]"
+                            f"[red]{str(e)[:40]}[/red]",
                         )
                 else:
                     table.add_row(
                         str(idx),
                         Path(example_path).name,
                         "[red]Missing[/red]",
-                        "[red]File not found[/red]"
+                        "[red]File not found[/red]",
                     )
             # Handle inline examples
             elif isinstance(example_path, ExampleConfig):
                 example_data = example_path.output
-                field_count = len(example_data) if isinstance(example_data, dict) else "N/A"
+                field_count = (
+                    len(example_data) if isinstance(example_data, dict) else "N/A"
+                )
 
                 if isinstance(example_data, dict):
                     preview_keys = list(example_data.keys())[:2]
@@ -1223,12 +1350,7 @@ Your response:"""
                 else:
                     preview = "Inline"
 
-                table.add_row(
-                    str(idx),
-                    "Inline",
-                    str(field_count),
-                    preview
-                )
+                table.add_row(str(idx), "Inline", str(field_count), preview)
 
         self.console.print(table)
         logger.info("examples_displayed", count=len(self.project_config.examples))
@@ -1260,7 +1382,7 @@ Your response:"""
             with Progress(
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),
-                console=self.console
+                console=self.console,
             ) as progress:
                 task = progress.add_task("Analyzing examples...", total=None)
 
@@ -1272,21 +1394,24 @@ Your response:"""
                     if isinstance(example_item, str):
                         full_path = self.project_path / example_item
                         if full_path.exists():
-                            with open(full_path, 'r') as f:
+                            with open(full_path, "r") as f:
                                 example_data = json.load(f)
                                 # Convert to ExampleConfig format (support both old and new formats)
-                                if 'input' in example_data and 'output' in example_data:
+                                if "input" in example_data and "output" in example_data:
                                     # New format
                                     example_config = ExampleConfig(
-                                        input=example_data['input'],
-                                        output=example_data['output']
+                                        input=example_data["input"],
+                                        output=example_data["output"],
                                     )
                                     parsed_examples.append(example_config)
-                                elif 'input_data' in example_data and 'output_data' in example_data:
+                                elif (
+                                    "input_data" in example_data
+                                    and "output_data" in example_data
+                                ):
                                     # Legacy format - convert to new format
                                     example_config = ExampleConfig(
-                                        input=example_data['input_data'],
-                                        output=example_data['output_data']
+                                        input=example_data["input_data"],
+                                        output=example_data["output_data"],
                                     )
                                     parsed_examples.append(example_config)
                     # Handle inline examples
@@ -1300,16 +1425,29 @@ Your response:"""
                 self.analysis_results = {
                     "patterns": [
                         {
-                            "type": p.type.value if hasattr(p.type, 'value') else str(p.type),
+                            "type": (
+                                p.type.value
+                                if hasattr(p.type, "value")
+                                else str(p.type)
+                            ),
                             "confidence": p.confidence,
                             "source_path": p.source_path,
                             "target_path": p.target_path,
-                            "description": getattr(p, 'description', '') or f"{p.type} transformation"
+                            "description": getattr(p, "description", "")
+                            or f"{p.type} transformation",
                         }
                         for p in parsed_result.patterns
                     ],
-                    "input_schema": parsed_result.input_schema.dict() if hasattr(parsed_result.input_schema, 'dict') else {},
-                    "output_schema": parsed_result.output_schema.dict() if hasattr(parsed_result.output_schema, 'dict') else {},
+                    "input_schema": (
+                        parsed_result.input_schema.dict()
+                        if hasattr(parsed_result.input_schema, "dict")
+                        else {}
+                    ),
+                    "output_schema": (
+                        parsed_result.output_schema.dict()
+                        if hasattr(parsed_result.output_schema, "dict")
+                        else {}
+                    ),
                     "confidence_scores": {
                         p.target_path: p.confidence for p in parsed_result.patterns
                     },
@@ -1321,8 +1459,12 @@ Your response:"""
             self.console.print("[green]✅ Analysis complete[/green]")
 
             patterns_count = len(self.analysis_results.get("patterns", []))
-            input_fields = len(self.analysis_results.get("input_schema", {}).get("fields", {}))
-            output_fields = len(self.analysis_results.get("output_schema", {}).get("fields", {}))
+            input_fields = len(
+                self.analysis_results.get("input_schema", {}).get("fields", {})
+            )
+            output_fields = len(
+                self.analysis_results.get("output_schema", {}).get("fields", {})
+            )
 
             summary_table = Table(title="Analysis Summary", show_header=False)
             summary_table.add_column("Metric", style="cyan")
@@ -1335,11 +1477,16 @@ Your response:"""
 
             self.console.print(summary_table)
 
-            logger.info("analysis_complete", patterns=patterns_count, examples=len(parsed_examples))
+            logger.info(
+                "analysis_complete",
+                patterns=patterns_count,
+                examples=len(parsed_examples),
+            )
 
         except Exception as e:
             self.console.print(f"[red]❌ Analysis failed: {e}[/red]")
             import traceback
+
             self.console.print(f"[dim]{traceback.format_exc()}[/dim]")
             logger.exception("analysis_error")
 
@@ -1366,7 +1513,9 @@ Your response:"""
             return
 
         # Create Rich table with enhanced formatting
-        table = Table(title=f"Detected Patterns ({len(patterns)} total)", show_lines=True)
+        table = Table(
+            title=f"Detected Patterns ({len(patterns)} total)", show_lines=True
+        )
         table.add_column("Type", style="cyan", width=20)
         table.add_column("Confidence", style="green", justify="right", width=12)
         table.add_column("Source → Target", style="white", width=30)
@@ -1394,7 +1543,7 @@ Your response:"""
                 pattern_type,
                 confidence_str,
                 mapping,
-                description[:40] + "..." if len(description) > 40 else description
+                description[:40] + "..." if len(description) > 40 else description,
             )
 
         self.console.print(table)
@@ -1403,7 +1552,9 @@ Your response:"""
         avg_confidence = sum(p.get("confidence", 0) for p in patterns) / len(patterns)
         self.console.print(f"\n[dim]Average Confidence: {avg_confidence:.1%}[/dim]")
 
-        logger.info("patterns_displayed", count=len(patterns), avg_confidence=avg_confidence)
+        logger.info(
+            "patterns_displayed", count=len(patterns), avg_confidence=avg_confidence
+        )
 
     async def cmd_generate_code(self, args: str = "") -> None:
         """Generate extraction code from analysis results.
@@ -1419,7 +1570,9 @@ Your response:"""
         - Generation failures: Error with details and traceback
         """
         if not self.code_generator:
-            self.console.print("[yellow]⚠️  No valid API key. Run /setup to configure.[/yellow]")
+            self.console.print(
+                "[yellow]⚠️  No valid API key. Run /setup to configure.[/yellow]"
+            )
             return
 
         if not self.analysis_results:
@@ -1430,25 +1583,34 @@ Your response:"""
             with Progress(
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),
-                console=self.console
+                console=self.console,
             ) as progress:
                 task = progress.add_task("Generating extraction code...", total=None)
 
                 # INTEGRATION: Use CodeGeneratorService
                 # Note: Simplified implementation - full integration would use parsed_examples
                 # For Phase 2, generate code directly from patterns
-                from extract_transform_platform.models.patterns import Pattern, PatternType
+                from extract_transform_platform.models.patterns import (
+                    Pattern,
+                    PatternType,
+                )
 
                 # Convert dict patterns back to Pattern objects
                 pattern_objects = []
                 for p_dict in self.analysis_results["patterns"]:
-                    pattern_type = PatternType(p_dict["type"]) if isinstance(p_dict["type"], str) else p_dict["type"]
+                    pattern_type = (
+                        PatternType(p_dict["type"])
+                        if isinstance(p_dict["type"], str)
+                        else p_dict["type"]
+                    )
                     pattern = Pattern(
                         type=pattern_type,
                         source_path=p_dict["source_path"],
                         target_path=p_dict["target_path"],
                         confidence=p_dict["confidence"],
-                        transformation=p_dict.get("description", f"{pattern_type} transformation")
+                        transformation=p_dict.get(
+                            "description", f"{pattern_type} transformation"
+                        ),
                     )
                     pattern_objects.append(pattern)
 
@@ -1457,7 +1619,7 @@ Your response:"""
                 self.generated_code_path = self.project_path / "generated_extractor.py"
 
                 # Save generated code
-                with open(self.generated_code_path, 'w') as f:
+                with open(self.generated_code_path, "w") as f:
                     f.write(self.generated_code)
 
                 progress.update(task, completed=True)
@@ -1466,21 +1628,24 @@ Your response:"""
             self.console.print(f"[dim]Saved to: {self.generated_code_path}[/dim]")
 
             # Show code preview with syntax highlighting
-            preview_lines = self.generated_code.split('\n')[:20]
-            preview_code = '\n'.join(preview_lines)
+            preview_lines = self.generated_code.split("\n")[:20]
+            preview_code = "\n".join(preview_lines)
 
             syntax = Syntax(preview_code, "python", theme="monokai", line_numbers=True)
             self.console.print("\n[bold]Code Preview:[/bold]")
             self.console.print(syntax)
 
-            if len(self.generated_code.split('\n')) > 20:
-                self.console.print(f"\n[dim]... ({len(self.generated_code.split('\n')) - 20} more lines)[/dim]")
+            if len(self.generated_code.split("\n")) > 20:
+                self.console.print(
+                    f"\n[dim]... ({len(self.generated_code.split('\n')) - 20} more lines)[/dim]"
+                )
 
             logger.info("code_generated", code_length=len(self.generated_code))
 
         except Exception as e:
             self.console.print(f"[red]❌ Code generation failed: {e}[/red]")
             import traceback
+
             self.console.print(f"[dim]{traceback.format_exc()}[/dim]")
             logger.exception("code_generation_error")
 
@@ -1515,11 +1680,11 @@ class GeneratedExtractor:
         for pattern in patterns:
             source = pattern.source_path
             target = pattern.target_path
-            code += f'        # Pattern: {pattern.type} ({pattern.confidence:.1%} confidence)\n'
+            code += f"        # Pattern: {pattern.type} ({pattern.confidence:.1%} confidence)\n"
             code += f'        result["{target}"] = data.get("{source}")\n\n'
 
-        code += '''        return result
-'''
+        code += """        return result
+"""
         return code
 
     async def cmd_validate_code(self, args: str = "") -> None:
@@ -1532,12 +1697,14 @@ class GeneratedExtractor:
             with Progress(
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),
-                console=self.console
+                console=self.console,
             ) as progress:
                 task = progress.add_task("Validating generated code...", total=None)
 
                 # INTEGRATION: Use ConstraintEnforcer
-                validation_result = self.constraint_enforcer.validate_code(self.generated_code)
+                validation_result = self.constraint_enforcer.validate_code(
+                    self.generated_code
+                )
 
                 progress.update(task, completed=True)
 
@@ -1548,29 +1715,62 @@ class GeneratedExtractor:
                 self.console.print("[yellow]⚠️  Code validation warnings:[/yellow]")
 
                 for violation in validation_result.violations[:10]:  # Show first 10
-                    severity_color = "red" if violation.severity.value == "error" else "yellow"
-                    self.console.print(f"  • [{severity_color}]{violation.message}[/{severity_color}]")
+                    severity_color = (
+                        "red" if violation.severity.value == "error" else "yellow"
+                    )
+                    self.console.print(
+                        f"  • [{severity_color}]{violation.message}[/{severity_color}]"
+                    )
 
                 if len(validation_result.violations) > 10:
-                    self.console.print(f"  [dim]... and {len(validation_result.violations) - 10} more[/dim]")
+                    self.console.print(
+                        f"  [dim]... and {len(validation_result.violations) - 10} more[/dim]"
+                    )
 
             # Show validation metrics
             metrics_table = Table(title="Validation Metrics", show_header=False)
             metrics_table.add_column("Metric", style="cyan")
             metrics_table.add_column("Value", style="white")
 
-            metrics_table.add_row("Valid", "✅ Yes" if validation_result.valid else "❌ No")
-            metrics_table.add_row("Total Violations", str(len(validation_result.violations)))
-            metrics_table.add_row("Errors", str(sum(1 for v in validation_result.violations if v.severity.value == "error")))
-            metrics_table.add_row("Warnings", str(sum(1 for v in validation_result.violations if v.severity.value == "warning")))
+            metrics_table.add_row(
+                "Valid", "✅ Yes" if validation_result.valid else "❌ No"
+            )
+            metrics_table.add_row(
+                "Total Violations", str(len(validation_result.violations))
+            )
+            metrics_table.add_row(
+                "Errors",
+                str(
+                    sum(
+                        1
+                        for v in validation_result.violations
+                        if v.severity.value == "error"
+                    )
+                ),
+            )
+            metrics_table.add_row(
+                "Warnings",
+                str(
+                    sum(
+                        1
+                        for v in validation_result.violations
+                        if v.severity.value == "warning"
+                    )
+                ),
+            )
 
             self.console.print(metrics_table)
 
-            logger.info("validation_complete", valid=validation_result.valid, violations=len(validation_result.violations))
+            logger.info(
+                "validation_complete",
+                valid=validation_result.valid,
+                violations=len(validation_result.violations),
+            )
 
         except Exception as e:
             self.console.print(f"[red]❌ Validation failed: {e}[/red]")
             import traceback
+
             self.console.print(f"[dim]{traceback.format_exc()}[/dim]")
             logger.exception("validation_error")
 
@@ -1597,15 +1797,14 @@ class GeneratedExtractor:
             with Progress(
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),
-                console=self.console
+                console=self.console,
             ) as progress:
                 task = progress.add_task("Extracting data...", total=None)
 
                 # Execute generated code
                 # Import the generated module dynamically
                 spec = importlib.util.spec_from_file_location(
-                    "generated_extractor",
-                    self.generated_code_path
+                    "generated_extractor", self.generated_code_path
                 )
                 generated_module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(generated_module)
@@ -1622,9 +1821,9 @@ class GeneratedExtractor:
                     if isinstance(example_item, str):
                         full_path = self.project_path / example_item
                         if full_path.exists():
-                            with open(full_path, 'r') as f:
+                            with open(full_path, "r") as f:
                                 example_data = json.load(f)
-                                sample_data = example_data.get('input_data', {})
+                                sample_data = example_data.get("input_data", {})
                     elif isinstance(example_item, ExampleConfig):
                         sample_data = example_item.input_data
 
@@ -1635,7 +1834,9 @@ class GeneratedExtractor:
                 progress.update(task, completed=True)
 
             # Display results
-            self.console.print(f"[green]✅ Extracted {len(self.extraction_results)} records[/green]")
+            self.console.print(
+                f"[green]✅ Extracted {len(self.extraction_results)} records[/green]"
+            )
 
             # Show preview of first 5 records
             if self.extraction_results:
@@ -1648,18 +1849,22 @@ class GeneratedExtractor:
 
                 # Add rows (max 5)
                 for record in self.extraction_results[:5]:
-                    results_table.add_row(*[str(record.get(k, "")) for k in first_record.keys()])
+                    results_table.add_row(
+                        *[str(record.get(k, "")) for k in first_record.keys()]
+                    )
 
                 self.console.print(results_table)
 
                 if len(self.extraction_results) > 5:
-                    self.console.print(f"\n[dim]... ({len(self.extraction_results) - 5} more records)[/dim]")
+                    self.console.print(
+                        f"\n[dim]... ({len(self.extraction_results) - 5} more records)[/dim]"
+                    )
 
             # Save results
             output_path = self.project_path / "output" / "extraction_results.json"
             output_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(output_path, 'w') as f:
+            with open(output_path, "w") as f:
                 json.dump(self.extraction_results, f, indent=2)
 
             self.console.print(f"[dim]Results saved to: {output_path}[/dim]")
@@ -1669,6 +1874,7 @@ class GeneratedExtractor:
         except Exception as e:
             self.console.print(f"[red]❌ Extraction failed: {e}[/red]")
             import traceback
+
             self.console.print(f"[dim]{traceback.format_exc()}[/dim]")
             logger.exception("extraction_error")
 
@@ -1690,23 +1896,31 @@ class GeneratedExtractor:
             session_data = {
                 "session_id": self.session_id,
                 "project_path": str(self.project_path) if self.project_path else None,
-                "project_config": self.project_config.model_dump() if self.project_config else None,
+                "project_config": (
+                    self.project_config.model_dump() if self.project_config else None
+                ),
                 "analysis_results": self.analysis_results,
-                "generated_code_path": str(self.generated_code_path) if self.generated_code_path else None,
-                "extraction_count": len(self.extraction_results) if self.extraction_results else 0,
+                "generated_code_path": (
+                    str(self.generated_code_path) if self.generated_code_path else None
+                ),
+                "extraction_count": (
+                    len(self.extraction_results) if self.extraction_results else 0
+                ),
                 "timestamp": datetime.now().isoformat(),
             }
 
             session_file = self._get_session_file(session_name)
 
-            with open(session_file, 'w') as f:
+            with open(session_file, "w") as f:
                 json.dump(session_data, f, indent=2)
 
             self.console.print(f"[green]✅ Session saved: {session_name}[/green]")
             self.console.print(f"[dim]Session ID: {self.session_id}[/dim]")
             self.console.print(f"[dim]File: {session_file}[/dim]")
 
-            logger.info("session_saved", session_name=session_name, session_id=self.session_id)
+            logger.info(
+                "session_saved", session_name=session_name, session_id=self.session_id
+            )
 
         except Exception as e:
             self.console.print(f"[red]❌ Failed to save session: {e}[/red]")
@@ -1720,10 +1934,12 @@ class GeneratedExtractor:
             session_file = self._get_session_file(session_name)
 
             if not session_file.exists():
-                self.console.print(f"[yellow]⚠️  Session '{session_name}' not found[/yellow]")
+                self.console.print(
+                    f"[yellow]⚠️  Session '{session_name}' not found[/yellow]"
+                )
                 return
 
-            with open(session_file, 'r') as f:
+            with open(session_file, "r") as f:
                 session_data = json.load(f)
 
             # Restore session_id if available (for sessions created with one-shot mode)
@@ -1739,7 +1955,7 @@ class GeneratedExtractor:
             if session_data.get("generated_code_path"):
                 code_path = Path(session_data["generated_code_path"])
                 if code_path.exists():
-                    with open(code_path, 'r') as f:
+                    with open(code_path, "r") as f:
                         self.generated_code = f.read()
                     self.generated_code_path = code_path
 
@@ -1750,7 +1966,9 @@ class GeneratedExtractor:
             # Show restored state
             await self.cmd_show()
 
-            logger.info("session_resumed", session_name=session_name, session_id=self.session_id)
+            logger.info(
+                "session_resumed", session_name=session_name, session_id=self.session_id
+            )
 
         except Exception as e:
             self.console.print(f"[red]❌ Failed to resume session: {e}[/red]")
@@ -1773,13 +1991,19 @@ class GeneratedExtractor:
 
         for session_file in sorted(session_files):
             try:
-                with open(session_file, 'r') as f:
+                with open(session_file, "r") as f:
                     session_data = json.load(f)
 
                 session_name = session_file.stem.replace("_session", "")
                 session_id = session_data.get("session_id", "N/A")
                 timestamp = session_data.get("timestamp", "Unknown")
-                project = session_data.get("project_config", {}).get("project", {}).get("name", "None") if session_data.get("project_config") else "None"
+                project = (
+                    session_data.get("project_config", {})
+                    .get("project", {})
+                    .get("name", "None")
+                    if session_data.get("project_config")
+                    else "None"
+                )
 
                 table.add_row(session_name, session_id, timestamp, project)
             except:
@@ -1794,10 +2018,14 @@ class GeneratedExtractor:
             threshold = float(args.strip())
 
             if not (0.0 <= threshold <= 1.0):
-                self.console.print("[red]❌ Confidence must be between 0.0 and 1.0[/red]")
+                self.console.print(
+                    "[red]❌ Confidence must be between 0.0 and 1.0[/red]"
+                )
                 return
 
-            old_threshold = self.project_config.confidence_threshold if self.project_config else 0.7
+            old_threshold = (
+                self.project_config.confidence_threshold if self.project_config else 0.7
+            )
 
             # Update config
             if self.project_config:
@@ -1806,7 +2034,9 @@ class GeneratedExtractor:
                 self.console.print("[yellow]⚠️  No project loaded[/yellow]")
                 return
 
-            self.console.print(f"[green]✅ Confidence threshold: {old_threshold:.1%} → {threshold:.1%}[/green]")
+            self.console.print(
+                f"[green]✅ Confidence threshold: {old_threshold:.1%} → {threshold:.1%}[/green]"
+            )
 
             # If already analyzed, re-run with new threshold
             if self.analysis_results:
@@ -1829,7 +2059,9 @@ class GeneratedExtractor:
                 diff_table.add_column("After", style="green")
 
                 diff_table.add_row("Pattern Count", str(old_count), str(new_count))
-                diff_table.add_row("Threshold", f"{old_threshold:.1%}", f"{threshold:.1%}")
+                diff_table.add_row(
+                    "Threshold", f"{old_threshold:.1%}", f"{threshold:.1%}"
+                )
 
                 # Calculate change
                 change = new_count - old_count
@@ -1838,9 +2070,13 @@ class GeneratedExtractor:
 
                 self.console.print(diff_table)
             else:
-                self.console.print("[dim]Run 'analyze' to detect patterns with new threshold[/dim]")
+                self.console.print(
+                    "[dim]Run 'analyze' to detect patterns with new threshold[/dim]"
+                )
 
-            logger.info("confidence_threshold_updated", old=old_threshold, new=threshold)
+            logger.info(
+                "confidence_threshold_updated", old=old_threshold, new=threshold
+            )
 
         except ValueError:
             self.console.print(f"[red]❌ Invalid threshold: {args}[/red]")
@@ -1850,7 +2086,9 @@ class GeneratedExtractor:
         """Get current confidence threshold."""
         if self.project_config:
             threshold = self.project_config.confidence_threshold or 0.7
-            self.console.print(f"[cyan]Current confidence threshold: {threshold:.1%}[/cyan]")
+            self.console.print(
+                f"[cyan]Current confidence threshold: {threshold:.1%}[/cyan]"
+            )
         else:
             self.console.print("[yellow]⚠️  No project loaded[/yellow]")
 

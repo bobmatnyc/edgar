@@ -27,7 +27,6 @@ from typing import Any, Dict, List, Literal, Optional, Union
 import yaml
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-
 # ============================================================================
 # ENUMERATIONS
 # ============================================================================
@@ -39,6 +38,7 @@ class DataSourceType(str, Enum):
     Extensibility: Add new source types by extending this enum and implementing
     corresponding handler in src/edgar_analyzer/extractors/.
     """
+
     FILE = "file"  # Local file (CSV, JSON, XML, etc.)
     URL = "url"  # Web resource (HTML, API endpoint)
     API = "api"  # REST API with parameters
@@ -48,6 +48,7 @@ class DataSourceType(str, Enum):
 
 class AuthType(str, Enum):
     """Authentication methods for data sources."""
+
     NONE = "none"  # No authentication
     API_KEY = "api_key"  # API key in header or parameter
     BEARER_TOKEN = "bearer"  # Bearer token authentication
@@ -57,6 +58,7 @@ class AuthType(str, Enum):
 
 class OutputFormat(str, Enum):
     """Supported output formats."""
+
     CSV = "csv"
     JSON = "json"
     EXCEL = "excel"
@@ -66,6 +68,7 @@ class OutputFormat(str, Enum):
 
 class ErrorStrategy(str, Enum):
     """Error handling strategies during extraction."""
+
     FAIL_FAST = "fail_fast"  # Stop on first error
     CONTINUE = "continue"  # Log errors and continue
     SKIP_INVALID = "skip_invalid"  # Skip invalid records
@@ -73,6 +76,7 @@ class ErrorStrategy(str, Enum):
 
 class FieldType(str, Enum):
     """Supported field data types for validation."""
+
     STRING = "str"
     INTEGER = "int"
     FLOAT = "float"
@@ -102,32 +106,23 @@ class AuthConfig(BaseModel):
         ...     param_name="appid"
         ... )
     """
-    type: AuthType = Field(
-        default=AuthType.NONE,
-        description="Authentication method"
-    )
+
+    type: AuthType = Field(default=AuthType.NONE, description="Authentication method")
     key: Optional[str] = Field(
-        None,
-        description="API key or token (use ${ENV_VAR} syntax for secrets)"
+        None, description="API key or token (use ${ENV_VAR} syntax for secrets)"
     )
     param_name: Optional[str] = Field(
-        None,
-        description="Parameter name for API key (e.g., 'appid', 'api_key')"
+        None, description="Parameter name for API key (e.g., 'appid', 'api_key')"
     )
     header_name: Optional[str] = Field(
-        None,
-        description="Header name for token (e.g., 'Authorization', 'X-API-Key')"
+        None, description="Header name for token (e.g., 'Authorization', 'X-API-Key')"
     )
-    username: Optional[str] = Field(
-        None,
-        description="Username for basic auth"
-    )
+    username: Optional[str] = Field(None, description="Username for basic auth")
     password: Optional[str] = Field(
-        None,
-        description="Password for basic auth (use ${ENV_VAR})"
+        None, description="Password for basic auth (use ${ENV_VAR})"
     )
 
-    @field_validator('key', 'password')
+    @field_validator("key", "password")
     @classmethod
     def validate_secrets(cls, v: Optional[str]) -> Optional[str]:
         """Warn if secrets are not using environment variables."""
@@ -155,24 +150,15 @@ class CacheConfig(BaseModel):
     Example:
         >>> cache = CacheConfig(enabled=True, ttl=3600, max_size_mb=100)
     """
-    enabled: bool = Field(
-        default=True,
-        description="Enable response caching"
-    )
-    ttl: int = Field(
-        default=3600,
-        description="Time-to-live in seconds (default: 1 hour)"
-    )
-    max_size_mb: Optional[int] = Field(
-        None,
-        description="Maximum cache size in MB"
-    )
-    cache_dir: str = Field(
-        default="data/cache",
-        description="Cache directory path"
-    )
 
-    @field_validator('ttl')
+    enabled: bool = Field(default=True, description="Enable response caching")
+    ttl: int = Field(
+        default=3600, description="Time-to-live in seconds (default: 1 hour)"
+    )
+    max_size_mb: Optional[int] = Field(None, description="Maximum cache size in MB")
+    cache_dir: str = Field(default="data/cache", description="Cache directory path")
+
+    @field_validator("ttl")
     @classmethod
     def validate_ttl(cls, v: int) -> int:
         """Ensure reasonable TTL values."""
@@ -200,16 +186,15 @@ class RateLimitConfig(BaseModel):
     Example:
         >>> rate_limit = RateLimitConfig(requests_per_second=1, burst_size=5)
     """
+
     requests_per_second: float = Field(
-        default=1.0,
-        description="Maximum requests per second"
+        default=1.0, description="Maximum requests per second"
     )
     burst_size: Optional[int] = Field(
-        None,
-        description="Burst allowance for request spikes"
+        None, description="Burst allowance for request spikes"
     )
 
-    @field_validator('requests_per_second')
+    @field_validator("requests_per_second")
     @classmethod
     def validate_rate(cls, v: float) -> float:
         """Ensure positive rate."""
@@ -243,66 +228,48 @@ class DataSourceConfig(BaseModel):
         ...     parameters={"units": "metric"}
         ... )
     """
-    type: DataSourceType = Field(
-        ...,
-        description="Data source type"
-    )
+
+    type: DataSourceType = Field(..., description="Data source type")
     name: str = Field(
-        ...,
-        description="Unique source name (used in references and logging)"
+        ..., description="Unique source name (used in references and logging)"
     )
     # Source location (one required based on type)
     endpoint: Optional[str] = Field(
-        None,
-        description="API endpoint URL (for API sources)"
+        None, description="API endpoint URL (for API sources)"
     )
-    url: Optional[str] = Field(
-        None,
-        description="Web URL (for URL sources)"
-    )
-    file_path: Optional[str] = Field(
-        None,
-        description="File path (for FILE sources)"
-    )
+    url: Optional[str] = Field(None, description="Web URL (for URL sources)")
+    file_path: Optional[str] = Field(None, description="File path (for FILE sources)")
     # Authentication
     auth: AuthConfig = Field(
         default_factory=lambda: AuthConfig(type=AuthType.NONE),
-        description="Authentication configuration"
+        description="Authentication configuration",
     )
     # Request parameters
     parameters: Dict[str, Any] = Field(
         default_factory=dict,
-        description="Query parameters or request options (supports ${VAR} templating)"
+        description="Query parameters or request options (supports ${VAR} templating)",
     )
     headers: Dict[str, str] = Field(
-        default_factory=dict,
-        description="Custom HTTP headers"
+        default_factory=dict, description="Custom HTTP headers"
     )
     # Performance and reliability
     cache: CacheConfig = Field(
-        default_factory=CacheConfig,
-        description="Caching configuration"
+        default_factory=CacheConfig, description="Caching configuration"
     )
     rate_limit: Optional[RateLimitConfig] = Field(
-        None,
-        description="Rate limiting configuration"
+        None, description="Rate limiting configuration"
     )
-    timeout: int = Field(
-        default=30,
-        description="Request timeout in seconds"
-    )
+    timeout: int = Field(default=30, description="Request timeout in seconds")
     max_retries: int = Field(
-        default=3,
-        description="Maximum retry attempts for failed requests"
+        default=3, description="Maximum retry attempts for failed requests"
     )
     # Source-specific options
     options: Dict[str, Any] = Field(
-        default_factory=dict,
-        description="Source-type-specific options"
+        default_factory=dict, description="Source-type-specific options"
     )
 
-    @model_validator(mode='after')
-    def validate_source_location(self) -> 'DataSourceConfig':
+    @model_validator(mode="after")
+    def validate_source_location(self) -> "DataSourceConfig":
         """Ensure appropriate location field is provided for source type."""
         if self.type == DataSourceType.API and not self.endpoint:
             raise ValueError("API sources require 'endpoint' field")
@@ -341,20 +308,18 @@ class ExampleConfig(BaseModel):
         ...     output={"temperature_c": 15.5, "conditions": "rain"}
         ... )
     """
+
     input: Dict[str, Any] = Field(
-        ...,
-        description="Example input data (raw API response, file content, etc.)"
+        ..., description="Example input data (raw API response, file content, etc.)"
     )
     output: Dict[str, Any] = Field(
-        ...,
-        description="Expected output structure after transformation"
+        ..., description="Expected output structure after transformation"
     )
     description: Optional[str] = Field(
-        None,
-        description="Optional description of what this example demonstrates"
+        None, description="Optional description of what this example demonstrates"
     )
 
-    @field_validator('input', 'output')
+    @field_validator("input", "output")
     @classmethod
     def validate_non_empty(cls, v: Dict[str, Any]) -> Dict[str, Any]:
         """Ensure examples are not empty."""
@@ -374,29 +339,18 @@ class FieldConstraint(BaseModel):
     Example:
         >>> constraint = FieldConstraint(min=0, max=100, pattern=r"^\\d+$")
     """
+
     min: Optional[Union[int, float]] = Field(
-        None,
-        description="Minimum value (numeric fields)"
+        None, description="Minimum value (numeric fields)"
     )
     max: Optional[Union[int, float]] = Field(
-        None,
-        description="Maximum value (numeric fields)"
+        None, description="Maximum value (numeric fields)"
     )
-    min_length: Optional[int] = Field(
-        None,
-        description="Minimum string length"
-    )
-    max_length: Optional[int] = Field(
-        None,
-        description="Maximum string length"
-    )
-    pattern: Optional[str] = Field(
-        None,
-        description="Regex pattern for validation"
-    )
+    min_length: Optional[int] = Field(None, description="Minimum string length")
+    max_length: Optional[int] = Field(None, description="Maximum string length")
+    pattern: Optional[str] = Field(None, description="Regex pattern for validation")
     allowed_values: Optional[List[Any]] = Field(
-        None,
-        description="List of allowed values (enum-like validation)"
+        None, description="List of allowed values (enum-like validation)"
     )
 
 
@@ -412,21 +366,18 @@ class ValidationConfig(BaseModel):
         ...     constraints={"temperature": FieldConstraint(min=-50, max=60)}
         ... )
     """
+
     required_fields: List[str] = Field(
-        default_factory=list,
-        description="List of required output fields"
+        default_factory=list, description="List of required output fields"
     )
     field_types: Dict[str, FieldType] = Field(
-        default_factory=dict,
-        description="Expected type for each field"
+        default_factory=dict, description="Expected type for each field"
     )
     constraints: Dict[str, FieldConstraint] = Field(
-        default_factory=dict,
-        description="Validation constraints per field"
+        default_factory=dict, description="Validation constraints per field"
     )
     allow_extra_fields: bool = Field(
-        default=True,
-        description="Allow fields not defined in validation schema"
+        default=True, description="Allow fields not defined in validation schema"
     )
 
 
@@ -447,25 +398,18 @@ class OutputDestinationConfig(BaseModel):
         ...     include_timestamp=True
         ... )
     """
-    type: OutputFormat = Field(
-        ...,
-        description="Output format"
-    )
-    path: str = Field(
-        ...,
-        description="Output file path or database connection string"
-    )
+
+    type: OutputFormat = Field(..., description="Output format")
+    path: str = Field(..., description="Output file path or database connection string")
     include_timestamp: bool = Field(
-        default=False,
-        description="Include timestamp in filename"
+        default=False, description="Include timestamp in filename"
     )
     pretty_print: bool = Field(
-        default=False,
-        description="Pretty-print JSON output (JSON format only)"
+        default=False, description="Pretty-print JSON output (JSON format only)"
     )
     options: Dict[str, Any] = Field(
         default_factory=dict,
-        description="Format-specific options (e.g., CSV delimiter, Excel sheet name)"
+        description="Format-specific options (e.g., CSV delimiter, Excel sheet name)",
     )
 
 
@@ -480,14 +424,16 @@ class OutputConfig(BaseModel):
             ]
         ... )
     """
+
     formats: List[OutputDestinationConfig] = Field(
-        default_factory=list,
-        description="List of output destinations"
+        default_factory=list, description="List of output destinations"
     )
 
-    @field_validator('formats')
+    @field_validator("formats")
     @classmethod
-    def validate_at_least_one_format(cls, v: List[OutputDestinationConfig]) -> List[OutputDestinationConfig]:
+    def validate_at_least_one_format(
+        cls, v: List[OutputDestinationConfig]
+    ) -> List[OutputDestinationConfig]:
         """Ensure at least one output format is configured."""
         if not v:
             raise ValueError("At least one output format must be configured")
@@ -517,36 +463,31 @@ class RuntimeConfig(BaseModel):
         ...     error_strategy=ErrorStrategy.CONTINUE
         ... )
     """
+
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
-        default="INFO",
-        description="Logging level"
+        default="INFO", description="Logging level"
     )
     parallel: bool = Field(
-        default=False,
-        description="Enable parallel processing for multiple records"
+        default=False, description="Enable parallel processing for multiple records"
     )
     max_workers: int = Field(
-        default=4,
-        description="Maximum worker threads/processes for parallel execution"
+        default=4, description="Maximum worker threads/processes for parallel execution"
     )
     error_strategy: ErrorStrategy = Field(
         default=ErrorStrategy.CONTINUE,
-        description="How to handle errors during extraction"
+        description="How to handle errors during extraction",
     )
     checkpoint_enabled: bool = Field(
-        default=False,
-        description="Enable checkpointing for resumable extraction"
+        default=False, description="Enable checkpointing for resumable extraction"
     )
     checkpoint_interval: int = Field(
-        default=10,
-        description="Save checkpoint every N records"
+        default=10, description="Save checkpoint every N records"
     )
     checkpoint_dir: str = Field(
-        default="data/checkpoints",
-        description="Directory for checkpoint files"
+        default="data/checkpoints", description="Directory for checkpoint files"
     )
 
-    @field_validator('max_workers')
+    @field_validator("max_workers")
     @classmethod
     def validate_max_workers(cls, v: int) -> int:
         """Ensure reasonable worker count."""
@@ -575,43 +516,33 @@ class ProjectMetadata(BaseModel):
         ...     tags=["weather", "api"]
         ... )
     """
-    name: str = Field(
-        ...,
-        description="Project name (lowercase, underscores allowed)"
-    )
-    description: str = Field(
-        default="",
-        description="Project description"
-    )
+
+    name: str = Field(..., description="Project name (lowercase, underscores allowed)")
+    description: str = Field(default="", description="Project description")
     version: str = Field(
-        default="1.0.0",
-        description="Project version (semver recommended)"
+        default="1.0.0", description="Project version (semver recommended)"
     )
-    author: Optional[str] = Field(
-        None,
-        description="Author name or organization"
-    )
+    author: Optional[str] = Field(None, description="Author name or organization")
     created: datetime = Field(
-        default_factory=datetime.now,
-        description="Project creation timestamp"
+        default_factory=datetime.now, description="Project creation timestamp"
     )
     updated: datetime = Field(
-        default_factory=datetime.now,
-        description="Last update timestamp"
+        default_factory=datetime.now, description="Last update timestamp"
     )
     tags: List[str] = Field(
-        default_factory=list,
-        description="Tags for categorization and search"
+        default_factory=list, description="Tags for categorization and search"
     )
 
-    @field_validator('name')
+    @field_validator("name")
     @classmethod
     def validate_name(cls, v: str) -> str:
         """Ensure project name is valid identifier."""
         if not v:
             raise ValueError("Project name cannot be empty")
-        if not v.replace('_', '').replace('-', '').isalnum():
-            raise ValueError("Project name must be alphanumeric (underscores/hyphens allowed)")
+        if not v.replace("_", "").replace("-", "").isalnum():
+            raise ValueError(
+                "Project name must be alphanumeric (underscores/hyphens allowed)"
+            )
         return v.lower()
 
 
@@ -642,55 +573,51 @@ class ProjectConfig(BaseModel):
         ... )
         >>> config.validate()
     """
-    project: ProjectMetadata = Field(
-        ...,
-        description="Project metadata"
-    )
+
+    project: ProjectMetadata = Field(..., description="Project metadata")
     data_sources: List[DataSourceConfig] = Field(
-        default_factory=list,
-        description="List of data sources to extract from"
+        default_factory=list, description="List of data sources to extract from"
     )
     examples: List[ExampleConfig] = Field(
         default_factory=list,
-        description="Example input/output pairs for transformation learning"
+        description="Example input/output pairs for transformation learning",
     )
     validation: ValidationConfig = Field(
-        default_factory=ValidationConfig,
-        description="Data validation rules"
+        default_factory=ValidationConfig, description="Data validation rules"
     )
-    output: OutputConfig = Field(
-        ...,
-        description="Output configuration"
-    )
+    output: OutputConfig = Field(..., description="Output configuration")
     runtime: RuntimeConfig = Field(
-        default_factory=RuntimeConfig,
-        description="Runtime execution configuration"
+        default_factory=RuntimeConfig, description="Runtime execution configuration"
     )
     confidence_threshold: float = Field(
         default=0.7,
         ge=0.0,
         le=1.0,
-        description="Minimum confidence threshold for pattern detection (0.0-1.0)"
+        description="Minimum confidence threshold for pattern detection (0.0-1.0)",
     )
 
-    @field_validator('data_sources')
+    @field_validator("data_sources")
     @classmethod
-    def validate_at_least_one_source(cls, v: List[DataSourceConfig]) -> List[DataSourceConfig]:
+    def validate_at_least_one_source(
+        cls, v: List[DataSourceConfig]
+    ) -> List[DataSourceConfig]:
         """Ensure at least one data source is configured."""
         if not v:
             raise ValueError("At least one data source must be configured")
         return v
 
-    @field_validator('data_sources')
+    @field_validator("data_sources")
     @classmethod
-    def validate_unique_source_names(cls, v: List[DataSourceConfig]) -> List[DataSourceConfig]:
+    def validate_unique_source_names(
+        cls, v: List[DataSourceConfig]
+    ) -> List[DataSourceConfig]:
         """Ensure data source names are unique."""
         names = [source.name for source in v]
         if len(names) != len(set(names)):
             raise ValueError("Data source names must be unique")
         return v
 
-    @field_validator('examples')
+    @field_validator("examples")
     @classmethod
     def validate_examples_provided(cls, v: List[ExampleConfig]) -> List[ExampleConfig]:
         """Recommend providing examples for better transformation quality."""
@@ -719,7 +646,7 @@ class ProjectConfig(BaseModel):
         if not path.exists():
             raise FileNotFoundError(f"Configuration file not found: {path}")
 
-        with open(path, 'r') as f:
+        with open(path, "r") as f:
             data = yaml.safe_load(f)
 
         return cls(**data)
@@ -734,14 +661,9 @@ class ProjectConfig(BaseModel):
             >>> config.to_yaml(Path("project.yaml"))
         """
         # Use mode='json' to serialize enums as strings
-        data = self.model_dump(mode='json', exclude_none=True)
-        with open(path, 'w') as f:
-            yaml.dump(
-                data,
-                f,
-                default_flow_style=False,
-                sort_keys=False
-            )
+        data = self.model_dump(mode="json", exclude_none=True)
+        with open(path, "w") as f:
+            yaml.dump(data, f, default_flow_style=False, sort_keys=False)
 
     def validate_comprehensive(self) -> Dict[str, List[str]]:
         """Perform comprehensive validation beyond Pydantic model validation.
@@ -760,23 +682,19 @@ class ProjectConfig(BaseModel):
             >>> if results['errors']:
             ...     print("Fix these errors:", results['errors'])
         """
-        results = {
-            'errors': [],
-            'warnings': [],
-            'recommendations': []
-        }
+        results = {"errors": [], "warnings": [], "recommendations": []}
 
         # Check for secrets in plaintext
         for source in self.data_sources:
-            if source.auth.key and not source.auth.key.startswith('${'):
-                results['warnings'].append(
+            if source.auth.key and not source.auth.key.startswith("${"):
+                results["warnings"].append(
                     f"Source '{source.name}' has plaintext API key. "
                     f"Use environment variable syntax: ${{VAR_NAME}}"
                 )
 
         # Recommend examples for better quality
         if len(self.examples) < 2:
-            results['recommendations'].append(
+            results["recommendations"].append(
                 "Provide at least 2-3 examples for better transformation quality"
             )
 
@@ -788,13 +706,13 @@ class ProjectConfig(BaseModel):
 
             missing = set(self.validation.required_fields) - example_fields
             if missing:
-                results['warnings'].append(
+                results["warnings"].append(
                     f"Required fields missing from examples: {missing}"
                 )
 
         # Check parallel processing with checkpoint
         if self.runtime.parallel and not self.runtime.checkpoint_enabled:
-            results['recommendations'].append(
+            results["recommendations"].append(
                 "Consider enabling checkpointing for parallel processing "
                 "to recover from failures"
             )

@@ -94,7 +94,7 @@ async def test_empty_conversation_compaction():
             user_input=f"Query {i}",
             controller_response=f"Response {i}",
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
     result = await memory.compact_memory()
@@ -126,6 +126,7 @@ async def test_malformed_summary_response():
     async def mock_llm_factory(response_text):
         async def mock_llm(messages):
             return response_text
+
         return mock_llm
 
     passed = 0
@@ -170,10 +171,7 @@ async def test_very_long_exchange():
     async def mock_llm(messages):
         return '{"summary": "Long exchange test", "key_facts": ["Long content handled"], "decisions_made": [], "entities": {}, "unresolved_questions": [], "conversation_flow": []}'
 
-    memory = SimpleChatbotMemory(
-        token_threshold=5000,
-        llm_client=mock_llm
-    )
+    memory = SimpleChatbotMemory(token_threshold=5000, llm_client=mock_llm)
 
     print("Adding very long exchange...")
     # Create an exchange with ~10k tokens
@@ -184,7 +182,7 @@ async def test_very_long_exchange():
         user_input=very_long_input,
         controller_response=very_long_response,
         context_used=[],
-        scripts_executed=[]
+        scripts_executed=[],
     )
 
     tokens = memory.get_token_count()
@@ -196,7 +194,7 @@ async def test_very_long_exchange():
             user_input=f"Follow-up {i}",
             controller_response=f"Response {i}" * 50,
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
     tokens_before = memory.get_token_count()
@@ -232,7 +230,7 @@ async def test_rapid_compaction_cycles():
     memory = SimpleChatbotMemory(
         token_threshold=1500,  # Very low threshold
         recent_keep_count=5,
-        llm_client=mock_llm
+        llm_client=mock_llm,
     )
 
     print("Triggering 10 rapid compaction cycles...")
@@ -246,7 +244,7 @@ async def test_rapid_compaction_cycles():
                 user_input=f"Cycle {cycle} Query {i} " * 10,
                 controller_response=f"Cycle {cycle} Response {i} " * 20,
                 context_used=[],
-                scripts_executed=[]
+                scripts_executed=[],
             )
 
         # Compact if needed
@@ -328,10 +326,7 @@ async def test_concurrent_access():
         await asyncio.sleep(0.01)  # Simulate network delay
         return '{"summary": "Concurrent test", "key_facts": [], "decisions_made": [], "entities": {}, "unresolved_questions": [], "conversation_flow": []}'
 
-    memory = SimpleChatbotMemory(
-        token_threshold=3000,
-        llm_client=mock_llm
-    )
+    memory = SimpleChatbotMemory(token_threshold=3000, llm_client=mock_llm)
 
     print("Testing concurrent exchange additions...")
 
@@ -342,7 +337,7 @@ async def test_concurrent_access():
                 user_input=f"Batch {batch_id} Query {i}",
                 controller_response=f"Batch {batch_id} Response {i}" * 20,
                 context_used=[],
-                scripts_executed=[]
+                scripts_executed=[],
             )
 
     # Run 5 concurrent tasks

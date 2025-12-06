@@ -7,13 +7,14 @@ with the interactive session for ad-hoc file management tasks.
 
 import asyncio
 import json
-import pytest
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from edgar_analyzer.interactive.session import InteractiveExtractionSession
-from cli_chatbot.core.scripting_engine import DynamicScriptingEngine
+import pytest
+
 from cli_chatbot.core.interfaces import ScriptResult
+from cli_chatbot.core.scripting_engine import DynamicScriptingEngine
+from edgar_analyzer.interactive.session import InteractiveExtractionSession
 
 
 @pytest.fixture
@@ -26,8 +27,7 @@ def temp_test_dir(tmp_path):
 def session(temp_test_dir):
     """Create test session instance."""
     session = InteractiveExtractionSession(
-        project_path=temp_test_dir,
-        test_mode=True  # Disable interactive prompts
+        project_path=temp_test_dir, test_mode=True  # Disable interactive prompts
     )
     return session
 
@@ -37,7 +37,7 @@ class TestScriptingEngineInitialization:
 
     def test_scripting_engine_exists(self, session):
         """Verify scripting engine is initialized."""
-        assert hasattr(session, 'scripting_engine')
+        assert hasattr(session, "scripting_engine")
         assert session.scripting_engine is not None
         assert isinstance(session.scripting_engine, DynamicScriptingEngine)
 
@@ -46,11 +46,11 @@ class TestScriptingEngineInitialization:
         engine = session.scripting_engine
 
         # Check allowed imports include file operation modules
-        assert 'os' in engine.allowed_imports
-        assert 'pathlib' in engine.allowed_imports
-        assert 'shutil' in engine.allowed_imports
-        assert 'zipfile' in engine.allowed_imports
-        assert 'glob' in engine.allowed_imports
+        assert "os" in engine.allowed_imports
+        assert "pathlib" in engine.allowed_imports
+        assert "shutil" in engine.allowed_imports
+        assert "zipfile" in engine.allowed_imports
+        assert "glob" in engine.allowed_imports
 
         # Check execution settings
         assert engine.max_execution_time == 30.0
@@ -84,10 +84,12 @@ The script creates a project directory.
             output="",
             error=None,
             execution_time=0.1,
-            side_effects=[]
+            side_effects=[],
         )
 
-        with patch.object(session.scripting_engine, 'execute_script', new_callable=AsyncMock) as mock_exec:
+        with patch.object(
+            session.scripting_engine, "execute_script", new_callable=AsyncMock
+        ) as mock_exec:
             mock_exec.return_value = mock_result
 
             await session._execute_scripts_from_response(response)
@@ -95,7 +97,7 @@ The script creates a project directory.
             # Verify script was executed
             assert mock_exec.called
             call_args = mock_exec.call_args
-            assert 'project_dir = Path("test_project")' in call_args[1]['script_code']
+            assert 'project_dir = Path("test_project")' in call_args[1]["script_code"]
 
     @pytest.mark.asyncio
     async def test_extract_multiple_scripts(self, session):
@@ -125,10 +127,12 @@ Done!
             output="",
             error=None,
             execution_time=0.1,
-            side_effects=[]
+            side_effects=[],
         )
 
-        with patch.object(session.scripting_engine, 'execute_script', new_callable=AsyncMock) as mock_exec:
+        with patch.object(
+            session.scripting_engine, "execute_script", new_callable=AsyncMock
+        ) as mock_exec:
             mock_exec.return_value = mock_result
 
             await session._execute_scripts_from_response(response)
@@ -141,7 +145,9 @@ Done!
         """Test handling response with no scripts."""
         response = "This is a normal response with no scripts."
 
-        with patch.object(session.scripting_engine, 'execute_script', new_callable=AsyncMock) as mock_exec:
+        with patch.object(
+            session.scripting_engine, "execute_script", new_callable=AsyncMock
+        ) as mock_exec:
             await session._execute_scripts_from_response(response)
 
             # Verify no execution attempted
@@ -164,9 +170,7 @@ result = f"Created directory at {{test_dir}}"
 """
 
         result = await session.scripting_engine.execute_script(
-            script_code=script_code,
-            context={},
-            safety_checks=True
+            script_code=script_code, context={}, safety_checks=True
         )
 
         # Verify execution succeeded
@@ -191,15 +195,10 @@ output_dir.mkdir(exist_ok=True)
 result = f"Created output at {output_dir}"
 """
 
-        context = {
-            "project_path": str(temp_test_dir),
-            "session_id": "test-session-123"
-        }
+        context = {"project_path": str(temp_test_dir), "session_id": "test-session-123"}
 
         result = await session.scripting_engine.execute_script(
-            script_code=script_code,
-            context=context,
-            safety_checks=True
+            script_code=script_code, context=context, safety_checks=True
         )
 
         # Verify execution succeeded with context
@@ -219,9 +218,7 @@ result = "Should not reach here"
 """
 
         result = await session.scripting_engine.execute_script(
-            script_code=script_code,
-            context={},
-            safety_checks=True
+            script_code=script_code, context={}, safety_checks=True
         )
 
         # Verify execution failed
@@ -239,9 +236,7 @@ result = eval("1 + 1")
 """
 
         result = await session.scripting_engine.execute_script(
-            script_code=script_code,
-            context={},
-            safety_checks=True
+            script_code=script_code, context={}, safety_checks=True
         )
 
         # Verify execution was blocked
@@ -275,7 +270,9 @@ result = f"Created project at {{project_dir}}"
 Your project is ready!
 """
 
-        with patch.object(session.openrouter_client, 'chat_completion', new_callable=AsyncMock) as mock_chat:
+        with patch.object(
+            session.openrouter_client, "chat_completion", new_callable=AsyncMock
+        ) as mock_chat:
             mock_chat.return_value = mock_response
 
             # Execute chat command
@@ -298,18 +295,20 @@ class TestSystemPrompt:
     async def test_system_prompt_has_file_operations(self, session):
         """Verify system prompt includes file operation capabilities."""
         # Trigger chat to access system prompt construction
-        with patch.object(session.openrouter_client, 'chat_completion', new_callable=AsyncMock) as mock_chat:
+        with patch.object(
+            session.openrouter_client, "chat_completion", new_callable=AsyncMock
+        ) as mock_chat:
             mock_chat.return_value = "Test response"
 
             await session.cmd_chat("test message")
 
             # Get the system prompt from the call
             call_args = mock_chat.call_args
-            messages = call_args[1]['messages']
-            system_message = next((m for m in messages if m['role'] == 'system'), None)
+            messages = call_args[1]["messages"]
+            system_message = next((m for m in messages if m["role"] == "system"), None)
 
             assert system_message is not None
-            system_prompt = system_message['content']
+            system_prompt = system_message["content"]
 
             # Verify file operation capabilities are mentioned
             assert "File Operations" in system_prompt
@@ -323,10 +322,7 @@ class TestSystemPrompt:
 async def test_end_to_end_file_operation(tmp_path):
     """End-to-end test of file operation via chat."""
     # Create session
-    session = InteractiveExtractionSession(
-        project_path=tmp_path,
-        test_mode=True
-    )
+    session = InteractiveExtractionSession(project_path=tmp_path, test_mode=True)
 
     # Create a test file to copy
     source_file = tmp_path / "test.txt"
@@ -350,7 +346,9 @@ result = f"Copied {{source.name}} to {{dest}}"
 File copied successfully!
 """
 
-    with patch.object(session.openrouter_client, 'chat_completion', new_callable=AsyncMock) as mock_chat:
+    with patch.object(
+        session.openrouter_client, "chat_completion", new_callable=AsyncMock
+    ) as mock_chat:
         mock_chat.return_value = mock_response
 
         # Execute chat command

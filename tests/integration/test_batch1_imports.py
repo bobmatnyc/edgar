@@ -10,6 +10,8 @@ import warnings
 def test_platform_imports():
     """Verify all platform imports work."""
     # File data sources
+    # Base classes
+    from extract_transform_platform.core import BaseDataSource, IDataSource
     from extract_transform_platform.data_sources.file import (
         ExcelDataSource,
         FileDataSource,
@@ -23,19 +25,18 @@ def test_platform_imports():
         URLDataSource,
     )
 
-    # Base classes
-    from extract_transform_platform.core import BaseDataSource, IDataSource
-
-    assert all([
-        FileDataSource,
-        ExcelDataSource,
-        PDFDataSource,
-        APIDataSource,
-        URLDataSource,
-        JinaDataSource,
-        BaseDataSource,
-        IDataSource,
-    ])
+    assert all(
+        [
+            FileDataSource,
+            ExcelDataSource,
+            PDFDataSource,
+            APIDataSource,
+            URLDataSource,
+            JinaDataSource,
+            BaseDataSource,
+            IDataSource,
+        ]
+    )
     print("✅ All platform imports successful")
 
 
@@ -56,20 +57,26 @@ def test_edgar_wrapper_imports():
         )
 
         # Verify imports worked
-        assert all([
-            FileDataSource,
-            ExcelDataSource,
-            PDFDataSource,
-            APIDataSource,
-            URLDataSource,
-            JinaDataSource,
-            BaseDataSource,
-            IDataSource,
-        ])
+        assert all(
+            [
+                FileDataSource,
+                ExcelDataSource,
+                PDFDataSource,
+                APIDataSource,
+                URLDataSource,
+                JinaDataSource,
+                BaseDataSource,
+                IDataSource,
+            ]
+        )
 
         # Verify we got deprecation warnings
-        deprecation_warnings = [warning for warning in w if issubclass(warning.category, DeprecationWarning)]
-        print(f"✅ All EDGAR wrapper imports successful ({len(deprecation_warnings)} deprecation warnings)")
+        deprecation_warnings = [
+            warning for warning in w if issubclass(warning.category, DeprecationWarning)
+        ]
+        print(
+            f"✅ All EDGAR wrapper imports successful ({len(deprecation_warnings)} deprecation warnings)"
+        )
 
         for warning in deprecation_warnings[:3]:  # Show first 3
             print(f"   ⚠️  {warning.message}")

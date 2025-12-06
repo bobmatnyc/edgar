@@ -46,7 +46,7 @@ class TestConfidenceThresholdPrompt:
                 target_path="output1",
                 transformation="Perfect confidence",
                 source_type=FieldTypeEnum.STRING,
-                target_type=FieldTypeEnum.STRING
+                target_type=FieldTypeEnum.STRING,
             ),
             Pattern(
                 type=PatternType.FIELD_EXTRACTION,
@@ -55,7 +55,7 @@ class TestConfidenceThresholdPrompt:
                 target_path="output2",
                 transformation="Very high confidence",
                 source_type=FieldTypeEnum.FLOAT,
-                target_type=FieldTypeEnum.FLOAT
+                target_type=FieldTypeEnum.FLOAT,
             ),
             Pattern(
                 type=PatternType.ARRAY_FIRST,
@@ -64,7 +64,7 @@ class TestConfidenceThresholdPrompt:
                 target_path="output3",
                 transformation="Medium-high confidence",
                 source_type=FieldTypeEnum.STRING,
-                target_type=FieldTypeEnum.STRING
+                target_type=FieldTypeEnum.STRING,
             ),
             Pattern(
                 type=PatternType.CALCULATION,
@@ -73,7 +73,7 @@ class TestConfidenceThresholdPrompt:
                 target_path="result",
                 transformation="Low confidence",
                 source_type=FieldTypeEnum.FLOAT,
-                target_type=FieldTypeEnum.FLOAT
+                target_type=FieldTypeEnum.FLOAT,
             ),
         ]
 
@@ -81,18 +81,26 @@ class TestConfidenceThresholdPrompt:
     def sample_parsed_examples(self, sample_patterns):
         """Create ParsedExamples with sample patterns."""
         return ParsedExamples(
-            input_schema=Schema(fields=[
-                SchemaField(path="field1", field_type=FieldTypeEnum.STRING),
-                SchemaField(path="main.field2", field_type=FieldTypeEnum.FLOAT, nested_level=1),
-            ]),
-            output_schema=Schema(fields=[
-                SchemaField(path="output1", field_type=FieldTypeEnum.STRING),
-                SchemaField(path="output2", field_type=FieldTypeEnum.FLOAT),
-            ]),
+            input_schema=Schema(
+                fields=[
+                    SchemaField(path="field1", field_type=FieldTypeEnum.STRING),
+                    SchemaField(
+                        path="main.field2",
+                        field_type=FieldTypeEnum.FLOAT,
+                        nested_level=1,
+                    ),
+                ]
+            ),
+            output_schema=Schema(
+                fields=[
+                    SchemaField(path="output1", field_type=FieldTypeEnum.STRING),
+                    SchemaField(path="output2", field_type=FieldTypeEnum.FLOAT),
+                ]
+            ),
             patterns=sample_patterns,
             schema_differences=[],
             num_examples=3,
-            warnings=[]
+            warnings=[],
         )
 
     # ========================================================================
@@ -100,7 +108,9 @@ class TestConfidenceThresholdPrompt:
     # ========================================================================
 
     @patch("edgar_analyzer.cli.prompts.confidence_threshold.Prompt.ask")
-    def test_preset_selection_conservative(self, mock_ask, prompt, sample_parsed_examples):
+    def test_preset_selection_conservative(
+        self, mock_ask, prompt, sample_parsed_examples
+    ):
         """Test selecting conservative preset (option 1)."""
         mock_ask.return_value = "1"
 
@@ -120,7 +130,9 @@ class TestConfidenceThresholdPrompt:
         mock_ask.assert_called_once()
 
     @patch("edgar_analyzer.cli.prompts.confidence_threshold.Prompt.ask")
-    def test_preset_selection_aggressive(self, mock_ask, prompt, sample_parsed_examples):
+    def test_preset_selection_aggressive(
+        self, mock_ask, prompt, sample_parsed_examples
+    ):
         """Test selecting aggressive preset (option 3)."""
         mock_ask.return_value = "3"
 
@@ -134,7 +146,9 @@ class TestConfidenceThresholdPrompt:
         """Test default preset is balanced (0.7)."""
         mock_ask.return_value = "2"
 
-        threshold = prompt.prompt_for_threshold(sample_parsed_examples, default="balanced")
+        threshold = prompt.prompt_for_threshold(
+            sample_parsed_examples, default="balanced"
+        )
 
         assert threshold == 0.7
 
@@ -154,7 +168,9 @@ class TestConfidenceThresholdPrompt:
         assert mock_ask.call_count == 2
 
     @patch("edgar_analyzer.cli.prompts.confidence_threshold.Prompt.ask")
-    def test_custom_threshold_boundary_low(self, mock_ask, prompt, sample_parsed_examples):
+    def test_custom_threshold_boundary_low(
+        self, mock_ask, prompt, sample_parsed_examples
+    ):
         """Test custom threshold at lower boundary (0.0)."""
         mock_ask.side_effect = ["4", "0.0"]
 
@@ -163,7 +179,9 @@ class TestConfidenceThresholdPrompt:
         assert threshold == 0.0
 
     @patch("edgar_analyzer.cli.prompts.confidence_threshold.Prompt.ask")
-    def test_custom_threshold_boundary_high(self, mock_ask, prompt, sample_parsed_examples):
+    def test_custom_threshold_boundary_high(
+        self, mock_ask, prompt, sample_parsed_examples
+    ):
         """Test custom threshold at upper boundary (1.0)."""
         mock_ask.side_effect = ["4", "1.0"]
 
@@ -173,7 +191,9 @@ class TestConfidenceThresholdPrompt:
 
     @patch("edgar_analyzer.cli.prompts.confidence_threshold.Prompt.ask")
     @patch("edgar_analyzer.cli.prompts.confidence_threshold.console")
-    def test_custom_threshold_invalid_then_valid(self, mock_console, mock_ask, prompt, sample_parsed_examples):
+    def test_custom_threshold_invalid_then_valid(
+        self, mock_console, mock_ask, prompt, sample_parsed_examples
+    ):
         """Test custom threshold with invalid then valid input."""
         # First call: "4" (custom)
         # Second call: "1.5" (invalid, > 1.0)

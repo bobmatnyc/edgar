@@ -17,11 +17,11 @@ Usage:
 """
 
 import os
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
+from pydantic import BaseModel, Field, field_validator
 
 
 class AIConfig(BaseModel):
@@ -35,47 +35,36 @@ class AIConfig(BaseModel):
         >>> config = AIConfig(api_key="sk-or-v1-...", model="anthropic/claude-sonnet-4.5")
     """
 
-    api_key: str = Field(
-        ...,
-        description="OpenRouter API key"
-    )
+    api_key: str = Field(..., description="OpenRouter API key")
 
     model: str = Field(
-        default="anthropic/claude-sonnet-4.5",
-        description="Default model identifier"
+        default="anthropic/claude-sonnet-4.5", description="Default model identifier"
     )
 
     base_url: str = Field(
-        default="https://openrouter.ai/api/v1",
-        description="OpenRouter API base URL"
+        default="https://openrouter.ai/api/v1", description="OpenRouter API base URL"
     )
 
     timeout: int = Field(
-        default=120,
-        description="Request timeout in seconds",
-        ge=1,
-        le=600
+        default=120, description="Request timeout in seconds", ge=1, le=600
     )
 
     max_retries: int = Field(
-        default=3,
-        description="Maximum retry attempts",
-        ge=0,
-        le=10
+        default=3, description="Maximum retry attempts", ge=0, le=10
     )
 
     temperature: float = Field(
         default=0.3,
         description="Default sampling temperature for pattern detection",
         ge=0.0,
-        le=2.0
+        le=2.0,
     )
 
     confidence_threshold: Optional[float] = Field(
         default=None,
         description="Minimum confidence threshold for pattern detection (0.0-1.0)",
         ge=0.0,
-        le=1.0
+        le=1.0,
     )
 
     @field_validator("api_key")
@@ -88,9 +77,7 @@ class AIConfig(BaseModel):
 
     @classmethod
     def from_env(
-        cls,
-        env_file: Optional[Path] = None,
-        require_api_key: bool = True
+        cls, env_file: Optional[Path] = None, require_api_key: bool = True
     ) -> "AIConfig":
         """
         Load configuration from environment variables.
@@ -144,9 +131,11 @@ class AIConfig(BaseModel):
             timeout=int(os.getenv("OPENROUTER_TIMEOUT", "120")),
             max_retries=int(os.getenv("OPENROUTER_MAX_RETRIES", "3")),
             temperature=float(os.getenv("AI_TEMPERATURE", "0.3")),
-            confidence_threshold=float(os.getenv("AI_CONFIDENCE_THRESHOLD"))
-            if os.getenv("AI_CONFIDENCE_THRESHOLD")
-            else None,
+            confidence_threshold=(
+                float(os.getenv("AI_CONFIDENCE_THRESHOLD"))
+                if os.getenv("AI_CONFIDENCE_THRESHOLD")
+                else None
+            ),
         )
 
     def to_client_kwargs(self) -> dict:

@@ -35,7 +35,6 @@ import pytest
 
 from extract_transform_platform.data_sources.web.jina_source import JinaDataSource
 
-
 # ============================================================================
 # Test Fixtures
 # ============================================================================
@@ -362,7 +361,10 @@ class TestSuccessfulJinaFetches:
             result = await jina_source.fetch(url=target_url)
 
             assert result is not None
-            assert result["content"] == "# JSON Format Content\n\nThis is content from JSON response."
+            assert (
+                result["content"]
+                == "# JSON Format Content\n\nThis is content from JSON response."
+            )
             assert result["title"] == "JSON Format Title"
             assert result["url"] == target_url
             assert result["metadata"]["description"] == "Test description"
@@ -584,9 +586,7 @@ class TestHTTPErrorHandling:
             assert exc_info.value.response.status_code == 429
 
     @pytest.mark.asyncio
-    async def test_500_jina_api_error(
-        self, jina_source, target_url, mock_response_500
-    ):
+    async def test_500_jina_api_error(self, jina_source, target_url, mock_response_500):
         """Test 500 Internal Server Error (Jina API failure)."""
         with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
             mock_get.return_value = mock_response_500
@@ -684,9 +684,7 @@ class TestCacheIntegration:
             assert mock_get.call_count == 1
 
     @pytest.mark.asyncio
-    async def test_cache_miss_calls_api(
-        self, jina_source, mock_markdown_response
-    ):
+    async def test_cache_miss_calls_api(self, jina_source, mock_markdown_response):
         """Test cache miss for different URLs calls API."""
         with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
             mock_get.return_value = mock_markdown_response

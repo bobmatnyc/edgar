@@ -56,7 +56,7 @@ class CacheService(ICacheService):
             if not cache_file.exists():
                 return None
 
-            with open(cache_file, 'r', encoding='utf-8') as f:
+            with open(cache_file, "r", encoding="utf-8") as f:
                 cache_data = json.load(f)
 
             # Check expiration
@@ -83,11 +83,11 @@ class CacheService(ICacheService):
         cache_data = {
             "data": value,
             "timestamp": time.time(),
-            "ttl": ttl or self._cache_config["ttl_default"]
+            "ttl": ttl or self._cache_config["ttl_default"],
         }
 
         try:
-            with open(cache_file, 'w', encoding='utf-8') as f:
+            with open(cache_file, "w", encoding="utf-8") as f:
                 json.dump(cache_data, f, indent=2, default=str)
 
             logger.debug("Cache set", key=key, ttl=cache_data["ttl"])
@@ -127,7 +127,7 @@ class CacheService(ICacheService):
         try:
             for cache_file in self._cache_dir.glob("*.json"):
                 try:
-                    with open(cache_file, 'r', encoding='utf-8') as f:
+                    with open(cache_file, "r", encoding="utf-8") as f:
                         cache_data = json.load(f)
 
                     if self._is_expired(cache_data):

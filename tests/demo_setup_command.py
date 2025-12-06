@@ -17,18 +17,19 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from edgar_analyzer.cli.commands.setup import (
-    _read_env_file,
-    _display_config_status,
-    _validate_edgar_user_agent,
-    _validate_openrouter,
-    _validate_jina,
-    setup,
-)
 from click.testing import CliRunner
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+
+from edgar_analyzer.cli.commands.setup import (
+    _display_config_status,
+    _read_env_file,
+    _validate_edgar_user_agent,
+    _validate_jina,
+    _validate_openrouter,
+    setup,
+)
 
 console = Console()
 
@@ -133,9 +134,7 @@ def demo_interactive_mode():
         "  • Rich UI with tables and colors\n"
     )
 
-    console.print(
-        "\n[green]To launch wizard:[/green] python -m edgar_analyzer setup\n"
-    )
+    console.print("\n[green]To launch wizard:[/green] python -m edgar_analyzer setup\n")
 
 
 def demo_help():

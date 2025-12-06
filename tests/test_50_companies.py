@@ -7,14 +7,14 @@ the self-improving code pattern and LLM QA capabilities at scale.
 """
 
 import asyncio
-import sys
-import os
 import json
+import os
+import sys
 import time
 from datetime import datetime
 
 # Add the src directory to the path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 from edgar_analyzer.services.llm_service import LLMService
 from self_improving_code.examples.edgar_extraction import EdgarExtractionExample
@@ -70,12 +70,13 @@ FORTUNE_50_COMPANIES = [
     ("0000021665", "Analog Devices Inc."),
     ("0000022356", "Anthem Inc."),
     ("0000024545", "Apache Corporation"),
-    ("0000027904", "Applied Materials Inc.")
+    ("0000027904", "Applied Materials Inc."),
 ]
+
 
 async def test_50_companies():
     """Test the complete system with 50 companies."""
-    
+
     print("🚀 Testing 50 Companies - Executive Compensation Extraction")
     print("=" * 80)
     print("COMPREHENSIVE SYSTEM TEST:")
@@ -84,7 +85,7 @@ async def test_50_companies():
     print("• Real-time processing and analysis")
     print("• Performance and reliability testing")
     print("=" * 80)
-    
+
     # Remove duplicates
     unique_companies = []
     seen_ciks = set()
@@ -92,9 +93,9 @@ async def test_50_companies():
         if cik not in seen_ciks:
             unique_companies.append((cik, name))
             seen_ciks.add(cik)
-    
+
     print(f"\n📊 Processing {len(unique_companies)} unique companies")
-    
+
     # Initialize services
     try:
         llm_service = LLMService()
@@ -103,26 +104,28 @@ async def test_50_companies():
     except Exception as e:
         print(f"❌ Failed to initialize services: {e}")
         return
-    
+
     # Results tracking
     results = {
-        'total_companies': len(unique_companies),
-        'successful_extractions': 0,
-        'failed_extractions': 0,
-        'companies_processed': [],
-        'start_time': datetime.now().isoformat(),
-        'processing_times': [],
-        'quality_scores': [],
-        'improvements_made': 0
+        "total_companies": len(unique_companies),
+        "successful_extractions": 0,
+        "failed_extractions": 0,
+        "companies_processed": [],
+        "start_time": datetime.now().isoformat(),
+        "processing_times": [],
+        "quality_scores": [],
+        "improvements_made": 0,
     }
-    
+
     print(f"\n🔄 Starting batch processing...")
-    
-    for i, (cik, company_name) in enumerate(unique_companies[:10], 1):  # Limit to 10 for demo
+
+    for i, (cik, company_name) in enumerate(
+        unique_companies[:10], 1
+    ):  # Limit to 10 for demo
         print(f"\n--- Processing {i}/10: {company_name} ---")
-        
+
         start_time = time.time()
-        
+
         try:
             # For demo, use sample HTML with realistic data for each company
             print(f"📄 Processing {company_name} with sample data...")
@@ -153,110 +156,133 @@ async def test_50_companies():
             </body>
             </html>
             """
-            
+
             # Extract with self-improvement
             print(f"🤖 Running self-improving extraction...")
-            
+
             extraction_results = await extraction_example.extract_with_improvement(
                 html_content=sample_html,
                 company_cik=cik,
                 company_name=company_name,
                 year=2023,
-                max_iterations=2
+                max_iterations=2,
             )
-            
+
             processing_time = time.time() - start_time
-            results['processing_times'].append(processing_time)
-            
+            results["processing_times"].append(processing_time)
+
             # Analyze results
-            compensations = extraction_results.get('compensations', [])
-            improvement_process = extraction_results.get('improvement_process', {})
-            
+            compensations = extraction_results.get("compensations", [])
+            improvement_process = extraction_results.get("improvement_process", {})
+
             if compensations:
-                results['successful_extractions'] += 1
+                results["successful_extractions"] += 1
                 print(f"✅ Extracted {len(compensations)} executives")
-                
+
                 # Track quality metrics
-                if improvement_process.get('iterations'):
-                    last_iteration = improvement_process['iterations'][-1]
-                    quality_score = last_iteration.get('evaluation', {}).get('quality_score', 0)
-                    results['quality_scores'].append(quality_score)
-                
-                if improvement_process.get('improvements_made'):
-                    results['improvements_made'] += len(improvement_process['improvements_made'])
-                
+                if improvement_process.get("iterations"):
+                    last_iteration = improvement_process["iterations"][-1]
+                    quality_score = last_iteration.get("evaluation", {}).get(
+                        "quality_score", 0
+                    )
+                    results["quality_scores"].append(quality_score)
+
+                if improvement_process.get("improvements_made"):
+                    results["improvements_made"] += len(
+                        improvement_process["improvements_made"]
+                    )
+
             else:
-                results['failed_extractions'] += 1
+                results["failed_extractions"] += 1
                 print(f"❌ No executives extracted")
-            
+
             # Store company results
             company_result = {
-                'cik': cik,
-                'name': company_name,
-                'success': len(compensations) > 0,
-                'executives_found': len(compensations),
-                'processing_time': processing_time,
-                'iterations_used': improvement_process.get('total_iterations', 0),
-                'improvements_made': len(improvement_process.get('improvements_made', [])),
-                'quality_score': results['quality_scores'][-1] if results['quality_scores'] else 0
+                "cik": cik,
+                "name": company_name,
+                "success": len(compensations) > 0,
+                "executives_found": len(compensations),
+                "processing_time": processing_time,
+                "iterations_used": improvement_process.get("total_iterations", 0),
+                "improvements_made": len(
+                    improvement_process.get("improvements_made", [])
+                ),
+                "quality_score": (
+                    results["quality_scores"][-1] if results["quality_scores"] else 0
+                ),
             }
-            
-            results['companies_processed'].append(company_result)
-            
+
+            results["companies_processed"].append(company_result)
+
             print(f"⏱️  Processing time: {processing_time:.2f}s")
             print(f"🔄 Iterations: {company_result['iterations_used']}")
             print(f"🛠️  Improvements: {company_result['improvements_made']}")
-            
+
         except Exception as e:
             print(f"❌ Error processing {company_name}: {e}")
-            results['failed_extractions'] += 1
-            
+            results["failed_extractions"] += 1
+
             company_result = {
-                'cik': cik,
-                'name': company_name,
-                'success': False,
-                'error': str(e),
-                'processing_time': time.time() - start_time
+                "cik": cik,
+                "name": company_name,
+                "success": False,
+                "error": str(e),
+                "processing_time": time.time() - start_time,
             }
-            results['companies_processed'].append(company_result)
-    
+            results["companies_processed"].append(company_result)
+
     # Final results
-    results['end_time'] = datetime.now().isoformat()
-    results['total_processing_time'] = sum(results['processing_times'])
-    results['average_processing_time'] = results['total_processing_time'] / len(results['processing_times']) if results['processing_times'] else 0
-    results['average_quality_score'] = sum(results['quality_scores']) / len(results['quality_scores']) if results['quality_scores'] else 0
-    results['success_rate'] = (results['successful_extractions'] / results['total_companies']) * 100
-    
+    results["end_time"] = datetime.now().isoformat()
+    results["total_processing_time"] = sum(results["processing_times"])
+    results["average_processing_time"] = (
+        results["total_processing_time"] / len(results["processing_times"])
+        if results["processing_times"]
+        else 0
+    )
+    results["average_quality_score"] = (
+        sum(results["quality_scores"]) / len(results["quality_scores"])
+        if results["quality_scores"]
+        else 0
+    )
+    results["success_rate"] = (
+        results["successful_extractions"] / results["total_companies"]
+    ) * 100
+
     print("\n" + "=" * 80)
     print("🎉 50 COMPANIES TEST COMPLETE")
     print("=" * 80)
-    
+
     print(f"📊 **OVERALL RESULTS:**")
     print(f"   Total Companies: {results['total_companies']}")
     print(f"   Successful Extractions: {results['successful_extractions']}")
     print(f"   Failed Extractions: {results['failed_extractions']}")
     print(f"   Success Rate: {results['success_rate']:.1f}%")
-    
+
     print(f"\n⏱️  **PERFORMANCE METRICS:**")
     print(f"   Total Processing Time: {results['total_processing_time']:.2f}s")
-    print(f"   Average Processing Time: {results['average_processing_time']:.2f}s per company")
+    print(
+        f"   Average Processing Time: {results['average_processing_time']:.2f}s per company"
+    )
     print(f"   Average Quality Score: {results['average_quality_score']:.2f}/1.0")
-    
+
     print(f"\n🛠️  **IMPROVEMENT METRICS:**")
     print(f"   Total Improvements Made: {results['improvements_made']}")
-    print(f"   Companies with Improvements: {len([c for c in results['companies_processed'] if c.get('improvements_made', 0) > 0])}")
-    
+    print(
+        f"   Companies with Improvements: {len([c for c in results['companies_processed'] if c.get('improvements_made', 0) > 0])}"
+    )
+
     # Save detailed results
-    with open('test_50_companies_results.json', 'w') as f:
+    with open("test_50_companies_results.json", "w") as f:
         json.dump(results, f, indent=2)
-    
+
     print(f"\n💾 Detailed results saved to: test_50_companies_results.json")
-    
+
     print(f"\n🚀 **SYSTEM READY FOR MANUAL CONTROLLER USE**")
     print(f"   The system has been validated at scale")
     print(f"   Self-improving patterns are working")
     print(f"   LLM QA is providing quality control")
     print(f"   Ready for interactive CLI chatbot controller")
+
 
 if __name__ == "__main__":
     asyncio.run(test_50_companies())

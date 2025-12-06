@@ -53,17 +53,21 @@ def mock_project_config():
         project=ProjectMetadata(
             name="test_project",  # Must be alphanumeric with underscores/hyphens
             description="Test project for interactive session",
-            version="1.0.0"
+            version="1.0.0",
         ),
         data_source=DataSourceConfig(
             name="test_api",  # Required field
             type="api",
-            config={"url": "https://api.example.com"}
+            config={"url": "https://api.example.com"},
         ),
-        output=OutputConfig(formats=[  # At least one format required
-            OutputDestinationConfig(type=OutputFormat.JSON, path="output/results.json")
-        ]),
-        examples=[]
+        output=OutputConfig(
+            formats=[  # At least one format required
+                OutputDestinationConfig(
+                    type=OutputFormat.JSON, path="output/results.json"
+                )
+            ]
+        ),
+        examples=[],
     )
 
 
@@ -103,7 +107,7 @@ def test_command_registry(session):
         "examples",
         "generate",
         "extract",
-        "exit"
+        "exit",
     }
     assert set(session.commands.keys()) == expected_commands
 
@@ -193,8 +197,16 @@ async def test_patterns_with_analysis(session):
     """Test patterns command with analysis results."""
     session.analysis_results = {
         "patterns": [
-            {"type": "FIELD_MAPPING", "confidence": 0.95, "description": "Map field A to B"},
-            {"type": "TYPE_CONVERSION", "confidence": 0.87, "description": "Convert string to int"}
+            {
+                "type": "FIELD_MAPPING",
+                "confidence": 0.95,
+                "description": "Map field A to B",
+            },
+            {
+                "type": "TYPE_CONVERSION",
+                "confidence": 0.87,
+                "description": "Convert string to int",
+            },
         ]
     }
     await session.cmd_show_patterns()
@@ -278,26 +290,28 @@ async def test_load_project_success(session, tmp_path):
 
     # Create a valid project.yaml
     import yaml
+
     config_path = project_path / "project.yaml"
-    with open(config_path, 'w') as f:
-        yaml.dump({
-            "project": {
-                "name": "test_project",  # Must be alphanumeric with underscores/hyphens
-                "description": "Test",
-                "version": "1.0.0"
+    with open(config_path, "w") as f:
+        yaml.dump(
+            {
+                "project": {
+                    "name": "test_project",  # Must be alphanumeric with underscores/hyphens
+                    "description": "Test",
+                    "version": "1.0.0",
+                },
+                "data_source": {
+                    "name": "test_api",
+                    "type": "api",
+                    "config": {"url": "https://api.example.com"},
+                },
+                "output": {
+                    "formats": [{"type": "json", "path": "output/results.json"}]
+                },
+                "examples": [],
             },
-            "data_source": {
-                "name": "test_api",
-                "type": "api",
-                "config": {"url": "https://api.example.com"}
-            },
-            "output": {
-                "formats": [
-                    {"type": "json", "path": "output/results.json"}
-                ]
-            },
-            "examples": []
-        }, f)
+            f,
+        )
 
     await session.cmd_load_project(str(project_path))
 
@@ -314,7 +328,7 @@ async def test_load_project_invalid_yaml(session, tmp_path):
 
     # Create invalid YAML
     config_path = project_path / "project.yaml"
-    with open(config_path, 'w') as f:
+    with open(config_path, "w") as f:
         f.write("invalid: yaml: content: [")
 
     await session.cmd_load_project(str(project_path))
@@ -392,26 +406,28 @@ async def test_full_workflow_simulation(session, tmp_path):
     project_path.mkdir()
 
     import yaml
+
     config_path = project_path / "project.yaml"
-    with open(config_path, 'w') as f:
-        yaml.dump({
-            "project": {
-                "name": "workflow_test",  # Must be alphanumeric with underscores/hyphens
-                "description": "Test workflow",
-                "version": "1.0.0"
+    with open(config_path, "w") as f:
+        yaml.dump(
+            {
+                "project": {
+                    "name": "workflow_test",  # Must be alphanumeric with underscores/hyphens
+                    "description": "Test workflow",
+                    "version": "1.0.0",
+                },
+                "data_source": {
+                    "name": "test_api",
+                    "type": "api",
+                    "config": {"url": "https://api.example.com"},
+                },
+                "output": {
+                    "formats": [{"type": "json", "path": "output/results.json"}]
+                },
+                "examples": [],
             },
-            "data_source": {
-                "name": "test_api",
-                "type": "api",
-                "config": {"url": "https://api.example.com"}
-            },
-            "output": {
-                "formats": [
-                    {"type": "json", "path": "output/results.json"}
-                ]
-            },
-            "examples": []
-        }, f)
+            f,
+        )
 
     # Execute workflow
     await session.cmd_load_project(str(project_path))
@@ -444,7 +460,7 @@ def test_all_commands_have_tests():
         "examples",
         "generate",
         "extract",
-        "exit"
+        "exit",
     }
 
     # Verify all commands are covered
@@ -479,42 +495,40 @@ async def test_phase2_full_workflow_integration(tmp_path):
 
     # Create project.yaml
     import yaml
+
     config_data = {
         "project": {
             "name": "test_project",
             "description": "Phase 2 test",
-            "version": "1.0.0"
+            "version": "1.0.0",
         },
         "data_source": {
             "name": "test_api",
             "type": "api",
-            "config": {"url": "https://api.example.com"}
+            "config": {"url": "https://api.example.com"},
         },
-        "output": {
-            "formats": [
-                {"type": "json", "path": "output/results.json"}
-            ]
-        },
-        "examples": ["example1.json", "example2.json"]
+        "output": {"formats": [{"type": "json", "path": "output/results.json"}]},
+        "examples": ["example1.json", "example2.json"],
     }
 
-    with open(project_dir / "project.yaml", 'w') as f:
+    with open(project_dir / "project.yaml", "w") as f:
         yaml.dump(config_data, f)
 
     # Create example files
     import json
+
     example1 = {
         "input_data": {"name": "John", "age": "30"},
-        "output_data": {"full_name": "John", "years": 30}
+        "output_data": {"full_name": "John", "years": 30},
     }
     example2 = {
         "input_data": {"name": "Jane", "age": "25"},
-        "output_data": {"full_name": "Jane", "years": 25}
+        "output_data": {"full_name": "Jane", "years": 25},
     }
 
-    with open(project_dir / "example1.json", 'w') as f:
+    with open(project_dir / "example1.json", "w") as f:
         json.dump(example1, f)
-    with open(project_dir / "example2.json", 'w') as f:
+    with open(project_dir / "example2.json", "w") as f:
         json.dump(example2, f)
 
     # Run workflow
@@ -557,19 +571,37 @@ async def test_phase2_session_save_restore(tmp_path):
 
     # Create minimal project
     import yaml
-    with open(project_dir / "project.yaml", 'w') as f:
-        yaml.dump({
-            "project": {"name": "test_save", "description": "Test", "version": "1.0.0"},
-            "data_source": {"name": "test", "type": "api", "config": {}},
-            "output": {"formats": [{"type": "json", "path": "output.json"}]},
-            "examples": []
-        }, f)
+
+    with open(project_dir / "project.yaml", "w") as f:
+        yaml.dump(
+            {
+                "project": {
+                    "name": "test_save",
+                    "description": "Test",
+                    "version": "1.0.0",
+                },
+                "data_source": {"name": "test", "type": "api", "config": {}},
+                "output": {"formats": [{"type": "json", "path": "output.json"}]},
+                "examples": [],
+            },
+            f,
+        )
 
     session1 = InteractiveExtractionSession(project_path=project_dir)
     await session1.cmd_load_project(str(project_dir))
 
     # Add some state
-    session1.analysis_results = {"patterns": [{"type": "FIELD_MAPPING", "confidence": 0.95, "source_field": "name", "target_field": "full_name", "description": "Map name"}]}
+    session1.analysis_results = {
+        "patterns": [
+            {
+                "type": "FIELD_MAPPING",
+                "confidence": 0.95,
+                "source_field": "name",
+                "target_field": "full_name",
+                "description": "Map name",
+            }
+        ]
+    }
 
     # Save session
     await session1.cmd_save_session("test")
@@ -596,13 +628,21 @@ async def test_phase2_auto_save_on_exit(tmp_path):
     project_dir.mkdir()
 
     import yaml
-    with open(project_dir / "project.yaml", 'w') as f:
-        yaml.dump({
-            "project": {"name": "test_autosave", "description": "Test", "version": "1.0.0"},
-            "data_source": {"name": "test", "type": "api", "config": {}},
-            "output": {"formats": [{"type": "json", "path": "output.json"}]},
-            "examples": []
-        }, f)
+
+    with open(project_dir / "project.yaml", "w") as f:
+        yaml.dump(
+            {
+                "project": {
+                    "name": "test_autosave",
+                    "description": "Test",
+                    "version": "1.0.0",
+                },
+                "data_source": {"name": "test", "type": "api", "config": {}},
+                "output": {"formats": [{"type": "json", "path": "output.json"}]},
+                "examples": [],
+            },
+            f,
+        )
 
     session = InteractiveExtractionSession(project_path=project_dir)
     await session.cmd_load_project(str(project_dir))
@@ -626,22 +666,22 @@ async def test_phase2_enhanced_pattern_display(session):
                 "confidence": 0.95,
                 "source_field": "name",
                 "target_field": "full_name",
-                "description": "Direct field mapping"
+                "description": "Direct field mapping",
             },
             {
                 "type": "TYPE_CONVERSION",
                 "confidence": 0.75,
                 "source_field": "age",
                 "target_field": "years",
-                "description": "String to integer"
+                "description": "String to integer",
             },
             {
                 "type": "CONCATENATION",
                 "confidence": 0.65,
                 "source_field": "first+last",
                 "target_field": "name",
-                "description": "Concatenate fields"
-            }
+                "description": "Concatenate fields",
+            },
         ]
     }
 
@@ -654,10 +694,19 @@ async def test_phase2_enhanced_pattern_display(session):
 async def test_phase2_command_registry_updated(session):
     """Test that Phase 2 commands are registered."""
     expected_commands = {
-        "help", "load", "show", "examples", "analyze", "patterns",
-        "generate", "validate", "extract",  # Phase 2: enhanced
-        "save", "resume", "sessions",  # Phase 2: new
-        "exit"
+        "help",
+        "load",
+        "show",
+        "examples",
+        "analyze",
+        "patterns",
+        "generate",
+        "validate",
+        "extract",  # Phase 2: enhanced
+        "save",
+        "resume",
+        "sessions",  # Phase 2: new
+        "exit",
     }
     assert set(session.commands.keys()) == expected_commands
 
