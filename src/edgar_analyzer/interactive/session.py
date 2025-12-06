@@ -105,14 +105,16 @@ class InteractiveExtractionSession:
         >>> await session.start()
     """
 
-    def __init__(self, project_path: Optional[Path] = None) -> None:
+    def __init__(self, project_path: Optional[Path] = None, test_mode: bool = False) -> None:
         """Initialize interactive session.
 
         Args:
             project_path: Optional project directory to auto-load on start
+            test_mode: If True, skip interactive prompts (for testing)
         """
         self.console = Console()
         self.project_path = project_path
+        self._test_mode = test_mode
         self.project_config: Optional[ProjectConfig] = None
         self.analysis_results: Optional[Dict[str, Any]] = None
         self.generated_code: Optional[str] = None
@@ -269,19 +271,25 @@ class InteractiveExtractionSession:
                 # Ctrl+D - exit gracefully
                 break
             except AuthenticationError as e:
-                # Auth error in REPL loop - trigger setup
+                # Auth error in REPL loop - trigger setup (unless in test mode)
                 self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
-                self.console.print("[dim]Let's set up a new one...[/dim]\n")
-                await self.cmd_setup("")
+                if not self._test_mode:
+                    self.console.print("[dim]Let's set up a new one...[/dim]\n")
+                    await self.cmd_setup("")
+                else:
+                    self.console.print("[dim]Run /setup to configure your API key.[/dim]")
                 logger.warning("auth_error_in_repl", error=str(e))
             except Exception as e:
                 # Check for auth-related errors in the message
                 error_str = str(e)
                 if "401" in error_str or "authentication" in error_str.lower() or "User not found" in error_str:
-                    # Auth error detected - trigger setup
+                    # Auth error detected - trigger setup (unless in test mode)
                     self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
-                    self.console.print("[dim]Let's set up a new one...[/dim]\n")
-                    await self.cmd_setup("")
+                    if not self._test_mode:
+                        self.console.print("[dim]Let's set up a new one...[/dim]\n")
+                        await self.cmd_setup("")
+                    else:
+                        self.console.print("[dim]Run /setup to configure your API key.[/dim]")
                     logger.warning("auth_error_detected_in_repl", error=error_str[:100])
                 else:
                     self.console.print(f"[red]Error executing command: {e}[/red]")
@@ -621,10 +629,13 @@ Provide a helpful response. If the user is asking how to do something, point the
             logger.info("chat_response_displayed", message_length=len(message), response_length=len(response))
 
         except AuthenticationError as e:
-            # Auth error - trigger setup flow
+            # Auth error - trigger setup flow (unless in test mode)
             self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
-            self.console.print("[dim]Let's set up a new one...[/dim]\n")
-            await self.cmd_setup("")
+            if not self._test_mode:
+                self.console.print("[dim]Let's set up a new one...[/dim]\n")
+                await self.cmd_setup("")
+            else:
+                self.console.print("[dim]Run /setup to configure your API key.[/dim]")
             logger.warning("auth_error_triggered_setup", error=str(e))
 
         except Exception as e:
@@ -632,10 +643,13 @@ Provide a helpful response. If the user is asking how to do something, point the
             error_str = str(e)
             # Check for auth-related errors in the message
             if "401" in error_str or "authentication" in error_str.lower() or "User not found" in error_str:
-                # Auth error detected by message content - trigger setup
+                # Auth error detected by message content - trigger setup (unless in test mode)
                 self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
-                self.console.print("[dim]Let's set up a new one...[/dim]\n")
-                await self.cmd_setup("")
+                if not self._test_mode:
+                    self.console.print("[dim]Let's set up a new one...[/dim]\n")
+                    await self.cmd_setup("")
+                else:
+                    self.console.print("[dim]Run /setup to configure your API key.[/dim]")
                 logger.warning("auth_error_detected_by_message", error=error_str[:100])
             else:
                 # Other errors - show generic message
