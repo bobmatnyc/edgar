@@ -122,7 +122,15 @@ class InteractiveExtractionSession:
         self.example_parser = ExampleParser(self.schema_analyzer)
         self.code_generator = CodeGeneratorService()
         self.constraint_enforcer = ConstraintEnforcer()
-        self.openrouter_client: Optional[OpenRouterClient] = None
+
+        # Initialize OpenRouter client for conversational AI
+        try:
+            self.openrouter_client = OpenRouterClient()
+            logger.debug("openrouter_client_initialized_for_chat")
+        except ValueError as e:
+            # API key not available - chat mode will be disabled
+            self.openrouter_client = None
+            logger.warning("openrouter_client_init_failed", error=str(e))
 
         # Command registry - maps command names to handler methods
         self.commands: Dict[str, Callable] = {
@@ -140,6 +148,8 @@ class InteractiveExtractionSession:
             "sessions": self.cmd_list_sessions,
             "confidence": self.cmd_set_confidence,
             "threshold": self.cmd_get_confidence,
+            "chat": self.cmd_chat,
+            "ask": self.cmd_chat,  # alias
             "exit": self.cmd_exit,
         }
 
@@ -217,8 +227,8 @@ class InteractiveExtractionSession:
                     if result == "exit":
                         break
                 else:
-                    self.console.print(f"[red]Unknown command: {command}[/red]")
-                    self.console.print("[dim]Try: help, or ask a natural language question[/dim]")
+                    # Route unknown commands to conversational AI
+                    await self.cmd_chat(user_input)
 
             except KeyboardInterrupt:
                 # Ctrl+C - just continue
@@ -253,6 +263,7 @@ class InteractiveExtractionSession:
 
         commands_info = [
             ("help", "", "Show this help message"),
+            ("chat", "<message>", "Ask the AI assistant a question"),
             ("load", "<path>", "Load project from path"),
             ("show", "", "Show current project status"),
             ("examples", "", "List loaded examples with preview"),
@@ -282,6 +293,122 @@ class InteractiveExtractionSession:
         self.console.print(tip)
 
         logger.info("help_displayed")
+
+    async def cmd_chat(self, message: str) -> None:
+        """Send a message to the AI assistant for conversational responses.
+
+        Provides helpful, conversational responses to questions about EDGAR's
+        capabilities, how to use commands, and general guidance.
+
+        Args:
+            message: User's question or message
+
+        Error Handling:
+        - No API key: Friendly message explaining chat is unavailable
+        - API errors: Graceful fallback with helpful error message
+        - Empty responses: Default helpful message
+        """
+        if not message or not message.strip():
+            self.console.print("[yellow]Please provide a message or question.[/yellow]")
+            return
+
+        # Check if OpenRouter client is available
+        if not self.openrouter_client:
+            self.console.print(
+                "[yellow]⚠️  Chat mode is unavailable (OPENROUTER_API_KEY not configured)[/yellow]\n"
+                "[dim]Set your API key to enable conversational AI assistance.[/dim]"
+            )
+            return
+
+        try:
+            # Show thinking indicator
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                console=self.console
+            ) as progress:
+                progress.add_task("Thinking...", total=None)
+
+                # Build context about current session state
+                context_info = []
+                if self.project_config:
+                    context_info.append(f"Project: {self.project_config.project.name}")
+                if self.analysis_results:
+                    pattern_count = len(self.analysis_results.get("patterns", []))
+                    context_info.append(f"Analysis complete ({pattern_count} patterns)")
+                if self.generated_code:
+                    context_info.append("Code generated")
+                if self.extraction_results:
+                    context_info.append(f"Extraction complete ({len(self.extraction_results)} records)")
+
+                session_context = " | ".join(context_info) if context_info else "No project loaded"
+
+                # Create system prompt
+                system_prompt = """You are EDGAR, a friendly AI assistant for data extraction and transformation.
+
+Your purpose: Help users extract and transform data from various sources (Excel, PDF, APIs, web) into structured JSON.
+
+Key capabilities:
+- Analyze data sources to detect transformation patterns
+- Generate extraction code from examples
+- Transform files (Excel, PDF, DOCX, PPTX) to structured JSON
+- Interactive workflow guidance
+
+Available commands:
+- load <path>: Load a project
+- analyze: Detect transformation patterns
+- patterns: Show detected patterns
+- generate: Generate extraction code
+- extract: Run extraction
+- confidence <0.0-1.0>: Adjust pattern detection threshold
+- help: Show all commands
+
+Guidelines:
+- Be friendly, concise, and helpful
+- When users ask how to do something, suggest the relevant command
+- Keep responses under 200 words unless detailed explanation is needed
+- Use emojis sparingly (✅ 🔍 💡 ⚠️)
+- If unsure, suggest using 'help' command"""
+
+                user_prompt = f"""Current session state: {session_context}
+
+User message: {message}
+
+Provide a helpful response. If the user is asking how to do something, point them to the relevant command(s)."""
+
+                # Call OpenRouter API
+                messages = [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ]
+
+                response = await self.openrouter_client.chat_completion(
+                    messages=messages,
+                    temperature=0.7,
+                    max_tokens=500  # Keep responses concise
+                )
+
+            # Display response with Rich formatting
+            if response and response.strip():
+                # Parse as markdown for nice formatting
+                md = Markdown(response.strip())
+                self.console.print(md)
+            else:
+                # Fallback if empty response
+                self.console.print(
+                    "[cyan]I'm here to help! Type 'help' to see available commands, "
+                    "or ask me about specific features.[/cyan]"
+                )
+
+            logger.info("chat_response_displayed", message_length=len(message), response_length=len(response))
+
+        except Exception as e:
+            # Graceful error handling
+            self.console.print(
+                f"[yellow]⚠️  I encountered an issue: {str(e)[:100]}[/yellow]\n"
+                "[dim]Try asking in a different way, or use 'help' to see available commands.[/dim]"
+            )
+            logger.exception("chat_error", message=message[:100])
 
     async def _parse_natural_language(self, user_input: str) -> Tuple[str, str]:
         """Parse natural language input to command + args using regex + LLM fallback.
