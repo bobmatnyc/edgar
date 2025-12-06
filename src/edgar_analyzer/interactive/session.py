@@ -49,6 +49,7 @@ Performance:
 
 import importlib.util
 import json
+import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -62,6 +63,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.prompt import Prompt
 from rich.syntax import Syntax
 from rich.table import Table
 
@@ -120,21 +122,24 @@ class InteractiveExtractionSession:
         self.project_manager = ProjectManager()
         self.schema_analyzer = SchemaAnalyzer()
         self.example_parser = ExampleParser(self.schema_analyzer)
-        self.code_generator = CodeGeneratorService()
         self.constraint_enforcer = ConstraintEnforcer()
 
-        # Initialize OpenRouter client for conversational AI
+        # Initialize OpenRouter client and code generator (both require API key)
         try:
             self.openrouter_client = OpenRouterClient()
+            self.code_generator = CodeGeneratorService()
             logger.debug("openrouter_client_initialized_for_chat")
         except ValueError as e:
-            # API key not available - chat mode will be disabled
+            # API key not available - chat mode and code generation will be disabled
             self.openrouter_client = None
-            logger.warning("openrouter_client_init_failed", error=str(e))
+            self.code_generator = None
+            logger.warning("openrouter_services_init_failed", error=str(e))
 
         # Command registry - maps command names to handler methods
         self.commands: Dict[str, Callable] = {
             "help": self.cmd_help,
+            "setup": self.cmd_setup,
+            "config": self.cmd_setup,  # alias
             "load": self.cmd_load_project,
             "show": self.cmd_show,
             "analyze": self.cmd_analyze,
@@ -178,6 +183,13 @@ class InteractiveExtractionSession:
         # Welcome message
         self.console.print("[bold blue]🔍 EDGAR Interactive Extraction Session[/bold blue]")
         self.console.print("Type naturally or use /commands (e.g., /help, /exit)\n")
+
+        # Check API key status
+        if not self.openrouter_client:
+            self.console.print(
+                "[yellow]⚠️  No valid API key configured. AI chat features disabled.[/yellow]\n"
+                "[dim]   Run /setup to configure your OpenRouter API key.[/dim]\n"
+            )
 
         # Auto-load project if path provided
         if self.project_path:
@@ -283,6 +295,7 @@ class InteractiveExtractionSession:
 
         commands_info = [
             ("/help", "", "Show this help message"),
+            ("/setup", "", "Configure API key and settings"),
             ("/chat", "<message>", "Ask the AI assistant a question"),
             ("/load", "<path>", "Load project from path"),
             ("/show", "", "Show current project status"),
@@ -314,6 +327,145 @@ class InteractiveExtractionSession:
 
         logger.info("help_displayed")
 
+    async def cmd_setup(self, args: str = "") -> None:
+        """Configure EDGAR settings including API key.
+
+        Interactive setup wizard for configuring:
+        - OpenRouter API key for AI features
+        - Validation of API key
+        - Automatic saving to .env.local
+
+        Args:
+            args: Unused, included for signature consistency
+        """
+        self.console.print("\n[bold cyan]🔧 EDGAR Setup[/bold cyan]\n")
+
+        # Check current API key status
+        current_key = os.getenv("OPENROUTER_API_KEY")
+        if current_key and self.openrouter_client:
+            self.console.print("[green]Current API key status: ✅ Valid[/green]")
+
+            # Ask if they want to update
+            update = Prompt.ask(
+                "Do you want to update your API key?",
+                choices=["y", "n"],
+                default="n"
+            )
+
+            if update.lower() != "y":
+                self.console.print("[dim]Setup cancelled[/dim]")
+                return
+        else:
+            self.console.print("[red]Current API key status: ❌ Not configured or invalid[/red]")
+
+        self.console.print("\n[dim]To use AI features, you need an OpenRouter API key.[/dim]")
+        self.console.print("[dim]Get one at: https://openrouter.ai/keys[/dim]\n")
+
+        # Prompt for API key (with password masking)
+        api_key = Prompt.ask(
+            "Enter your OpenRouter API key (or 'cancel' to skip)",
+            password=True
+        )
+
+        # Check for cancellation
+        if api_key.lower() == "cancel":
+            self.console.print("[yellow]Setup cancelled[/yellow]")
+            return
+
+        # Validate API key format
+        if not api_key.startswith("sk-or-v1-"):
+            self.console.print("[red]❌ Invalid API key format. OpenRouter keys start with 'sk-or-v1-'[/red]")
+            return
+
+        # Validate API key by making a test call
+        self.console.print("\n[dim]Validating API key...[/dim]")
+
+        is_valid = await self._validate_api_key(api_key)
+
+        if not is_valid:
+            self.console.print("[red]❌ API key validation failed. Please check your key and try again.[/red]")
+            return
+
+        self.console.print("[green]✅ API key is valid![/green]")
+
+        # Save to .env.local
+        try:
+            self._save_api_key(api_key)
+            self.console.print("[green]✅ Saved to .env.local[/green]")
+
+            # Reload the client with new key
+            os.environ["OPENROUTER_API_KEY"] = api_key
+            self.openrouter_client = OpenRouterClient(api_key=api_key)
+
+            self.console.print("\n[green]AI chat features are now enabled. Try saying hello![/green]")
+            logger.info("api_key_configured_successfully")
+
+        except Exception as e:
+            self.console.print(f"[red]❌ Failed to save API key: {e}[/red]")
+            logger.exception("api_key_save_error")
+
+    async def _validate_api_key(self, api_key: str) -> bool:
+        """Test if an API key is valid by making a minimal API call.
+
+        Args:
+            api_key: The OpenRouter API key to validate
+
+        Returns:
+            True if key is valid, False otherwise
+        """
+        try:
+            # Create a temporary client with the key
+            test_client = OpenRouterClient(api_key=api_key)
+
+            # Make a minimal test call
+            response = await test_client.chat_completion(
+                messages=[{"role": "user", "content": "hi"}],
+                max_tokens=1,
+                temperature=0.0
+            )
+
+            # If we got any response, the key is valid
+            return True
+
+        except Exception as e:
+            logger.debug("api_key_validation_failed", error=str(e))
+            return False
+
+    def _save_api_key(self, api_key: str) -> None:
+        """Save API key to .env.local file.
+
+        Args:
+            api_key: The OpenRouter API key to save
+
+        Raises:
+            Exception: If file write fails
+        """
+        env_path = Path(".env.local")
+
+        if env_path.exists():
+            # Read existing content
+            content = env_path.read_text()
+
+            # Replace existing key or add new one
+            if "OPENROUTER_API_KEY=" in content:
+                # Replace existing key
+                import re
+                content = re.sub(
+                    r'OPENROUTER_API_KEY=.*',
+                    f'OPENROUTER_API_KEY={api_key}',
+                    content
+                )
+            else:
+                # Add new key
+                content += f"\nOPENROUTER_API_KEY={api_key}\n"
+
+            env_path.write_text(content)
+        else:
+            # Create new .env.local file
+            env_path.write_text(f"# EDGAR Environment Configuration\nOPENROUTER_API_KEY={api_key}\n")
+
+        logger.info("api_key_saved_to_env", path=str(env_path))
+
     async def cmd_chat(self, message: str) -> None:
         """Send a message to the AI assistant for conversational responses.
 
@@ -335,8 +487,7 @@ class InteractiveExtractionSession:
         # Check if OpenRouter client is available
         if not self.openrouter_client:
             self.console.print(
-                "[yellow]⚠️  Chat mode is unavailable (OPENROUTER_API_KEY not configured)[/yellow]\n"
-                "[dim]Set your API key to enable conversational AI assistance.[/dim]"
+                "[yellow]⚠️  No valid API key. Run /setup to configure.[/yellow]"
             )
             return
 
@@ -491,8 +642,8 @@ If unclear, return: help|
 
 Your response:"""
 
-                response = await self.openrouter_client.complete(
-                    prompt=prompt,
+                response = await self.openrouter_client.chat_completion(
+                    messages=[{"role": "user", "content": prompt}],
                     max_tokens=50,
                     temperature=0.1
                 )
@@ -868,6 +1019,10 @@ Your response:"""
         - No analysis results: Warning to run analyze first
         - Generation failures: Error with details and traceback
         """
+        if not self.code_generator:
+            self.console.print("[yellow]⚠️  No valid API key. Run /setup to configure.[/yellow]")
+            return
+
         if not self.analysis_results:
             self.console.print("[yellow]⚠️  Run 'analyze' first[/yellow]")
             return
