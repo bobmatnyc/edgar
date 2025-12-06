@@ -463,3 +463,220 @@ async def test_command_signature_consistency(session):
             assert result is None or result == "exit"
         except TypeError as e:
             pytest.fail(f"Command {command_name} doesn't accept args parameter: {e}")
+
+
+# ============================================================================
+# PHASE 2 INTEGRATION TESTS - Full Workflow with Services
+# ============================================================================
+
+
+@pytest.mark.asyncio
+async def test_phase2_full_workflow_integration(tmp_path):
+    """Test complete Phase 2 workflow: load → analyze → generate → validate → extract."""
+    # Setup test project
+    project_dir = tmp_path / "test_project"
+    project_dir.mkdir()
+
+    # Create project.yaml
+    import yaml
+    config_data = {
+        "project": {
+            "name": "test_project",
+            "description": "Phase 2 test",
+            "version": "1.0.0"
+        },
+        "data_source": {
+            "name": "test_api",
+            "type": "api",
+            "config": {"url": "https://api.example.com"}
+        },
+        "output": {
+            "formats": [
+                {"type": "json", "path": "output/results.json"}
+            ]
+        },
+        "examples": ["example1.json", "example2.json"]
+    }
+
+    with open(project_dir / "project.yaml", 'w') as f:
+        yaml.dump(config_data, f)
+
+    # Create example files
+    import json
+    example1 = {
+        "input_data": {"name": "John", "age": "30"},
+        "output_data": {"full_name": "John", "years": 30}
+    }
+    example2 = {
+        "input_data": {"name": "Jane", "age": "25"},
+        "output_data": {"full_name": "Jane", "years": 25}
+    }
+
+    with open(project_dir / "example1.json", 'w') as f:
+        json.dump(example1, f)
+    with open(project_dir / "example2.json", 'w') as f:
+        json.dump(example2, f)
+
+    # Run workflow
+    session = InteractiveExtractionSession(project_path=project_dir)
+
+    # Load project
+    await session.cmd_load_project(str(project_dir))
+    assert session.project_config is not None
+    assert session.project_config.project.name == "test_project"
+
+    # Analyze (uses ExampleParser and SchemaAnalyzer)
+    await session.cmd_analyze()
+    assert session.analysis_results is not None
+    assert "patterns" in session.analysis_results
+    assert "input_schema" in session.analysis_results
+    assert "output_schema" in session.analysis_results
+
+    # Generate code
+    await session.cmd_generate_code()
+    assert session.generated_code is not None
+    assert session.generated_code_path is not None
+    assert session.generated_code_path.exists()
+    assert "class GeneratedExtractor" in session.generated_code
+
+    # Validate code (uses ConstraintEnforcer)
+    await session.cmd_validate_code()
+    # Validation should complete without error
+
+    # Extract data (executes generated code)
+    await session.cmd_run_extraction()
+    assert session.extraction_results is not None
+    assert len(session.extraction_results) > 0
+
+
+@pytest.mark.asyncio
+async def test_phase2_session_save_restore(tmp_path):
+    """Test session persistence (save/resume/list)."""
+    project_dir = tmp_path / "test_project"
+    project_dir.mkdir()
+
+    # Create minimal project
+    import yaml
+    with open(project_dir / "project.yaml", 'w') as f:
+        yaml.dump({
+            "project": {"name": "test_save", "description": "Test", "version": "1.0.0"},
+            "data_source": {"name": "test", "type": "api", "config": {}},
+            "output": {"formats": [{"type": "json", "path": "output.json"}]},
+            "examples": []
+        }, f)
+
+    session1 = InteractiveExtractionSession(project_path=project_dir)
+    await session1.cmd_load_project(str(project_dir))
+
+    # Add some state
+    session1.analysis_results = {"patterns": [{"type": "FIELD_MAPPING", "confidence": 0.95, "source_field": "name", "target_field": "full_name", "description": "Map name"}]}
+
+    # Save session
+    await session1.cmd_save_session("test")
+
+    # Create new session and restore
+    session2 = InteractiveExtractionSession()
+    await session2.cmd_resume_session("test")
+
+    # Verify state restored
+    assert session2.project_config is not None
+    assert session2.project_config.project.name == "test_save"
+    assert session2.analysis_results is not None
+    assert len(session2.analysis_results["patterns"]) == 1
+
+    # List sessions
+    await session2.cmd_list_sessions()
+    # Should display without error
+
+
+@pytest.mark.asyncio
+async def test_phase2_auto_save_on_exit(tmp_path):
+    """Test auto-save functionality on exit."""
+    project_dir = tmp_path / "test_project"
+    project_dir.mkdir()
+
+    import yaml
+    with open(project_dir / "project.yaml", 'w') as f:
+        yaml.dump({
+            "project": {"name": "test_autosave", "description": "Test", "version": "1.0.0"},
+            "data_source": {"name": "test", "type": "api", "config": {}},
+            "output": {"formats": [{"type": "json", "path": "output.json"}]},
+            "examples": []
+        }, f)
+
+    session = InteractiveExtractionSession(project_path=project_dir)
+    await session.cmd_load_project(str(project_dir))
+
+    # Exit should auto-save
+    result = await session.cmd_exit()
+    assert result == "exit"
+
+    # Verify session was saved
+    session_file = session._get_session_file("last")
+    assert session_file.exists()
+
+
+@pytest.mark.asyncio
+async def test_phase2_enhanced_pattern_display(session):
+    """Test enhanced pattern display with color-coded confidence."""
+    session.analysis_results = {
+        "patterns": [
+            {
+                "type": "FIELD_MAPPING",
+                "confidence": 0.95,
+                "source_field": "name",
+                "target_field": "full_name",
+                "description": "Direct field mapping"
+            },
+            {
+                "type": "TYPE_CONVERSION",
+                "confidence": 0.75,
+                "source_field": "age",
+                "target_field": "years",
+                "description": "String to integer"
+            },
+            {
+                "type": "CONCATENATION",
+                "confidence": 0.65,
+                "source_field": "first+last",
+                "target_field": "name",
+                "description": "Concatenate fields"
+            }
+        ]
+    }
+
+    # Should display patterns with color-coded confidence
+    await session.cmd_show_patterns()
+    # Should complete without error (visual verification in manual testing)
+
+
+@pytest.mark.asyncio
+async def test_phase2_command_registry_updated(session):
+    """Test that Phase 2 commands are registered."""
+    expected_commands = {
+        "help", "load", "show", "examples", "analyze", "patterns",
+        "generate", "validate", "extract",  # Phase 2: enhanced
+        "save", "resume", "sessions",  # Phase 2: new
+        "exit"
+    }
+    assert set(session.commands.keys()) == expected_commands
+
+
+@pytest.mark.asyncio
+async def test_phase2_validate_without_code(session):
+    """Test validate command without generated code."""
+    await session.cmd_validate_code()
+    # Should display warning
+    assert session.generated_code is None
+
+
+@pytest.mark.asyncio
+async def test_phase2_sessions_command_empty(session):
+    """Test sessions command with no saved sessions."""
+    # Clear session directory if it exists
+    session_dir = session._get_session_dir()
+    for session_file in session_dir.glob("*.json"):
+        session_file.unlink()
+
+    await session.cmd_list_sessions()
+    # Should display "No saved sessions found"
