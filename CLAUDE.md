@@ -23,23 +23,24 @@ Transform EDGAR into a **general-purpose platform** supporting 4 work paths:
 ## Quick Start Commands
 
 ```bash
-# Interactive Chat Mode ✨ (NEW - Phase 3)
-edgar-analyzer chat --project projects/weather_test/
-edgar-analyzer chat --resume last
-edgar-analyzer chat --list-sessions
+# Interactive Chat Mode ✨ (NEW - Phase 3 - DEFAULT)
+edgar                                        # Start chat mode (new default!)
+edgar --project projects/weather_test/       # Chat with project loaded
+edgar --resume last                          # Resume last session
+edgar chat --list-sessions                   # List all sessions
 
 # EDGAR Data Extraction
-python -m edgar_analyzer extract --cik 0000320193 --year 2023
+edgar extract --cik 0000320193 --year 2023
 
 # File Transform (Excel/PDF)
-python -m edgar_analyzer analyze-project projects/employee_roster/
-python -m edgar_analyzer generate-code projects/employee_roster/
-python -m edgar_analyzer run-extraction projects/employee_roster/
+edgar analyze-project projects/employee_roster/
+edgar generate-code projects/employee_roster/
+edgar run-extraction projects/employee_roster/
 
 # Project Management (T7+T8 Complete)
-python -m edgar_analyzer project create my_project --template weather
-python -m edgar_analyzer project list --format table
-python -m edgar_analyzer project validate my_project
+edgar project create my_project --template weather
+edgar project list --format table
+edgar project validate my_project
 
 # Quality & Testing
 make test          # Run all tests (565/591 passing)
@@ -48,16 +49,25 @@ make build         # Create deployment package
 
 # External Artifacts Setup
 export EDGAR_ARTIFACTS_DIR=~/edgar_projects  # Add to ~/.bashrc
+
+# Legacy Command (backward compatibility)
+edgar-analyzer chat --project projects/weather_test/  # Still works!
 ```
 
 ---
 
-## Interactive Chat Mode ✨ (Phase 3 - NEW)
+## Interactive Chat Mode ✨ (Phase 3 - DEFAULT)
 
 **Auggie-style REPL for iterative extraction workflows!**
 
+**Now the default when running `edgar` with no arguments!**
+
 ```bash
-edgar-analyzer chat --project projects/weather_test/
+# Just type 'edgar' to start!
+edgar
+
+# Or with options
+edgar --project projects/weather_test/
 
 edgar> analyze
 ✅ Analysis complete
@@ -87,14 +97,20 @@ edgar> generate
 
 **Quick Commands**:
 ```bash
-# Start fresh session
-edgar-analyzer chat --project <path>
+# Start fresh session (new default!)
+edgar
+edgar chat
+
+# With project loaded
+edgar --project <path>
+edgar chat --project <path>
 
 # Resume last session
-edgar-analyzer chat --resume last
+edgar --resume last
+edgar chat --resume last
 
 # List saved sessions
-edgar-analyzer chat --list-sessions
+edgar chat --list-sessions
 ```
 
 **Available Commands** (in session):

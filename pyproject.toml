@@ -71,7 +71,8 @@ dev = [
 ]
 
 [project.scripts]
-edgar-analyzer = "edgar_analyzer.main_cli:main"
+edgar = "edgar_analyzer.main_cli:main"
+edgar-analyzer = "edgar_analyzer.main_cli:main"  # Backward compatibility
 extract-transform = "extract_transform_platform.cli.commands:cli"
 
 [project.urls]
