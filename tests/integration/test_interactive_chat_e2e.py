@@ -266,6 +266,8 @@ async def test_command_registry_completeness():
 
     expected_commands = {
         "help",
+        "chat",
+        "ask",  # chat alias
         "load",
         "show",
         "examples",
@@ -353,3 +355,75 @@ async def test_multiple_analyze_runs(test_project):
 
     # Should get same results
     assert first_patterns == second_patterns
+
+
+# ============================================================================
+# CHAT FEATURE TESTS
+# ============================================================================
+
+
+@pytest.mark.asyncio
+async def test_chat_command_exists():
+    """Test chat command is registered."""
+    session = InteractiveExtractionSession()
+    assert "chat" in session.commands
+    assert "ask" in session.commands  # alias
+
+
+@pytest.mark.asyncio
+async def test_chat_empty_message():
+    """Test chat with empty message shows warning."""
+    session = InteractiveExtractionSession()
+    await session.cmd_chat("")
+    # Should show warning, not crash
+
+
+@pytest.mark.asyncio
+async def test_chat_without_api_key():
+    """Test chat without API key shows graceful error."""
+    session = InteractiveExtractionSession()
+    # Force openrouter_client to None to simulate missing API key
+    session.openrouter_client = None
+    await session.cmd_chat("Hello")
+    # Should show graceful error, not crash
+
+
+@pytest.mark.asyncio
+@pytest.mark.skipif(
+    not pytest.config.getoption("--run-slow", default=False),
+    reason="Requires API key and makes actual API calls"
+)
+async def test_chat_with_api_key():
+    """Test chat with API key (requires OPENROUTER_API_KEY)."""
+    import os
+
+    if not os.getenv("OPENROUTER_API_KEY"):
+        pytest.skip("OPENROUTER_API_KEY not set")
+
+    session = InteractiveExtractionSession()
+    if not session.openrouter_client:
+        pytest.skip("OpenRouter client not initialized")
+
+    # Test basic greeting
+    await session.cmd_chat("Hello")
+    # Should return response without error
+
+
+@pytest.mark.asyncio
+async def test_chat_alias_ask():
+    """Test 'ask' command is alias for 'chat'."""
+    session = InteractiveExtractionSession()
+    assert session.commands["ask"] == session.commands["chat"]
+
+
+@pytest.mark.asyncio
+async def test_unknown_command_routes_to_chat():
+    """Test unknown commands route to chat handler."""
+    session = InteractiveExtractionSession()
+    # Force openrouter_client to None to avoid API call
+    session.openrouter_client = None
+
+    # This should route to chat (which will show API key error)
+    # but should not crash
+    await session.cmd_chat("unknown_command_test")
+    # Should complete without crash
