@@ -48,9 +48,11 @@ Performance:
 """
 
 import importlib.util
+import io
 import json
 import os
 import re
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
@@ -76,6 +78,9 @@ from extract_transform_platform.services.analysis.schema_analyzer import SchemaA
 from extract_transform_platform.services.codegen.code_generator import CodeGeneratorService
 from extract_transform_platform.services.codegen.constraint_enforcer import ConstraintEnforcer
 from extract_transform_platform.services.project_manager import ProjectManager
+
+# Import scripting engine for file operations
+from cli_chatbot.core.scripting_engine import DynamicScriptingEngine
 
 logger = structlog.get_logger(__name__)
 
@@ -105,16 +110,19 @@ class InteractiveExtractionSession:
         >>> await session.start()
     """
 
-    def __init__(self, project_path: Optional[Path] = None, test_mode: bool = False) -> None:
+    def __init__(self, project_path: Optional[Path] = None, test_mode: bool = False, session_id: Optional[str] = None) -> None:
         """Initialize interactive session.
 
         Args:
             project_path: Optional project directory to auto-load on start
             test_mode: If True, skip interactive prompts (for testing)
+            session_id: Optional session ID to resume (for one-shot mode)
         """
         self.console = Console()
         self.project_path = project_path
         self._test_mode = test_mode
+        self._oneshot_mode = False  # Flag for one-shot execution mode
+        self.session_id = session_id or self._generate_session_id()
         self.project_config: Optional[ProjectConfig] = None
         self.analysis_results: Optional[Dict[str, Any]] = None
         self.generated_code: Optional[str] = None
@@ -126,6 +134,19 @@ class InteractiveExtractionSession:
         self.schema_analyzer = SchemaAnalyzer()
         self.example_parser = ExampleParser(self.schema_analyzer)
         self.constraint_enforcer = ConstraintEnforcer()
+
+        # Initialize scripting engine for file operations
+        # Allow safe file operations (os, pathlib, shutil, zipfile)
+        self.scripting_engine = DynamicScriptingEngine(
+            allowed_imports=[
+                'json', 'datetime', 'math', 'random', 'os', 'sys', 'pathlib',
+                'collections', 'itertools', 'functools', 're', 'typing', 'time',
+                'shutil', 'zipfile', 'glob'  # Add file operation modules
+            ],
+            max_execution_time=30.0,
+            prefer_subprocess=True
+        )
+        logger.debug("scripting_engine_initialized")
 
         # Initialize OpenRouter client and code generator (both require API key)
         try:
@@ -161,7 +182,21 @@ class InteractiveExtractionSession:
             "exit": self.cmd_exit,
         }
 
-        logger.info("interactive_session_initialized", project_path=str(project_path))
+        logger.info("interactive_session_initialized", project_path=str(project_path), session_id=self.session_id)
+
+    def _generate_session_id(self) -> str:
+        """Generate unique session ID: edgar-{YYYYMMDD-HHMMSS}-{8-char-uuid}
+
+        Returns:
+            Unique session identifier string
+
+        Examples:
+            >>> session_id = self._generate_session_id()
+            >>> # Returns: "edgar-20251206-143000-a1b2c3d4"
+        """
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        short_uuid = uuid.uuid4().hex[:8]
+        return f"edgar-{timestamp}-{short_uuid}"
 
     async def start(self) -> None:
         """Start interactive REPL session.
@@ -298,6 +333,145 @@ class InteractiveExtractionSession:
         self.console.print("[yellow]Session ended[/yellow]")
         logger.info("repl_ended")
 
+    async def execute_command_oneshot(self, command_str: str) -> Dict[str, Any]:
+        """Execute single command without REPL, return structured result.
+
+        This method enables one-shot command execution for non-interactive use cases
+        such as automation, testing, or CLI scripting. It captures console output,
+        executes the command, auto-saves the session, and returns structured results.
+
+        Args:
+            command_str: Command string to execute (e.g., "help", "analyze", "patterns")
+
+        Returns:
+            Dictionary containing:
+            - session_id: Unique session identifier
+            - command: Command that was executed
+            - success: Boolean indicating if command succeeded
+            - output: Captured console output as string
+            - error: Error message if command failed (None otherwise)
+
+        Example:
+            >>> session = InteractiveExtractionSession()
+            >>> result = await session.execute_command_oneshot("help")
+            >>> print(result["session_id"])
+            edgar-20251206-143000-a1b2c3d4
+            >>> print(result["output"])
+            Available commands: help, analyze, ...
+
+        Design Decisions:
+        - Uses StringIO to capture Rich console output
+        - Auto-saves session after execution for stateful workflows
+        - Returns structured dict instead of printing (enables JSON output)
+        - Preserves existing command handlers (no code duplication)
+
+        Trade-offs:
+        - Slightly slower than direct execution due to output capture (~10-20ms overhead)
+        - Limited Rich formatting in captured output (text-only)
+        """
+        # Set one-shot mode flag to prevent interactive prompts
+        self._oneshot_mode = True
+
+        # Create string buffer to capture output
+        output_buffer = io.StringIO()
+
+        # Create console that writes to buffer
+        capture_console = Console(file=output_buffer, force_terminal=False)
+
+        # Temporarily replace console
+        original_console = self.console
+        self.console = capture_console
+
+        result: Dict[str, Any] = {
+            "session_id": self.session_id,
+            "command": command_str,
+            "success": False,
+            "output": "",
+            "error": None
+        }
+
+        try:
+            # Parse command and args
+            if command_str.startswith('/'):
+                # Slash command - strip leading /
+                parts = command_str[1:].split(maxsplit=1)
+            else:
+                # Regular command
+                parts = command_str.split(maxsplit=1)
+
+            command = parts[0].lower()
+            args = parts[1] if len(parts) > 1 else ""
+
+            logger.debug("oneshot_command_executing", command=command, args=args, session_id=self.session_id)
+
+            # Execute command
+            if command in self.commands:
+                cmd_result = await self.commands[command](args)
+                result["success"] = True
+
+                # Handle special return values (like "exit" from cmd_exit)
+                # These are informational, not errors
+                if cmd_result == "exit":
+                    result["success"] = True
+                    result["info"] = "exit"
+            else:
+                # Unknown command
+                capture_console.print(f"[red]❌ Unknown command: {command}[/red]")
+                capture_console.print("[dim]Type 'help' to see available commands[/dim]")
+                result["error"] = f"Unknown command: {command}"
+
+        except Exception as e:
+            # Capture error
+            capture_console.print(f"[red]❌ Error executing command: {e}[/red]")
+            result["error"] = str(e)
+            logger.exception("oneshot_command_error", command=command_str, session_id=self.session_id)
+
+        finally:
+            # Restore original console
+            self.console = original_console
+
+            # Reset one-shot mode flag
+            self._oneshot_mode = False
+
+            # Capture output
+            result["output"] = output_buffer.getvalue()
+
+            # Auto-save session (use session_id as filename)
+            try:
+                await self._save_session_by_id()
+            except Exception as e:
+                logger.warning("oneshot_autosave_failed", session_id=self.session_id, error=str(e))
+
+        logger.info("oneshot_command_complete",
+                   session_id=self.session_id,
+                   command=command_str,
+                   success=result["success"])
+
+        return result
+
+    async def _save_session_by_id(self) -> None:
+        """Save session using session_id as filename (for one-shot mode).
+
+        Creates session file named: {session_id}_session.json
+        This allows resuming sessions by ID instead of custom names.
+        """
+        session_data = {
+            "session_id": self.session_id,
+            "project_path": str(self.project_path) if self.project_path else None,
+            "project_config": self.project_config.model_dump() if self.project_config else None,
+            "analysis_results": self.analysis_results,
+            "generated_code_path": str(self.generated_code_path) if self.generated_code_path else None,
+            "extraction_count": len(self.extraction_results) if self.extraction_results else 0,
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        session_file = self._get_session_file(self.session_id)
+
+        with open(session_file, 'w') as f:
+            json.dump(session_data, f, indent=2)
+
+        logger.debug("session_saved_by_id", session_id=self.session_id, path=str(session_file))
+
     async def cmd_help(self, args: str = "") -> None:
         """Show available commands with enhanced Rich formatting.
 
@@ -362,6 +536,16 @@ class InteractiveExtractionSession:
         Args:
             args: Unused, included for signature consistency
         """
+        # In one-shot mode, skip interactive prompts and return error message
+        if self._oneshot_mode:
+            self.console.print(
+                "[red]❌ API key not configured[/red]\n"
+                "[dim]Cannot run interactive setup in one-shot mode.[/dim]\n"
+                "[dim]To configure API key, run: edgar /setup[/dim]\n"
+                "[dim]Or set OPENROUTER_API_KEY environment variable.[/dim]"
+            )
+            return
+
         self.console.print("\n[bold cyan]🔧 EDGAR Setup[/bold cyan]\n")
 
         # Check current API key status
@@ -559,6 +743,41 @@ EDGAR is an **example-driven data transformation system**. Users provide 2-3 exa
 - **Multi-Source Support**: Excel, PDF, CSV, JSON, REST APIs, web scraping (via Jina.ai)
 - **Code Generation**: Generate production-ready Python extractors
 - **Confidence Thresholds**: Adjust how certain patterns must be before including them
+- **File Operations**: Execute Python scripts for file management (create dirs, copy/move files, unzip archives, list contents)
+
+## File Operations
+You can execute Python scripts for file management tasks when users request file operations:
+- Create directories (mkdir)
+- Copy/move files (shutil)
+- Unzip archives (zipfile)
+- List directory contents (os.listdir, pathlib)
+- Safe file system operations
+
+**When to use scripting**:
+- User asks to "create", "copy", "move", "unzip", "list", or "organize" files
+- User needs to perform file system operations
+- User wants to automate file tasks
+
+**How to use scripting**:
+Generate a Python script in a code block with marker: ```python:execute
+The script will be automatically executed with safety checks.
+Use the 'result' variable to return values if needed.
+
+**Example script**:
+```python:execute
+from pathlib import Path
+import shutil
+
+# Create project directory
+project_dir = Path("projects/my_project")
+project_dir.mkdir(parents=True, exist_ok=True)
+
+# Create subdirectories
+(project_dir / "input").mkdir(exist_ok=True)
+(project_dir / "output").mkdir(exist_ok=True)
+
+result = f"Created project at {project_dir}"
+```
 
 ## Commands (prefix with / for system commands)
 - /load <path>: Load a project
@@ -614,6 +833,11 @@ Provide a helpful response. If the user is asking how to do something, point the
                     max_tokens=500  # Keep responses concise
                 )
 
+            # Check for executable scripts in response
+            if response and "```python:execute" in response:
+                # Extract and execute scripts
+                await self._execute_scripts_from_response(response)
+
             # Display response with Rich formatting
             if response and response.strip():
                 # Parse as markdown for nice formatting
@@ -629,9 +853,9 @@ Provide a helpful response. If the user is asking how to do something, point the
             logger.info("chat_response_displayed", message_length=len(message), response_length=len(response))
 
         except AuthenticationError as e:
-            # Auth error - trigger setup flow (unless in test mode)
+            # Auth error - trigger setup flow (unless in test mode or one-shot mode)
             self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
-            if not self._test_mode:
+            if not self._test_mode and not self._oneshot_mode:
                 self.console.print("[dim]Let's set up a new one...[/dim]\n")
                 await self.cmd_setup("")
             else:
@@ -643,9 +867,9 @@ Provide a helpful response. If the user is asking how to do something, point the
             error_str = str(e)
             # Check for auth-related errors in the message
             if "401" in error_str or "authentication" in error_str.lower() or "User not found" in error_str:
-                # Auth error detected by message content - trigger setup (unless in test mode)
+                # Auth error detected by message content - trigger setup (unless in test mode or one-shot mode)
                 self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
-                if not self._test_mode:
+                if not self._test_mode and not self._oneshot_mode:
                     self.console.print("[dim]Let's set up a new one...[/dim]\n")
                     await self.cmd_setup("")
                 else:
@@ -658,6 +882,98 @@ Provide a helpful response. If the user is asking how to do something, point the
                     "[dim]Try asking in a different way, or use 'help' to see available commands.[/dim]"
                 )
                 logger.exception("chat_error", message=message[:100])
+
+    async def _execute_scripts_from_response(self, response: str) -> None:
+        """Extract and execute Python scripts from AI response.
+
+        Detects code blocks marked with ```python:execute and executes them
+        using the scripting engine with safety checks.
+
+        Args:
+            response: AI response text containing potential scripts
+
+        Design Decisions:
+        - Uses regex to extract code blocks between markers
+        - Executes in subprocess for isolation
+        - Shows spinner during execution
+        - Displays results in formatted panels
+        - Handles errors gracefully with user-friendly messages
+        """
+        # Extract all python:execute code blocks
+        import re
+        pattern = r'```python:execute\n(.*?)```'
+        scripts = re.findall(pattern, response, re.DOTALL)
+
+        if not scripts:
+            return
+
+        for i, script_code in enumerate(scripts, 1):
+            try:
+                # Show execution indicator
+                with Progress(
+                    SpinnerColumn(),
+                    TextColumn("[progress.description]{task.description}"),
+                    console=self.console
+                ) as progress:
+                    progress.add_task(f"Executing script {i}/{len(scripts)}...", total=None)
+
+                    # Build execution context
+                    context = {
+                        "project_path": str(self.project_path) if self.project_path else None,
+                        "session_id": self.session_id,
+                    }
+
+                    # Execute script with safety checks
+                    result = await self.scripting_engine.execute_script(
+                        script_code=script_code.strip(),
+                        context=context,
+                        safety_checks=True
+                    )
+
+                # Display results
+                if result.success:
+                    self.console.print(f"\n[green]✅ Script {i} executed successfully[/green]")
+
+                    # Show output if present
+                    if result.output and result.output.strip():
+                        output_panel = Panel(
+                            result.output.strip(),
+                            title="Script Output",
+                            border_style="green"
+                        )
+                        self.console.print(output_panel)
+
+                    # Show result if present
+                    if result.result is not None:
+                        result_panel = Panel(
+                            str(result.result),
+                            title="Result",
+                            border_style="cyan"
+                        )
+                        self.console.print(result_panel)
+
+                    # Show execution time
+                    self.console.print(f"[dim]Execution time: {result.execution_time:.2f}s[/dim]\n")
+
+                else:
+                    # Script failed - show error
+                    self.console.print(f"\n[red]❌ Script {i} failed[/red]")
+                    if result.error:
+                        error_panel = Panel(
+                            result.error,
+                            title="Error Details",
+                            border_style="red"
+                        )
+                        self.console.print(error_panel)
+
+                logger.info("script_executed",
+                           script_index=i,
+                           success=result.success,
+                           execution_time=result.execution_time)
+
+            except Exception as e:
+                self.console.print(f"\n[red]❌ Script {i} execution error: {e}[/red]")
+                logger.exception("script_execution_error", script_index=i)
 
     async def _parse_natural_language(self, user_input: str) -> Tuple[str, str]:
         """Parse natural language input to command + args using regex + LLM fallback.
@@ -1372,6 +1688,7 @@ class GeneratedExtractor:
 
         try:
             session_data = {
+                "session_id": self.session_id,
                 "project_path": str(self.project_path) if self.project_path else None,
                 "project_config": self.project_config.model_dump() if self.project_config else None,
                 "analysis_results": self.analysis_results,
@@ -1386,9 +1703,10 @@ class GeneratedExtractor:
                 json.dump(session_data, f, indent=2)
 
             self.console.print(f"[green]✅ Session saved: {session_name}[/green]")
+            self.console.print(f"[dim]Session ID: {self.session_id}[/dim]")
             self.console.print(f"[dim]File: {session_file}[/dim]")
 
-            logger.info("session_saved", session_name=session_name)
+            logger.info("session_saved", session_name=session_name, session_id=self.session_id)
 
         except Exception as e:
             self.console.print(f"[red]❌ Failed to save session: {e}[/red]")
@@ -1408,6 +1726,10 @@ class GeneratedExtractor:
             with open(session_file, 'r') as f:
                 session_data = json.load(f)
 
+            # Restore session_id if available (for sessions created with one-shot mode)
+            if "session_id" in session_data:
+                self.session_id = session_data["session_id"]
+
             # Restore state
             if session_data.get("project_path"):
                 await self.cmd_load_project(session_data["project_path"])
@@ -1422,12 +1744,13 @@ class GeneratedExtractor:
                     self.generated_code_path = code_path
 
             self.console.print(f"[green]✅ Session resumed: {session_name}[/green]")
+            self.console.print(f"[dim]Session ID: {self.session_id}[/dim]")
             self.console.print(f"[dim]From: {session_data.get('timestamp')}[/dim]")
 
             # Show restored state
             await self.cmd_show()
 
-            logger.info("session_resumed", session_name=session_name)
+            logger.info("session_resumed", session_name=session_name, session_id=self.session_id)
 
         except Exception as e:
             self.console.print(f"[red]❌ Failed to resume session: {e}[/red]")
@@ -1444,6 +1767,7 @@ class GeneratedExtractor:
 
         table = Table(title="Saved Sessions")
         table.add_column("Name", style="cyan")
+        table.add_column("Session ID", style="magenta", width=30)
         table.add_column("Timestamp", style="white")
         table.add_column("Project", style="green")
 
@@ -1453,10 +1777,11 @@ class GeneratedExtractor:
                     session_data = json.load(f)
 
                 session_name = session_file.stem.replace("_session", "")
+                session_id = session_data.get("session_id", "N/A")
                 timestamp = session_data.get("timestamp", "Unknown")
                 project = session_data.get("project_config", {}).get("project", {}).get("name", "None") if session_data.get("project_config") else "None"
 
-                table.add_row(session_name, timestamp, project)
+                table.add_row(session_name, session_id, timestamp, project)
             except:
                 pass
 

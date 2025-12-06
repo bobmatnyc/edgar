@@ -1,0 +1,216 @@
+{
+  "timestamp": "2025-12-06 11:40:57",
+  "basic_commands": [
+    {
+      "name": "Help command",
+      "command": "help",
+      "args": "",
+      "success": true,
+      "error": null,
+      "duration": 0.0018417835235595703,
+      "expect_error": false
+    },
+    {
+      "name": "Load project",
+      "command": "load",
+      "args": "/Users/masa/Clients/Zach/projects/edgar/projects/weather_test",
+      "success": true,
+      "error": null,
+      "duration": 0.010568857192993164,
+      "expect_error": false
+    },
+    {
+      "name": "Show status",
+      "command": "show",
+      "args": "",
+      "success": false,
+      "error": "'ProjectConfig' object has no attribute 'data_source'",
+      "duration": 3.1948089599609375e-05,
+      "expect_error": false
+    },
+    {
+      "name": "Show examples",
+      "command": "examples",
+      "args": "",
+      "success": false,
+      "error": "'ExampleConfig' object has no attribute 'output_data'",
+      "duration": 4.1961669921875e-05,
+      "expect_error": false
+    },
+    {
+      "name": "Analyze project",
+      "command": "analyze",
+      "args": "",
+      "success": true,
+      "error": null,
+      "duration": 0.15762782096862793,
+      "expect_error": false
+    },
+    {
+      "name": "Show patterns",
+      "command": "patterns",
+      "args": "",
+      "success": true,
+      "error": null,
+      "duration": 0.0002779960632324219,
+      "expect_error": false
+    },
+    {
+      "name": "Generate code",
+      "command": "generate",
+      "args": "",
+      "success": true,
+      "error": null,
+      "duration": 0.00027489662170410156,
+      "expect_error": false
+    },
+    {
+      "name": "Validate code",
+      "command": "validate",
+      "args": "",
+      "success": true,
+      "error": null,
+      "duration": 0.00025391578674316406,
+      "expect_error": false
+    },
+    {
+      "name": "Extract data",
+      "command": "extract",
+      "args": "",
+      "success": true,
+      "error": null,
+      "duration": 0.00022792816162109375,
+      "expect_error": false
+    },
+    {
+      "name": "Set confidence",
+      "command": "confidence",
+      "args": "0.85",
+      "success": false,
+      "error": "'ProjectConfig' object has no attribute 'confidence_threshold'",
+      "duration": 2.4080276489257812e-05,
+      "expect_error": false
+    },
+    {
+      "name": "Get threshold",
+      "command": "threshold",
+      "args": "",
+      "success": false,
+      "error": "'ProjectConfig' object has no attribute 'confidence_threshold'",
+      "duration": 2.002716064453125e-05,
+      "expect_error": false
+    },
+    {
+      "name": "Save session",
+      "command": "save",
+      "args": "test_qa",
+      "success": true,
+      "error": null,
+      "duration": 1.038893222808838,
+      "expect_error": false
+    },
+    {
+      "name": "List sessions",
+      "command": "sessions",
+      "args": "",
+      "success": true,
+      "error": null,
+      "duration": 0.0016739368438720703,
+      "expect_error": false
+    },
+    {
+      "name": "Resume session",
+      "command": "resume",
+      "args": "test_qa",
+      "success": true,
+      "error": null,
+      "duration": 0.07435083389282227,
+      "expect_error": false
+    }
+  ],
+  "natural_language": [
+    {
+      "name": "NL: What patterns did you detect?",
+      "query": "What patterns did you detect?",
+      "parsed_command": "patterns",
+      "parsed_args": "",
+      "expected_command": "patterns",
+      "success": true
+    },
+    {
+      "name": "NL: Show me the examples",
+      "query": "Show me the examples",
+      "parsed_command": "examples",
+      "parsed_args": "",
+      "expected_command": "examples",
+      "success": true
+    },
+    {
+      "name": "NL: Can you analyze the project?",
+      "query": "Can you analyze the project?",
+      "parsed_command": "analyze",
+      "parsed_args": "",
+      "expected_command": "analyze",
+      "success": true
+    },
+    {
+      "name": "NL: Generate the extraction code",
+      "query": "Generate the extraction code",
+      "parsed_command": "generate",
+      "parsed_args": "",
+      "expected_command": "generate",
+      "success": true
+    },
+    {
+      "name": "NL: Set confidence to 0.9",
+      "query": "Set confidence to 0.9",
+      "parsed_command": "confidence",
+      "parsed_args": "",
+      "expected_command": "confidence",
+      "success": true
+    }
+  ],
+  "error_handling": [
+    {
+      "name": "Invalid confidence value",
+      "command": "confidence",
+      "args": "5.0",
+      "success": false,
+      "error": null,
+      "duration": 0.00020313262939453125,
+      "expect_error": true
+    },
+    {
+      "name": "Resume nonexistent session",
+      "command": "resume",
+      "args": "nonexistent_session_xyz",
+      "success": false,
+      "error": null,
+      "duration": 0.00020503997802734375,
+      "expect_error": true
+    },
+    {
+      "name": "Generate without analyze",
+      "command": "generate",
+      "args": "",
+      "success": true,
+      "error": null,
+      "duration": 8.20159912109375e-05,
+      "expect_error": false
+    }
+  ],
+  "session_persistence": {
+    "save_success": true,
+    "restore_success": false,
+    "session_file": "/Users/masa/.edgar/sessions/persist_test_session.json"
+  },
+  "performance": {
+    "full_workflow": 0.152940034866333
+  },
+  "summary": {
+    "total_tests": 23,
+    "total_passed": 16,
+    "pass_rate": 0.6956521739130435,
+    "production_ready": false
+  }
+}
