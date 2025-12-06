@@ -1,11 +1,13 @@
 """Tests for custom code generation exceptions."""
+
 import pytest
+
 from extract_transform_platform.services.codegen.exceptions import (
     CodeValidationError,
-    OpenRouterAPIError,
-    PlanGenerationError,
     ExampleParsingError,
     FileWriteError,
+    OpenRouterAPIError,
+    PlanGenerationError,
 )
 
 
@@ -14,7 +16,7 @@ class TestCodeValidationError:
         error = CodeValidationError(
             issues=["syntax error", "type error"],
             attempts=3,
-            project_name="test_project"
+            project_name="test_project",
         )
 
         error_str = str(error)
@@ -23,20 +25,14 @@ class TestCodeValidationError:
         assert "syntax error" in error_str
 
     def test_includes_troubleshooting_suggestions(self):
-        error = CodeValidationError(
-            issues=["error1"],
-            attempts=1,
-            project_name="test"
-        )
+        error = CodeValidationError(issues=["error1"], attempts=1, project_name="test")
 
         assert "💡 Troubleshooting:" in str(error)
         assert "Review the following validation issues" in str(error)
 
     def test_context_stored(self):
         error = CodeValidationError(
-            issues=["issue1", "issue2"],
-            attempts=2,
-            project_name="test_proj"
+            issues=["issue1", "issue2"], attempts=2, project_name="test_proj"
         )
 
         assert error.context["issues"] == ["issue1", "issue2"]
@@ -44,9 +40,7 @@ class TestCodeValidationError:
 
     def test_multiple_issues_joined(self):
         error = CodeValidationError(
-            issues=["issue1", "issue2", "issue3"],
-            attempts=3,
-            project_name="test"
+            issues=["issue1", "issue2", "issue3"], attempts=3, project_name="test"
         )
 
         error_str = str(error)
@@ -126,7 +120,7 @@ class TestExampleParsingError:
     def test_includes_file_path_and_parse_error(self):
         error = ExampleParsingError(
             file_path="/path/to/file.json",
-            parse_error="Expecting ',' delimiter: line 5 column 10"
+            parse_error="Expecting ',' delimiter: line 5 column 10",
         )
         error_str = str(error)
 
@@ -136,8 +130,7 @@ class TestExampleParsingError:
 
     def test_includes_troubleshooting_suggestions(self):
         error = ExampleParsingError(
-            file_path="example1.json",
-            parse_error="Invalid JSON"
+            file_path="example1.json", parse_error="Invalid JSON"
         )
         error_str = str(error)
 
@@ -146,10 +139,7 @@ class TestExampleParsingError:
         assert "UTF-8" in error_str
 
     def test_context_stored(self):
-        error = ExampleParsingError(
-            file_path="test.json",
-            parse_error="Parse error"
-        )
+        error = ExampleParsingError(file_path="test.json", parse_error="Parse error")
 
         assert error.context["file_path"] == "test.json"
         assert error.context["parse_error"] == "Parse error"
@@ -158,8 +148,7 @@ class TestExampleParsingError:
 class TestFileWriteError:
     def test_includes_file_path_and_error(self):
         error = FileWriteError(
-            file_path="/output/extractor.py",
-            error="Permission denied"
+            file_path="/output/extractor.py", error="Permission denied"
         )
         error_str = str(error)
 
@@ -168,10 +157,7 @@ class TestFileWriteError:
         assert "write permissions" in error_str
 
     def test_includes_troubleshooting_suggestions(self):
-        error = FileWriteError(
-            file_path="output.py",
-            error="No space left on device"
-        )
+        error = FileWriteError(file_path="output.py", error="No space left on device")
         error_str = str(error)
 
         assert "💡 Troubleshooting:" in error_str
@@ -179,10 +165,7 @@ class TestFileWriteError:
         assert "--output-dir" in error_str
 
     def test_context_stored(self):
-        error = FileWriteError(
-            file_path="/tmp/file.py",
-            error="I/O error"
-        )
+        error = FileWriteError(file_path="/tmp/file.py", error="I/O error")
 
         assert error.context["file_path"] == "/tmp/file.py"
         assert error.context["error"] == "I/O error"
@@ -190,24 +173,29 @@ class TestFileWriteError:
 
 class TestCodeGenerationErrorBase:
     def test_suggestions_optional(self):
-        from extract_transform_platform.services.codegen.exceptions import CodeGenerationError
+        from extract_transform_platform.services.codegen.exceptions import (
+            CodeGenerationError,
+        )
 
         error = CodeGenerationError("Test error")
         assert error.suggestions == []
         assert "💡 Troubleshooting:" not in str(error)
 
     def test_context_optional(self):
-        from extract_transform_platform.services.codegen.exceptions import CodeGenerationError
+        from extract_transform_platform.services.codegen.exceptions import (
+            CodeGenerationError,
+        )
 
         error = CodeGenerationError("Test error")
         assert error.context == {}
 
     def test_suggestions_displayed(self):
-        from extract_transform_platform.services.codegen.exceptions import CodeGenerationError
+        from extract_transform_platform.services.codegen.exceptions import (
+            CodeGenerationError,
+        )
 
         error = CodeGenerationError(
-            "Test error",
-            suggestions=["Suggestion 1", "Suggestion 2"]
+            "Test error", suggestions=["Suggestion 1", "Suggestion 2"]
         )
         error_str = str(error)
 
@@ -216,11 +204,10 @@ class TestCodeGenerationErrorBase:
         assert "2. Suggestion 2" in error_str
 
     def test_context_stored(self):
-        from extract_transform_platform.services.codegen.exceptions import CodeGenerationError
-
-        error = CodeGenerationError(
-            "Test error",
-            context={"key": "value"}
+        from extract_transform_platform.services.codegen.exceptions import (
+            CodeGenerationError,
         )
+
+        error = CodeGenerationError("Test error", context={"key": "value"})
 
         assert error.context["key"] == "value"

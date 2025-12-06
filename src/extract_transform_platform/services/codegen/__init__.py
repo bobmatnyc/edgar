@@ -14,13 +14,15 @@ Migration Status: COMPLETE (T4 - Extract Code Generation Pipeline)
 - Tests: 0 breaking changes
 """
 
-from extract_transform_platform.services.codegen.prompt_generator import PromptGenerator
 from extract_transform_platform.services.codegen.code_generator import (
     CodeGeneratorService,
     CodeValidator,
     CodeWriter,
 )
-from extract_transform_platform.services.codegen.constraint_enforcer import ConstraintEnforcer
+from extract_transform_platform.services.codegen.constraint_enforcer import (
+    ConstraintEnforcer,
+)
+from extract_transform_platform.services.codegen.prompt_generator import PromptGenerator
 
 __all__ = [
     "PromptGenerator",

@@ -22,9 +22,7 @@ class ReportService(IReportService):
     """Report generation service implementation."""
 
     def __init__(
-        self,
-        data_extraction_service: IDataExtractionService,
-        config: ConfigService
+        self, data_extraction_service: IDataExtractionService, config: ConfigService
     ):
         """Initialize report service."""
         self._data_extraction = data_extraction_service
@@ -38,7 +36,9 @@ class ReportService(IReportService):
         self, companies: List[str], year: int
     ) -> AnalysisReport:
         """Generate analysis report for multiple companies."""
-        logger.info("Starting analysis report generation", companies=len(companies), year=year)
+        logger.info(
+            "Starting analysis report generation", companies=len(companies), year=year
+        )
 
         report = AnalysisReport(target_year=year)
 
@@ -47,14 +47,16 @@ class ReportService(IReportService):
                 logger.info("Analyzing company", cik=cik)
 
                 # Extract company analysis
-                company_analysis = await self._data_extraction.extract_company_analysis(cik, year)
+                company_analysis = await self._data_extraction.extract_company_analysis(
+                    cik, year
+                )
 
                 if company_analysis:
                     report.add_company_analysis(company_analysis)
                     logger.info(
                         "Company analysis added to report",
                         cik=cik,
-                        company=company_analysis.company.name
+                        company=company_analysis.company.name,
                     )
                 else:
                     logger.warning("Failed to analyze company", cik=cik)
@@ -66,7 +68,7 @@ class ReportService(IReportService):
         logger.info(
             "Analysis report generation completed",
             total_companies=report.total_companies,
-            year=year
+            year=year,
         )
 
         return report
@@ -84,7 +86,9 @@ class ReportService(IReportService):
 
             # Add header styling
             header_font = Font(bold=True, color="FFFFFF")
-            header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
+            header_fill = PatternFill(
+                start_color="366092", end_color="366092", fill_type="solid"
+            )
 
             # Write data to worksheet
             for r in dataframe_to_rows(df, index=False, header=True):
@@ -118,7 +122,9 @@ class ReportService(IReportService):
             logger.info("Excel report exported", filepath=str(output_path))
 
         except Exception as e:
-            logger.error("Failed to export Excel report", filepath=filepath, error=str(e))
+            logger.error(
+                "Failed to export Excel report", filepath=filepath, error=str(e)
+            )
             raise
 
     async def export_to_json(self, report: AnalysisReport, filepath: str) -> None:
@@ -130,13 +136,15 @@ class ReportService(IReportService):
             report_data = report.dict()
 
             # Write to JSON file
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(report_data, f, indent=2, default=str)
 
             logger.info("JSON report exported", filepath=str(output_path))
 
         except Exception as e:
-            logger.error("Failed to export JSON report", filepath=filepath, error=str(e))
+            logger.error(
+                "Failed to export JSON report", filepath=filepath, error=str(e)
+            )
             raise
 
     def _create_report_dataframe(self, report: AnalysisReport) -> pd.DataFrame:
@@ -163,17 +171,19 @@ class ReportService(IReportService):
             exceeds_tax = exec_compensation > tax_amount if tax_amount > 0 else False
 
             row = {
-                'Company Name': company.name,
-                'Ticker': company.ticker or 'N/A',
-                'CIK': company.cik,
-                'Industry': company.industry or 'N/A',
-                'Sector': company.sector or 'N/A',
-                'Fortune Rank': company.fortune_rank or 'N/A',
-                f'Executive Compensation {report.target_year}': float(exec_compensation),
-                f'Tax Expense {report.target_year}': float(tax_amount),
-                'Compensation/Tax Ratio': ratio,
-                'Compensation Exceeds Tax': exceeds_tax,
-                'Number of Executives': len(company_analysis.executive_compensations)
+                "Company Name": company.name,
+                "Ticker": company.ticker or "N/A",
+                "CIK": company.cik,
+                "Industry": company.industry or "N/A",
+                "Sector": company.sector or "N/A",
+                "Fortune Rank": company.fortune_rank or "N/A",
+                f"Executive Compensation {report.target_year}": float(
+                    exec_compensation
+                ),
+                f"Tax Expense {report.target_year}": float(tax_amount),
+                "Compensation/Tax Ratio": ratio,
+                "Compensation Exceeds Tax": exceeds_tax,
+                "Number of Executives": len(company_analysis.executive_compensations),
             }
 
             data.append(row)
@@ -182,7 +192,7 @@ class ReportService(IReportService):
 
         # Sort by compensation amount (descending)
         if not df.empty:
-            comp_col = f'Executive Compensation {report.target_year}'
+            comp_col = f"Executive Compensation {report.target_year}"
             df = df.sort_values(comp_col, ascending=False)
 
         return df
@@ -199,8 +209,14 @@ class ReportService(IReportService):
             ["Report Date", stats["report_date"].strftime("%Y-%m-%d %H:%M:%S")],
             ["Target Year", stats["target_year"]],
             ["Total Companies Analyzed", stats["total_companies"]],
-            ["Companies with Higher Compensation", stats["companies_with_higher_compensation"]],
-            ["Percentage with Higher Compensation", f"{stats['percentage_higher_compensation']:.1f}%"],
+            [
+                "Companies with Higher Compensation",
+                stats["companies_with_higher_compensation"],
+            ],
+            [
+                "Percentage with Higher Compensation",
+                f"{stats['percentage_higher_compensation']:.1f}%",
+            ],
         ]
 
         for row in summary_data:
@@ -208,7 +224,7 @@ class ReportService(IReportService):
 
         # Style summary sheet
         header_font = Font(bold=True, size=14)
-        ws['A1'].font = header_font
+        ws["A1"].font = header_font
 
         # Auto-adjust column widths
         for column in ws.columns:

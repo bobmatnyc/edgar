@@ -15,8 +15,10 @@ Removal Timeline: After all EDGAR code migrated (estimated: 2 weeks)
 """
 
 import warnings
-from extract_transform_platform.data_sources.web.api_source import APIDataSource as _PlatformAPIDataSource
 
+from extract_transform_platform.data_sources.web.api_source import (
+    APIDataSource as _PlatformAPIDataSource,
+)
 
 # Issue deprecation warning on import
 warnings.warn(
@@ -24,7 +26,7 @@ warnings.warn(
     "Use 'from extract_transform_platform.data_sources.web import APIDataSource' instead. "
     "This wrapper will be removed in a future version.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 
@@ -36,6 +38,7 @@ class APIDataSource(_PlatformAPIDataSource):
 
     This wrapper will be removed after EDGAR code is fully migrated.
     """
+
     pass
 
 

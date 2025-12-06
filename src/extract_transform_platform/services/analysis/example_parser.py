@@ -27,6 +27,9 @@ Usage:
 import logging
 from typing import Any, Dict, List, Optional, Set, Tuple
 
+# TODO: Migrate ExampleConfig to platform (currently in EDGAR)
+# Temporary import from EDGAR until ProjectConfig is migrated (T2 dependency)
+from edgar_analyzer.models.project_config import ExampleConfig
 from extract_transform_platform.models.patterns import (
     FieldTypeEnum,
     ParsedExamples,
@@ -35,10 +38,6 @@ from extract_transform_platform.models.patterns import (
     Schema,
 )
 from extract_transform_platform.services.analysis.schema_analyzer import SchemaAnalyzer
-
-# TODO: Migrate ExampleConfig to platform (currently in EDGAR)
-# Temporary import from EDGAR until ProjectConfig is migrated (T2 dependency)
-from edgar_analyzer.models.project_config import ExampleConfig
 
 logger = logging.getLogger(__name__)
 

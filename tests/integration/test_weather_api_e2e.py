@@ -28,8 +28,8 @@ Success Criteria:
 - Progress tracking verified
 """
 
-import asyncio
 import ast
+import asyncio
 import json
 import os
 import shutil
@@ -49,7 +49,9 @@ from edgar_analyzer.config.container import Container
 from extract_transform_platform.models.plan import GenerationProgress
 from extract_transform_platform.models.project_config import ProjectConfig
 from extract_transform_platform.services.analysis import ExampleParser, SchemaAnalyzer
-from extract_transform_platform.services.codegen.code_generator import CodeGeneratorService
+from extract_transform_platform.services.codegen.code_generator import (
+    CodeGeneratorService,
+)
 from extract_transform_platform.services.codegen.exceptions import (
     CodeGenerationError,
     CodeValidationError,
@@ -76,7 +78,9 @@ def _check_api_key_available() -> bool:
 def require_api_key():
     """Skip test if OPENROUTER_API_KEY is not available."""
     if not _check_api_key_available():
-        pytest.skip("OPENROUTER_API_KEY not set - skipping E2E test requiring code generation")
+        pytest.skip(
+            "OPENROUTER_API_KEY not set - skipping E2E test requiring code generation"
+        )
 
 
 @pytest.fixture
@@ -207,7 +211,7 @@ class TestWeatherAPILifecycle:
             ExampleConfig(
                 input=ex["input"],
                 output=ex["output"],
-                description=ex.get("description", "")
+                description=ex.get("description", ""),
             )
             for ex in weather_api_examples
         ]
@@ -242,7 +246,9 @@ class TestWeatherAPILifecycle:
                     try:
                         ast.parse(code)
                     except SyntaxError as e:
-                        pytest.fail(f"Generated code has syntax error in {py_file}: {e}")
+                        pytest.fail(
+                            f"Generated code has syntax error in {py_file}: {e}"
+                        )
 
     # ============================================================================
     # TEST 2: CLI COMMAND INTEGRATION TEST
@@ -277,9 +283,9 @@ class TestWeatherAPILifecycle:
 
         # Step 3: Check output contains expected information
         output = result.output
-        assert "weather_api" in output.lower() or "validation" in output.lower(), (
-            "Output should mention project or validation"
-        )
+        assert (
+            "weather_api" in output.lower() or "validation" in output.lower()
+        ), "Output should mention project or validation"
 
     @pytest.mark.integration
     def test_weather_api_cli_list(self, cli_runner: CliRunner) -> None:
@@ -301,9 +307,9 @@ class TestWeatherAPILifecycle:
         result = cli_runner.invoke(project, ["list"])
 
         assert result.exit_code == 0, f"List command failed: {result.output}"
-        assert "weather_api" in result.output.lower(), (
-            "weather_api_extractor should appear in project list"
-        )
+        assert (
+            "weather_api" in result.output.lower()
+        ), "weather_api_extractor should appear in project list"
 
     # ============================================================================
     # TEST 7: SMOKE TEST (FAST VALIDATION)
@@ -406,8 +412,12 @@ class TestWeatherAPIExamples:
             output_data = example["output"]
             assert "city" in output_data, "All outputs should have 'city'"
             assert "country" in output_data, "All outputs should have 'country'"
-            assert "temperature_c" in output_data, "All outputs should have 'temperature_c'"
-            assert "humidity_percent" in output_data, "All outputs should have 'humidity_percent'"
+            assert (
+                "temperature_c" in output_data
+            ), "All outputs should have 'temperature_c'"
+            assert (
+                "humidity_percent" in output_data
+            ), "All outputs should have 'humidity_percent'"
             assert "conditions" in output_data, "All outputs should have 'conditions'"
 
             # Collect schemas
@@ -416,18 +426,24 @@ class TestWeatherAPIExamples:
 
         # Step 5: Run SchemaAnalyzer on inputs and outputs
         inferred_input_schema = schema_analyzer.infer_input_schema(weather_api_examples)
-        inferred_output_schema = schema_analyzer.infer_output_schema(weather_api_examples)
+        inferred_output_schema = schema_analyzer.infer_output_schema(
+            weather_api_examples
+        )
 
         assert inferred_input_schema is not None, "Should infer input schema"
         assert inferred_output_schema is not None, "Should infer output schema"
 
         # Step 6: Verify consistent field types
         # All temperature fields should be numeric (float or int)
-        assert len(inferred_output_schema.fields) >= 8, "Should have at least 8 output fields"
+        assert (
+            len(inferred_output_schema.fields) >= 8
+        ), "Should have at least 8 output fields"
 
         # Find temperature field and verify type
         # Note: SchemaField is a dict-like structure, access with dict methods
-        temp_fields = [f for f in inferred_output_schema.fields if "temperature" in str(f)]
+        temp_fields = [
+            f for f in inferred_output_schema.fields if "temperature" in str(f)
+        ]
         assert len(temp_fields) > 0, "Should detect temperature field"
 
     @pytest.mark.integration
@@ -455,7 +471,9 @@ class TestWeatherAPIExamples:
             with open(json_file) as f:
                 try:
                     data = json.load(f)
-                    assert isinstance(data, dict), f"{json_file.name} should contain object"
+                    assert isinstance(
+                        data, dict
+                    ), f"{json_file.name} should contain object"
                 except json.JSONDecodeError as e:
                     pytest.fail(f"Invalid JSON in {json_file.name}: {e}")
 
@@ -502,9 +520,9 @@ class TestWeatherAPICodeGeneration:
 
         # Step 2: Verify error message is helpful
         error_msg = str(exc_info.value).lower()
-        assert "example" in error_msg or "empty" in error_msg, (
-            "Error message should mention examples or empty"
-        )
+        assert (
+            "example" in error_msg or "empty" in error_msg
+        ), "Error message should mention examples or empty"
 
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -537,12 +555,18 @@ class TestWeatherAPICodeGeneration:
             malformed_example = ExampleConfig(
                 input={"invalid": "data"},
                 output={},  # Empty output
-                description="Malformed test"
+                description="Malformed test",
             )
 
             # Step 2: Attempt generation
             with pytest.raises(
-                (ExampleParsingError, ValueError, KeyError, CodeGenerationError, Exception)
+                (
+                    ExampleParsingError,
+                    ValueError,
+                    KeyError,
+                    CodeGenerationError,
+                    Exception,
+                )
             ) as exc_info:
                 await code_generator.generate(
                     examples=[malformed_example],
@@ -554,15 +578,23 @@ class TestWeatherAPICodeGeneration:
             # Error should mention missing field, invalid format, or parsing issue
             assert any(
                 keyword in error_msg
-                for keyword in ["output", "missing", "invalid", "required", "example", "parse", "pattern"]
+                for keyword in [
+                    "output",
+                    "missing",
+                    "invalid",
+                    "required",
+                    "example",
+                    "parse",
+                    "pattern",
+                ]
             ), f"Error message should be informative: {error_msg}"
 
         except Exception as e:
             # If we can't even create the malformed example, that's also acceptable
             # as it shows the validation is working at the model level
-            assert "validation" in str(e).lower() or "required" in str(e).lower(), (
-                f"Expected validation error, got: {e}"
-            )
+            assert (
+                "validation" in str(e).lower() or "required" in str(e).lower()
+            ), f"Expected validation error, got: {e}"
 
     # ============================================================================
     # TEST 5: GENERATED CODE QUALITY TEST
@@ -591,16 +623,16 @@ class TestWeatherAPICodeGeneration:
         Note: This test skips if no generated code exists, which is acceptable
         for E2E testing as code generation requires API keys and real API calls.
         """
-        generated_dir = (
-            weather_api_project_path / "generated" / "weather_api_extractor"
-        )
+        generated_dir = weather_api_project_path / "generated" / "weather_api_extractor"
 
         if not generated_dir.exists():
             pytest.skip("No generated code found - generation requires API keys")
 
         # Step 1: Find Python files
         # Generated code may be in src/ subdirectory or directly in generated_dir
-        src_dir = generated_dir / "src" if (generated_dir / "src").exists() else generated_dir
+        src_dir = (
+            generated_dir / "src" if (generated_dir / "src").exists() else generated_dir
+        )
         python_files = list(src_dir.glob("**/*.py"))
 
         if len(python_files) == 0:
@@ -638,9 +670,9 @@ class TestWeatherAPICodeGeneration:
             # We expect at least some type hints and docstrings in generated code
             # (not all files may have them, but main extractor should)
             if py_file.stem not in ["__init__"]:
-                assert has_type_hints or has_docstrings, (
-                    f"{py_file.name} should have type hints or docstrings"
-                )
+                assert (
+                    has_type_hints or has_docstrings
+                ), f"{py_file.name} should have type hints or docstrings"
 
     # ============================================================================
     # TEST 6: PROGRESS TRACKING INTEGRATION TEST (T10)
@@ -682,6 +714,7 @@ class TestWeatherAPICodeGeneration:
         # Step 2: Verify progress callback signature is correct
         # We verify the callback parameter exists and accepts the right type
         import inspect
+
         sig = inspect.signature(code_generator.generate)
         params = sig.parameters
 
@@ -694,7 +727,7 @@ class TestWeatherAPICodeGeneration:
             total_steps=7,
             step_name="Test step",
             status="in_progress",
-            elapsed_time=0.5
+            elapsed_time=0.5,
         )
 
         assert test_progress.current_step == 1, "Should track current step"

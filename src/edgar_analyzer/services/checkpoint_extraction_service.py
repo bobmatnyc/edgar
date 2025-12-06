@@ -30,7 +30,7 @@ class CheckpointExtractionService:
         self,
         data_extraction_service: IDataExtractionService,
         company_service: ICompanyService,
-        checkpoint_manager: Optional[CheckpointManager] = None
+        checkpoint_manager: Optional[CheckpointManager] = None,
     ):
         """Initialize checkpoint extraction service."""
         self._data_extraction = data_extraction_service
@@ -45,7 +45,7 @@ class CheckpointExtractionService:
         target_year: int,
         analysis_years: Optional[List[int]] = None,
         analysis_id: Optional[str] = None,
-        config: Optional[dict] = None
+        config: Optional[dict] = None,
     ) -> AnalysisCheckpoint:
         """Start a new analysis or resume an existing one."""
 
@@ -55,7 +55,13 @@ class CheckpointExtractionService:
 
         # Default to 5-year analysis
         if analysis_years is None:
-            analysis_years = [target_year - 4, target_year - 3, target_year - 2, target_year - 1, target_year]
+            analysis_years = [
+                target_year - 4,
+                target_year - 3,
+                target_year - 2,
+                target_year - 1,
+                target_year,
+            ]
 
         # Try to load existing checkpoint
         checkpoint = self._checkpoint_manager.load_checkpoint(analysis_id, target_year)
@@ -66,11 +72,15 @@ class CheckpointExtractionService:
                 analysis_id=analysis_id,
                 progress=f"{checkpoint.progress_percentage:.1f}%",
                 completed=checkpoint.completed_companies,
-                total=checkpoint.total_companies
+                total=checkpoint.total_companies,
             )
         else:
             # Create new checkpoint
-            logger.info("Starting new analysis", analysis_id=analysis_id, companies=len(company_ciks))
+            logger.info(
+                "Starting new analysis",
+                analysis_id=analysis_id,
+                companies=len(company_ciks),
+            )
 
             # Get company information
             companies_data = []
@@ -84,7 +94,7 @@ class CheckpointExtractionService:
                         fortune_rank=company.fortune_rank,
                         sector=company.sector,
                         industry=company.industry,
-                        status=ExtractionStatus.PENDING
+                        status=ExtractionStatus.PENDING,
                     )
                     companies_data.append(company_data)
 
@@ -94,7 +104,7 @@ class CheckpointExtractionService:
                 analysis_years=analysis_years,
                 total_companies=len(companies_data),
                 config=config or {},
-                companies=companies_data
+                companies=companies_data,
             )
 
             # Save initial checkpoint
@@ -103,10 +113,7 @@ class CheckpointExtractionService:
         return checkpoint
 
     async def extract_company_data(
-        self,
-        checkpoint: AnalysisCheckpoint,
-        company_cik: str,
-        max_retries: int = 3
+        self, checkpoint: AnalysisCheckpoint, company_cik: str, max_retries: int = 3
     ) -> bool:
         """Extract data for a single company with error handling."""
 
@@ -117,7 +124,9 @@ class CheckpointExtractionService:
 
         # Skip if already completed
         if company_data.status == ExtractionStatus.COMPLETED:
-            logger.debug("Company already completed", cik=company_cik, name=company_data.name)
+            logger.debug(
+                "Company already completed", cik=company_cik, name=company_data.name
+            )
             return True
 
         # Update status to in progress
@@ -125,7 +134,9 @@ class CheckpointExtractionService:
         company_data.extraction_start_time = datetime.now()
 
         try:
-            logger.info("Extracting company data", cik=company_cik, name=company_data.name)
+            logger.info(
+                "Extracting company data", cik=company_cik, name=company_data.name
+            )
 
             # Extract data for each year
             for year in checkpoint.analysis_years:
@@ -146,7 +157,7 @@ class CheckpointExtractionService:
                 "Company extraction completed",
                 cik=company_cik,
                 name=company_data.name,
-                years=len(checkpoint.analysis_years)
+                years=len(checkpoint.analysis_years),
             )
 
             return True
@@ -167,41 +178,61 @@ class CheckpointExtractionService:
                     cik=company_cik,
                     name=company_data.name,
                     error=error_msg,
-                    retries=company_data.retry_count
+                    retries=company_data.retry_count,
                 )
 
                 return False
             else:
                 # Reset to pending for retry
                 company_data.status = ExtractionStatus.PENDING
-                company_data.error_message = f"Retry {company_data.retry_count}: {error_msg}"
+                company_data.error_message = (
+                    f"Retry {company_data.retry_count}: {error_msg}"
+                )
 
                 logger.warning(
                     "Company extraction failed, will retry",
                     cik=company_cik,
                     name=company_data.name,
                     error=error_msg,
-                    retry=company_data.retry_count
+                    retry=company_data.retry_count,
                 )
 
                 return False
 
-    async def _extract_year_data(self, company_data: CompanyExtractionData, year: int) -> None:
+    async def _extract_year_data(
+        self, company_data: CompanyExtractionData, year: int
+    ) -> None:
         """Extract data for a specific year."""
         try:
             # Extract tax expense data
-            tax_expense = await self._data_extraction.extract_tax_expense(company_data.cik, year)
+            tax_expense = await self._data_extraction.extract_tax_expense(
+                company_data.cik, year
+            )
             if tax_expense:
                 company_data.tax_data[year] = {
                     "total_tax_expense": float(tax_expense.total_tax_expense),
-                    "current_tax_expense": float(tax_expense.current_tax_expense) if tax_expense.current_tax_expense else 0.0,
-                    "deferred_tax_expense": float(tax_expense.deferred_tax_expense) if tax_expense.deferred_tax_expense else 0.0,
+                    "current_tax_expense": (
+                        float(tax_expense.current_tax_expense)
+                        if tax_expense.current_tax_expense
+                        else 0.0
+                    ),
+                    "deferred_tax_expense": (
+                        float(tax_expense.deferred_tax_expense)
+                        if tax_expense.deferred_tax_expense
+                        else 0.0
+                    ),
                     "fiscal_year": tax_expense.fiscal_year,
-                    "filing_date": tax_expense.filing_date.isoformat() if tax_expense.filing_date else None
+                    "filing_date": (
+                        tax_expense.filing_date.isoformat()
+                        if tax_expense.filing_date
+                        else None
+                    ),
                 }
 
             # Extract executive compensation data
-            compensations = await self._data_extraction.extract_executive_compensation(company_data.cik, year)
+            compensations = await self._data_extraction.extract_executive_compensation(
+                company_data.cik, year
+            )
             if compensations:
                 company_data.compensation_data[year] = [
                     {
@@ -210,10 +241,18 @@ class CheckpointExtractionService:
                         "total_compensation": float(comp.total_compensation),
                         "salary": float(comp.salary) if comp.salary else 0.0,
                         "bonus": float(comp.bonus) if comp.bonus else 0.0,
-                        "stock_awards": float(comp.stock_awards) if comp.stock_awards else 0.0,
-                        "option_awards": float(comp.option_awards) if comp.option_awards else 0.0,
-                        "other_compensation": float(comp.other_compensation) if comp.other_compensation else 0.0,
-                        "fiscal_year": comp.fiscal_year
+                        "stock_awards": (
+                            float(comp.stock_awards) if comp.stock_awards else 0.0
+                        ),
+                        "option_awards": (
+                            float(comp.option_awards) if comp.option_awards else 0.0
+                        ),
+                        "other_compensation": (
+                            float(comp.other_compensation)
+                            if comp.other_compensation
+                            else 0.0
+                        ),
+                        "fiscal_year": comp.fiscal_year,
                     }
                     for comp in compensations
                 ]
@@ -223,7 +262,7 @@ class CheckpointExtractionService:
                 "Failed to extract data for year",
                 cik=company_data.cik,
                 year=year,
-                error=str(e)
+                error=str(e),
             )
             # Continue with other years even if one fails
 
@@ -232,7 +271,9 @@ class CheckpointExtractionService:
         try:
             # Calculate total compensation by year
             for year, compensations in company_data.compensation_data.items():
-                total_comp = sum(Decimal(str(comp["total_compensation"])) for comp in compensations)
+                total_comp = sum(
+                    Decimal(str(comp["total_compensation"])) for comp in compensations
+                )
                 company_data.total_compensation_by_year[year] = total_comp
 
             # Calculate compensation vs tax ratios
@@ -248,16 +289,14 @@ class CheckpointExtractionService:
 
         except Exception as e:
             logger.warning(
-                "Failed to calculate metrics",
-                cik=company_data.cik,
-                error=str(e)
+                "Failed to calculate metrics", cik=company_data.cik, error=str(e)
             )
 
     async def process_all_companies(
         self,
         checkpoint: AnalysisCheckpoint,
         save_frequency: int = 5,
-        progress_callback: Optional[callable] = None
+        progress_callback: Optional[callable] = None,
     ) -> AnalysisCheckpoint:
         """Process all pending companies in the checkpoint."""
 
@@ -266,7 +305,7 @@ class CheckpointExtractionService:
             "Processing companies",
             pending=len(pending_companies),
             completed=checkpoint.completed_companies,
-            failed=checkpoint.failed_companies
+            failed=checkpoint.failed_companies,
         )
 
         companies_processed = 0
@@ -281,7 +320,7 @@ class CheckpointExtractionService:
             if progress_callback:
                 progress_callback(
                     checkpoint.completed_companies + checkpoint.failed_companies,
-                    checkpoint.total_companies
+                    checkpoint.total_companies,
                 )
 
             # Save checkpoint periodically
@@ -291,7 +330,7 @@ class CheckpointExtractionService:
                     "Checkpoint saved",
                     processed=companies_processed,
                     completed=checkpoint.completed_companies,
-                    failed=checkpoint.failed_companies
+                    failed=checkpoint.failed_companies,
                 )
 
         # Final checkpoint save
@@ -302,7 +341,7 @@ class CheckpointExtractionService:
             total=checkpoint.total_companies,
             completed=checkpoint.completed_companies,
             failed=checkpoint.failed_companies,
-            success_rate=f"{checkpoint.success_rate:.1f}%"
+            success_rate=f"{checkpoint.success_rate:.1f}%",
         )
 
         return checkpoint

@@ -16,16 +16,18 @@ Output:
 
 import ast
 import json
+import logging
 import subprocess
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
-import logging
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 @dataclass
@@ -66,7 +68,11 @@ class TicketValidation:
     @property
     def completion_rate(self) -> float:
         """Completion rate as percentage."""
-        return (self.passed_criteria / self.total_criteria * 100) if self.total_criteria > 0 else 0.0
+        return (
+            (self.passed_criteria / self.total_criteria * 100)
+            if self.total_criteria > 0
+            else 0.0
+        )
 
 
 @dataclass
@@ -146,13 +152,17 @@ class MVPValidator:
         report.metrics = self._collect_metrics()
 
         status = "PASS" if report.all_tickets_passed else "FAIL"
-        logger.info(f"MVP validation complete: {status} ({report.overall_completion_rate:.1f}%)")
+        logger.info(
+            f"MVP validation complete: {status} ({report.overall_completion_rate:.1f}%)"
+        )
 
         return report
 
     def _validate_1m323_project_config(self) -> TicketValidation:
         """Validate 1M-323: Project Configuration Schema."""
-        ticket = TicketValidation(ticket_id="1M-323", ticket_name="Project Configuration Schema")
+        ticket = TicketValidation(
+            ticket_id="1M-323", ticket_name="Project Configuration Schema"
+        )
 
         # Schema defined
         schema_file = self.src_dir / "models" / "project_config.py"
@@ -177,7 +187,11 @@ class MVPValidator:
                     description="Pydantic models with validation",
                     required=True,
                     passed=has_basemodel and has_field,
-                    evidence=["BaseModel imports found", "Field validators found"] if (has_basemodel and has_field) else [],
+                    evidence=(
+                        ["BaseModel imports found", "Field validators found"]
+                        if (has_basemodel and has_field)
+                        else []
+                    ),
                 )
             )
 
@@ -189,7 +203,11 @@ class MVPValidator:
                 description="Documentation updated",
                 required=True,
                 passed=doc_file.exists() and doc_file.stat().st_size > 1000,
-                evidence=[f"Documentation: {doc_file.stat().st_size} bytes"] if doc_file.exists() else [],
+                evidence=(
+                    [f"Documentation: {doc_file.stat().st_size} bytes"]
+                    if doc_file.exists()
+                    else []
+                ),
             )
         )
 
@@ -280,7 +298,9 @@ class MVPValidator:
 
     def _validate_1m325_sonnet45_integration(self) -> TicketValidation:
         """Validate 1M-325: Sonnet 4.5 Integration."""
-        ticket = TicketValidation(ticket_id="1M-325", ticket_name="Sonnet 4.5 Integration")
+        ticket = TicketValidation(
+            ticket_id="1M-325", ticket_name="Sonnet 4.5 Integration"
+        )
 
         # Agent implementation
         agent_file = self.src_dir / "agents" / "sonnet45_agent.py"
@@ -341,7 +361,11 @@ class MVPValidator:
                 description="Documentation complete",
                 required=True,
                 passed=doc_file.exists() and doc_file.stat().st_size > 5000,
-                evidence=[f"Documentation: {doc_file.stat().st_size} bytes"] if doc_file.exists() else [],
+                evidence=(
+                    [f"Documentation: {doc_file.stat().st_size} bytes"]
+                    if doc_file.exists()
+                    else []
+                ),
             )
         )
 
@@ -349,7 +373,9 @@ class MVPValidator:
 
     def _validate_1m326_weather_template(self) -> TicketValidation:
         """Validate 1M-326: Weather API Template."""
-        ticket = TicketValidation(ticket_id="1M-326", ticket_name="Weather API Template")
+        ticket = TicketValidation(
+            ticket_id="1M-326", ticket_name="Weather API Template"
+        )
 
         # Template directory structure
         template_dir = self.project_root / "templates" / "weather_api"
@@ -359,7 +385,11 @@ class MVPValidator:
                 description="Complete project directory structure",
                 required=True,
                 passed=template_dir.exists() if template_dir else False,
-                evidence=[str(template_dir)] if template_dir and template_dir.exists() else [],
+                evidence=(
+                    [str(template_dir)]
+                    if template_dir and template_dir.exists()
+                    else []
+                ),
             )
         )
 
@@ -401,7 +431,9 @@ class MVPValidator:
                 description="Complete documentation (README.md)",
                 required=True,
                 passed=readme_file.exists() if readme_file else False,
-                evidence=[str(readme_file)] if readme_file and readme_file.exists() else [],
+                evidence=(
+                    [str(readme_file)] if readme_file and readme_file.exists() else []
+                ),
             )
         )
 
@@ -483,7 +515,11 @@ class MVPValidator:
                 description="Documentation complete with examples",
                 required=True,
                 passed=doc_file.exists() and doc_file.stat().st_size > 5000,
-                evidence=[f"Documentation: {doc_file.stat().st_size} bytes"] if doc_file.exists() else [],
+                evidence=(
+                    [f"Documentation: {doc_file.stat().st_size} bytes"]
+                    if doc_file.exists()
+                    else []
+                ),
             )
         )
 
@@ -491,7 +527,9 @@ class MVPValidator:
 
     def _validate_1m328_end_to_end(self) -> TicketValidation:
         """Validate 1M-328: End-to-End Generation."""
-        ticket = TicketValidation(ticket_id="1M-328", ticket_name="End-to-End Generation")
+        ticket = TicketValidation(
+            ticket_id="1M-328", ticket_name="End-to-End Generation"
+        )
 
         # Integration test
         test_file = self.tests_dir / "integration" / "test_code_generation.py"
@@ -589,7 +627,9 @@ def print_report(report: MVPValidationReport):
     for ticket in report.tickets:
         status_icon = "✅" if ticket.all_passed else "❌"
         print(f"\n{status_icon} {ticket.ticket_id}: {ticket.ticket_name}")
-        print(f"   Completion: {ticket.completion_rate:.1f}% ({ticket.passed_criteria}/{ticket.total_criteria})")
+        print(
+            f"   Completion: {ticket.completion_rate:.1f}% ({ticket.passed_criteria}/{ticket.total_criteria})"
+        )
 
         for criterion in ticket.criteria:
             c_icon = "✅" if criterion.passed else "❌"

@@ -52,7 +52,10 @@ import structlog
 import yaml
 from pydantic import ValidationError
 
-from extract_transform_platform.models.project_config import ProjectConfig, ProjectMetadata
+from extract_transform_platform.models.project_config import (
+    ProjectConfig,
+    ProjectMetadata,
+)
 
 logger = structlog.get_logger(__name__)
 
@@ -64,21 +67,25 @@ logger = structlog.get_logger(__name__)
 
 class ProjectNotFoundError(Exception):
     """Raised when project does not exist."""
+
     pass
 
 
 class ProjectAlreadyExistsError(Exception):
     """Raised when attempting to create project with existing name."""
+
     pass
 
 
 class InvalidConfigError(Exception):
     """Raised when project configuration is invalid."""
+
     pass
 
 
 class TemplateNotFoundError(Exception):
     """Raised when project template does not exist."""
+
     pass
 
 
@@ -104,6 +111,7 @@ class ProjectInfo:
         modified_at: Last modification timestamp
         metadata: Additional project metadata
     """
+
     name: str
     path: Path
     config: Optional[ProjectConfig] = None
@@ -141,7 +149,7 @@ class ProjectInfo:
                 "version": config.project.version,
                 "author": config.project.author,
                 "tags": config.project.tags,
-            }
+            },
         )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -176,6 +184,7 @@ class ValidationResult:
         warnings: List of non-critical issues
         recommendations: List of best practice suggestions
     """
+
     project_name: str
     is_valid: bool
     errors: List[str] = field(default_factory=list)
@@ -252,10 +261,7 @@ class ProjectManager:
         # Ensure directory exists
         self._projects_dir.mkdir(parents=True, exist_ok=True)
 
-        logger.info(
-            "ProjectManager initialized",
-            projects_dir=str(self._projects_dir)
-        )
+        logger.info("ProjectManager initialized", projects_dir=str(self._projects_dir))
 
     def _get_default_projects_dir(self) -> Path:
         """Get default projects directory from environment.
@@ -297,10 +303,7 @@ class ProjectManager:
         projects = {}
 
         if not self._projects_dir.exists():
-            logger.warning(
-                "Projects directory not found",
-                path=str(self._projects_dir)
-            )
+            logger.warning("Projects directory not found", path=str(self._projects_dir))
             return projects
 
         for item in self._projects_dir.iterdir():
@@ -327,26 +330,19 @@ class ProjectManager:
 
             except FileNotFoundError:
                 logger.warning(
-                    "Config file disappeared during scan",
-                    path=str(config_path)
+                    "Config file disappeared during scan", path=str(config_path)
                 )
             except yaml.YAMLError as e:
-                logger.error(
-                    "Invalid YAML syntax",
-                    path=str(config_path),
-                    error=str(e)
-                )
+                logger.error("Invalid YAML syntax", path=str(config_path), error=str(e))
             except ValidationError as e:
                 logger.error(
-                    "Config validation failed",
-                    path=str(config_path),
-                    error=str(e)
+                    "Config validation failed", path=str(config_path), error=str(e)
                 )
             except Exception as e:
                 logger.error(
                     "Unexpected error loading project",
                     path=str(config_path),
-                    error=str(e)
+                    error=str(e),
                 )
 
         logger.info("Projects loaded", count=len(projects))
@@ -376,10 +372,7 @@ class ProjectManager:
         logger.debug("Projects cache invalidated")
 
     async def create_project(
-        self,
-        name: str,
-        description: str = "",
-        template: Optional[str] = None
+        self, name: str, description: str = "", template: Optional[str] = None
     ) -> ProjectInfo:
         """Create a new project from template.
 
@@ -401,13 +394,15 @@ class ProjectManager:
             >>> print(f"Created at: {project.path}")
         """
         # Validate name
-        if not name or not name.replace('_', '').replace('-', '').isalnum():
+        if not name or not name.replace("_", "").replace("-", "").isalnum():
             raise ValueError(f"Invalid project name: {name}")
 
         # Check if exists
         project_path = self._projects_dir / name
         if project_path.exists():
-            raise ProjectAlreadyExistsError(f"Project '{name}' already exists at {project_path}")
+            raise ProjectAlreadyExistsError(
+                f"Project '{name}' already exists at {project_path}"
+            )
 
         # Create directories
         project_path.mkdir(parents=True, exist_ok=True)
@@ -452,26 +447,27 @@ class ProjectManager:
         return ProjectConfig(
             project=ProjectMetadata(
                 name=name,
-                description=description if description else f"Minimal project: {name}"
+                description=description if description else f"Minimal project: {name}",
             ),
             data_sources=[
                 DataSourceConfig(
                     type=DataSourceType.API,
                     name="example_api",
-                    endpoint="https://api.example.com"
+                    endpoint="https://api.example.com",
                 )
             ],
             output=OutputConfig(
                 formats=[
                     OutputDestinationConfig(
-                        type=OutputFormat.JSON,
-                        path="output/data.json"
+                        type=OutputFormat.JSON, path="output/data.json"
                     )
                 ]
-            )
+            ),
         )
 
-    def _load_template(self, template: str, name: str, description: str = "") -> ProjectConfig:
+    def _load_template(
+        self, template: str, name: str, description: str = ""
+    ) -> ProjectConfig:
         """Load project configuration from template file.
 
         Args:
@@ -494,7 +490,7 @@ class ProjectManager:
         template_map = {
             "weather": "weather_api_project.yaml",
             "news_scraper": "news_scraper_project.yaml",
-            "minimal": "minimal_project.yaml"
+            "minimal": "minimal_project.yaml",
         }
 
         if template not in template_map:
@@ -506,7 +502,9 @@ class ProjectManager:
         # Locate template file
         # Templates are in project_root/templates/
         template_filename = template_map[template]
-        template_path = Path(__file__).parent.parent.parent.parent / "templates" / template_filename
+        template_path = (
+            Path(__file__).parent.parent.parent.parent / "templates" / template_filename
+        )
 
         if not template_path.exists():
             raise TemplateNotFoundError(
@@ -518,7 +516,9 @@ class ProjectManager:
         try:
             config = ProjectConfig.from_yaml(template_path)
         except Exception as e:
-            raise ValueError(f"Invalid template YAML in {template_filename}: {e}") from e
+            raise ValueError(
+                f"Invalid template YAML in {template_filename}: {e}"
+            ) from e
 
         # Override name and description
         config.project.name = name
@@ -529,7 +529,7 @@ class ProjectManager:
             "Template loaded",
             template=template,
             name=name,
-            data_sources=len(config.data_sources)
+            data_sources=len(config.data_sources),
         )
 
         return config
@@ -601,7 +601,7 @@ class ProjectManager:
                 "Failed to delete project",
                 name=name,
                 path=str(project.path),
-                error=str(e)
+                error=str(e),
             )
             raise
 
@@ -641,7 +641,7 @@ class ProjectManager:
                 is_valid=False,
                 errors=errors,
                 warnings=warnings,
-                recommendations=recommendations
+                recommendations=recommendations,
             )
 
         # Validate config file
@@ -651,9 +651,9 @@ class ProjectManager:
 
             # Run comprehensive validation
             validation = config.validate_comprehensive()
-            errors.extend(validation.get('errors', []))
-            warnings.extend(validation.get('warnings', []))
-            recommendations.extend(validation.get('recommendations', []))
+            errors.extend(validation.get("errors", []))
+            warnings.extend(validation.get("warnings", []))
+            recommendations.extend(validation.get("recommendations", []))
 
         except FileNotFoundError:
             errors.append("Configuration file not found: project.yaml")
@@ -683,7 +683,7 @@ class ProjectManager:
             is_valid=len(errors) == 0,
             errors=errors,
             warnings=warnings,
-            recommendations=recommendations
+            recommendations=recommendations,
         )
 
     async def get_project_info(self, name: str) -> Optional[ProjectInfo]:

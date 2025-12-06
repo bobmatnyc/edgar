@@ -15,11 +15,11 @@ All sources implement common interface with built-in:
 - Configuration validation
 """
 
-from .base import IDataSource, BaseDataSource
 from .api_source import APIDataSource
-from .jina_source import JinaDataSource
-from .file_source import FileDataSource
+from .base import BaseDataSource, IDataSource
 from .excel_source import ExcelDataSource
+from .file_source import FileDataSource
+from .jina_source import JinaDataSource
 from .pdf_source import PDFDataSource
 from .url_source import URLDataSource
 

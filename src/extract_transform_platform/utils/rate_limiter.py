@@ -16,8 +16,8 @@ Performance:
 """
 
 import asyncio
-from datetime import datetime, timedelta
 from collections import deque
+from datetime import datetime, timedelta
 from typing import Optional
 
 

@@ -2,8 +2,9 @@
 
 import asyncio
 import os
-import pytest
 from pathlib import Path
+
+import pytest
 
 from edgar_analyzer.interactive.session import InteractiveExtractionSession
 
@@ -30,7 +31,10 @@ async def test_oneshot_chat_no_api_key_no_prompt(remove_api_key):
     assert result["error"] is None
 
     # Should show appropriate message
-    assert "No valid API key" in result["output"] or "API key not configured" in result["output"]
+    assert (
+        "No valid API key" in result["output"]
+        or "API key not configured" in result["output"]
+    )
 
     # Should NOT contain EOFError
     assert "EOF when reading a line" not in result["output"]
@@ -54,7 +58,9 @@ async def test_oneshot_setup_returns_error_message(remove_api_key):
     assert "Cannot run interactive setup in one-shot mode" in result["output"]
 
     # Should suggest alternative
-    assert "edgar /setup" in result["output"] or "OPENROUTER_API_KEY" in result["output"]
+    assert (
+        "edgar /setup" in result["output"] or "OPENROUTER_API_KEY" in result["output"]
+    )
 
     # Should NOT try to prompt
     assert "Do you want to update" not in result["output"]

@@ -23,7 +23,9 @@ async def mock_llm_with_context(messages):
     # Extract user content
     user_content = ""
     for msg in messages:
-        if msg.get("role") == "user" and "CONVERSATION EXCHANGES" in msg.get("content", ""):
+        if msg.get("role") == "user" and "CONVERSATION EXCHANGES" in msg.get(
+            "content", ""
+        ):
             user_content = msg.get("content", "")
             break
 
@@ -90,7 +92,7 @@ async def test_early_context_preserved():
     memory = SimpleChatbotMemory(
         token_threshold=3000,
         recent_keep_count=5,  # Only keep last 5
-        llm_client=mock_llm_with_context
+        llm_client=mock_llm_with_context,
     )
 
     print("Step 1: Establishing early context...")
@@ -99,7 +101,10 @@ async def test_early_context_preserved():
         ("What is Apple's CIK?", "Apple Inc. (AAPL) has CIK 0000320193."),
         ("What's their ticker symbol?", "Apple's ticker symbol is AAPL."),
         ("Extract 2023 compensation", "I'll use XBRL extraction for fiscal year 2023."),
-        ("What's the success rate?", "XBRL extraction has 90%+ success rate vs 45% for HTML parsing."),
+        (
+            "What's the success rate?",
+            "XBRL extraction has 90%+ success rate vs 45% for HTML parsing.",
+        ),
         ("What about Microsoft?", "Microsoft Corporation (MSFT) has CIK 0000789019."),
     ]
 
@@ -108,7 +113,7 @@ async def test_early_context_preserved():
             user_input=user,
             controller_response=response,
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
     print(f"  Added {len(early_exchanges)} early exchanges")
@@ -119,9 +124,10 @@ async def test_early_context_preserved():
     for i in range(30):
         await memory.add_exchange(
             user_input=f"Question {i}: " + ("Tell me about data quality " * 10),
-            controller_response=f"Answer {i}: " + ("Data quality is ensured through validation " * 15),
+            controller_response=f"Answer {i}: "
+            + ("Data quality is ensured through validation " * 15),
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
     tokens_before = memory.get_token_count()
@@ -174,7 +180,9 @@ async def test_early_context_preserved():
         checks_passed += 0.5
 
     # Check 3: XBRL methodology
-    xbrl_found = any("XBRL" in fact for fact in key_facts) or "XBRL" in summary.get("summary", "")
+    xbrl_found = any("XBRL" in fact for fact in key_facts) or "XBRL" in summary.get(
+        "summary", ""
+    )
     if xbrl_found:
         print("  ✅ XBRL methodology preserved")
         checks_passed += 1
@@ -190,7 +198,9 @@ async def test_early_context_preserved():
         print(f"  ❌ Company entities incomplete ({len(companies)} companies)")
 
     # Check 5: Success rate data
-    success_rate_found = any("90%" in fact or "success" in fact.lower() for fact in key_facts)
+    success_rate_found = any(
+        "90%" in fact or "success" in fact.lower() for fact in key_facts
+    )
     if success_rate_found:
         print("  ✅ Success rate data preserved")
         checks_passed += 1
@@ -222,7 +232,7 @@ async def test_summary_accumulation():
     memory = SimpleChatbotMemory(
         token_threshold=2000,  # Low threshold for multiple compactions
         recent_keep_count=5,
-        llm_client=mock_llm_with_context
+        llm_client=mock_llm_with_context,
     )
 
     print("Performing 3 compaction cycles...")
@@ -235,9 +245,10 @@ async def test_summary_accumulation():
         for i in range(20):
             await memory.add_exchange(
                 user_input=f"Cycle {cycle} Query {i}: What about company analysis?",
-                controller_response=f"Cycle {cycle} Response {i}: Analyzing data for cycle {cycle}" * 15,
+                controller_response=f"Cycle {cycle} Response {i}: Analyzing data for cycle {cycle}"
+                * 15,
                 context_used=[],
-                scripts_executed=[]
+                scripts_executed=[],
             )
 
         # Compact
@@ -265,7 +276,9 @@ async def test_summary_accumulation():
         last_facts = compaction_facts[-1]
 
         if last_facts >= first_facts * 0.8:  # Allow 20% reduction
-            print(f"\n✅ Facts preserved across compactions ({first_facts} → {last_facts})")
+            print(
+                f"\n✅ Facts preserved across compactions ({first_facts} → {last_facts})"
+            )
             return 0
         else:
             print(f"\n⚠️  Fact loss across compactions ({first_facts} → {last_facts})")
@@ -283,9 +296,7 @@ async def test_named_entity_recall():
     print()
 
     memory = SimpleChatbotMemory(
-        token_threshold=3000,
-        recent_keep_count=5,
-        llm_client=mock_llm_with_context
+        token_threshold=3000, recent_keep_count=5, llm_client=mock_llm_with_context
     )
 
     # Establish context with specific entities
@@ -300,9 +311,10 @@ async def test_named_entity_recall():
     for entity, description in entities_to_test:
         await memory.add_exchange(
             user_input=f"Tell me about {entity}",
-            controller_response=f"{entity} is {description}. Here's more information: " + ("details " * 20),
+            controller_response=f"{entity} is {description}. Here's more information: "
+            + ("details " * 20),
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
     # Add filler exchanges
@@ -311,7 +323,7 @@ async def test_named_entity_recall():
             user_input=f"Filler query {i} " * 10,
             controller_response=f"Filler response {i} " * 20,
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
     print(f"  Added {len(entities_to_test)} entity exchanges + 30 filler")
@@ -350,8 +362,10 @@ async def test_named_entity_recall():
             print(f"  ❌ Missing: {entity}")
 
     print()
-    recall_rate = (found_count / len(entities_to_test) * 100)
-    print(f"Entity recall rate: {recall_rate:.0f}% ({found_count}/{len(entities_to_test)})")
+    recall_rate = found_count / len(entities_to_test) * 100
+    print(
+        f"Entity recall rate: {recall_rate:.0f}% ({found_count}/{len(entities_to_test)})"
+    )
 
     if recall_rate >= 75:
         print("✅ EXCELLENT entity preservation")

@@ -6,11 +6,12 @@ This script verifies that the iterative refinement loop is correctly
 implemented without requiring a full test environment.
 """
 
-import sys
 import os
+import sys
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
 
 def verify_implementation():
     """Verify all implementation changes are in place."""
@@ -25,17 +26,18 @@ def verify_implementation():
     # 1. Check CodeGeneratorService.generate() has max_retries parameter
     print("1. Checking CodeGeneratorService.generate() signature...")
     try:
-        from edgar_analyzer.services.code_generator import CodeGeneratorService
         import inspect
+
+        from edgar_analyzer.services.code_generator import CodeGeneratorService
 
         sig = inspect.signature(CodeGeneratorService.generate)
         params = list(sig.parameters.keys())
 
-        if 'max_retries' in params:
+        if "max_retries" in params:
             print("   ✅ max_retries parameter exists")
 
             # Check default value
-            default = sig.parameters['max_retries'].default
+            default = sig.parameters["max_retries"].default
             if default == 3:
                 print(f"   ✅ Default value is 3")
                 results.append(True)
@@ -59,11 +61,11 @@ def verify_implementation():
         sig = inspect.signature(Sonnet45Agent.code)
         params = list(sig.parameters.keys())
 
-        if 'validation_errors' in params:
+        if "validation_errors" in params:
             print("   ✅ validation_errors parameter exists")
 
             # Check it's optional
-            default = sig.parameters['validation_errors'].default
+            default = sig.parameters["validation_errors"].default
             if default is None:
                 print(f"   ✅ Default value is None (optional)")
                 results.append(True)
@@ -84,10 +86,7 @@ def verify_implementation():
     try:
         from edgar_analyzer.agents.sonnet45_agent import PromptLoader
 
-        methods = [
-            'render_coder_retry_prompt',
-            '_format_validation_errors'
-        ]
+        methods = ["render_coder_retry_prompt", "_format_validation_errors"]
 
         all_exist = True
         for method in methods:
@@ -109,12 +108,12 @@ def verify_implementation():
     try:
         template_path = os.path.join(
             os.path.dirname(__file__),
-            '..',
-            'src',
-            'edgar_analyzer',
-            'agents',
-            'prompts',
-            'coder_mode_retry.md'
+            "..",
+            "src",
+            "edgar_analyzer",
+            "agents",
+            "prompts",
+            "coder_mode_retry.md",
         )
 
         if os.path.exists(template_path):
@@ -122,13 +121,13 @@ def verify_implementation():
             print(f"   ✅ Template exists ({size} bytes)")
 
             # Check for key placeholders
-            with open(template_path, 'r') as f:
+            with open(template_path, "r") as f:
                 content = f.read()
 
             placeholders = [
-                '{{plan_spec_json}}',
-                '{{patterns_and_examples_json}}',
-                '{{validation_errors}}'
+                "{{plan_spec_json}}",
+                "{{patterns_and_examples_json}}",
+                "{{validation_errors}}",
             ]
 
             all_present = True
@@ -153,19 +152,17 @@ def verify_implementation():
     print("5. Checking integration tests...")
     try:
         test_path = os.path.join(
-            os.path.dirname(__file__),
-            'integration',
-            'test_code_generation.py'
+            os.path.dirname(__file__), "integration", "test_code_generation.py"
         )
 
         if os.path.exists(test_path):
-            with open(test_path, 'r') as f:
+            with open(test_path, "r") as f:
                 content = f.read()
 
             tests = [
-                'test_iterative_refinement_on_validation_failure',
-                'test_max_retries_exceeded',
-                'test_validation_disabled_no_retry'
+                "test_iterative_refinement_on_validation_failure",
+                "test_max_retries_exceeded",
+                "test_validation_disabled_no_retry",
             ]
 
             all_exist = True

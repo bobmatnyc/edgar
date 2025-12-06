@@ -24,6 +24,9 @@ Known Constraints:
 """
 
 import os
+
+# Add src to path for local imports
+import sys
 import time
 from pathlib import Path
 from typing import Optional
@@ -32,13 +35,9 @@ import httpx
 import pytest
 import yaml
 
-# Add src to path for local imports
-import sys
-from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from extract_transform_platform.data_sources.web import JinaDataSource
-
 
 # =============================================================================
 # Fixtures
@@ -392,7 +391,9 @@ class TestJinaErrorHandling:
         with pytest.raises(
             (httpx.HTTPError, httpx.ConnectError, httpx.HTTPStatusError)
         ):
-            await jina_source.fetch("https://this-domain-definitely-does-not-exist-12345.com")
+            await jina_source.fetch(
+                "https://this-domain-definitely-does-not-exist-12345.com"
+            )
 
     @pytest.mark.asyncio
     async def test_validate_config_success(
@@ -469,9 +470,7 @@ class TestJinaNewsScraperTemplate:
         assert project["name"] == "news_scraper"
         assert "jina" in project["tags"]
 
-    def test_template_jina_config(
-        self, news_scraper_template_path: Path
-    ) -> None:
+    def test_template_jina_config(self, news_scraper_template_path: Path) -> None:
         """Test Jina configuration in news scraper template.
 
         Verifies:
@@ -512,9 +511,7 @@ class TestJinaNewsScraperTemplate:
         assert cache["enabled"] is True
         assert cache["ttl"] == 3600  # 1 hour
 
-    def test_template_examples_format(
-        self, news_scraper_template_path: Path
-    ) -> None:
+    def test_template_examples_format(self, news_scraper_template_path: Path) -> None:
         """Test example format in news scraper template.
 
         Verifies:

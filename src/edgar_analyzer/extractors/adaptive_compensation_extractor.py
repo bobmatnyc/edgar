@@ -6,10 +6,11 @@ The control layer will evaluate results and direct improvements to this code.
 """
 
 import re
-from typing import List, Dict, Any, Optional
-from bs4 import BeautifulSoup
 from decimal import Decimal
+from typing import Any, Dict, List, Optional
+
 import structlog
+from bs4 import BeautifulSoup
 
 from edgar_analyzer.models.company import ExecutiveCompensation
 
@@ -19,140 +20,140 @@ logger = structlog.get_logger(__name__)
 class AdaptiveCompensationExtractor:
     """
     MUTABLE IMPLEMENTATION: Executive compensation extractor that can be improved.
-    
+
     This class contains the actual extraction logic that the self-improving
     pattern can modify based on evaluation results.
     """
-    
+
     def __init__(self):
         self.version = "1.0.0"
         logger.info("Adaptive Compensation Extractor initialized", version=self.version)
-    
+
     async def extract_compensation(
-        self, 
-        html_content: str, 
-        company_cik: str, 
-        company_name: str, 
-        year: int
+        self, html_content: str, company_cik: str, company_name: str, year: int
     ) -> List[ExecutiveCompensation]:
         """
         Main extraction method - this can be improved by the pattern.
         """
-        logger.info("Starting adaptive compensation extraction",
-                   company=company_name, year=year, content_length=len(html_content))
-        
-        soup = BeautifulSoup(html_content, 'html.parser')
+        logger.info(
+            "Starting adaptive compensation extraction",
+            company=company_name,
+            year=year,
+            content_length=len(html_content),
+        )
+
+        soup = BeautifulSoup(html_content, "html.parser")
         compensations = []
-        
+
         # Strategy 1: Look for Summary Compensation Table
-        compensations = await self._extract_from_summary_table(soup, company_cik, company_name, year)
-        
+        compensations = await self._extract_from_summary_table(
+            soup, company_cik, company_name, year
+        )
+
         if not compensations:
             # Strategy 2: Look for named executives
-            compensations = await self._extract_from_named_executives(soup, company_cik, company_name, year)
-        
+            compensations = await self._extract_from_named_executives(
+                soup, company_cik, company_name, year
+            )
+
         logger.info("Adaptive extraction complete", executives_found=len(compensations))
         return compensations
-    
+
     async def _extract_from_summary_table(
-        self, 
-        soup: BeautifulSoup, 
-        company_cik: str, 
-        company_name: str, 
-        year: int
+        self, soup: BeautifulSoup, company_cik: str, company_name: str, year: int
     ) -> List[ExecutiveCompensation]:
         """Strategy 1: Extract from Summary Compensation Table"""
-        
+
         compensations = []
-        
+
         # Look for Summary Compensation Table
         table_indicators = [
-            'summary compensation table',
-            'executive compensation',
-            'named executive officer'
+            "summary compensation table",
+            "executive compensation",
+            "named executive officer",
         ]
-        
-        tables = soup.find_all('table')
-        
+
+        tables = soup.find_all("table")
+
         for table in tables:
             table_text = table.get_text().lower()
-            
+
             if any(indicator in table_text for indicator in table_indicators):
                 logger.debug("Found potential summary compensation table")
-                
-                rows = table.find_all('tr')
-                
+
+                rows = table.find_all("tr")
+
                 # Find header row
                 header_row = None
                 for row in rows:
                     row_text = row.get_text().lower()
-                    if 'name' in row_text and 'total' in row_text:
+                    if "name" in row_text and "total" in row_text:
                         header_row = row
                         break
-                
+
                 if header_row:
                     # Parse data rows
                     header_idx = rows.index(header_row)
-                    data_rows = rows[header_idx + 1:header_idx + 6]  # Up to 5 executives
-                    
+                    data_rows = rows[
+                        header_idx + 1 : header_idx + 6
+                    ]  # Up to 5 executives
+
                     for row in data_rows:
                         exec_data = self._parse_compensation_row(row, company_cik, year)
                         if exec_data and self._is_valid_executive_data(exec_data):
                             compensations.append(exec_data)
-                
+
                 if compensations:
                     break  # Found data in this table
-        
+
         return compensations
-    
+
     async def _extract_from_named_executives(
-        self, 
-        soup: BeautifulSoup, 
-        company_cik: str, 
-        company_name: str, 
-        year: int
+        self, soup: BeautifulSoup, company_cik: str, company_name: str, year: int
     ) -> List[ExecutiveCompensation]:
         """Strategy 2: Extract by searching for executive names and titles"""
-        
+
         compensations = []
-        
+
         # Common executive titles to search for
         executive_titles = [
-            'chief executive officer',
-            'chief financial officer', 
-            'chief operating officer',
-            'president'
+            "chief executive officer",
+            "chief financial officer",
+            "chief operating officer",
+            "president",
         ]
-        
+
         for title in executive_titles:
             # Find elements containing this title
             title_elements = soup.find_all(string=re.compile(title, re.IGNORECASE))
-            
+
             for element in title_elements:
                 # Find the parent table row
                 parent = element.parent
-                while parent and parent.name != 'tr':
+                while parent and parent.name != "tr":
                     parent = parent.parent
-                
-                if parent and parent.name == 'tr':
+
+                if parent and parent.name == "tr":
                     exec_data = self._parse_compensation_row(parent, company_cik, year)
                     if exec_data and self._is_valid_executive_data(exec_data):
                         compensations.append(exec_data)
                         break  # Found one for this title
-        
+
         return compensations
 
-    def _parse_compensation_row(self, row, company_cik: str, year: int) -> Optional[ExecutiveCompensation]:
+    def _parse_compensation_row(
+        self, row, company_cik: str, year: int
+    ) -> Optional[ExecutiveCompensation]:
         """Parse a table row to extract executive compensation data."""
         try:
-            cells = row.find_all(['td', 'th'])
+            cells = row.find_all(["td", "th"])
 
             if len(cells) < 3:
                 return None
 
             # Extract name (usually first cell)
             name_cell = cells[0].get_text().strip()
-            name = ' '.join(name_cell.split())  # Clean whitespace
+            name = " ".join(name_cell.split())  # Clean whitespace
 
             if not self._is_valid_name(name):
                 return None
@@ -207,8 +208,16 @@ class AdaptiveCompensationExtractor:
 
         # Should not contain obvious non-name indicators
         invalid_indicators = [
-            'total', 'compensation', 'table', 'summary', '$', '(',
-            'million', 'thousand', 'year', 'fiscal'
+            "total",
+            "compensation",
+            "table",
+            "summary",
+            "$",
+            "(",
+            "million",
+            "thousand",
+            "year",
+            "fiscal",
         ]
 
         name_lower = name.lower()
@@ -216,14 +225,16 @@ class AdaptiveCompensationExtractor:
             return False
 
         # Should be mostly letters
-        if not re.match(r'^[A-Za-z\s\.\-\']+$', name):
+        if not re.match(r"^[A-Za-z\s\.\-\']+$", name):
             return False
 
         return True
 
     def _looks_like_number(self, text: str) -> bool:
         """Check if text looks like a number/amount."""
-        clean_text = text.replace('$', '').replace(',', '').replace('(', '').replace(')', '')
+        clean_text = (
+            text.replace("$", "").replace(",", "").replace("(", "").replace(")", "")
+        )
         try:
             float(clean_text)
             return True
@@ -232,12 +243,12 @@ class AdaptiveCompensationExtractor:
 
     def _extract_amount(self, text: str) -> Optional[int]:
         """Extract a monetary amount from text."""
-        clean_text = re.sub(r'[^\d,]', '', text)
-        numbers = re.findall(r'\d{1,3}(?:,\d{3})*', clean_text)
+        clean_text = re.sub(r"[^\d,]", "", text)
+        numbers = re.findall(r"\d{1,3}(?:,\d{3})*", clean_text)
 
         for num_str in numbers:
             try:
-                amount = int(num_str.replace(',', ''))
+                amount = int(num_str.replace(",", ""))
                 if 1000 <= amount <= 1000000000:
                     return amount
             except ValueError:

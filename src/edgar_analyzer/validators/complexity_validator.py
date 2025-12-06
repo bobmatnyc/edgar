@@ -7,7 +7,7 @@ Measures and enforces limits on cyclomatic complexity and code size.
 import ast
 from typing import List
 
-from edgar_analyzer.models.validation import Violation, Severity, ConstraintConfig
+from edgar_analyzer.models.validation import ConstraintConfig, Severity, Violation
 
 
 class ComplexityValidator:

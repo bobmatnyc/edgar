@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 
 class ExtractionStatus(str, Enum):
     """Status of data extraction for a company."""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -31,26 +32,40 @@ class CompanyExtractionData(BaseModel):
     industry: Optional[str] = Field(None, description="Industry classification")
 
     # Extraction metadata
-    status: ExtractionStatus = Field(default=ExtractionStatus.PENDING, description="Extraction status")
-    extraction_start_time: Optional[datetime] = Field(None, description="When extraction started")
-    extraction_end_time: Optional[datetime] = Field(None, description="When extraction completed")
-    error_message: Optional[str] = Field(None, description="Error message if extraction failed")
+    status: ExtractionStatus = Field(
+        default=ExtractionStatus.PENDING, description="Extraction status"
+    )
+    extraction_start_time: Optional[datetime] = Field(
+        None, description="When extraction started"
+    )
+    extraction_end_time: Optional[datetime] = Field(
+        None, description="When extraction completed"
+    )
+    error_message: Optional[str] = Field(
+        None, description="Error message if extraction failed"
+    )
     retry_count: int = Field(default=0, description="Number of retry attempts")
 
     # Financial data by year
-    tax_data: Dict[int, Dict[str, Any]] = Field(default_factory=dict, description="Tax expense data by year")
-    compensation_data: Dict[int, List[Dict[str, Any]]] = Field(default_factory=dict, description="Executive compensation by year")
+    tax_data: Dict[int, Dict[str, Any]] = Field(
+        default_factory=dict, description="Tax expense data by year"
+    )
+    compensation_data: Dict[int, List[Dict[str, Any]]] = Field(
+        default_factory=dict, description="Executive compensation by year"
+    )
 
     # Calculated metrics
-    total_compensation_by_year: Dict[int, Decimal] = Field(default_factory=dict, description="Total compensation by year")
-    compensation_vs_tax_ratios: Dict[int, Optional[float]] = Field(default_factory=dict, description="Compensation to tax ratios")
+    total_compensation_by_year: Dict[int, Decimal] = Field(
+        default_factory=dict, description="Total compensation by year"
+    )
+    compensation_vs_tax_ratios: Dict[int, Optional[float]] = Field(
+        default_factory=dict, description="Compensation to tax ratios"
+    )
 
     class Config:
         """Pydantic configuration."""
-        json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            Decimal: lambda v: float(v)
-        }
+
+        json_encoders = {datetime: lambda v: v.isoformat(), Decimal: lambda v: float(v)}
 
 
 class AnalysisCheckpoint(BaseModel):
@@ -60,29 +75,47 @@ class AnalysisCheckpoint(BaseModel):
     analysis_id: str = Field(..., description="Unique analysis identifier")
     target_year: int = Field(..., description="Primary analysis year")
     analysis_years: List[int] = Field(..., description="All years being analyzed")
-    total_companies: int = Field(..., description="Total number of companies to analyze")
+    total_companies: int = Field(
+        ..., description="Total number of companies to analyze"
+    )
 
     # Progress tracking
-    created_at: datetime = Field(default_factory=datetime.now, description="Checkpoint creation time")
-    last_updated: datetime = Field(default_factory=datetime.now, description="Last update time")
-    completed_companies: int = Field(default=0, description="Number of completed companies")
+    created_at: datetime = Field(
+        default_factory=datetime.now, description="Checkpoint creation time"
+    )
+    last_updated: datetime = Field(
+        default_factory=datetime.now, description="Last update time"
+    )
+    completed_companies: int = Field(
+        default=0, description="Number of completed companies"
+    )
     failed_companies: int = Field(default=0, description="Number of failed companies")
 
     # Configuration
-    config: Dict[str, Any] = Field(default_factory=dict, description="Analysis configuration")
+    config: Dict[str, Any] = Field(
+        default_factory=dict, description="Analysis configuration"
+    )
 
     # Company data
-    companies: List[CompanyExtractionData] = Field(default_factory=list, description="Company extraction data")
+    companies: List[CompanyExtractionData] = Field(
+        default_factory=list, description="Company extraction data"
+    )
 
     # Error tracking
-    global_errors: List[Dict[str, Any]] = Field(default_factory=list, description="Global errors encountered")
+    global_errors: List[Dict[str, Any]] = Field(
+        default_factory=list, description="Global errors encountered"
+    )
 
     @property
     def progress_percentage(self) -> float:
         """Calculate progress percentage."""
         if self.total_companies == 0:
             return 0.0
-        return (self.completed_companies + self.failed_companies) / self.total_companies * 100
+        return (
+            (self.completed_companies + self.failed_companies)
+            / self.total_companies
+            * 100
+        )
 
     @property
     def success_rate(self) -> float:
@@ -113,10 +146,8 @@ class AnalysisCheckpoint(BaseModel):
 
     class Config:
         """Pydantic configuration."""
-        json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            Decimal: lambda v: float(v)
-        }
+
+        json_encoders = {datetime: lambda v: v.isoformat(), Decimal: lambda v: float(v)}
 
 
 class CheckpointManager:
@@ -138,12 +169,14 @@ class CheckpointManager:
         checkpoint_dict = checkpoint.dict()
 
         # Save to file
-        with open(filepath, 'w', encoding='utf-8') as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             json.dump(checkpoint_dict, f, indent=2, default=self._json_serializer)
 
         return filepath
 
-    def load_checkpoint(self, analysis_id: str, target_year: int) -> Optional[AnalysisCheckpoint]:
+    def load_checkpoint(
+        self, analysis_id: str, target_year: int
+    ) -> Optional[AnalysisCheckpoint]:
         """Load checkpoint from disk."""
         filename = f"analysis_{analysis_id}_{target_year}.json"
         filepath = self.checkpoint_dir / filename
@@ -152,7 +185,7 @@ class CheckpointManager:
             return None
 
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, "r", encoding="utf-8") as f:
                 checkpoint_dict = json.load(f)
 
             # Convert datetime strings back to datetime objects
@@ -170,41 +203,50 @@ class CheckpointManager:
 
         for filepath in self.checkpoint_dir.glob("analysis_*.json"):
             try:
-                with open(filepath, 'r', encoding='utf-8') as f:
+                with open(filepath, "r", encoding="utf-8") as f:
                     data = json.load(f)
 
-                checkpoints.append({
-                    "analysis_id": data.get("analysis_id"),
-                    "target_year": data.get("target_year"),
-                    "created_at": data.get("created_at"),
-                    "last_updated": data.get("last_updated"),
-                    "total_companies": data.get("total_companies"),
-                    "completed_companies": data.get("completed_companies"),
-                    "progress": data.get("completed_companies", 0) / data.get("total_companies", 1) * 100,
-                    "filepath": str(filepath)
-                })
+                checkpoints.append(
+                    {
+                        "analysis_id": data.get("analysis_id"),
+                        "target_year": data.get("target_year"),
+                        "created_at": data.get("created_at"),
+                        "last_updated": data.get("last_updated"),
+                        "total_companies": data.get("total_companies"),
+                        "completed_companies": data.get("completed_companies"),
+                        "progress": data.get("completed_companies", 0)
+                        / data.get("total_companies", 1)
+                        * 100,
+                        "filepath": str(filepath),
+                    }
+                )
             except Exception:
                 continue
 
-        return sorted(checkpoints, key=lambda x: x.get("last_updated", ""), reverse=True)
+        return sorted(
+            checkpoints, key=lambda x: x.get("last_updated", ""), reverse=True
+        )
 
     def find_resumable_analysis(
         self,
         target_year: int,
         company_count: Optional[int] = None,
-        max_age_hours: int = 24
+        max_age_hours: int = 24,
     ) -> Optional[AnalysisCheckpoint]:
         """Find the best resumable analysis for the given criteria."""
         checkpoints = self.list_checkpoints()
 
         # Filter by target year
-        year_checkpoints = [cp for cp in checkpoints if cp.get("target_year") == target_year]
+        year_checkpoints = [
+            cp for cp in checkpoints if cp.get("target_year") == target_year
+        ]
 
         if not year_checkpoints:
             return None
 
         # Filter by age (within last 24 hours by default)
         from datetime import datetime, timedelta
+
         cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
 
         recent_checkpoints = []
@@ -221,8 +263,7 @@ class CheckpointManager:
 
         # Find incomplete analyses (progress < 100%)
         incomplete_checkpoints = [
-            cp for cp in recent_checkpoints
-            if cp.get("progress", 100) < 100
+            cp for cp in recent_checkpoints if cp.get("progress", 100) < 100
         ]
 
         # If we have incomplete analyses, prioritize them
@@ -235,22 +276,20 @@ class CheckpointManager:
         # If company count is specified, prefer analyses with similar company count
         if company_count:
             # Sort by how close the company count is to our target
-            candidates.sort(key=lambda cp: abs(cp.get("total_companies", 0) - company_count))
+            candidates.sort(
+                key=lambda cp: abs(cp.get("total_companies", 0) - company_count)
+            )
 
         # Get the best candidate
         best_candidate = candidates[0]
 
         # Load the full checkpoint
         return self.load_checkpoint(
-            best_candidate["analysis_id"],
-            best_candidate["target_year"]
+            best_candidate["analysis_id"], best_candidate["target_year"]
         )
 
     def should_auto_resume(
-        self,
-        target_year: int,
-        company_count: int,
-        force_new: bool = False
+        self, target_year: int, company_count: int, force_new: bool = False
     ) -> tuple[bool, Optional[AnalysisCheckpoint]]:
         """Determine if we should auto-resume an existing analysis."""
 
@@ -271,12 +310,14 @@ class CheckpointManager:
         # 2. Analysis has made significant progress (> 10%) to avoid resuming barely started analyses
         # 3. Company count is similar (within 20% difference)
 
-        company_count_diff = abs(resumable.total_companies - company_count) / company_count * 100
+        company_count_diff = (
+            abs(resumable.total_companies - company_count) / company_count * 100
+        )
 
         should_resume = (
-            progress < 100 and  # Incomplete
-            progress > 10 and   # Has made some progress
-            company_count_diff <= 20  # Similar company count
+            progress < 100  # Incomplete
+            and progress > 10  # Has made some progress
+            and company_count_diff <= 20  # Similar company count
         )
 
         return should_resume, resumable
@@ -292,8 +333,11 @@ class CheckpointManager:
             "failed_companies": checkpoint.failed_companies,
             "success_rate": checkpoint.success_rate,
             "last_updated": checkpoint.last_updated.strftime("%Y-%m-%d %H:%M:%S"),
-            "age_hours": (datetime.now() - checkpoint.last_updated).total_seconds() / 3600,
-            "estimated_remaining": checkpoint.total_companies - checkpoint.completed_companies - checkpoint.failed_companies
+            "age_hours": (datetime.now() - checkpoint.last_updated).total_seconds()
+            / 3600,
+            "estimated_remaining": checkpoint.total_companies
+            - checkpoint.completed_companies
+            - checkpoint.failed_companies,
         }
 
     def delete_checkpoint(self, analysis_id: str, target_year: int) -> bool:
@@ -339,7 +383,8 @@ class CheckpointManager:
                 # Convert Decimal fields
                 if "total_compensation_by_year" in company:
                     company["total_compensation_by_year"] = {
-                        int(k): Decimal(str(v)) for k, v in company["total_compensation_by_year"].items()
+                        int(k): Decimal(str(v))
+                        for k, v in company["total_compensation_by_year"].items()
                     }
 
         return data

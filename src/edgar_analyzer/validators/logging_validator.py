@@ -7,7 +7,7 @@ Ensures code uses structured logging instead of print statements.
 import ast
 from typing import List
 
-from edgar_analyzer.models.validation import Violation, Severity, ConstraintConfig
+from edgar_analyzer.models.validation import ConstraintConfig, Severity, Violation
 
 
 class LoggingValidator:
@@ -162,7 +162,14 @@ class LoggingValidator:
             if isinstance(child, ast.Call):
                 # Check for common HTTP client methods
                 if isinstance(child.func, ast.Attribute):
-                    if child.func.attr in ("get", "post", "put", "delete", "patch", "request"):
+                    if child.func.attr in (
+                        "get",
+                        "post",
+                        "put",
+                        "delete",
+                        "patch",
+                        "request",
+                    ):
                         return True
 
                 # Check for function names suggesting API calls

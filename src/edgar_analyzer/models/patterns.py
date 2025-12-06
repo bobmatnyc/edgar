@@ -17,19 +17,16 @@ Date: 2025-11-29
 import warnings
 
 # Import all models from platform package
-from extract_transform_platform.models.patterns import (
-    # Enumerations
-    PatternType,
+from extract_transform_platform.models.patterns import (  # Enumerations; Pattern models; Prompt generation models
     FieldTypeEnum,
-    # Pattern models
+    GeneratedPrompt,
+    ParsedExamples,
     Pattern,
-    SchemaField,
+    PatternType,
+    PromptSection,
     Schema,
     SchemaDifference,
-    ParsedExamples,
-    # Prompt generation models
-    PromptSection,
-    GeneratedPrompt,
+    SchemaField,
 )
 
 # Issue deprecation warning
@@ -38,7 +35,7 @@ warnings.warn(
     "Use extract_transform_platform.models.patterns instead. "
     "This compatibility wrapper will be removed in a future release.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # Re-export all models for backward compatibility

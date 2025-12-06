@@ -21,6 +21,7 @@ import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Any, Callable, Dict, Optional, Protocol, Tuple
+
 from extract_transform_platform.utils.rate_limiter import RateLimiter
 
 logger = logging.getLogger(__name__)
@@ -353,7 +354,9 @@ class BaseDataSource(ABC):
             }
 
         now = datetime.now()
-        ages = [(now - timestamp).total_seconds() for _, timestamp in self._cache.values()]
+        ages = [
+            (now - timestamp).total_seconds() for _, timestamp in self._cache.values()
+        ]
 
         return {
             "enabled": self.cache_enabled,

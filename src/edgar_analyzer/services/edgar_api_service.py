@@ -17,7 +17,9 @@ logger = structlog.get_logger(__name__)
 class EdgarApiService(IEdgarApiService):
     """SEC EDGAR API service implementation."""
 
-    def __init__(self, config: ConfigService, cache_service: Optional[ICacheService] = None):
+    def __init__(
+        self, config: ConfigService, cache_service: Optional[ICacheService] = None
+    ):
         """Initialize EDGAR API service."""
         self._config = config
         self._cache = cache_service
@@ -34,12 +36,9 @@ class EdgarApiService(IEdgarApiService):
             headers = {
                 "User-Agent": self._edgar_config["user_agent"],
                 "Accept-Encoding": "gzip, deflate",
-                "Host": "data.sec.gov"
+                "Host": "data.sec.gov",
             }
-            self._session = aiohttp.ClientSession(
-                timeout=timeout,
-                headers=headers
-            )
+            self._session = aiohttp.ClientSession(timeout=timeout, headers=headers)
         return self._session
 
     async def _rate_limit(self) -> None:
@@ -81,21 +80,22 @@ class EdgarApiService(IEdgarApiService):
                         await self._cache.set(cache_key, data)
                         logger.debug("Data cached", cache_key=cache_key)
 
-                    logger.info("API request successful", url=url, status=response.status)
+                    logger.info(
+                        "API request successful", url=url, status=response.status
+                    )
                     return data
 
             except aiohttp.ClientError as e:
                 logger.warning(
-                    "API request failed",
-                    url=url,
-                    attempt=attempt + 1,
-                    error=str(e)
+                    "API request failed", url=url, attempt=attempt + 1, error=str(e)
                 )
                 if attempt == self._edgar_config["max_retries"] - 1:
                     raise
-                await asyncio.sleep(2 ** attempt)  # Exponential backoff
+                await asyncio.sleep(2**attempt)  # Exponential backoff
 
-        raise Exception(f"Failed to fetch data from {url} after {self._edgar_config['max_retries']} attempts")
+        raise Exception(
+            f"Failed to fetch data from {url} after {self._edgar_config['max_retries']} attempts"
+        )
 
     async def get_company_submissions(self, cik: str) -> Dict:
         """Get company submission history."""

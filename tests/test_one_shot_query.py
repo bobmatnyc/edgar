@@ -56,7 +56,9 @@ class MockLLMClient:
             return "This is a test response for testing purposes."
 
         if "count" in last_message.lower() and "files" in last_message.lower():
-            return "I can analyze the project files. Let me check the codebase structure."
+            return (
+                "I can analyze the project files. Let me check the codebase structure."
+            )
 
         return f"Mock response for: {last_message[:50]}..."
 
@@ -106,7 +108,9 @@ async def test_session_continuation():
     print(f"✅ First query successful: {response1[:80]}...")
 
     # Second query - should use context from first
-    response2 = await controller.query("Extract 2023 data for that company", silent=True)
+    response2 = await controller.query(
+        "Extract 2023 data for that company", silent=True
+    )
     assert response2 is not None
     print(f"✅ Second query successful: {response2[:80]}...")
 
@@ -194,7 +198,8 @@ async def test_no_loop_entered():
 
     try:
         response = await asyncio.wait_for(
-            controller.query("Test query", silent=True), timeout=10.0  # 10 second timeout
+            controller.query("Test query", silent=True),
+            timeout=10.0,  # 10 second timeout
         )
         end_time = asyncio.get_event_loop().time()
 
@@ -262,24 +267,34 @@ async def test_self_awareness_initialization():
     )
 
     # Self-awareness should be None initially
-    assert controller._self_awareness is None, "Self-awareness should be None before first query"
+    assert (
+        controller._self_awareness is None
+    ), "Self-awareness should be None before first query"
 
     # Execute query - should initialize self-awareness
     response = await controller.query("Test query", silent=True)
     assert response is not None
 
     # Self-awareness should now be initialized
-    assert controller._self_awareness is not None, "Self-awareness should be initialized after query"
+    assert (
+        controller._self_awareness is not None
+    ), "Self-awareness should be initialized after query"
 
     # Self-awareness is a ContextInfo object, not a string
     # Check that it has the expected attributes
-    assert hasattr(controller._self_awareness, 'content'), "Self-awareness should have content attribute"
-    assert hasattr(controller._self_awareness, 'source'), "Self-awareness should have source attribute"
+    assert hasattr(
+        controller._self_awareness, "content"
+    ), "Self-awareness should have content attribute"
+    assert hasattr(
+        controller._self_awareness, "source"
+    ), "Self-awareness should have source attribute"
 
     # Verify it contains actual self-awareness content
     awareness_content = str(controller._self_awareness.content)
     assert len(awareness_content) > 0, "Self-awareness content should not be empty"
-    assert "controller" in awareness_content.lower(), "Self-awareness should reference controller"
+    assert (
+        "controller" in awareness_content.lower()
+    ), "Self-awareness should reference controller"
 
     print("✅ Self-awareness properly initialized")
     print(f"   Self-awareness content length: {len(awareness_content)} characters")
@@ -307,7 +322,9 @@ async def test_query_return_value():
 
     # The response should be the formatted LLM response
     # It should contain the actual answer (not just metadata)
-    assert "cik" in response.lower() or "0000320193" in response, "Response should contain CIK information"
+    assert (
+        "cik" in response.lower() or "0000320193" in response
+    ), "Response should contain CIK information"
 
     print("✅ Query return value is correct")
     print(f"   Response: {response[:100]}...")

@@ -31,7 +31,7 @@ class HistoricalAnalysisService:
         edgar_api_service: IEdgarApiService,
         data_extraction_service: IDataExtractionService,
         company_service: ICompanyService,
-        cache_service: Optional[ICacheService] = None
+        cache_service: Optional[ICacheService] = None,
     ):
         """Initialize historical analysis service."""
         self._edgar_api = edgar_api_service
@@ -62,12 +62,18 @@ class HistoricalAnalysisService:
                 logger.info("Extracting data for year", cik=cik_formatted, year=year)
 
                 # Extract tax expense
-                tax_expense = await self._data_extraction.extract_tax_expense(cik_formatted, year)
+                tax_expense = await self._data_extraction.extract_tax_expense(
+                    cik_formatted, year
+                )
                 if tax_expense:
                     all_tax_expenses.append(tax_expense)
 
                 # Extract executive compensation
-                exec_compensations = await self._data_extraction.extract_executive_compensation(cik_formatted, year)
+                exec_compensations = (
+                    await self._data_extraction.extract_executive_compensation(
+                        cik_formatted, year
+                    )
+                )
                 all_executive_compensations.extend(exec_compensations)
 
                 # Small delay to respect rate limits
@@ -78,7 +84,7 @@ class HistoricalAnalysisService:
                 company=company,
                 tax_expenses=all_tax_expenses,
                 executive_compensations=all_executive_compensations,
-                analysis_date=datetime.now()
+                analysis_date=datetime.now(),
             )
 
             logger.info(
@@ -87,7 +93,7 @@ class HistoricalAnalysisService:
                 company=company.name,
                 years=len(years),
                 tax_expenses=len(all_tax_expenses),
-                executives=len(all_executive_compensations)
+                executives=len(all_executive_compensations),
             )
 
             return analysis
@@ -97,7 +103,7 @@ class HistoricalAnalysisService:
                 "Failed to extract multi-year analysis",
                 cik=cik_formatted,
                 years=years,
-                error=str(e)
+                error=str(e),
             )
             return None
 
@@ -110,11 +116,20 @@ class HistoricalAnalysisService:
 
         for year in years:
             try:
-                tax_expense = await self._data_extraction.extract_tax_expense(cik_formatted, year)
-                tax_trends[year] = tax_expense.total_tax_expense if tax_expense else None
+                tax_expense = await self._data_extraction.extract_tax_expense(
+                    cik_formatted, year
+                )
+                tax_trends[year] = (
+                    tax_expense.total_tax_expense if tax_expense else None
+                )
                 await asyncio.sleep(0.1)  # Rate limiting
             except Exception as e:
-                logger.warning("Failed to extract tax for year", cik=cik_formatted, year=year, error=str(e))
+                logger.warning(
+                    "Failed to extract tax for year",
+                    cik=cik_formatted,
+                    year=year,
+                    error=str(e),
+                )
                 tax_trends[year] = None
 
         return tax_trends
@@ -128,42 +143,64 @@ class HistoricalAnalysisService:
 
         for year in years:
             try:
-                compensations = await self._data_extraction.extract_executive_compensation(cik_formatted, year)
-                total_compensation = sum(comp.total_compensation for comp in compensations)
+                compensations = (
+                    await self._data_extraction.extract_executive_compensation(
+                        cik_formatted, year
+                    )
+                )
+                total_compensation = sum(
+                    comp.total_compensation for comp in compensations
+                )
                 compensation_trends[year] = total_compensation
                 await asyncio.sleep(0.1)  # Rate limiting
             except Exception as e:
-                logger.warning("Failed to extract compensation for year", cik=cik_formatted, year=year, error=str(e))
-                compensation_trends[year] = Decimal('0')
+                logger.warning(
+                    "Failed to extract compensation for year",
+                    cik=cik_formatted,
+                    year=year,
+                    error=str(e),
+                )
+                compensation_trends[year] = Decimal("0")
 
         return compensation_trends
 
-    def calculate_growth_rates(self, values: Dict[int, Optional[Decimal]]) -> Dict[int, Optional[float]]:
+    def calculate_growth_rates(
+        self, values: Dict[int, Optional[Decimal]]
+    ) -> Dict[int, Optional[float]]:
         """Calculate year-over-year growth rates."""
         growth_rates = {}
         sorted_years = sorted(values.keys())
 
         for i in range(1, len(sorted_years)):
             current_year = sorted_years[i]
-            previous_year = sorted_years[i-1]
+            previous_year = sorted_years[i - 1]
 
             current_value = values.get(current_year)
             previous_value = values.get(previous_year)
 
-            if current_value is not None and previous_value is not None and previous_value > 0:
-                growth_rate = float((current_value - previous_value) / previous_value * 100)
+            if (
+                current_value is not None
+                and previous_value is not None
+                and previous_value > 0
+            ):
+                growth_rate = float(
+                    (current_value - previous_value) / previous_value * 100
+                )
                 growth_rates[current_year] = growth_rate
             else:
                 growth_rates[current_year] = None
 
         return growth_rates
 
-    def calculate_average_ratios(self, analysis: CompanyAnalysis, years: List[int]) -> Dict[str, float]:
+    def calculate_average_ratios(
+        self, analysis: CompanyAnalysis, years: List[int]
+    ) -> Dict[str, float]:
         """Calculate average ratios over multiple years."""
         ratios = analysis.compensation_vs_tax_ratio
 
         valid_ratios = [
-            float(ratios[year]) for year in years
+            float(ratios[year])
+            for year in years
             if year in ratios and ratios[year] is not None
         ]
 
@@ -174,5 +211,5 @@ class HistoricalAnalysisService:
             "average_ratio": sum(valid_ratios) / len(valid_ratios),
             "max_ratio": max(valid_ratios),
             "min_ratio": min(valid_ratios),
-            "years_with_data": len(valid_ratios)
+            "years_with_data": len(valid_ratios),
         }

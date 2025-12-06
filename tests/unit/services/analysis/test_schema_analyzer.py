@@ -27,19 +27,19 @@ Performance: Test suite executes in ~2-3 seconds (fast feedback)
 Ticket: 1M-625 (Phase 3 Week 2 Days 2-3: SchemaAnalyzer Testing - Priority 1)
 """
 
-import pytest
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, Dict, List
 
+import pytest
+
 from extract_transform_platform.models.patterns import (
     FieldTypeEnum,
     Schema,
-    SchemaField,
     SchemaDifference,
+    SchemaField,
 )
 from extract_transform_platform.services.analysis.schema_analyzer import SchemaAnalyzer
-
 
 # ============================================================================
 # FIXTURES
@@ -241,13 +241,7 @@ class TestSchemaInference:
 
     def test_infer_schema_deeply_nested(self, analyzer):
         """Test handling of deeply nested structures (5+ levels)."""
-        examples = [
-            {
-                "l1": {
-                    "l2": {"l3": {"l4": {"l5": {"value": 42}}}}
-                }
-            }
-        ]
+        examples = [{"l1": {"l2": {"l3": {"l4": {"l5": {"value": 42}}}}}}]
 
         schema = analyzer.infer_schema(examples)
 
@@ -279,9 +273,7 @@ class TestSchemaInference:
 
     def test_infer_schema_mixed_flat_and_nested(self, analyzer):
         """Test schema with both flat and nested fields."""
-        examples = [
-            {"flat": "value", "nested": {"inner": "value"}}
-        ]
+        examples = [{"flat": "value", "nested": {"inner": "value"}}]
 
         schema = analyzer.infer_schema(examples)
 
@@ -449,7 +441,11 @@ class TestSchemaComparison:
 
         differences = analyzer.compare_schemas(input_schema, output_schema)
 
-        added = [d for d in differences if d.difference_type == "added" and d.output_path == "field2"]
+        added = [
+            d
+            for d in differences
+            if d.difference_type == "added" and d.output_path == "field2"
+        ]
         assert len(added) > 0
         assert added[0].output_type == FieldTypeEnum.INTEGER
 
@@ -599,6 +595,7 @@ class TestTypeDetection:
 
     def test_unknown_type_fallback(self, analyzer):
         """Test handling of unknown/complex types."""
+
         # Create custom object that's not a standard type
         class CustomObject:
             pass
@@ -816,7 +813,9 @@ class TestEdgeCases:
         # When all values are null and removed, should return UNKNOWN
         result = analyzer._infer_type([None, None, None])
         # After removing NULLs, type_counts is empty, returns UNKNOWN
-        assert result == FieldTypeEnum.NULL  # Actually returns NULL since it's the only type
+        assert (
+            result == FieldTypeEnum.NULL
+        )  # Actually returns NULL since it's the only type
 
     def test_get_value_type_dict(self, analyzer):
         """Test _get_value_type with dict (edge case coverage)."""

@@ -1,10 +1,12 @@
 """Tests for setup CLI commands."""
+
 import asyncio
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
 from click.testing import CliRunner
-from unittest.mock import Mock, patch, AsyncMock
 
-from edgar_analyzer.cli.commands.setup import setup, _test_openrouter, _test_jina
+from edgar_analyzer.cli.commands.setup import _test_jina, _test_openrouter, setup
 
 
 class TestSetupTestCommand:
@@ -15,7 +17,9 @@ class TestSetupTestCommand:
         monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-test-key-12345")
 
         # Mock OpenRouterClient
-        with patch('extract_transform_platform.ai.openrouter_client.OpenRouterClient') as mock_client_class:
+        with patch(
+            "extract_transform_platform.ai.openrouter_client.OpenRouterClient"
+        ) as mock_client_class:
             mock_client = Mock()
             mock_client.chat_completion = AsyncMock(return_value="Test response")
             mock_client_class.return_value = mock_client
@@ -35,7 +39,9 @@ class TestSetupTestCommand:
         monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-test-key-12345")
 
         # Mock OpenRouterClient that raises exception
-        with patch('extract_transform_platform.ai.openrouter_client.OpenRouterClient') as mock_client_class:
+        with patch(
+            "extract_transform_platform.ai.openrouter_client.OpenRouterClient"
+        ) as mock_client_class:
             mock_client = Mock()
             mock_client.chat_completion = AsyncMock(side_effect=Exception("API Error"))
             mock_client_class.return_value = mock_client
@@ -55,7 +61,7 @@ class TestSetupTestCommand:
         monkeypatch.setenv("JINA_API_KEY", "jina_test_key_12345")
 
         # Mock httpx client
-        with patch('httpx.Client') as mock_client_class:
+        with patch("httpx.Client") as mock_client_class:
             mock_client = Mock()
             mock_response = Mock()
             mock_response.status_code = 200
@@ -74,10 +80,14 @@ class TestSetupTestCommand:
 
         runner = CliRunner()
 
-        with patch('edgar_analyzer.cli.commands.setup._test_openrouter', return_value=True), \
-             patch('edgar_analyzer.cli.commands.setup._test_jina', return_value=True):
+        with (
+            patch(
+                "edgar_analyzer.cli.commands.setup._test_openrouter", return_value=True
+            ),
+            patch("edgar_analyzer.cli.commands.setup._test_jina", return_value=True),
+        ):
 
-            result = runner.invoke(setup, ['test', '--service', 'all'])
+            result = runner.invoke(setup, ["test", "--service", "all"])
             assert result.exit_code == 0
             assert "All services operational" in result.output
 
@@ -87,8 +97,10 @@ class TestSetupTestCommand:
 
         runner = CliRunner()
 
-        with patch('edgar_analyzer.cli.commands.setup._test_openrouter', return_value=True):
-            result = runner.invoke(setup, ['test', '--service', 'openrouter'])
+        with patch(
+            "edgar_analyzer.cli.commands.setup._test_openrouter", return_value=True
+        ):
+            result = runner.invoke(setup, ["test", "--service", "openrouter"])
             assert result.exit_code == 0
             assert "✅ PASS" in result.output
 
@@ -98,9 +110,13 @@ class TestSetupTestCommand:
 
         runner = CliRunner()
 
-        with patch('edgar_analyzer.cli.commands.setup._test_openrouter', return_value=False), \
-             patch('edgar_analyzer.cli.commands.setup._test_jina', return_value=True):
+        with (
+            patch(
+                "edgar_analyzer.cli.commands.setup._test_openrouter", return_value=False
+            ),
+            patch("edgar_analyzer.cli.commands.setup._test_jina", return_value=True),
+        ):
 
-            result = runner.invoke(setup, ['test', '--service', 'all'])
+            result = runner.invoke(setup, ["test", "--service", "all"])
             assert result.exit_code == 1  # Abort
             assert "Some services failed" in result.output

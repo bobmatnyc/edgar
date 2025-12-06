@@ -14,7 +14,11 @@ Migration Status: T6 (1M-381 - IDataExtractor Interface Definition)
 - Added IDataExtractor export for code generation consistency
 """
 
-from extract_transform_platform.core.base import BaseDataSource, IDataSource, IDataExtractor
+from extract_transform_platform.core.base import (
+    BaseDataSource,
+    IDataExtractor,
+    IDataSource,
+)
 
 __all__ = [
     "BaseDataSource",

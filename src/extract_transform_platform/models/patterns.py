@@ -32,7 +32,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field, field_validator
 
-
 # ============================================================================
 # ENUMERATIONS
 # ============================================================================
@@ -134,59 +133,51 @@ class Pattern(BaseModel):
         ... )
     """
 
-    type: PatternType = Field(
-        ...,
-        description="Type of transformation pattern"
-    )
+    type: PatternType = Field(..., description="Type of transformation pattern")
 
     confidence: float = Field(
         ...,
         ge=0.0,
         le=1.0,
-        description="Confidence score (0.0 to 1.0) based on example consistency"
+        description="Confidence score (0.0 to 1.0) based on example consistency",
     )
 
     source_path: str = Field(
         ...,
-        description="Path to source field in input (e.g., 'main.temp', 'weather[0].description')"
+        description="Path to source field in input (e.g., 'main.temp', 'weather[0].description')",
     )
 
     target_path: str = Field(
-        ...,
-        description="Path to target field in output (e.g., 'temperature_c')"
+        ..., description="Path to target field in output (e.g., 'temperature_c')"
     )
 
     transformation: str = Field(
-        ...,
-        description="Human-readable description of the transformation"
+        ..., description="Human-readable description of the transformation"
     )
 
     examples: List[Tuple[Any, Any]] = Field(
         default_factory=list,
-        description="List of (input_value, output_value) pairs demonstrating this pattern"
+        description="List of (input_value, output_value) pairs demonstrating this pattern",
     )
 
     source_type: Optional[FieldTypeEnum] = Field(
-        None,
-        description="Inferred data type of source field"
+        None, description="Inferred data type of source field"
     )
 
     target_type: Optional[FieldTypeEnum] = Field(
-        None,
-        description="Inferred data type of target field"
+        None, description="Inferred data type of target field"
     )
 
     code_snippet: Optional[str] = Field(
         None,
-        description="Optional Python code snippet implementing this transformation"
+        description="Optional Python code snippet implementing this transformation",
     )
 
     notes: Optional[str] = Field(
-        None,
-        description="Additional notes or edge cases for this pattern"
+        None, description="Additional notes or edge cases for this pattern"
     )
 
-    @field_validator('confidence')
+    @field_validator("confidence")
     @classmethod
     def validate_confidence_range(cls, v: float) -> float:
         """Ensure confidence is between 0 and 1."""
@@ -243,43 +234,30 @@ class SchemaField(BaseModel):
     """
 
     path: str = Field(
-        ...,
-        description="Field path (e.g., 'main.temp', 'weather[0].description')"
+        ..., description="Field path (e.g., 'main.temp', 'weather[0].description')"
     )
 
-    field_type: FieldTypeEnum = Field(
-        ...,
-        description="Inferred data type"
-    )
+    field_type: FieldTypeEnum = Field(..., description="Inferred data type")
 
     required: bool = Field(
-        default=True,
-        description="Whether field is present in all examples"
+        default=True, description="Whether field is present in all examples"
     )
 
-    nullable: bool = Field(
-        default=False,
-        description="Whether field can be null/None"
-    )
+    nullable: bool = Field(default=False, description="Whether field can be null/None")
 
     nested_level: int = Field(
         default=0,
-        description="Depth of nesting (0 = top level, 1 = one level deep, etc.)"
+        description="Depth of nesting (0 = top level, 1 = one level deep, etc.)",
     )
 
-    is_array: bool = Field(
-        default=False,
-        description="Whether field is an array"
-    )
+    is_array: bool = Field(default=False, description="Whether field is an array")
 
     array_item_type: Optional[FieldTypeEnum] = Field(
-        None,
-        description="Type of array items (if is_array=True)"
+        None, description="Type of array items (if is_array=True)"
     )
 
     sample_values: List[Any] = Field(
-        default_factory=list,
-        description="Sample values from examples"
+        default_factory=list, description="Sample values from examples"
     )
 
 
@@ -299,18 +277,15 @@ class Schema(BaseModel):
     """
 
     fields: List[SchemaField] = Field(
-        default_factory=list,
-        description="List of fields in schema"
+        default_factory=list, description="List of fields in schema"
     )
 
     is_nested: bool = Field(
-        default=False,
-        description="Whether schema contains nested structures"
+        default=False, description="Whether schema contains nested structures"
     )
 
     has_arrays: bool = Field(
-        default=False,
-        description="Whether schema contains array fields"
+        default=False, description="Whether schema contains array fields"
     )
 
     def get_field(self, path: str) -> Optional[SchemaField]:
@@ -349,33 +324,28 @@ class SchemaDifference(BaseModel):
     """
 
     input_path: Optional[str] = Field(
-        None,
-        description="Path in input schema (None if field only in output)"
+        None, description="Path in input schema (None if field only in output)"
     )
 
     output_path: Optional[str] = Field(
-        None,
-        description="Path in output schema (None if field only in input)"
+        None, description="Path in output schema (None if field only in input)"
     )
 
     difference_type: str = Field(
         ...,
-        description="Type of difference (added, removed, renamed, type_changed, etc.)"
+        description="Type of difference (added, removed, renamed, type_changed, etc.)",
     )
 
     description: str = Field(
-        ...,
-        description="Human-readable description of the difference"
+        ..., description="Human-readable description of the difference"
     )
 
     input_type: Optional[FieldTypeEnum] = Field(
-        None,
-        description="Input field type (if applicable)"
+        None, description="Input field type (if applicable)"
     )
 
     output_type: Optional[FieldTypeEnum] = Field(
-        None,
-        description="Output field type (if applicable)"
+        None, description="Output field type (if applicable)"
     )
 
 
@@ -393,35 +363,23 @@ class ParsedExamples(BaseModel):
         ... )
     """
 
-    input_schema: Schema = Field(
-        ...,
-        description="Inferred input data schema"
-    )
+    input_schema: Schema = Field(..., description="Inferred input data schema")
 
-    output_schema: Schema = Field(
-        ...,
-        description="Inferred output data schema"
-    )
+    output_schema: Schema = Field(..., description="Inferred output data schema")
 
     patterns: List[Pattern] = Field(
-        default_factory=list,
-        description="Identified transformation patterns"
+        default_factory=list, description="Identified transformation patterns"
     )
 
     schema_differences: List[SchemaDifference] = Field(
-        default_factory=list,
-        description="Differences between input and output schemas"
+        default_factory=list, description="Differences between input and output schemas"
     )
 
-    num_examples: int = Field(
-        ...,
-        ge=0,
-        description="Number of examples analyzed"
-    )
+    num_examples: int = Field(..., ge=0, description="Number of examples analyzed")
 
     warnings: List[str] = Field(
         default_factory=list,
-        description="Warnings about pattern inconsistencies or edge cases"
+        description="Warnings about pattern inconsistencies or edge cases",
     )
 
     @property
@@ -485,52 +443,40 @@ class FilteredParsedExamples(BaseModel):
     Related to: 1M-362 (Interactive Confidence Threshold UX)
     """
 
-    input_schema: Schema = Field(
-        ...,
-        description="Inferred input data schema"
-    )
+    input_schema: Schema = Field(..., description="Inferred input data schema")
 
-    output_schema: Schema = Field(
-        ...,
-        description="Inferred output data schema"
-    )
+    output_schema: Schema = Field(..., description="Inferred output data schema")
 
     all_patterns: List[Pattern] = Field(
-        default_factory=list,
-        description="All detected patterns before filtering"
+        default_factory=list, description="All detected patterns before filtering"
     )
 
     included_patterns: List[Pattern] = Field(
         default_factory=list,
-        description="Patterns meeting confidence threshold (will be used for code generation)"
+        description="Patterns meeting confidence threshold (will be used for code generation)",
     )
 
     excluded_patterns: List[Pattern] = Field(
         default_factory=list,
-        description="Patterns below confidence threshold (excluded from code generation)"
+        description="Patterns below confidence threshold (excluded from code generation)",
     )
 
     confidence_threshold: float = Field(
         ...,
         ge=0.0,
         le=1.0,
-        description="Confidence threshold used for filtering (0.0 to 1.0)"
+        description="Confidence threshold used for filtering (0.0 to 1.0)",
     )
 
     schema_differences: List[SchemaDifference] = Field(
-        default_factory=list,
-        description="Differences between input and output schemas"
+        default_factory=list, description="Differences between input and output schemas"
     )
 
-    num_examples: int = Field(
-        ...,
-        ge=0,
-        description="Number of examples analyzed"
-    )
+    num_examples: int = Field(..., ge=0, description="Number of examples analyzed")
 
     warnings: List[str] = Field(
         default_factory=list,
-        description="Warnings about filtering impact and excluded patterns"
+        description="Warnings about filtering impact and excluded patterns",
     )
 
     @property
@@ -581,20 +527,11 @@ class PromptSection(BaseModel):
         ... )
     """
 
-    title: str = Field(
-        ...,
-        description="Section title"
-    )
+    title: str = Field(..., description="Section title")
 
-    content: str = Field(
-        ...,
-        description="Section content"
-    )
+    content: str = Field(..., description="Section content")
 
-    order: int = Field(
-        default=0,
-        description="Display order (lower = earlier)"
-    )
+    order: int = Field(default=0, description="Display order (lower = earlier)")
 
 
 class GeneratedPrompt(BaseModel):
@@ -610,13 +547,11 @@ class GeneratedPrompt(BaseModel):
     """
 
     sections: List[PromptSection] = Field(
-        default_factory=list,
-        description="Ordered list of prompt sections"
+        default_factory=list, description="Ordered list of prompt sections"
     )
 
     metadata: Dict[str, Any] = Field(
-        default_factory=dict,
-        description="Metadata about prompt generation"
+        default_factory=dict, description="Metadata about prompt generation"
     )
 
     def to_text(self) -> str:

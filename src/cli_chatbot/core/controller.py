@@ -13,6 +13,8 @@ from typing import Any, Callable, Dict, List, Optional
 
 import structlog
 
+from ..utils.summarizer import ConversationSummarizer
+from ..utils.token_counter import TokenCounter
 from .context_injector import DynamicContextInjector
 from .interfaces import (
     ChatbotPersonality,
@@ -24,8 +26,6 @@ from .interfaces import (
     ScriptResult,
 )
 from .scripting_engine import DynamicScriptingEngine
-from ..utils.token_counter import TokenCounter
-from ..utils.summarizer import ConversationSummarizer
 
 logger = structlog.get_logger(__name__)
 

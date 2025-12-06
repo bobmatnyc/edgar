@@ -7,8 +7,8 @@ import structlog
 
 logger = structlog.get_logger(__name__)
 
-T = TypeVar('T')
-R = TypeVar('R')
+T = TypeVar("T")
+R = TypeVar("R")
 
 
 class ParallelProcessingService:
@@ -23,7 +23,7 @@ class ParallelProcessingService:
         logger.info(
             "Parallel processing service initialized",
             max_concurrent=max_concurrent,
-            rate_limit_delay=rate_limit_delay
+            rate_limit_delay=rate_limit_delay,
         )
 
     async def process_batch(
@@ -31,7 +31,7 @@ class ParallelProcessingService:
         items: List[T],
         processor: Callable[[T], Any],
         batch_size: Optional[int] = None,
-        progress_callback: Optional[Callable[[int, int], None]] = None
+        progress_callback: Optional[Callable[[int, int], None]] = None,
     ) -> List[R]:
         """Process items in parallel batches with rate limiting."""
         if not items:
@@ -41,11 +41,13 @@ class ParallelProcessingService:
         results = []
         total_items = len(items)
 
-        logger.info("Starting batch processing", total_items=total_items, batch_size=batch_size)
+        logger.info(
+            "Starting batch processing", total_items=total_items, batch_size=batch_size
+        )
 
         # Process items in batches
         for i in range(0, total_items, batch_size):
-            batch = items[i:i + batch_size]
+            batch = items[i : i + batch_size]
             batch_results = await self._process_batch_concurrent(batch, processor)
             results.extend(batch_results)
 
@@ -57,7 +59,9 @@ class ParallelProcessingService:
             if i + batch_size < total_items:
                 await asyncio.sleep(self.rate_limit_delay)
 
-        logger.info("Batch processing completed", total_items=total_items, results=len(results))
+        logger.info(
+            "Batch processing completed", total_items=total_items, results=len(results)
+        )
         return results
 
     async def _process_batch_concurrent(
@@ -72,9 +76,7 @@ class ParallelProcessingService:
         for i, result in enumerate(results):
             if isinstance(result, Exception):
                 logger.warning(
-                    "Item processing failed",
-                    item=str(batch[i]),
-                    error=str(result)
+                    "Item processing failed", item=str(batch[i]), error=str(result)
                 )
             elif result is not None:
                 valid_results.append(result)
@@ -106,7 +108,7 @@ class ParallelProcessingService:
         self,
         company_ciks: List[str],
         analysis_function: Callable[[str], Any],
-        progress_callback: Optional[Callable[[int, int], None]] = None
+        progress_callback: Optional[Callable[[int, int], None]] = None,
     ) -> List[Any]:
         """Process companies in parallel with optimized batching."""
         logger.info("Starting parallel company processing", companies=len(company_ciks))
@@ -123,13 +125,13 @@ class ParallelProcessingService:
             company_ciks,
             analysis_function,
             batch_size=batch_size,
-            progress_callback=progress_callback
+            progress_callback=progress_callback,
         )
 
         logger.info(
             "Parallel company processing completed",
             total_companies=len(company_ciks),
-            successful_results=len(results)
+            successful_results=len(results),
         )
 
         return results
@@ -138,10 +140,12 @@ class ParallelProcessingService:
         self,
         company_cik: str,
         years: List[int],
-        year_processor: Callable[[str, int], Any]
+        year_processor: Callable[[str, int], Any],
     ) -> List[Any]:
         """Process multiple years for a company in parallel."""
-        logger.info("Starting multi-year parallel processing", cik=company_cik, years=len(years))
+        logger.info(
+            "Starting multi-year parallel processing", cik=company_cik, years=len(years)
+        )
 
         # Create tasks for each year
         async def process_year(year: int):
@@ -151,14 +155,14 @@ class ParallelProcessingService:
         results = await self.process_batch(
             years,
             lambda year: process_year(year),
-            batch_size=3  # Limit concurrent years to avoid overwhelming API
+            batch_size=3,  # Limit concurrent years to avoid overwhelming API
         )
 
         logger.info(
             "Multi-year parallel processing completed",
             cik=company_cik,
             years=len(years),
-            results=len(results)
+            results=len(results),
         )
 
         return results

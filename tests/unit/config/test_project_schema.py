@@ -5,9 +5,10 @@ Tests all Pydantic models, validation rules, and edge cases for the
 project.yaml configuration system.
 """
 
-import pytest
 from datetime import datetime
 from pathlib import Path
+
+import pytest
 from pydantic import ValidationError
 
 from edgar_analyzer.models.project_config import (
@@ -30,7 +31,6 @@ from edgar_analyzer.models.project_config import (
     ValidationConfig,
 )
 
-
 # ============================================================================
 # PROJECT METADATA TESTS
 # ============================================================================
@@ -45,7 +45,7 @@ class TestProjectMetadata:
             name="test_project",
             description="Test description",
             version="1.0.0",
-            author="Test Author"
+            author="Test Author",
         )
         assert metadata.name == "test_project"
         assert metadata.version == "1.0.0"
@@ -89,10 +89,7 @@ class TestProjectMetadata:
 
     def test_tags_list(self):
         """Test that tags are properly stored."""
-        metadata = ProjectMetadata(
-            name="test",
-            tags=["tag1", "tag2", "tag3"]
-        )
+        metadata = ProjectMetadata(name="test", tags=["tag1", "tag2", "tag3"])
         assert len(metadata.tags) == 3
         assert "tag1" in metadata.tags
 
@@ -113,11 +110,7 @@ class TestAuthConfig:
 
     def test_api_key_auth(self):
         """Test API key authentication."""
-        auth = AuthConfig(
-            type=AuthType.API_KEY,
-            key="${API_KEY}",
-            param_name="apikey"
-        )
+        auth = AuthConfig(type=AuthType.API_KEY, key="${API_KEY}", param_name="apikey")
         assert auth.type == AuthType.API_KEY
         assert auth.key == "${API_KEY}"
         assert auth.param_name == "apikey"
@@ -125,9 +118,7 @@ class TestAuthConfig:
     def test_bearer_token_auth(self):
         """Test bearer token authentication."""
         auth = AuthConfig(
-            type=AuthType.BEARER_TOKEN,
-            key="${TOKEN}",
-            header_name="Authorization"
+            type=AuthType.BEARER_TOKEN, key="${TOKEN}", header_name="Authorization"
         )
         assert auth.type == AuthType.BEARER_TOKEN
         assert auth.header_name == "Authorization"
@@ -135,9 +126,7 @@ class TestAuthConfig:
     def test_basic_auth(self):
         """Test basic authentication."""
         auth = AuthConfig(
-            type=AuthType.BASIC_AUTH,
-            username="user",
-            password="${PASSWORD}"
+            type=AuthType.BASIC_AUTH, username="user", password="${PASSWORD}"
         )
         assert auth.type == AuthType.BASIC_AUTH
         assert auth.username == "user"
@@ -146,19 +135,13 @@ class TestAuthConfig:
     def test_env_var_syntax(self):
         """Test environment variable syntax validation."""
         # Should accept ${VAR} syntax
-        auth = AuthConfig(
-            type=AuthType.API_KEY,
-            key="${MY_API_KEY}"
-        )
+        auth = AuthConfig(type=AuthType.API_KEY, key="${MY_API_KEY}")
         assert auth.key.startswith("${")
 
     def test_plaintext_secret_warning(self):
         """Test that plaintext secrets generate warnings (not errors)."""
         # This should not raise an error, but may log a warning
-        auth = AuthConfig(
-            type=AuthType.API_KEY,
-            key="plaintext_key_12345"
-        )
+        auth = AuthConfig(type=AuthType.API_KEY, key="plaintext_key_12345")
         assert auth.key == "plaintext_key_12345"
 
 
@@ -180,10 +163,7 @@ class TestCacheConfig:
     def test_custom_cache_config(self):
         """Test custom cache configuration."""
         cache = CacheConfig(
-            enabled=True,
-            ttl=7200,
-            max_size_mb=50,
-            cache_dir="custom/cache"
+            enabled=True, ttl=7200, max_size_mb=50, cache_dir="custom/cache"
         )
         assert cache.ttl == 7200
         assert cache.max_size_mb == 50
@@ -219,10 +199,7 @@ class TestRateLimitConfig:
 
     def test_custom_rate_limit(self):
         """Test custom rate limiting."""
-        rate_limit = RateLimitConfig(
-            requests_per_second=2.5,
-            burst_size=10
-        )
+        rate_limit = RateLimitConfig(requests_per_second=2.5, burst_size=10)
         assert rate_limit.requests_per_second == 2.5
         assert rate_limit.burst_size == 10
 
@@ -256,7 +233,7 @@ class TestDataSourceConfig:
             type=DataSourceType.API,
             name="test_api",
             endpoint="https://api.example.com/data",
-            auth=AuthConfig(type=AuthType.API_KEY, key="${KEY}")
+            auth=AuthConfig(type=AuthType.API_KEY, key="${KEY}"),
         )
         assert source.type == DataSourceType.API
         assert source.endpoint is not None
@@ -266,7 +243,7 @@ class TestDataSourceConfig:
         with pytest.raises(ValidationError) as exc_info:
             DataSourceConfig(
                 type=DataSourceType.API,
-                name="test_api"
+                name="test_api",
                 # Missing endpoint
             )
         assert "endpoint" in str(exc_info.value).lower()
@@ -274,9 +251,7 @@ class TestDataSourceConfig:
     def test_url_source_valid(self):
         """Test valid URL data source."""
         source = DataSourceConfig(
-            type=DataSourceType.URL,
-            name="test_url",
-            url="https://example.com/page"
+            type=DataSourceType.URL, name="test_url", url="https://example.com/page"
         )
         assert source.type == DataSourceType.URL
         assert source.url is not None
@@ -286,16 +261,14 @@ class TestDataSourceConfig:
         with pytest.raises(ValidationError):
             DataSourceConfig(
                 type=DataSourceType.URL,
-                name="test_url"
+                name="test_url",
                 # Missing url
             )
 
     def test_file_source_valid(self):
         """Test valid file data source."""
         source = DataSourceConfig(
-            type=DataSourceType.FILE,
-            name="test_file",
-            file_path="data/input.csv"
+            type=DataSourceType.FILE, name="test_file", file_path="data/input.csv"
         )
         assert source.type == DataSourceType.FILE
         assert source.file_path is not None
@@ -305,7 +278,7 @@ class TestDataSourceConfig:
         with pytest.raises(ValidationError):
             DataSourceConfig(
                 type=DataSourceType.FILE,
-                name="test_file"
+                name="test_file",
                 # Missing file_path
             )
 
@@ -315,7 +288,7 @@ class TestDataSourceConfig:
             type=DataSourceType.API,
             name="test",
             endpoint="https://api.example.com",
-            parameters={"format": "json", "limit": 100}
+            parameters={"format": "json", "limit": 100},
         )
         assert source.parameters["format"] == "json"
         assert source.parameters["limit"] == 100
@@ -326,7 +299,7 @@ class TestDataSourceConfig:
             type=DataSourceType.API,
             name="test",
             endpoint="https://api.example.com",
-            headers={"User-Agent": "TestBot/1.0"}
+            headers={"User-Agent": "TestBot/1.0"},
         )
         assert source.headers["User-Agent"] == "TestBot/1.0"
 
@@ -336,7 +309,7 @@ class TestDataSourceConfig:
             type=DataSourceType.API,
             name="test",
             endpoint="https://api.example.com",
-            cache=CacheConfig(ttl=7200)
+            cache=CacheConfig(ttl=7200),
         )
         assert source.cache.ttl == 7200
 
@@ -346,7 +319,7 @@ class TestDataSourceConfig:
             type=DataSourceType.API,
             name="test",
             endpoint="https://api.example.com",
-            rate_limit=RateLimitConfig(requests_per_second=2)
+            rate_limit=RateLimitConfig(requests_per_second=2),
         )
         assert source.rate_limit.requests_per_second == 2
 
@@ -364,7 +337,7 @@ class TestExampleConfig:
         example = ExampleConfig(
             input={"raw_field": "value"},
             output={"clean_field": "value"},
-            description="Test example"
+            description="Test example",
         )
         assert example.input["raw_field"] == "value"
         assert example.output["clean_field"] == "value"
@@ -372,31 +345,21 @@ class TestExampleConfig:
     def test_empty_input_rejected(self):
         """Test that empty input is rejected."""
         with pytest.raises(ValidationError):
-            ExampleConfig(
-                input={},
-                output={"field": "value"}
-            )
+            ExampleConfig(input={}, output={"field": "value"})
 
     def test_empty_output_rejected(self):
         """Test that empty output is rejected."""
         with pytest.raises(ValidationError):
-            ExampleConfig(
-                input={"field": "value"},
-                output={}
-            )
+            ExampleConfig(input={"field": "value"}, output={})
 
     def test_nested_structures(self):
         """Test examples with nested structures."""
         example = ExampleConfig(
             input={
                 "user": {"name": "John", "email": "john@example.com"},
-                "data": {"value": 42}
+                "data": {"value": 42},
             },
-            output={
-                "user_name": "John",
-                "user_email": "john@example.com",
-                "value": 42
-            }
+            output={"user_name": "John", "user_email": "john@example.com", "value": 42},
         )
         assert example.input["user"]["name"] == "John"
         assert example.output["user_name"] == "John"
@@ -418,9 +381,7 @@ class TestValidationConfig:
 
     def test_required_fields(self):
         """Test required fields configuration."""
-        validation = ValidationConfig(
-            required_fields=["field1", "field2"]
-        )
+        validation = ValidationConfig(required_fields=["field1", "field2"])
         assert "field1" in validation.required_fields
         assert "field2" in validation.required_fields
 
@@ -430,7 +391,7 @@ class TestValidationConfig:
             field_types={
                 "name": FieldType.STRING,
                 "age": FieldType.INTEGER,
-                "price": FieldType.FLOAT
+                "price": FieldType.FLOAT,
             }
         )
         assert validation.field_types["name"] == FieldType.STRING
@@ -441,7 +402,7 @@ class TestValidationConfig:
         validation = ValidationConfig(
             constraints={
                 "age": FieldConstraint(min=0, max=150),
-                "email": FieldConstraint(pattern=r"^.+@.+\..+$")
+                "email": FieldConstraint(pattern=r"^.+@.+\..+$"),
             }
         )
         assert validation.constraints["age"].min == 0
@@ -461,10 +422,7 @@ class TestOutputConfig:
         """Test valid output configuration."""
         output = OutputConfig(
             formats=[
-                OutputDestinationConfig(
-                    type=OutputFormat.CSV,
-                    path="output/data.csv"
-                )
+                OutputDestinationConfig(type=OutputFormat.CSV, path="output/data.csv")
             ]
         )
         assert len(output.formats) == 1
@@ -476,7 +434,7 @@ class TestOutputConfig:
             formats=[
                 OutputDestinationConfig(type=OutputFormat.CSV, path="output.csv"),
                 OutputDestinationConfig(type=OutputFormat.JSON, path="output.json"),
-                OutputDestinationConfig(type=OutputFormat.EXCEL, path="output.xlsx")
+                OutputDestinationConfig(type=OutputFormat.EXCEL, path="output.xlsx"),
             ]
         )
         assert len(output.formats) == 3
@@ -491,9 +449,7 @@ class TestOutputConfig:
         output = OutputConfig(
             formats=[
                 OutputDestinationConfig(
-                    type=OutputFormat.CSV,
-                    path="output.csv",
-                    include_timestamp=True
+                    type=OutputFormat.CSV, path="output.csv", include_timestamp=True
                 )
             ]
         )
@@ -504,9 +460,7 @@ class TestOutputConfig:
         output = OutputConfig(
             formats=[
                 OutputDestinationConfig(
-                    type=OutputFormat.JSON,
-                    path="output.json",
-                    pretty_print=True
+                    type=OutputFormat.JSON, path="output.json", pretty_print=True
                 )
             ]
         )
@@ -534,7 +488,7 @@ class TestRuntimeConfig:
             log_level="DEBUG",
             parallel=True,
             max_workers=8,
-            error_strategy=ErrorStrategy.FAIL_FAST
+            error_strategy=ErrorStrategy.FAIL_FAST,
         )
         assert runtime.log_level == "DEBUG"
         assert runtime.parallel is True
@@ -543,9 +497,7 @@ class TestRuntimeConfig:
     def test_checkpoint_config(self):
         """Test checkpoint configuration."""
         runtime = RuntimeConfig(
-            checkpoint_enabled=True,
-            checkpoint_interval=5,
-            checkpoint_dir="checkpoints"
+            checkpoint_enabled=True, checkpoint_interval=5, checkpoint_dir="checkpoints"
         )
         assert runtime.checkpoint_enabled is True
         assert runtime.checkpoint_interval == 5
@@ -577,17 +529,14 @@ class TestProjectConfig:
                 DataSourceConfig(
                     type=DataSourceType.API,
                     name="api1",
-                    endpoint="https://api.example.com"
+                    endpoint="https://api.example.com",
                 )
             ],
             output=OutputConfig(
                 formats=[
-                    OutputDestinationConfig(
-                        type=OutputFormat.JSON,
-                        path="output.json"
-                    )
+                    OutputDestinationConfig(type=OutputFormat.JSON, path="output.json")
                 ]
-            )
+            ),
         )
         assert config.project.name == "test"
         assert len(config.data_sources) == 1
@@ -597,42 +546,24 @@ class TestProjectConfig:
         """Test complete project configuration."""
         config = ProjectConfig(
             project=ProjectMetadata(
-                name="full_test",
-                description="Full test",
-                version="1.0.0"
+                name="full_test", description="Full test", version="1.0.0"
             ),
             data_sources=[
                 DataSourceConfig(
                     type=DataSourceType.API,
                     name="api1",
                     endpoint="https://api.example.com",
-                    auth=AuthConfig(
-                        type=AuthType.API_KEY,
-                        key="${API_KEY}"
-                    )
+                    auth=AuthConfig(type=AuthType.API_KEY, key="${API_KEY}"),
                 )
             ],
-            examples=[
-                ExampleConfig(
-                    input={"raw": "data"},
-                    output={"clean": "data"}
-                )
-            ],
-            validation=ValidationConfig(
-                required_fields=["clean"]
-            ),
+            examples=[ExampleConfig(input={"raw": "data"}, output={"clean": "data"})],
+            validation=ValidationConfig(required_fields=["clean"]),
             output=OutputConfig(
                 formats=[
-                    OutputDestinationConfig(
-                        type=OutputFormat.CSV,
-                        path="output.csv"
-                    )
+                    OutputDestinationConfig(type=OutputFormat.CSV, path="output.csv")
                 ]
             ),
-            runtime=RuntimeConfig(
-                log_level="INFO",
-                parallel=True
-            )
+            runtime=RuntimeConfig(log_level="INFO", parallel=True),
         )
         assert config.project.name == "full_test"
         assert len(config.examples) == 1
@@ -647,11 +578,10 @@ class TestProjectConfig:
                 output=OutputConfig(
                     formats=[
                         OutputDestinationConfig(
-                            type=OutputFormat.JSON,
-                            path="output.json"
+                            type=OutputFormat.JSON, path="output.json"
                         )
                     ]
-                )
+                ),
             )
 
     def test_duplicate_source_names_rejected(self):
@@ -663,22 +593,21 @@ class TestProjectConfig:
                     DataSourceConfig(
                         type=DataSourceType.API,
                         name="api1",
-                        endpoint="https://api.example.com"
+                        endpoint="https://api.example.com",
                     ),
                     DataSourceConfig(
                         type=DataSourceType.API,
                         name="api1",  # Duplicate name
-                        endpoint="https://api2.example.com"
-                    )
+                        endpoint="https://api2.example.com",
+                    ),
                 ],
                 output=OutputConfig(
                     formats=[
                         OutputDestinationConfig(
-                            type=OutputFormat.JSON,
-                            path="output.json"
+                            type=OutputFormat.JSON, path="output.json"
                         )
                     ]
-                )
+                ),
             )
         assert "unique" in str(exc_info.value).lower()
 
@@ -693,28 +622,23 @@ class TestProjectConfig:
                     endpoint="https://api.example.com",
                     auth=AuthConfig(
                         type=AuthType.API_KEY,
-                        key="plaintext_key"  # Should trigger warning
-                    )
+                        key="plaintext_key",  # Should trigger warning
+                    ),
                 )
             ],
             examples=[],  # No examples - should trigger recommendation
-            validation=ValidationConfig(
-                required_fields=["field1", "field2"]
-            ),
+            validation=ValidationConfig(required_fields=["field1", "field2"]),
             output=OutputConfig(
                 formats=[
-                    OutputDestinationConfig(
-                        type=OutputFormat.JSON,
-                        path="output.json"
-                    )
+                    OutputDestinationConfig(type=OutputFormat.JSON, path="output.json")
                 ]
-            )
+            ),
         )
 
         results = config.validate_comprehensive()
 
         # Should have warnings about plaintext key and no examples
-        assert len(results['warnings']) > 0 or len(results['recommendations']) > 0
+        assert len(results["warnings"]) > 0 or len(results["recommendations"]) > 0
 
 
 # ============================================================================
@@ -763,17 +687,14 @@ output:
                 DataSourceConfig(
                     type=DataSourceType.API,
                     name="api1",
-                    endpoint="https://api.example.com"
+                    endpoint="https://api.example.com",
                 )
             ],
             output=OutputConfig(
                 formats=[
-                    OutputDestinationConfig(
-                        type=OutputFormat.JSON,
-                        path="output.json"
-                    )
+                    OutputDestinationConfig(type=OutputFormat.JSON, path="output.json")
                 ]
-            )
+            ),
         )
 
         yaml_file = tmp_path / "output.yaml"
@@ -812,18 +733,15 @@ class TestEdgeCases:
                 DataSourceConfig(
                     type=DataSourceType.API,
                     name="api1",
-                    endpoint="https://api.example.com"
+                    endpoint="https://api.example.com",
                 )
             ],
             examples=[],  # Empty but allowed
             output=OutputConfig(
                 formats=[
-                    OutputDestinationConfig(
-                        type=OutputFormat.JSON,
-                        path="output.json"
-                    )
+                    OutputDestinationConfig(type=OutputFormat.JSON, path="output.json")
                 ]
-            )
+            ),
         )
         assert len(config.examples) == 0
 
@@ -832,8 +750,7 @@ class TestEdgeCases:
         output = OutputConfig(
             formats=[
                 OutputDestinationConfig(
-                    type=OutputFormat.CSV,
-                    path="output/data (2024-01-15).csv"
+                    type=OutputFormat.CSV, path="output/data (2024-01-15).csv"
                 )
             ]
         )

@@ -6,27 +6,26 @@ Tests cover both PM and Coder modes, error handling, and integration.
 
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, Mock, patch, mock_open
+from unittest.mock import AsyncMock, Mock, mock_open, patch
 
 import pytest
 
-from edgar_analyzer.agents.sonnet45_agent import Sonnet45Agent, PromptLoader
+from edgar_analyzer.agents.sonnet45_agent import PromptLoader, Sonnet45Agent
 from edgar_analyzer.models.patterns import (
+    FieldTypeEnum,
     Pattern,
     PatternType,
-    FieldTypeEnum,
 )
+from edgar_analyzer.models.plan import ClassSpec, GeneratedCode, MethodSpec, PlanSpec
 from edgar_analyzer.models.project_config import (
-    ProjectConfig,
-    ProjectMetadata,
     DataSourceConfig,
     DataSourceType,
     OutputConfig,
     OutputDestinationConfig,
     OutputFormat,
+    ProjectConfig,
+    ProjectMetadata,
 )
-from edgar_analyzer.models.plan import PlanSpec, GeneratedCode, ClassSpec, MethodSpec
-
 
 # ============================================================================
 # FIXTURES
@@ -45,7 +44,7 @@ def sample_patterns():
             transformation="Extract temperature from main object",
             examples=[({"temp": 15.5}, 15.5), ({"temp": 20.0}, 20.0)],
             source_type=FieldTypeEnum.FLOAT,
-            target_type=FieldTypeEnum.FLOAT
+            target_type=FieldTypeEnum.FLOAT,
         ),
         Pattern(
             type=PatternType.ARRAY_FIRST,
@@ -55,8 +54,8 @@ def sample_patterns():
             transformation="Extract first weather description",
             examples=[([{"description": "rain"}], "rain")],
             source_type=FieldTypeEnum.STRING,
-            target_type=FieldTypeEnum.STRING
-        )
+            target_type=FieldTypeEnum.STRING,
+        ),
     ]
 
 
@@ -65,52 +64,52 @@ def sample_project_config():
     """Sample project configuration for testing."""
     return ProjectConfig(
         project=ProjectMetadata(
-            name="test_weather_extractor",
-            description="Test weather extractor"
+            name="test_weather_extractor", description="Test weather extractor"
         ),
         data_sources=[
             DataSourceConfig(
                 type=DataSourceType.API,
                 name="weather_api",
-                endpoint="https://api.openweathermap.org/data/2.5/weather"
+                endpoint="https://api.openweathermap.org/data/2.5/weather",
             )
         ],
         output=OutputConfig(
             formats=[
                 OutputDestinationConfig(
-                    type=OutputFormat.JSON,
-                    path="output/weather.json"
+                    type=OutputFormat.JSON, path="output/weather.json"
                 )
             ]
-        )
+        ),
     )
 
 
 @pytest.fixture
 def sample_plan_response():
     """Sample PM mode API response."""
-    return json.dumps({
-        "strategy": "Fetch weather data from API, parse JSON, transform to output schema",
-        "classes": [
-            {
-                "name": "WeatherExtractor",
-                "purpose": "Extract weather data",
-                "base_classes": ["IDataExtractor"],
-                "methods": [
-                    {
-                        "name": "extract",
-                        "purpose": "Main extraction method",
-                        "parameters": ["self", "city: str"],
-                        "return_type": "Optional[Dict[str, Any]]"
-                    }
-                ],
-                "attributes": ["api_key: str", "base_url: str"]
-            }
-        ],
-        "dependencies": ["requests", "pydantic"],
-        "error_handling": "Retry with exponential backoff",
-        "testing_strategy": "Pytest with mocked HTTP responses"
-    })
+    return json.dumps(
+        {
+            "strategy": "Fetch weather data from API, parse JSON, transform to output schema",
+            "classes": [
+                {
+                    "name": "WeatherExtractor",
+                    "purpose": "Extract weather data",
+                    "base_classes": ["IDataExtractor"],
+                    "methods": [
+                        {
+                            "name": "extract",
+                            "purpose": "Main extraction method",
+                            "parameters": ["self", "city: str"],
+                            "return_type": "Optional[Dict[str, Any]]",
+                        }
+                    ],
+                    "attributes": ["api_key: str", "base_url: str"],
+                }
+            ],
+            "dependencies": ["requests", "pydantic"],
+            "error_handling": "Retry with exponential backoff",
+            "testing_strategy": "Pytest with mocked HTTP responses",
+        }
+    )
 
 
 @pytest.fixture
@@ -215,16 +214,14 @@ class TestPromptLoader:
                     purpose="Test",
                     methods=[
                         MethodSpec(
-                            name="extract",
-                            purpose="Extract",
-                            return_type="Dict"
+                            name="extract", purpose="Extract", return_type="Dict"
                         )
-                    ]
+                    ],
                 )
             ],
             dependencies=["requests"],
             error_handling="Retry",
-            testing_strategy="Pytest"
+            testing_strategy="Pytest",
         )
 
         examples = [{"input": {"a": 1}, "output": {"b": 2}}]
@@ -268,25 +265,22 @@ class TestSonnet45Agent:
     def test_init_custom_temperatures(self):
         """Test initialization with custom temperatures."""
         agent = Sonnet45Agent(
-            api_key="test_key",
-            pm_temperature=0.5,
-            coder_temperature=0.1
+            api_key="test_key", pm_temperature=0.5, coder_temperature=0.1
         )
         assert agent.pm_temperature == 0.5
         assert agent.coder_temperature == 0.1
 
     @pytest.mark.asyncio
     async def test_plan_success(
-        self,
-        sample_patterns,
-        sample_project_config,
-        sample_plan_response
+        self, sample_patterns, sample_project_config, sample_plan_response
     ):
         """Test PM mode planning with successful response."""
         agent = Sonnet45Agent(api_key="test_key")
 
         # Mock API call
-        with patch.object(agent.client, 'chat_completion_json', new_callable=AsyncMock) as mock_api:
+        with patch.object(
+            agent.client, "chat_completion_json", new_callable=AsyncMock
+        ) as mock_api:
             mock_api.return_value = sample_plan_response
 
             # Execute plan
@@ -295,7 +289,7 @@ class TestSonnet45Agent:
             # Verify API called
             assert mock_api.called
             call_args = mock_api.call_args
-            assert call_args.kwargs['temperature'] == agent.pm_temperature
+            assert call_args.kwargs["temperature"] == agent.pm_temperature
 
             # Verify plan structure
             assert isinstance(plan, PlanSpec)
@@ -308,7 +302,9 @@ class TestSonnet45Agent:
         """Test PM mode with invalid JSON response."""
         agent = Sonnet45Agent(api_key="test_key")
 
-        with patch.object(agent.client, 'chat_completion_json', new_callable=AsyncMock) as mock_api:
+        with patch.object(
+            agent.client, "chat_completion_json", new_callable=AsyncMock
+        ) as mock_api:
             mock_api.return_value = "not valid json {"
 
             with pytest.raises(ValueError, match="invalid JSON"):
@@ -316,20 +312,17 @@ class TestSonnet45Agent:
 
     @pytest.mark.asyncio
     async def test_plan_missing_required_fields(
-        self,
-        sample_patterns,
-        sample_project_config
+        self, sample_patterns, sample_project_config
     ):
         """Test PM mode with missing required fields."""
         agent = Sonnet45Agent(api_key="test_key")
 
         # Response missing required 'strategy' field
-        invalid_response = json.dumps({
-            "classes": [],
-            "dependencies": []
-        })
+        invalid_response = json.dumps({"classes": [], "dependencies": []})
 
-        with patch.object(agent.client, 'chat_completion_json', new_callable=AsyncMock) as mock_api:
+        with patch.object(
+            agent.client, "chat_completion_json", new_callable=AsyncMock
+        ) as mock_api:
             mock_api.return_value = invalid_response
 
             with pytest.raises(ValueError, match="invalid"):
@@ -346,10 +339,12 @@ class TestSonnet45Agent:
             classes=[ClassSpec(name="TestExtractor", purpose="Test")],
             dependencies=[],
             error_handling="Test",
-            testing_strategy="Test"
+            testing_strategy="Test",
         )
 
-        with patch.object(agent.client, 'chat_completion', new_callable=AsyncMock) as mock_api:
+        with patch.object(
+            agent.client, "chat_completion", new_callable=AsyncMock
+        ) as mock_api:
             mock_api.return_value = sample_code_response
 
             # Execute code generation
@@ -358,7 +353,7 @@ class TestSonnet45Agent:
             # Verify API called
             assert mock_api.called
             call_args = mock_api.call_args
-            assert call_args.kwargs['temperature'] == agent.coder_temperature
+            assert call_args.kwargs["temperature"] == agent.coder_temperature
 
             # Verify code structure
             assert isinstance(code, GeneratedCode)
@@ -376,15 +371,17 @@ class TestSonnet45Agent:
             classes=[ClassSpec(name="TestExtractor", purpose="Test")],
             dependencies=[],
             error_handling="Test",
-            testing_strategy="Test"
+            testing_strategy="Test",
         )
 
         examples = [
             {"input": {"temp": 15}, "output": {"temperature_c": 15}},
-            {"input": {"temp": 20}, "output": {"temperature_c": 20}}
+            {"input": {"temp": 20}, "output": {"temperature_c": 20}},
         ]
 
-        with patch.object(agent.client, 'chat_completion', new_callable=AsyncMock) as mock_api:
+        with patch.object(
+            agent.client, "chat_completion", new_callable=AsyncMock
+        ) as mock_api:
             mock_api.return_value = """
 # FILE: extractor.py
 ```python
@@ -407,8 +404,8 @@ def test():
 
             # Verify examples passed to API
             call_args = mock_api.call_args
-            messages = call_args.kwargs['messages']
-            prompt_content = messages[1]['content']
+            messages = call_args.kwargs["messages"]
+            prompt_content = messages[1]["content"]
 
             # Examples should be in prompt
             assert "15" in prompt_content or "20" in prompt_content
@@ -423,7 +420,7 @@ def test():
             classes=[ClassSpec(name="TestExtractor", purpose="Test")],
             dependencies=[],
             error_handling="Test",
-            testing_strategy="Test"
+            testing_strategy="Test",
         )
 
         # Response without file markers (fallback mode)
@@ -444,7 +441,9 @@ def test():
 ```
 """
 
-        with patch.object(agent.client, 'chat_completion', new_callable=AsyncMock) as mock_api:
+        with patch.object(
+            agent.client, "chat_completion", new_callable=AsyncMock
+        ) as mock_api:
             mock_api.return_value = response_without_markers
 
             code = await agent.code(plan, sample_patterns)
@@ -463,7 +462,7 @@ def test():
             classes=[ClassSpec(name="TestExtractor", purpose="Test")],
             dependencies=[],
             error_handling="Test",
-            testing_strategy="Test"
+            testing_strategy="Test",
         )
 
         # Only one code block
@@ -474,7 +473,9 @@ class OnlyOne:
 ```
 """
 
-        with patch.object(agent.client, 'chat_completion', new_callable=AsyncMock) as mock_api:
+        with patch.object(
+            agent.client, "chat_completion", new_callable=AsyncMock
+        ) as mock_api:
             mock_api.return_value = insufficient_response
 
             with pytest.raises(ValueError, match="Expected 3 code blocks"):
@@ -486,13 +487,17 @@ class OnlyOne:
         sample_patterns,
         sample_project_config,
         sample_plan_response,
-        sample_code_response
+        sample_code_response,
     ):
         """Test end-to-end plan_and_code pipeline."""
         agent = Sonnet45Agent(api_key="test_key")
 
-        with patch.object(agent.client, 'chat_completion_json', new_callable=AsyncMock) as mock_plan:
-            with patch.object(agent.client, 'chat_completion', new_callable=AsyncMock) as mock_code:
+        with patch.object(
+            agent.client, "chat_completion_json", new_callable=AsyncMock
+        ) as mock_plan:
+            with patch.object(
+                agent.client, "chat_completion", new_callable=AsyncMock
+            ) as mock_code:
                 mock_plan.return_value = sample_plan_response
                 mock_code.return_value = sample_code_response
 
@@ -509,14 +514,14 @@ class OnlyOne:
 
     @pytest.mark.asyncio
     async def test_plan_and_code_pm_failure(
-        self,
-        sample_patterns,
-        sample_project_config
+        self, sample_patterns, sample_project_config
     ):
         """Test plan_and_code when PM mode fails."""
         agent = Sonnet45Agent(api_key="test_key")
 
-        with patch.object(agent.client, 'chat_completion_json', new_callable=AsyncMock) as mock_plan:
+        with patch.object(
+            agent.client, "chat_completion_json", new_callable=AsyncMock
+        ) as mock_plan:
             mock_plan.side_effect = Exception("API Error")
 
             with pytest.raises(Exception, match="API Error"):
@@ -524,16 +529,17 @@ class OnlyOne:
 
     @pytest.mark.asyncio
     async def test_plan_and_code_coder_failure(
-        self,
-        sample_patterns,
-        sample_project_config,
-        sample_plan_response
+        self, sample_patterns, sample_project_config, sample_plan_response
     ):
         """Test plan_and_code when Coder mode fails."""
         agent = Sonnet45Agent(api_key="test_key")
 
-        with patch.object(agent.client, 'chat_completion_json', new_callable=AsyncMock) as mock_plan:
-            with patch.object(agent.client, 'chat_completion', new_callable=AsyncMock) as mock_code:
+        with patch.object(
+            agent.client, "chat_completion_json", new_callable=AsyncMock
+        ) as mock_plan:
+            with patch.object(
+                agent.client, "chat_completion", new_callable=AsyncMock
+            ) as mock_code:
                 mock_plan.return_value = sample_plan_response
                 mock_code.side_effect = Exception("Coder Error")
 

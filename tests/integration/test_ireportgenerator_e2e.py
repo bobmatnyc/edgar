@@ -95,15 +95,19 @@ class TestCrossFormatConsistency:
     @pytest.fixture
     def test_data(self) -> pd.DataFrame:
         """Standard test dataset for cross-format consistency."""
-        return pd.DataFrame({
-            "Product": ["Widget A", "Widget B", "Widget C", "Widget D"],
-            "Q1 Sales": [45000, 52000, 38000, 61000],
-            "Q2 Sales": [48000, 55000, 41000, 64000],
-            "Target": [50000, 50000, 50000, 50000],
-            "Growth": ["10%", "15%", "8%", "18%"],
-        })
+        return pd.DataFrame(
+            {
+                "Product": ["Widget A", "Widget B", "Widget C", "Widget D"],
+                "Q1 Sales": [45000, 52000, 38000, 61000],
+                "Q2 Sales": [48000, 55000, 41000, 64000],
+                "Target": [50000, 50000, 50000, 50000],
+                "Growth": ["10%", "15%", "8%", "18%"],
+            }
+        )
 
-    def test_all_formats_generate_successfully(self, test_data: pd.DataFrame, tmp_path: Path):
+    def test_all_formats_generate_successfully(
+        self, test_data: pd.DataFrame, tmp_path: Path
+    ):
         """Test generating reports in all 4 formats successfully."""
         formats_and_extensions = [
             ("excel", "xlsx"),
@@ -130,7 +134,9 @@ class TestCrossFormatConsistency:
             assert result.stat().st_size > 0
             assert result.suffix == f".{extension}"
 
-    def test_all_formats_contain_same_data(self, test_data: pd.DataFrame, tmp_path: Path):
+    def test_all_formats_contain_same_data(
+        self, test_data: pd.DataFrame, tmp_path: Path
+    ):
         """Test all formats contain the same underlying data."""
         # Generate all formats
         excel_path = tmp_path / "report.xlsx"
@@ -154,11 +160,13 @@ class TestCrossFormatConsistency:
 
         # Verify all files exist with reasonable sizes
         assert excel_path.stat().st_size > 1000  # Excel: ~5-10KB
-        assert pdf_path.stat().st_size > 1000    # PDF: ~2-5KB
-        assert docx_path.stat().st_size > 1000   # DOCX: ~3-6KB
-        assert pptx_path.stat().st_size > 5000   # PPTX: ~20-30KB
+        assert pdf_path.stat().st_size > 1000  # PDF: ~2-5KB
+        assert docx_path.stat().st_size > 1000  # DOCX: ~3-6KB
+        assert pptx_path.stat().st_size > 5000  # PPTX: ~20-30KB
 
-    def test_all_formats_respect_metadata(self, test_data: pd.DataFrame, tmp_path: Path):
+    def test_all_formats_respect_metadata(
+        self, test_data: pd.DataFrame, tmp_path: Path
+    ):
         """Test all formats include metadata (title, author, timestamp)."""
         metadata = {
             "title": "E2E Test Report",
@@ -356,11 +364,13 @@ class TestPerformanceBenchmarks:
 
     def test_small_dataset_performance(self, tmp_path: Path):
         """Test generation time with 100-row dataset (target: <1s each)."""
-        data = pd.DataFrame({
-            "ID": range(100),
-            "Name": [f"Item {i}" for i in range(100)],
-            "Value": [i * 10 for i in range(100)],
-        })
+        data = pd.DataFrame(
+            {
+                "ID": range(100),
+                "Name": [f"Item {i}" for i in range(100)],
+                "Value": [i * 10 for i in range(100)],
+            }
+        )
 
         formats = [
             ("excel", "xlsx"),
@@ -387,12 +397,14 @@ class TestPerformanceBenchmarks:
 
     def test_medium_dataset_performance(self, tmp_path: Path):
         """Test generation time with 1000-row dataset (target: <5s each)."""
-        data = pd.DataFrame({
-            "ID": range(1000),
-            "Product": [f"Product {i % 10}" for i in range(1000)],
-            "Sales": [1000 + (i * 100) for i in range(1000)],
-            "Cost": [500 + (i * 50) for i in range(1000)],
-        })
+        data = pd.DataFrame(
+            {
+                "ID": range(1000),
+                "Product": [f"Product {i % 10}" for i in range(1000)],
+                "Sales": [1000 + (i * 100) for i in range(1000)],
+                "Cost": [500 + (i * 50) for i in range(1000)],
+            }
+        )
 
         formats = [
             ("excel", "xlsx"),
@@ -419,9 +431,7 @@ class TestPerformanceBenchmarks:
 
     def test_memory_efficiency(self, tmp_path: Path):
         """Test memory efficiency with 1000-row dataset."""
-        data = pd.DataFrame({
-            "Col" + str(i): range(1000) for i in range(10)
-        })
+        data = pd.DataFrame({"Col" + str(i): range(1000) for i in range(10)})
 
         # Just verify all formats complete without memory errors
         formats = ["excel", "pdf", "docx", "pptx"]

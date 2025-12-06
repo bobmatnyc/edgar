@@ -5,12 +5,12 @@ Tests validation against realistic code examples, including valid extractor
 implementations and common violation patterns.
 """
 
-import pytest
 import time
+
+import pytest
 
 from edgar_analyzer.models.validation import ConstraintConfig
 from edgar_analyzer.services.constraint_enforcer import ConstraintEnforcer
-
 
 # Example 1: Perfect Weather API Extractor (should pass all checks)
 VALID_WEATHER_EXTRACTOR = '''
@@ -145,7 +145,7 @@ class WeatherAPIExtractor(IDataExtractor):
 
 
 # Example 2: Code with multiple violations
-INVALID_EXTRACTOR_MULTIPLE_VIOLATIONS = '''
+INVALID_EXTRACTOR_MULTIPLE_VIOLATIONS = """
 import os
 import subprocess
 
@@ -158,7 +158,7 @@ class BadExtractor:
         result = eval(query)
         os.system("ls -la")
         return result
-'''
+"""
 
 
 # Example 3: Code with only warnings (should not block)
@@ -258,7 +258,9 @@ class TestConstraintEnforcementIntegration:
         assert not result.valid
 
         # Should have multiple errors
-        assert result.errors_count >= 4  # Missing interface, imports, hardcoded cred, eval
+        assert (
+            result.errors_count >= 4
+        )  # Missing interface, imports, hardcoded cred, eval
 
         # Check specific violations present
         violation_codes = {v.code for v in result.violations}
@@ -275,9 +277,15 @@ class TestConstraintEnforcementIntegration:
             assert result.valid
         else:
             # If there are errors, they should be for missing logging, not blocking issues
-            error_codes = {v.code for v in result.violations if v.severity.value == "error"}
+            error_codes = {
+                v.code for v in result.violations if v.severity.value == "error"
+            }
             # Check that critical violations are not present
-            critical_codes = {"FORBIDDEN_IMPORT", "DANGEROUS_FUNCTION", "SQL_INJECTION_RISK"}
+            critical_codes = {
+                "FORBIDDEN_IMPORT",
+                "DANGEROUS_FUNCTION",
+                "SQL_INJECTION_RISK",
+            }
             assert not error_codes.intersection(critical_codes)
 
     def test_high_complexity_detected(self):
@@ -301,7 +309,9 @@ class TestConstraintEnforcementIntegration:
         validation_time_ms = (end_time - start_time) * 1000
 
         # Should complete in under 100ms
-        assert validation_time_ms < 100, f"Validation took {validation_time_ms:.2f}ms (target: <100ms)"
+        assert (
+            validation_time_ms < 100
+        ), f"Validation took {validation_time_ms:.2f}ms (target: <100ms)"
 
     def test_batch_validation_performance(self):
         """Test performance with multiple code snippets."""
@@ -319,7 +329,9 @@ class TestConstraintEnforcementIntegration:
         total_time_ms = (end_time - start_time) * 1000
 
         # Should validate 4 snippets in under 200ms total
-        assert total_time_ms < 200, f"Batch validation took {total_time_ms:.2f}ms (target: <200ms)"
+        assert (
+            total_time_ms < 200
+        ), f"Batch validation took {total_time_ms:.2f}ms (target: <200ms)"
 
         # Check that all validations completed
         assert len(results) == 4
@@ -344,10 +356,10 @@ class TestConstraintEnforcementIntegration:
 
     def test_error_recovery(self):
         """Test that enforcer handles malformed code gracefully."""
-        malformed_code = '''
+        malformed_code = """
         def broken(
             # Unclosed parenthesis
-        '''
+        """
 
         result = self.enforcer.validate_code(malformed_code)
 
@@ -433,7 +445,7 @@ class TestRealWorldScenarios:
         initial_violations = len(result_1.violations)
 
         # Improve: Add interface, remove forbidden imports
-        iteration_2 = '''
+        iteration_2 = """
 from edgar_analyzer.interfaces.data_extractor import IDataExtractor
 
 class BadExtractor(IDataExtractor):
@@ -444,7 +456,7 @@ class BadExtractor(IDataExtractor):
         print("Starting extraction")
         result = eval(query)
         return result
-'''
+"""
         result_2 = enforcer.validate_code(iteration_2)
         # Should have fewer violations (removed forbidden imports)
         assert len(result_2.violations) < initial_violations

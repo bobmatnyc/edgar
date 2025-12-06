@@ -2,22 +2,24 @@
 
 import json
 import os
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 import structlog
 from dotenv import load_dotenv
 
 from edgar_analyzer.models.company import ExecutiveCompensation
+
 from .openrouter_service import OpenRouterService
 
 # Load environment variables
-load_dotenv('.env.local')
+load_dotenv(".env.local")
 
 logger = structlog.get_logger(__name__)
 
 
 class LLMService:
     """Service for LLM-powered financial data analysis."""
-    
+
     def __init__(self):
         """Initialize LLM service with centralized OpenRouter service."""
         # Initialize centralized OpenRouter service
@@ -29,10 +31,12 @@ class LLMService:
         self.tertiary_model = os.getenv("TERTIARY_MODEL", "anthropic/claude-3-sonnet")
         self.model = self.primary_model
 
-        logger.info("LLM service initialized",
-                   primary_model=self.primary_model,
-                   fallback_model=self.fallback_model,
-                   tertiary_model=self.tertiary_model)
+        logger.info(
+            "LLM service initialized",
+            primary_model=self.primary_model,
+            fallback_model=self.fallback_model,
+            tertiary_model=self.tertiary_model,
+        )
 
     async def _make_llm_request(
         self,
@@ -40,7 +44,7 @@ class LLMService:
         temperature: float = 0.1,
         max_tokens: int = 4000,
         enable_web_search: bool = False,
-        web_search_params: Optional[Dict[str, Any]] = None
+        web_search_params: Optional[Dict[str, Any]] = None,
     ):
         """
         Make LLM request using centralized OpenRouter service with fallback support.
@@ -67,20 +71,18 @@ class LLMService:
                 fallback_models=[self.fallback_model, self.tertiary_model],
                 temperature=temperature,
                 max_tokens=max_tokens,
-                enable_web_search=enable_web_search
+                enable_web_search=enable_web_search,
             )
         except Exception as e:
             logger.error("All models failed in centralized service", error=str(e))
             raise
-
-
 
     async def web_search_request(
         self,
         query: str,
         context: Optional[str] = None,
         max_results: int = 5,
-        temperature: float = 0.3
+        temperature: float = 0.3,
     ) -> str:
         """
         Perform web search using LLM with OpenRouter web search capabilities.
@@ -115,12 +117,9 @@ Search Guidelines:
 Context: {context if context else 'General information search'}
 Maximum results to consider: {max_results}
 
-Please search for the requested information and provide a well-structured response."""
+Please search for the requested information and provide a well-structured response.""",
             },
-            {
-                "role": "user",
-                "content": f"Search for: {query}"
-            }
+            {"role": "user", "content": f"Search for: {query}"},
         ]
 
         try:
@@ -128,12 +127,12 @@ Please search for the requested information and provide a well-structured respon
                 messages=messages,
                 temperature=temperature,
                 max_tokens=2000,
-                enable_web_search=True
+                enable_web_search=True,
             )
 
-            logger.info("Web search completed",
-                       query=query,
-                       response_length=len(response))
+            logger.info(
+                "Web search completed", query=query, response_length=len(response)
+            )
 
             return response
 
@@ -146,7 +145,7 @@ Please search for the requested information and provide a well-structured respon
         primary_content: str,
         search_queries: List[str],
         analysis_prompt: str,
-        context: Optional[str] = None
+        context: Optional[str] = None,
     ) -> str:
         """
         Perform enhanced analysis combining primary content with web search results.
@@ -169,9 +168,7 @@ Please search for the requested information and provide a well-structured respon
         for query in search_queries:
             try:
                 result = await self.web_search_request(
-                    query=query,
-                    context=context,
-                    max_results=3
+                    query=query, context=context, max_results=3
                 )
                 search_results.append(f"Search: {query}\nResults: {result}\n")
             except Exception as e:
@@ -207,24 +204,21 @@ Analysis Guidelines:
 - Provide evidence-based conclusions
 - Note limitations or areas needing further investigation
 
-{analysis_prompt}"""
+{analysis_prompt}""",
             },
-            {
-                "role": "user",
-                "content": combined_content
-            }
+            {"role": "user", "content": combined_content},
         ]
 
         try:
             response = await self._make_llm_request(
-                messages=messages,
-                temperature=0.2,
-                max_tokens=3000
+                messages=messages, temperature=0.2, max_tokens=3000
             )
 
-            logger.info("Enhanced analysis completed",
-                       search_queries=len(search_queries),
-                       response_length=len(response))
+            logger.info(
+                "Enhanced analysis completed",
+                search_queries=len(search_queries),
+                response_length=len(response),
+            )
 
             return response
 
@@ -233,18 +227,15 @@ Analysis Guidelines:
             return f"Enhanced analysis failed: {str(e)}"
 
     async def parse_proxy_compensation_table(
-        self, 
-        html_content: str, 
-        company_name: str,
-        year: int
+        self, html_content: str, company_name: str, year: int
     ) -> List[Dict[str, Any]]:
         """Use LLM to parse executive compensation from proxy statement HTML."""
-        
+
         # Grok 4.1 Fast has 2M context window - can handle much larger content
         # Truncate only if extremely large (keep first 500k chars to stay well within limits)
         if len(html_content) > 500000:
             html_content = html_content[:500000] + "... [truncated due to size]"
-        
+
         prompt = f"""You are an advanced agentic AI financial analyst with deep expertise in SEC filing analysis and executive compensation research. Use your agentic reasoning capabilities to systematically analyze this complex financial document.
 
 AGENTIC TASK: Systematically extract executive compensation data from this {company_name} proxy statement for fiscal year {year}.
@@ -295,22 +286,29 @@ OUTPUT FORMAT (JSON only, no explanatory text):
 Return empty array [] if no clear compensation data is found."""
 
         try:
-            content = await self._make_llm_request([
-                {"role": "system", "content": "You are Grok 4.1 Fast, an advanced agentic AI model specialized in real-world analysis tasks. You are functioning as a senior financial analyst and SEC filing expert with deep expertise in executive compensation analysis. Use your 2M context window and agentic reasoning capabilities to provide precise, institutional-grade analysis of complex financial documents."},
-                {"role": "user", "content": prompt}
-            ], temperature=0.05, max_tokens=4000)  # Very low temperature for precise extraction
-            
+            content = await self._make_llm_request(
+                [
+                    {
+                        "role": "system",
+                        "content": "You are Grok 4.1 Fast, an advanced agentic AI model specialized in real-world analysis tasks. You are functioning as a senior financial analyst and SEC filing expert with deep expertise in executive compensation analysis. Use your 2M context window and agentic reasoning capabilities to provide precise, institutional-grade analysis of complex financial documents.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.05,
+                max_tokens=4000,
+            )  # Very low temperature for precise extraction
+
             # Try to parse JSON response
             try:
                 # Remove any markdown formatting
-                if content.startswith('```json'):
+                if content.startswith("```json"):
                     content = content[7:]
-                if content.endswith('```'):
+                if content.endswith("```"):
                     content = content[:-3]
 
                 # Try to extract JSON from the response (handle cases where LLM adds explanation)
-                json_start = content.find('[')
-                json_end = content.rfind(']') + 1
+                json_start = content.find("[")
+                json_end = content.rfind("]") + 1
 
                 if json_start >= 0 and json_end > json_start:
                     json_content = content[json_start:json_end]
@@ -318,23 +316,23 @@ Return empty array [] if no clear compensation data is found."""
                 else:
                     # Fallback to parsing the entire content
                     executives = json.loads(content)
-                
+
                 logger.info(
                     "LLM parsed executive compensation",
                     company=company_name,
                     year=year,
-                    executives_found=len(executives)
+                    executives_found=len(executives),
                 )
-                
+
                 return executives
-                
+
             except json.JSONDecodeError as e:
                 logger.warning(
                     "Failed to parse LLM JSON response",
                     company=company_name,
                     year=year,
                     error=str(e),
-                    content=content[:500]
+                    content=content[:500],
                 )
                 return []
 
@@ -343,30 +341,33 @@ Return empty array [] if no clear compensation data is found."""
                 "LLM proxy parsing failed",
                 company=company_name,
                 year=year,
-                error=str(e)
+                error=str(e),
             )
             return []
 
     async def validate_compensation_data(
-        self,
-        executives: List[ExecutiveCompensation],
-        company_name: str,
-        year: int
+        self, executives: List[ExecutiveCompensation], company_name: str, year: int
     ) -> Dict[str, Any]:
         """Use LLM to validate and quality-check extracted compensation data."""
 
         # Convert executives to dict format for LLM analysis
         exec_data = []
         for exec in executives:
-            exec_data.append({
-                "name": exec.executive_name,
-                "title": exec.title,
-                "total_compensation": float(exec.total_compensation),
-                "salary": float(exec.salary) if exec.salary else None,
-                "bonus": float(exec.bonus) if exec.bonus else None,
-                "stock_awards": float(exec.stock_awards) if exec.stock_awards else None,
-                "option_awards": float(exec.option_awards) if exec.option_awards else None
-            })
+            exec_data.append(
+                {
+                    "name": exec.executive_name,
+                    "title": exec.title,
+                    "total_compensation": float(exec.total_compensation),
+                    "salary": float(exec.salary) if exec.salary else None,
+                    "bonus": float(exec.bonus) if exec.bonus else None,
+                    "stock_awards": (
+                        float(exec.stock_awards) if exec.stock_awards else None
+                    ),
+                    "option_awards": (
+                        float(exec.option_awards) if exec.option_awards else None
+                    ),
+                }
+            )
 
         prompt = f"""You are a senior financial analyst and executive compensation expert with deep knowledge of Fortune 500 companies, SEC regulations, and market compensation benchmarks.
 
@@ -438,21 +439,28 @@ OUTPUT (JSON only):
 }}"""
 
         try:
-            content = await self._make_llm_request([
-                {"role": "system", "content": "You are Grok 4.1 Fast, an advanced agentic AI model excelling at real-world analysis tasks. You are functioning as a senior financial analyst and executive compensation expert with comprehensive knowledge of Fortune 500 companies, SEC regulations, and market benchmarks. Use your agentic reasoning capabilities and 2M context window to provide institutional-grade assessment."},
-                {"role": "user", "content": prompt}
-            ], temperature=0.1, max_tokens=3000)
+            content = await self._make_llm_request(
+                [
+                    {
+                        "role": "system",
+                        "content": "You are Grok 4.1 Fast, an advanced agentic AI model excelling at real-world analysis tasks. You are functioning as a senior financial analyst and executive compensation expert with comprehensive knowledge of Fortune 500 companies, SEC regulations, and market benchmarks. Use your agentic reasoning capabilities and 2M context window to provide institutional-grade assessment.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.1,
+                max_tokens=3000,
+            )
 
             # Parse JSON response
             try:
-                if content.startswith('```json'):
+                if content.startswith("```json"):
                     content = content[7:]
-                if content.endswith('```'):
+                if content.endswith("```"):
                     content = content[:-3]
 
                 # Try to extract JSON from the response
-                json_start = content.find('{')
-                json_end = content.rfind('}') + 1
+                json_start = content.find("{")
+                json_end = content.rfind("}") + 1
 
                 if json_start >= 0 and json_end > json_start:
                     json_content = content[json_start:json_end]
@@ -464,8 +472,8 @@ OUTPUT (JSON only):
                     "LLM validated compensation data",
                     company=company_name,
                     year=year,
-                    quality_score=validation_result.get('overall_quality_score', 0),
-                    authentic=validation_result.get('data_appears_authentic', False)
+                    quality_score=validation_result.get("overall_quality_score", 0),
+                    authentic=validation_result.get("data_appears_authentic", False),
                 )
 
                 return validation_result
@@ -475,7 +483,7 @@ OUTPUT (JSON only):
                     "Failed to parse LLM validation response",
                     company=company_name,
                     year=year,
-                    error=str(e)
+                    error=str(e),
                 )
                 return {
                     "overall_quality_score": 0.5,
@@ -483,15 +491,12 @@ OUTPUT (JSON only):
                     "issues_found": ["Failed to parse LLM response"],
                     "recommendations": ["Manual review required"],
                     "confidence_in_data": 0.0,
-                    "summary": "LLM validation failed"
+                    "summary": "LLM validation failed",
                 }
 
         except Exception as e:
             logger.error(
-                "LLM validation failed",
-                company=company_name,
-                year=year,
-                error=str(e)
+                "LLM validation failed", company=company_name, year=year, error=str(e)
             )
             return {
                 "overall_quality_score": 0.0,
@@ -499,5 +504,5 @@ OUTPUT (JSON only):
                 "issues_found": [f"LLM validation error: {str(e)}"],
                 "recommendations": ["Manual review required"],
                 "confidence_in_data": 0.0,
-                "summary": "LLM validation failed due to error"
+                "summary": "LLM validation failed due to error",
             }

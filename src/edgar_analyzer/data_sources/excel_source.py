@@ -16,6 +16,7 @@ Code Reuse: 90% (only import path changed)
 """
 
 import warnings
+
 from extract_transform_platform.data_sources.file.excel_source import (
     ExcelDataSource as _PlatformExcelDataSource,
 )

@@ -12,8 +12,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from cli_chatbot.core.controller import ChatbotController, SimpleChatbotMemory
-from cli_chatbot.utils.token_counter import TokenCounter
 from cli_chatbot.utils.summarizer import ConversationSummarizer
+from cli_chatbot.utils.token_counter import TokenCounter
 
 
 async def mock_llm_client(messages):
@@ -94,14 +94,13 @@ async def test_complete_workflow():
         token_threshold=5000,  # Low threshold for testing
         enable_summarization=True,
         recent_keep_count=10,
-        llm_client=mock_llm_client
+        llm_client=mock_llm_client,
     )
 
     # Create minimal controller for testing
-    controller_mock = type('MockController', (), {
-        'llm_client': mock_llm_client,
-        'memory': memory
-    })()
+    controller_mock = type(
+        "MockController", (), {"llm_client": mock_llm_client, "memory": memory}
+    )()
 
     # Get initial token count
     initial_tokens = memory.get_token_count()
@@ -140,7 +139,7 @@ async def test_complete_workflow():
         "Can you extract stock awards separately?",
         "What proxy statement sections are parsed?",
         "How do you identify executives by role?",
-        "What's the breakthrough in XBRL extraction?"
+        "What's the breakthrough in XBRL extraction?",
     ]
 
     for i, query in enumerate(test_queries, 1):
@@ -152,7 +151,7 @@ async def test_complete_workflow():
             user_input=query,
             controller_response=response,
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
         # Get current stats
@@ -160,7 +159,9 @@ async def test_complete_workflow():
         should_compact = memory.should_compact()
 
         if i % 5 == 0:
-            print(f"   Exchange {i:2d}: {current_tokens:,} tokens | Compact: {'YES' if should_compact else 'no '}")
+            print(
+                f"   Exchange {i:2d}: {current_tokens:,} tokens | Compact: {'YES' if should_compact else 'no '}"
+            )
 
     print(f"   ✅ Completed {len(test_queries)} exchanges")
     print()
@@ -184,10 +185,12 @@ async def test_complete_workflow():
         # Add more exchanges
         for i in range(20):
             await memory.add_exchange(
-                user_input=f"Additional query {i} about executive compensation and EDGAR data extraction" * 10,
-                controller_response=f"Detailed response {i} explaining the methodology and data sources" * 20,
+                user_input=f"Additional query {i} about executive compensation and EDGAR data extraction"
+                * 10,
+                controller_response=f"Detailed response {i} explaining the methodology and data sources"
+                * 20,
                 context_used=[],
-                scripts_executed=[]
+                scripts_executed=[],
             )
         success = await memory.compact_memory()
         print(f"   ✅ Compaction {'succeeded' if success else 'FAILED'}")
@@ -197,7 +200,9 @@ async def test_complete_workflow():
     print("5️⃣  Verifying compaction results...")
     tokens_after = memory.get_token_count()
     token_reduction = tokens_before - tokens_after
-    reduction_percent = (token_reduction / tokens_before * 100) if tokens_before > 0 else 0
+    reduction_percent = (
+        (token_reduction / tokens_before * 100) if tokens_before > 0 else 0
+    )
 
     print(f"   Tokens before: {tokens_before:,}")
     print(f"   Tokens after:  {tokens_after:,}")
@@ -208,10 +213,16 @@ async def test_complete_workflow():
     print("6️⃣  Checking conversation summary...")
     if memory.conversation_summary:
         print(f"   ✅ Summary exists")
-        print(f"   Summary length: {len(memory.conversation_summary.get('summary', ''))} chars")
+        print(
+            f"   Summary length: {len(memory.conversation_summary.get('summary', ''))} chars"
+        )
         print(f"   Key facts: {len(memory.conversation_summary.get('key_facts', []))}")
-        print(f"   Entities (companies): {len(memory.conversation_summary.get('entities', {}).get('companies', []))}")
-        print(f"   Decisions made: {len(memory.conversation_summary.get('decisions_made', []))}")
+        print(
+            f"   Entities (companies): {len(memory.conversation_summary.get('entities', {}).get('companies', []))}"
+        )
+        print(
+            f"   Decisions made: {len(memory.conversation_summary.get('decisions_made', []))}"
+        )
         print()
         print("   Sample summary text:")
         print(f"   {memory.conversation_summary.get('summary', 'N/A')[:150]}...")
@@ -262,11 +273,15 @@ async def test_complete_workflow():
     if reduction_percent >= 20:  # At least 20% reduction
         print("✅ Token reduction: PASS (achieved {:.1f}%)".format(reduction_percent))
     else:
-        print("❌ Token reduction: FAIL (only {:.1f}%, target 60%+)".format(reduction_percent))
+        print(
+            "❌ Token reduction: FAIL (only {:.1f}%, target 60%+)".format(
+                reduction_percent
+            )
+        )
         all_checks_pass = False
 
     # Check 2: Summary created
-    if stats['has_summary']:
+    if stats["has_summary"]:
         print("✅ Summary creation: PASS")
     else:
         print("❌ Summary creation: FAIL")
@@ -280,7 +295,7 @@ async def test_complete_workflow():
         all_checks_pass = False
 
     # Check 4: Stats tracking
-    if stats['compaction_count'] > 0:
+    if stats["compaction_count"] > 0:
         print("✅ Compaction tracking: PASS")
     else:
         print("❌ Compaction tracking: FAIL")
@@ -322,7 +337,9 @@ async def test_token_counter_accuracy():
         total_variance += variance
 
         print(f"  Text: '{text[:50]}...'")
-        print(f"  Expected ~{expected_approx}, Got {actual} (variance: {variance:.1f}%)")
+        print(
+            f"  Expected ~{expected_approx}, Got {actual} (variance: {variance:.1f}%)"
+        )
 
     avg_variance = total_variance / len(test_cases)
     print(f"\n  Average variance: {avg_variance:.1f}%")
@@ -345,9 +362,7 @@ async def test_error_handling():
     # Test 1: Summarizer without LLM client
     print("1️⃣  Testing summarizer without LLM client...")
     summarizer = ConversationSummarizer(llm_client=None)
-    exchanges = [
-        {"user_input": "Test", "controller_response": "Response"}
-    ]
+    exchanges = [{"user_input": "Test", "controller_response": "Response"}]
     summary = await summarizer.summarize_exchanges(exchanges)
 
     if summary.get("fallback_mode"):
@@ -359,9 +374,7 @@ async def test_error_handling():
     # Test 2: Memory without summarizer
     print("2️⃣  Testing memory without summarizer...")
     memory = SimpleChatbotMemory(
-        token_threshold=1000,
-        enable_summarization=True,
-        llm_client=None  # No LLM
+        token_threshold=1000, enable_summarization=True, llm_client=None  # No LLM
     )
 
     # Add exchanges
@@ -370,12 +383,14 @@ async def test_error_handling():
             user_input=f"Query {i}" * 50,
             controller_response=f"Response {i}" * 100,
             context_used=[],
-            scripts_executed=[]
+            scripts_executed=[],
         )
 
     # Try compaction
     success = await memory.compact_memory()
-    print(f"  Compaction result: {'✅ Handled gracefully' if not success else '⚠️  Unexpected success'}")
+    print(
+        f"  Compaction result: {'✅ Handled gracefully' if not success else '⚠️  Unexpected success'}"
+    )
     print(f"  Memory preserved: {'✅ Yes' if len(memory.history) > 0 else '❌ No'}")
     print()
 
@@ -383,7 +398,9 @@ async def test_error_handling():
     print("3️⃣  Testing compaction with empty conversation...")
     empty_memory = SimpleChatbotMemory(llm_client=mock_llm_client)
     success = await empty_memory.compact_memory()
-    print(f"  Result: {'✅ Handled correctly' if not success else '⚠️  Unexpected behavior'}")
+    print(
+        f"  Result: {'✅ Handled correctly' if not success else '⚠️  Unexpected behavior'}"
+    )
     print()
 
 
@@ -422,6 +439,7 @@ async def main():
     except Exception as e:
         print(f"\n❌ Test suite failed with exception: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

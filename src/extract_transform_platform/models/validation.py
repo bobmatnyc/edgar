@@ -149,9 +149,7 @@ class ConstraintConfig:
             "__import__",
         }
     )
-    required_decorators: dict = field(
-        default_factory=lambda: {"__init__": ["inject"]}
-    )
+    required_decorators: dict = field(default_factory=lambda: {"__init__": ["inject"]})
     enforce_type_hints: bool = True
     enforce_docstrings: bool = True
     enforce_interface: bool = True
@@ -170,7 +168,9 @@ class ConstraintConfig:
                     ["os", "subprocess", "eval", "exec", "compile", "__import__"],
                 )
             ),
-            required_decorators=config.get("required_decorators", {"__init__": ["inject"]}),
+            required_decorators=config.get(
+                "required_decorators", {"__init__": ["inject"]}
+            ),
             enforce_type_hints=config.get("enforce_type_hints", True),
             enforce_docstrings=config.get("enforce_docstrings", True),
             enforce_interface=config.get("enforce_interface", True),

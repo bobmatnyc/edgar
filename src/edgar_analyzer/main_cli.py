@@ -20,9 +20,9 @@ early log messages during module initialization.
 """
 
 import asyncio
-import sys
-import os
 import json
+import os
+import sys
 from pathlib import Path
 
 # Add src to path for imports
@@ -42,29 +42,72 @@ else:
 # Configure logging to quiet mode by default (BEFORE importing logging modules)
 # This will be reconfigured based on CLI flags after parsing
 from edgar_analyzer.config.logging_config import configure_logging
+
 configure_logging(None)  # Start in quiet mode
 
-# Now safe to import modules that use logging
-from edgar_analyzer.services.llm_service import LLMService
 from cli_chatbot.core.controller import ChatbotController
 from cli_chatbot.fallback.traditional_cli import create_fallback_cli
 
+# Now safe to import modules that use logging
+from edgar_analyzer.services.llm_service import LLMService
+
 
 @click.group(invoke_without_command=True)
-@click.option('--mode', type=click.Choice(['auto', 'chatbot', 'traditional']),
-              default='auto', help='CLI interface mode')
-@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
-@click.option('--log-level', '-l',
-              type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], case_sensitive=False),
-              default=None,
-              help='Set logging level (default: quiet - no logging)')
-@click.option('--enable-web-search/--disable-web-search', default=True, help='Enable/disable web search capabilities (enabled by default)')
-@click.option('--cli', 'bypass_interactive', is_flag=True, help='Bypass interactive mode, show CLI help')
-@click.option('--project', type=click.Path(exists=True), help='Project directory path (for chat mode)')
-@click.option('--resume', type=str, default=None, help='Resume saved session by name (for chat mode)')
-@click.option('--list-sessions', is_flag=True, help='List all saved sessions and exit (for chat mode)')
+@click.option(
+    "--mode",
+    type=click.Choice(["auto", "chatbot", "traditional"]),
+    default="auto",
+    help="CLI interface mode",
+)
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
+@click.option(
+    "--log-level",
+    "-l",
+    type=click.Choice(
+        ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], case_sensitive=False
+    ),
+    default=None,
+    help="Set logging level (default: quiet - no logging)",
+)
+@click.option(
+    "--enable-web-search/--disable-web-search",
+    default=True,
+    help="Enable/disable web search capabilities (enabled by default)",
+)
+@click.option(
+    "--cli",
+    "bypass_interactive",
+    is_flag=True,
+    help="Bypass interactive mode, show CLI help",
+)
+@click.option(
+    "--project",
+    type=click.Path(exists=True),
+    help="Project directory path (for chat mode)",
+)
+@click.option(
+    "--resume",
+    type=str,
+    default=None,
+    help="Resume saved session by name (for chat mode)",
+)
+@click.option(
+    "--list-sessions",
+    is_flag=True,
+    help="List all saved sessions and exit (for chat mode)",
+)
 @click.pass_context
-def cli(ctx, mode, verbose, log_level, enable_web_search, bypass_interactive, project, resume, list_sessions):
+def cli(
+    ctx,
+    mode,
+    verbose,
+    log_level,
+    enable_web_search,
+    bypass_interactive,
+    project,
+    resume,
+    list_sessions,
+):
     """
     EDGAR - General-Purpose Data Extraction & Transformation Platform
 
@@ -100,10 +143,10 @@ def cli(ctx, mode, verbose, log_level, enable_web_search, bypass_interactive, pr
     configure_logging(log_level)
 
     ctx.ensure_object(dict)
-    ctx.obj['mode'] = mode
-    ctx.obj['verbose'] = verbose
-    ctx.obj['log_level'] = log_level
-    ctx.obj['enable_web_search'] = enable_web_search
+    ctx.obj["mode"] = mode
+    ctx.obj["verbose"] = verbose
+    ctx.obj["log_level"] = log_level
+    ctx.obj["enable_web_search"] = enable_web_search
 
     if verbose:
         click.echo(f"🔧 EDGAR CLI starting in {mode} mode")
@@ -119,26 +162,28 @@ def cli(ctx, mode, verbose, log_level, enable_web_search, bypass_interactive, pr
             click.echo(ctx.get_help())
         else:
             # Start chat mode by default, passing through chat-specific options
-            ctx.invoke(chat, project=project, resume=resume, list_sessions=list_sessions)
+            ctx.invoke(
+                chat, project=project, resume=resume, list_sessions=list_sessions
+            )
 
 
 @cli.command()
 @click.pass_context
 def interactive(ctx):
     """Start interactive conversational interface (default mode)."""
-    
+
     async def start_interactive():
-        mode = ctx.obj.get('mode', 'auto')
-        verbose = ctx.obj.get('verbose', False)
-        enable_web_search = ctx.obj.get('enable_web_search', True)
-        
+        mode = ctx.obj.get("mode", "auto")
+        verbose = ctx.obj.get("verbose", False)
+        enable_web_search = ctx.obj.get("enable_web_search", True)
+
         if verbose:
             click.echo("🚀 Starting interactive mode...")
-        
+
         try:
             # Initialize LLM service
             llm_service = LLMService()
-            
+
             async def llm_client(messages):
                 return await llm_service._make_llm_request(
                     messages, temperature=0.7, max_tokens=2000
@@ -147,27 +192,28 @@ def interactive(ctx):
             # Web search client if enabled
             web_search_client = None
             if enable_web_search:
+
                 async def web_search_client(query, context=None):
                     return await llm_service.web_search_request(query, context)
-            
+
             # Get application root
             app_root = str(Path(__file__).parent.parent.parent)
-            
-            if mode == 'chatbot':
+
+            if mode == "chatbot":
                 # Force chatbot mode
                 controller = ChatbotController(
                     llm_client=llm_client,
                     application_root=app_root,
                     scripting_enabled=True,
                     web_search_enabled=enable_web_search,
-                    web_search_client=web_search_client
+                    web_search_client=web_search_client,
                 )
                 await controller.start_conversation()
-                
-            elif mode == 'traditional':
+
+            elif mode == "traditional":
                 # Force traditional CLI mode
                 await ChatbotController._start_fallback_cli(app_root)
-                
+
             else:  # auto mode
                 # Automatic detection and fallback
                 controller = await ChatbotController.create_with_fallback(
@@ -176,75 +222,83 @@ def interactive(ctx):
                     test_llm=True,
                     scripting_enabled=True,
                     web_search_enabled=enable_web_search,
-                    web_search_client=web_search_client
+                    web_search_client=web_search_client,
                 )
-                
+
                 if controller:
                     await controller.start_conversation()
                 # If controller is None, fallback CLI was already started
-                
+
         except Exception as e:
             click.echo(f"❌ Error starting interactive mode: {e}")
             if verbose:
                 import traceback
+
                 traceback.print_exc()
-    
+
     asyncio.run(start_interactive())
 
 
 @cli.command()
-@click.option('--companies', '-c', default=10, help='Number of companies to test')
-@click.option('--output', '-o', help='Output file for results')
+@click.option("--companies", "-c", default=10, help="Number of companies to test")
+@click.option("--output", "-o", help="Output file for results")
 @click.pass_context
 def test(ctx, companies, output):
     """Run system test with multiple companies."""
-    
+
     async def run_test():
-        verbose = ctx.obj.get('verbose', False)
-        
+        verbose = ctx.obj.get("verbose", False)
+
         if verbose:
             click.echo(f"🧪 Testing system with {companies} companies...")
-        
+
         try:
             # Import and run the test
             from test_50_companies import test_50_companies
-            
+
             # Modify the test to use specified number of companies
             # This would require updating the test function
             await test_50_companies()
-            
+
             if output:
                 click.echo(f"📄 Results saved to: {output}")
-            
+
         except Exception as e:
             click.echo(f"❌ Test failed: {e}")
             if verbose:
                 import traceback
+
                 traceback.print_exc()
-    
+
     asyncio.run(run_test())
 
 
 @cli.command()
-@click.option('--cik', required=True, help='Company CIK number')
-@click.option('--year', default=2023, help='Fiscal year')
-@click.option('--output-format', type=click.Choice(['json', 'table', 'csv']), 
-              default='table', help='Output format')
+@click.option("--cik", required=True, help="Company CIK number")
+@click.option("--year", default=2023, help="Fiscal year")
+@click.option(
+    "--output-format",
+    type=click.Choice(["json", "table", "csv"]),
+    default="table",
+    help="Output format",
+)
 @click.pass_context
 def extract(ctx, cik, year, output_format):
     """Extract executive compensation for a specific company."""
-    
+
     async def run_extraction():
-        verbose = ctx.obj.get('verbose', False)
-        
+        verbose = ctx.obj.get("verbose", False)
+
         if verbose:
             click.echo(f"📊 Extracting compensation for CIK {cik}, year {year}")
-        
+
         try:
-            from self_improving_code.examples.edgar_extraction import EdgarExtractionExample
-            
+            from self_improving_code.examples.edgar_extraction import (
+                EdgarExtractionExample,
+            )
+
             example = EdgarExtractionExample()
-            
+
             # For demo, use sample HTML
             sample_html = f"""
             <html><body>
@@ -256,35 +310,40 @@ def extract(ctx, cik, year, output_format):
                 </table>
             </body></html>
             """
-            
+
             results = await example.extract_with_improvement(
                 html_content=sample_html,
                 company_cik=cik,
                 company_name=f"Company {cik}",
                 year=year,
-                max_iterations=2
+                max_iterations=2,
             )
-            
-            compensations = results.get('compensations', [])
-            
-            if output_format == 'json':
+
+            compensations = results.get("compensations", [])
+
+            if output_format == "json":
                 import json
+
                 compensation_data = []
                 for comp in compensations:
-                    compensation_data.append({
-                        'name': comp.executive_name,
-                        'title': comp.title,
-                        'total_compensation': float(comp.total_compensation),
-                        'salary': float(comp.salary) if comp.salary else 0,
-                        'bonus': float(comp.bonus) if comp.bonus else 0
-                    })
+                    compensation_data.append(
+                        {
+                            "name": comp.executive_name,
+                            "title": comp.title,
+                            "total_compensation": float(comp.total_compensation),
+                            "salary": float(comp.salary) if comp.salary else 0,
+                            "bonus": float(comp.bonus) if comp.bonus else 0,
+                        }
+                    )
                 click.echo(json.dumps(compensation_data, indent=2))
-                
-            elif output_format == 'csv':
+
+            elif output_format == "csv":
                 click.echo("Name,Title,Total Compensation,Salary,Bonus")
                 for comp in compensations:
-                    click.echo(f"{comp.executive_name},{comp.title},{comp.total_compensation},{comp.salary},{comp.bonus}")
-                    
+                    click.echo(
+                        f"{comp.executive_name},{comp.title},{comp.total_compensation},{comp.salary},{comp.bonus}"
+                    )
+
             else:  # table format
                 click.echo(f"\n📊 Executive Compensation - CIK {cik} ({year})")
                 click.echo("-" * 60)
@@ -292,22 +351,33 @@ def extract(ctx, cik, year, output_format):
                     click.echo(f"👤 {comp.executive_name}")
                     click.echo(f"   Title: {comp.title}")
                     click.echo(f"   Total: ${comp.total_compensation:,}")
-                    click.echo(f"   Salary: ${comp.salary:,}" if comp.salary else "   Salary: N/A")
+                    click.echo(
+                        f"   Salary: ${comp.salary:,}"
+                        if comp.salary
+                        else "   Salary: N/A"
+                    )
                     click.echo()
-            
+
             if verbose:
-                improvement_info = results.get('improvement_process', {})
+                improvement_info = results.get("improvement_process", {})
                 click.echo(f"\n🔄 Improvement Process:")
-                click.echo(f"   Iterations: {improvement_info.get('total_iterations', 0)}")
-                click.echo(f"   Success: {improvement_info.get('final_success', False)}")
-                click.echo(f"   Improvements: {len(improvement_info.get('improvements_made', []))}")
-            
+                click.echo(
+                    f"   Iterations: {improvement_info.get('total_iterations', 0)}"
+                )
+                click.echo(
+                    f"   Success: {improvement_info.get('final_success', False)}"
+                )
+                click.echo(
+                    f"   Improvements: {len(improvement_info.get('improvements_made', []))}"
+                )
+
         except Exception as e:
             click.echo(f"❌ Extraction failed: {e}")
             if verbose:
                 import traceback
+
                 traceback.print_exc()
-    
+
     asyncio.run(run_extraction())
 
 
@@ -323,10 +393,14 @@ def project(ctx):
     pass
 
 
-@project.command('create')
-@click.argument('name')
-@click.option('--template', type=click.Choice(['weather', 'news_scraper', 'minimal']),
-              default='minimal', help='Project template to use')
+@project.command("create")
+@click.argument("name")
+@click.option(
+    "--template",
+    type=click.Choice(["weather", "news_scraper", "minimal"]),
+    default="minimal",
+    help="Project template to use",
+)
 @click.pass_context
 def project_create(ctx, name, template):
     """Create a new project from template.
@@ -335,11 +409,14 @@ def project_create(ctx, name, template):
         edgar-analyzer project create my_api --template weather
         edgar-analyzer project create news_scraper --template news_scraper
     """
+
     async def run_create():
         try:
-            from extract_transform_platform.services.project_manager import ProjectManager
+            from extract_transform_platform.services.project_manager import (
+                ProjectManager,
+            )
 
-            verbose = ctx.obj.get('verbose', False)
+            verbose = ctx.obj.get("verbose", False)
 
             if verbose:
                 click.echo(f"Creating project '{name}' from template '{template}'...")
@@ -356,17 +433,23 @@ def project_create(ctx, name, template):
 
         except Exception as e:
             click.echo(f"❌ Error creating project: {e}")
-            if ctx.obj.get('verbose', False):
+            if ctx.obj.get("verbose", False):
                 import traceback
+
                 traceback.print_exc()
             sys.exit(1)
 
     asyncio.run(run_create())
 
 
-@project.command('list')
-@click.option('--format', 'output_format', type=click.Choice(['table', 'json']),
-              default='table', help='Output format')
+@project.command("list")
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["table", "json"]),
+    default="table",
+    help="Output format",
+)
 @click.pass_context
 def project_list(ctx, output_format):
     """List all projects.
@@ -375,9 +458,12 @@ def project_list(ctx, output_format):
         edgar-analyzer project list
         edgar-analyzer project list --format json
     """
+
     async def run_list():
         try:
-            from extract_transform_platform.services.project_manager import ProjectManager
+            from extract_transform_platform.services.project_manager import (
+                ProjectManager,
+            )
 
             manager = ProjectManager()
             projects = await manager.list_projects()
@@ -386,7 +472,7 @@ def project_list(ctx, output_format):
                 click.echo("No projects found.")
                 return
 
-            if output_format == 'json':
+            if output_format == "json":
                 output = [p.to_dict() for p in projects]
                 click.echo(json.dumps(output, indent=2))
             else:
@@ -394,22 +480,23 @@ def project_list(ctx, output_format):
                 click.echo(f"\n{'Name':<30} {'Description':<50} {'Path':<40}")
                 click.echo("-" * 120)
                 for p in projects:
-                    desc = p.metadata.get('description', 'No description')[:48]
+                    desc = p.metadata.get("description", "No description")[:48]
                     click.echo(f"{p.name:<30} {desc:<50} {str(p.path):<40}")
                 click.echo(f"\nTotal: {len(projects)} projects")
 
         except Exception as e:
             click.echo(f"❌ Error listing projects: {e}")
-            if ctx.obj.get('verbose', False):
+            if ctx.obj.get("verbose", False):
                 import traceback
+
                 traceback.print_exc()
             sys.exit(1)
 
     asyncio.run(run_list())
 
 
-@project.command('validate')
-@click.argument('name')
+@project.command("validate")
+@click.argument("name")
 @click.pass_context
 def project_validate(ctx, name):
     """Validate project configuration and structure.
@@ -417,11 +504,14 @@ def project_validate(ctx, name):
     Examples:
         edgar-analyzer project validate my_api
     """
+
     async def run_validate():
         try:
-            from extract_transform_platform.services.project_manager import ProjectManager
+            from extract_transform_platform.services.project_manager import (
+                ProjectManager,
+            )
 
-            verbose = ctx.obj.get('verbose', False)
+            verbose = ctx.obj.get("verbose", False)
 
             if verbose:
                 click.echo(f"Validating project '{name}'...")
@@ -461,17 +551,18 @@ def project_validate(ctx, name):
 
         except Exception as e:
             click.echo(f"❌ Error validating project: {e}")
-            if ctx.obj.get('verbose', False):
+            if ctx.obj.get("verbose", False):
                 import traceback
+
                 traceback.print_exc()
             sys.exit(1)
 
     asyncio.run(run_validate())
 
 
-@project.command('delete')
-@click.argument('name')
-@click.option('--yes', '-y', is_flag=True, help='Skip confirmation prompt')
+@project.command("delete")
+@click.argument("name")
+@click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
 @click.pass_context
 def project_delete(ctx, name, yes):
     """Delete a project.
@@ -480,9 +571,12 @@ def project_delete(ctx, name, yes):
         edgar-analyzer project delete old_project
         edgar-analyzer project delete old_project --yes
     """
+
     async def run_delete():
         try:
-            from extract_transform_platform.services.project_manager import ProjectManager
+            from extract_transform_platform.services.project_manager import (
+                ProjectManager,
+            )
 
             manager = ProjectManager()
 
@@ -511,8 +605,9 @@ def project_delete(ctx, name, yes):
 
         except Exception as e:
             click.echo(f"❌ Error deleting project: {e}")
-            if ctx.obj.get('verbose', False):
+            if ctx.obj.get("verbose", False):
                 import traceback
+
                 traceback.print_exc()
             sys.exit(1)
 
@@ -524,7 +619,7 @@ def project_delete(ctx, name, yes):
 # ============================================================================
 
 
-def _load_examples_from_config(config: 'ProjectConfig', project_path: Path) -> list:
+def _load_examples_from_config(config: "ProjectConfig", project_path: Path) -> list:
     """
     Load examples from ProjectConfig, supporting both inline and file-based examples.
 
@@ -548,7 +643,7 @@ def _load_examples_from_config(config: 'ProjectConfig', project_path: Path) -> l
     examples = []
 
     # Priority 1: Check for inline examples in config
-    if hasattr(config, 'examples') and config.examples:
+    if hasattr(config, "examples") and config.examples:
         for ex in config.examples:
             if isinstance(ex, ExampleConfig):
                 examples.append(ex)
@@ -570,7 +665,7 @@ def _load_examples_from_config(config: 'ProjectConfig', project_path: Path) -> l
 
     for example_file in example_files:
         try:
-            with open(example_file, 'r') as f:
+            with open(example_file, "r") as f:
                 example_data = json.load(f)
                 examples.append(ExampleConfig(**example_data))
         except Exception as e:
@@ -587,8 +682,8 @@ def _load_examples_from_config(config: 'ProjectConfig', project_path: Path) -> l
 # ============================================================================
 
 
-@cli.command('analyze-project')
-@click.argument('project_path', type=click.Path(exists=True, path_type=Path))
+@cli.command("analyze-project")
+@click.argument("project_path", type=click.Path(exists=True, path_type=Path))
 @click.pass_context
 def analyze_project(ctx, project_path):
     """Analyze project examples and detect transformation patterns.
@@ -603,12 +698,13 @@ def analyze_project(ctx, project_path):
         edgar-analyzer analyze-project projects/my_api/
         edgar-analyzer analyze-project /path/to/external/project/
     """
+
     async def run_analyze():
         try:
             from edgar_analyzer.models.project_config import ProjectConfig
             from edgar_analyzer.services.example_parser import ExampleParser
 
-            verbose = ctx.obj.get('verbose', False)
+            verbose = ctx.obj.get("verbose", False)
 
             # Load project config
             config_path = project_path / "project.yaml"
@@ -625,8 +721,12 @@ def analyze_project(ctx, project_path):
             examples = _load_examples_from_config(config, project_path)
 
             if not examples:
-                click.echo("❌ Error: No examples found (neither inline nor in examples/ directory)")
-                click.echo("   Add examples to project.yaml or create examples/*.json files")
+                click.echo(
+                    "❌ Error: No examples found (neither inline nor in examples/ directory)"
+                )
+                click.echo(
+                    "   Add examples to project.yaml or create examples/*.json files"
+                )
                 sys.exit(1)
 
             click.echo(f"\n📊 Analyzing {len(examples)} examples...")
@@ -642,30 +742,35 @@ def analyze_project(ctx, project_path):
 
             # Save analysis results
             analysis_path = project_path / "analysis_results.json"
-            with open(analysis_path, 'w') as f:
-                json.dump({
-                    'patterns': [p.dict() for p in parsed.patterns],
-                    'input_schema': parsed.input_schema.dict(),
-                    'output_schema': parsed.output_schema.dict(),
-                    'num_examples': len(examples)
-                }, f, indent=2)
+            with open(analysis_path, "w") as f:
+                json.dump(
+                    {
+                        "patterns": [p.dict() for p in parsed.patterns],
+                        "input_schema": parsed.input_schema.dict(),
+                        "output_schema": parsed.output_schema.dict(),
+                        "num_examples": len(examples),
+                    },
+                    f,
+                    indent=2,
+                )
 
             click.echo(f"\n   Results saved to: {analysis_path}")
             click.echo(f"\nNext step: edgar-analyzer generate-code {project_path}")
 
         except Exception as e:
             click.echo(f"❌ Error analyzing project: {e}")
-            if ctx.obj.get('verbose', False):
+            if ctx.obj.get("verbose", False):
                 import traceback
+
                 traceback.print_exc()
             sys.exit(1)
 
     asyncio.run(run_analyze())
 
 
-@cli.command('generate-code')
-@click.argument('project_path', type=click.Path(exists=True, path_type=Path))
-@click.option('--validate/--no-validate', default=True, help='Validate generated code')
+@cli.command("generate-code")
+@click.argument("project_path", type=click.Path(exists=True, path_type=Path))
+@click.option("--validate/--no-validate", default=True, help="Validate generated code")
 @click.pass_context
 def generate_code(ctx, project_path, validate):
     """Generate extraction code from analyzed patterns.
@@ -680,12 +785,13 @@ def generate_code(ctx, project_path, validate):
         edgar-analyzer generate-code projects/my_api/
         edgar-analyzer generate-code projects/my_api/ --no-validate
     """
+
     async def run_generate():
         try:
             from edgar_analyzer.models.project_config import ProjectConfig
             from edgar_analyzer.services.code_generator import CodeGeneratorService
 
-            verbose = ctx.obj.get('verbose', False)
+            verbose = ctx.obj.get("verbose", False)
 
             # Load project config
             config_path = project_path / "project.yaml"
@@ -699,8 +805,12 @@ def generate_code(ctx, project_path, validate):
             examples = _load_examples_from_config(config, project_path)
 
             if not examples:
-                click.echo("❌ Error: No examples found (neither inline nor in examples/ directory)")
-                click.echo("   Add examples to project.yaml or create examples/*.json files")
+                click.echo(
+                    "❌ Error: No examples found (neither inline nor in examples/ directory)"
+                )
+                click.echo(
+                    "   Add examples to project.yaml or create examples/*.json files"
+                )
                 sys.exit(1)
 
             click.echo(f"\n🔧 Generating code for {config.project.name}...")
@@ -709,13 +819,14 @@ def generate_code(ctx, project_path, validate):
             api_key = os.getenv("OPENROUTER_API_KEY")
             if not api_key:
                 click.echo("❌ Error: OPENROUTER_API_KEY not set in environment")
-                click.echo("   Set it in .env.local or export OPENROUTER_API_KEY=your_key")
+                click.echo(
+                    "   Set it in .env.local or export OPENROUTER_API_KEY=your_key"
+                )
                 sys.exit(1)
 
             # Generate code
             service = CodeGeneratorService(
-                api_key=api_key,
-                output_dir=project_path / "src"
+                api_key=api_key, output_dir=project_path / "src"
             )
 
             context = await service.generate(
@@ -723,19 +834,23 @@ def generate_code(ctx, project_path, validate):
                 project_config=config,
                 validate=validate,
                 write_files=True,
-                max_retries=3
+                max_retries=3,
             )
 
             if context.is_complete:
                 click.echo(f"✅ Code generation complete!")
                 click.echo(f"\n   Generated files:")
-                click.echo(f"     - extractor.py ({context.code.extractor_lines} lines)")
+                click.echo(
+                    f"     - extractor.py ({context.code.extractor_lines} lines)"
+                )
                 click.echo(f"     - models.py ({context.code.models_lines} lines)")
                 click.echo(f"     - tests.py ({context.code.tests_lines} lines)")
                 click.echo(f"\n   Output directory: {project_path / 'src'}")
 
                 if validate and context.validation and context.validation.is_valid:
-                    click.echo(f"   Quality score: {context.validation.quality_score:.0%}")
+                    click.echo(
+                        f"   Quality score: {context.validation.quality_score:.0%}"
+                    )
 
                 click.echo(f"\nNext step: edgar-analyzer run-extraction {project_path}")
             else:
@@ -748,18 +863,23 @@ def generate_code(ctx, project_path, validate):
 
         except Exception as e:
             click.echo(f"❌ Error generating code: {e}")
-            if ctx.obj.get('verbose', False):
+            if ctx.obj.get("verbose", False):
                 import traceback
+
                 traceback.print_exc()
             sys.exit(1)
 
     asyncio.run(run_generate())
 
 
-@cli.command('run-extraction')
-@click.argument('project_path', type=click.Path(exists=True, path_type=Path))
-@click.option('--output-format', type=click.Choice(['json', 'csv', 'excel']),
-              default='json', help='Output format')
+@cli.command("run-extraction")
+@click.argument("project_path", type=click.Path(exists=True, path_type=Path))
+@click.option(
+    "--output-format",
+    type=click.Choice(["json", "csv", "excel"]),
+    default="json",
+    help="Output format",
+)
 @click.pass_context
 def run_extraction(ctx, project_path, output_format):
     """Run the generated extraction code.
@@ -773,12 +893,14 @@ def run_extraction(ctx, project_path, output_format):
         edgar-analyzer run-extraction projects/my_api/
         edgar-analyzer run-extraction projects/my_api/ --output-format csv
     """
+
     async def run_extract():
         try:
             import importlib.util
+
             from edgar_analyzer.models.project_config import ProjectConfig
 
-            verbose = ctx.obj.get('verbose', False)
+            verbose = ctx.obj.get("verbose", False)
 
             # Load project config
             config_path = project_path / "project.yaml"
@@ -791,7 +913,9 @@ def run_extraction(ctx, project_path, output_format):
             # Load generated extractor
             extractor_path = project_path / "src" / "extractor.py"
             if not extractor_path.exists():
-                click.echo(f"❌ Error: extractor.py not found in {project_path / 'src'}")
+                click.echo(
+                    f"❌ Error: extractor.py not found in {project_path / 'src'}"
+                )
                 click.echo("   Run 'edgar-analyzer generate-code' first")
                 sys.exit(1)
 
@@ -811,7 +935,7 @@ def run_extraction(ctx, project_path, output_format):
             extractor_class = None
             for name in dir(module):
                 obj = getattr(module, name)
-                if isinstance(obj, type) and name.endswith('Extractor'):
+                if isinstance(obj, type) and name.endswith("Extractor"):
                     extractor_class = obj
                     break
 
@@ -829,21 +953,23 @@ def run_extraction(ctx, project_path, output_format):
             output_dir = project_path / "output"
             output_dir.mkdir(exist_ok=True)
 
-            if output_format == 'json':
+            if output_format == "json":
                 output_file = output_dir / "results.json"
-                with open(output_file, 'w') as f:
+                with open(output_file, "w") as f:
                     json.dump(results, f, indent=2)
                 click.echo(f"✅ Extraction complete! Results saved to {output_file}")
 
-            elif output_format == 'csv':
+            elif output_format == "csv":
                 import pandas as pd
+
                 output_file = output_dir / "results.csv"
                 df = pd.DataFrame(results)
                 df.to_csv(output_file, index=False)
                 click.echo(f"✅ Extraction complete! Results saved to {output_file}")
 
-            elif output_format == 'excel':
+            elif output_format == "excel":
                 import pandas as pd
+
                 output_file = output_dir / "results.xlsx"
                 df = pd.DataFrame(results)
                 df.to_excel(output_file, index=False)
@@ -853,8 +979,9 @@ def run_extraction(ctx, project_path, output_format):
 
         except Exception as e:
             click.echo(f"❌ Error running extraction: {e}")
-            if ctx.obj.get('verbose', False):
+            if ctx.obj.get("verbose", False):
                 import traceback
+
                 traceback.print_exc()
             sys.exit(1)
 
@@ -862,12 +989,31 @@ def run_extraction(ctx, project_path, output_format):
 
 
 @cli.command()
-@click.option('--project', type=click.Path(exists=True), help='Project directory path')
-@click.option('--resume', type=str, default=None, help='Resume saved session by name')
-@click.option('--list-sessions', is_flag=True, help='List all saved sessions and exit')
-@click.option('--exec', '-e', 'exec_command', type=str, default=None, help='Execute single command without REPL (one-shot mode)')
-@click.option('--session', '-s', 'session_id', type=str, default=None, help='Session ID to resume (for one-shot mode)')
-@click.option('--output-format', type=click.Choice(['text', 'json'], case_sensitive=False), default='text', help='Output format for one-shot mode')
+@click.option("--project", type=click.Path(exists=True), help="Project directory path")
+@click.option("--resume", type=str, default=None, help="Resume saved session by name")
+@click.option("--list-sessions", is_flag=True, help="List all saved sessions and exit")
+@click.option(
+    "--exec",
+    "-e",
+    "exec_command",
+    type=str,
+    default=None,
+    help="Execute single command without REPL (one-shot mode)",
+)
+@click.option(
+    "--session",
+    "-s",
+    "session_id",
+    type=str,
+    default=None,
+    help="Session ID to resume (for one-shot mode)",
+)
+@click.option(
+    "--output-format",
+    type=click.Choice(["text", "json"], case_sensitive=False),
+    default="text",
+    help="Output format for one-shot mode",
+)
 @click.pass_context
 def chat(ctx, project, resume, list_sessions, exec_command, session_id, output_format):
     """Start interactive extraction session with REPL interface (DEFAULT).
@@ -955,6 +1101,7 @@ def chat(ctx, project, resume, list_sessions, exec_command, session_id, output_f
 
     # Handle --list-sessions flag
     if list_sessions:
+
         async def list_all_sessions():
             session = InteractiveExtractionSession()
             await session.cmd_list_sessions()
@@ -964,8 +1111,9 @@ def chat(ctx, project, resume, list_sessions, exec_command, session_id, output_f
 
     # Handle one-shot execution mode (--exec)
     if exec_command:
+
         async def execute_oneshot():
-            verbose = ctx.obj.get('verbose', False)
+            verbose = ctx.obj.get("verbose", False)
 
             if verbose:
                 click.echo(f"🚀 Executing one-shot command: {exec_command}")
@@ -975,8 +1123,7 @@ def chat(ctx, project, resume, list_sessions, exec_command, session_id, output_f
 
                 # Create or resume session
                 session = InteractiveExtractionSession(
-                    project_path=project_path,
-                    session_id=session_id
+                    project_path=project_path, session_id=session_id
                 )
 
                 # If session_id provided, try to resume that session
@@ -987,37 +1134,38 @@ def chat(ctx, project, resume, list_sessions, exec_command, session_id, output_f
                 result = await session.execute_command_oneshot(exec_command)
 
                 # Output results based on format
-                if output_format.lower() == 'json':
+                if output_format.lower() == "json":
                     # JSON output
                     click.echo(json.dumps(result, indent=2))
                 else:
                     # Text output
                     click.echo(f"Session: {result['session_id']}")
-                    click.echo(result['output'])
+                    click.echo(result["output"])
 
-                    if result['error']:
+                    if result["error"]:
                         click.echo(f"❌ Error: {result['error']}")
 
                 # Exit with appropriate code
-                if not result['success']:
+                if not result["success"]:
                     ctx.exit(1)
                 # If successful, just return normally (don't call ctx.exit(0))
                 return
 
             except Exception as e:
-                if output_format.lower() == 'json':
+                if output_format.lower() == "json":
                     error_result = {
                         "session_id": session_id or "unknown",
                         "command": exec_command,
                         "success": False,
                         "output": "",
-                        "error": str(e)
+                        "error": str(e),
                     }
                     click.echo(json.dumps(error_result, indent=2))
                 else:
                     click.echo(f"❌ Error executing command: {e}")
                     if verbose:
                         import traceback
+
                         traceback.print_exc()
                 ctx.exit(1)
 
@@ -1026,7 +1174,7 @@ def chat(ctx, project, resume, list_sessions, exec_command, session_id, output_f
 
     # Normal interactive REPL mode
     async def start_chat():
-        verbose = ctx.obj.get('verbose', False)
+        verbose = ctx.obj.get("verbose", False)
 
         if verbose:
             click.echo("🚀 Starting interactive chat session...")
@@ -1045,6 +1193,7 @@ def chat(ctx, project, resume, list_sessions, exec_command, session_id, output_f
             click.echo(f"❌ Error starting chat session: {e}")
             if verbose:
                 import traceback
+
                 traceback.print_exc()
 
     asyncio.run(start_chat())
@@ -1053,15 +1202,15 @@ def chat(ctx, project, resume, list_sessions, exec_command, session_id, output_f
 # Add traditional CLI commands as subcommands
 def create_integrated_cli():
     """Create integrated CLI with both conversational and traditional commands."""
-    
+
     # Get the traditional CLI
     app_root = str(Path(__file__).parent.parent.parent)
     traditional_cli = create_fallback_cli(app_root)
-    
+
     # Add traditional commands to main CLI
     for command_name, command in traditional_cli.commands.items():
         cli.add_command(command, name=f"trad-{command_name}")
-    
+
     return cli
 
 

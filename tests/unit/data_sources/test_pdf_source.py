@@ -660,6 +660,7 @@ class TestPDFDataSourceConfiguration:
 
         # Manually change the file extension after init
         import shutil
+
         new_path = tmp_path / "test.txt"
         shutil.move(test_file, new_path)
         source.file_path = new_path
@@ -707,12 +708,15 @@ class TestPDFDataSourceConfiguration:
         assert is_valid is False
 
     @pytest.mark.asyncio
-    async def test_validate_config_pdfplumber_not_installed(self, simple_pdf, monkeypatch):
+    async def test_validate_config_pdfplumber_not_installed(
+        self, simple_pdf, monkeypatch
+    ):
         """Test validate_config returns False if pdfplumber not available."""
         source = PDFDataSource(simple_pdf)
 
         # Mock pdfplumber import failure
         import builtins
+
         real_import = builtins.__import__
 
         def mock_import(name, *args, **kwargs):
@@ -778,6 +782,7 @@ class TestPDFDataSourceErrorHandling:
 
         # Mock pdfplumber import failure
         import builtins
+
         real_import = builtins.__import__
 
         def mock_import(name, *args, **kwargs):
@@ -799,6 +804,7 @@ class TestPDFDataSourceErrorHandling:
 
         # Mock pandas import failure
         import builtins
+
         real_import = builtins.__import__
 
         def mock_import(name, *args, **kwargs):
@@ -847,9 +853,7 @@ class TestPDFDataSourceErrorHandling:
         data = [["Name", "Age", "City"]]
 
         table = Table(data)
-        table.setStyle(
-            TableStyle([("GRID", (0, 0), (-1, -1), 1, colors.black)])
-        )
+        table.setStyle(TableStyle([("GRID", (0, 0), (-1, -1), 1, colors.black)]))
         doc.build([table])
 
         source = PDFDataSource(file_path)

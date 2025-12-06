@@ -89,11 +89,13 @@ class TestSetupCommand:
 
             # Create file with multiple variables
             env_path = tmp_path / ".env.local"
-            env_path.write_text("""
+            env_path.write_text(
+                """
 DATABASE_URL=sqlite:///test.db
 OPENROUTER_API_KEY=sk-or-v1-old123
 LOG_LEVEL=DEBUG
-""")
+"""
+            )
 
             # Update API key
             new_key = "sk-or-v1-new456"

@@ -43,7 +43,6 @@ from extract_transform_platform.services.project_manager import (
     ValidationResult,
 )
 
-
 # ============================================================================
 # FIXTURES
 # ============================================================================
@@ -72,23 +71,20 @@ def sample_project_config():
             description="Test project description",
             version="1.0.0",
             author="Test Author",
-            tags=["test", "sample"]
+            tags=["test", "sample"],
         ),
         data_sources=[
             DataSourceConfig(
                 type=DataSourceType.API,
                 name="example_api",
-                endpoint="https://api.example.com"
+                endpoint="https://api.example.com",
             )
         ],
         output=OutputConfig(
             formats=[
-                OutputDestinationConfig(
-                    type=OutputFormat.JSON,
-                    path="output/data.json"
-                )
+                OutputDestinationConfig(type=OutputFormat.JSON, path="output/data.json")
             ]
-        )
+        ),
     )
 
 
@@ -124,17 +120,14 @@ def create_project_yaml(project_dir: Path, name: str, **kwargs):
             DataSourceConfig(
                 type=DataSourceType.API,
                 name="example_api",
-                endpoint="https://api.example.com"
+                endpoint="https://api.example.com",
             )
         ],
         output=OutputConfig(
             formats=[
-                OutputDestinationConfig(
-                    type=OutputFormat.JSON,
-                    path="output/data.json"
-                )
+                OutputDestinationConfig(type=OutputFormat.JSON, path="output/data.json")
             ]
-        )
+        ),
     )
 
     config.to_yaml(project_dir / "project.yaml")
@@ -173,8 +166,7 @@ class TestCRUDOperations:
         """Test project creation with specified template."""
         # Currently template is not implemented, but should not fail
         project_info = await project_manager.create_project(
-            "template_project",
-            template="weather"
+            "template_project", template="weather"
         )
 
         assert project_info is not None
@@ -307,7 +299,9 @@ class TestValidation:
         assert "not found" in result.errors[0].lower()
 
     @pytest.mark.asyncio
-    async def test_validate_project_missing_config(self, project_manager, tmp_projects_dir):
+    async def test_validate_project_missing_config(
+        self, project_manager, tmp_projects_dir
+    ):
         """Test validation when project.yaml is missing."""
         # Create project directory without config
         project_dir = tmp_projects_dir / "no_config"
@@ -320,7 +314,9 @@ class TestValidation:
         assert result.has_errors
 
     @pytest.mark.asyncio
-    async def test_validate_project_invalid_yaml(self, project_manager, tmp_projects_dir):
+    async def test_validate_project_invalid_yaml(
+        self, project_manager, tmp_projects_dir
+    ):
         """Test validation with malformed YAML."""
         project_dir = tmp_projects_dir / "bad_yaml"
         project_dir.mkdir()
@@ -335,7 +331,9 @@ class TestValidation:
         assert result.has_errors
 
     @pytest.mark.asyncio
-    async def test_validate_project_missing_directories(self, project_manager, sample_project_yaml):
+    async def test_validate_project_missing_directories(
+        self, project_manager, sample_project_yaml
+    ):
         """Test validation warns about missing directories."""
         # Remove some directories
         shutil.rmtree(sample_project_yaml / "examples")
@@ -350,7 +348,9 @@ class TestValidation:
         assert any("src" in w.lower() for w in result.warnings)
 
     @pytest.mark.asyncio
-    async def test_validate_project_no_examples(self, project_manager, sample_project_yaml):
+    async def test_validate_project_no_examples(
+        self, project_manager, sample_project_yaml
+    ):
         """Test validation warns when no example files exist."""
         # Examples directory exists but is empty (created in fixture)
         result = await project_manager.validate_project("test_project")
@@ -367,7 +367,7 @@ class TestValidation:
             is_valid=False,
             errors=["Error 1", "Error 2"],
             warnings=["Warning 1"],
-            recommendations=["Recommendation 1"]
+            recommendations=["Recommendation 1"],
         )
 
         result_dict = result.to_dict()
@@ -421,7 +421,9 @@ class TestCaching:
         assert projects[0].name == "new_project"
 
     @pytest.mark.asyncio
-    async def test_cache_invalidation_on_delete(self, project_manager, sample_project_yaml):
+    async def test_cache_invalidation_on_delete(
+        self, project_manager, sample_project_yaml
+    ):
         """Test that cache is cleared when deleting project."""
         # Initial list to populate cache
         projects = await project_manager.list_projects()
@@ -600,7 +602,9 @@ class TestErrorHandling:
             assert project is not None
 
     @pytest.mark.asyncio
-    async def test_load_projects_malformed_yaml(self, project_manager, tmp_projects_dir):
+    async def test_load_projects_malformed_yaml(
+        self, project_manager, tmp_projects_dir
+    ):
         """Test that malformed YAML is logged and skipped."""
         # Create project with bad YAML
         project_dir = tmp_projects_dir / "bad_yaml"
@@ -613,20 +617,24 @@ class TestErrorHandling:
         assert len(projects) == 0
 
     @pytest.mark.asyncio
-    async def test_load_projects_validation_error(self, project_manager, tmp_projects_dir):
+    async def test_load_projects_validation_error(
+        self, project_manager, tmp_projects_dir
+    ):
         """Test that validation errors are logged and skipped."""
         # Create project with invalid config
         project_dir = tmp_projects_dir / "invalid_config"
         project_dir.mkdir()
 
         # Write YAML with missing required fields
-        (project_dir / "project.yaml").write_text("""
+        (project_dir / "project.yaml").write_text(
+            """
 project:
   name: ""  # Invalid: empty name
 data_sources: []
 output:
   formats: []
-        """)
+        """
+        )
 
         # Should not crash, just skip the project
         projects = await project_manager.list_projects()
@@ -634,7 +642,9 @@ output:
         assert len(projects) == 0
 
     @pytest.mark.asyncio
-    async def test_delete_project_permission_error(self, project_manager, sample_project_yaml):
+    async def test_delete_project_permission_error(
+        self, project_manager, sample_project_yaml
+    ):
         """Test that OSError is raised on deletion failure."""
         # Mock shutil.rmtree to raise OSError
         with patch("shutil.rmtree") as mock_rmtree:
@@ -684,7 +694,9 @@ class TestEdgeCases:
         assert project.path.exists()
 
     @pytest.mark.asyncio
-    async def test_list_projects_with_non_directory_items(self, project_manager, tmp_projects_dir):
+    async def test_list_projects_with_non_directory_items(
+        self, project_manager, tmp_projects_dir
+    ):
         """Test that non-directory items are ignored."""
         # Create a file (not directory) in projects directory
         (tmp_projects_dir / "not_a_project.txt").write_text("test")
@@ -699,7 +711,9 @@ class TestEdgeCases:
         assert projects[0].name == "valid_project"
 
     @pytest.mark.asyncio
-    async def test_list_projects_with_directory_without_yaml(self, project_manager, tmp_projects_dir):
+    async def test_list_projects_with_directory_without_yaml(
+        self, project_manager, tmp_projects_dir
+    ):
         """Test that directories without project.yaml are ignored."""
         # Create directory without project.yaml
         (tmp_projects_dir / "no_yaml_dir").mkdir()
@@ -743,7 +757,9 @@ class TestEdgeCases:
         assert "test" in project_info.metadata["tags"]
 
     @pytest.mark.asyncio
-    async def test_load_projects_with_file_disappearing(self, project_manager, tmp_projects_dir, monkeypatch):
+    async def test_load_projects_with_file_disappearing(
+        self, project_manager, tmp_projects_dir, monkeypatch
+    ):
         """Test handling of race condition when config disappears during scan."""
         # Create a project
         project_dir = tmp_projects_dir / "disappearing"
@@ -765,7 +781,9 @@ class TestEdgeCases:
         assert len(projects) == 0
 
     @pytest.mark.asyncio
-    async def test_load_projects_unexpected_error(self, project_manager, tmp_projects_dir, monkeypatch):
+    async def test_load_projects_unexpected_error(
+        self, project_manager, tmp_projects_dir, monkeypatch
+    ):
         """Test handling of unexpected errors during project loading."""
         # Create a project
         project_dir = tmp_projects_dir / "error_project"

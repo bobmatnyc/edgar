@@ -28,7 +28,6 @@ import pytest
 
 from extract_transform_platform.data_sources.file.excel_source import ExcelDataSource
 
-
 # ============================================================================
 # Test Fixtures
 # ============================================================================
@@ -44,11 +43,13 @@ def simple_excel(tmp_path):
     - Standard header row
     """
     file_path = tmp_path / "simple.xlsx"
-    df = pd.DataFrame({
-        "Name": ["Alice", "Bob", "Carol"],
-        "Age": [30, 25, 35],
-        "City": ["NYC", "LA", "Chicago"]
-    })
+    df = pd.DataFrame(
+        {
+            "Name": ["Alice", "Bob", "Carol"],
+            "Age": [30, 25, 35],
+            "City": ["NYC", "LA", "Chicago"],
+        }
+    )
     df.to_excel(file_path, index=False)
     return file_path
 
@@ -65,13 +66,15 @@ def multi_type_excel(tmp_path):
     - date_col: Date/datetime values
     """
     file_path = tmp_path / "multi_type.xlsx"
-    df = pd.DataFrame({
-        "int_col": [1, 2, 3],
-        "float_col": [1.5, 2.5, 3.5],
-        "str_col": ["a", "b", "c"],
-        "bool_col": [True, False, True],
-        "date_col": pd.to_datetime(["2020-01-01", "2020-01-02", "2020-01-03"])
-    })
+    df = pd.DataFrame(
+        {
+            "int_col": [1, 2, 3],
+            "float_col": [1.5, 2.5, 3.5],
+            "str_col": ["a", "b", "c"],
+            "bool_col": [True, False, True],
+            "date_col": pd.to_datetime(["2020-01-01", "2020-01-02", "2020-01-03"]),
+        }
+    )
     df.to_excel(file_path, index=False)
     return file_path
 
@@ -96,26 +99,17 @@ def multi_sheet_excel(tmp_path):
     """
     file_path = tmp_path / "multi_sheet.xlsx"
 
-    with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+    with pd.ExcelWriter(file_path, engine="openpyxl") as writer:
         # Sheet 1: Data
-        df1 = pd.DataFrame({
-            "Product": ["A", "B", "C"],
-            "Sales": [100, 200, 150]
-        })
+        df1 = pd.DataFrame({"Product": ["A", "B", "C"], "Sales": [100, 200, 150]})
         df1.to_excel(writer, sheet_name="Data", index=False)
 
         # Sheet 2: Summary
-        df2 = pd.DataFrame({
-            "Total": [450],
-            "Average": [150]
-        })
+        df2 = pd.DataFrame({"Total": [450], "Average": [150]})
         df2.to_excel(writer, sheet_name="Summary", index=False)
 
         # Sheet 3: Archive
-        df3 = pd.DataFrame({
-            "OldProduct": ["X", "Y"],
-            "OldSales": [50, 75]
-        })
+        df3 = pd.DataFrame({"OldProduct": ["X", "Y"], "OldSales": [50, 75]})
         df3.to_excel(writer, sheet_name="Archive", index=False)
 
     return file_path
@@ -125,11 +119,13 @@ def multi_sheet_excel(tmp_path):
 def excel_with_nan(tmp_path):
     """Create Excel with NaN values."""
     file_path = tmp_path / "with_nan.xlsx"
-    df = pd.DataFrame({
-        "A": [1, None, 3, None],
-        "B": ["x", "y", None, "z"],
-        "C": [1.1, None, 3.3, 4.4]
-    })
+    df = pd.DataFrame(
+        {
+            "A": [1, None, 3, None],
+            "B": ["x", "y", None, "z"],
+            "C": [1.1, None, 3.3, 4.4],
+        }
+    )
     df.to_excel(file_path, index=False)
     return file_path
 
@@ -138,11 +134,13 @@ def excel_with_nan(tmp_path):
 def large_excel(tmp_path):
     """Create large Excel file (100 rows)."""
     file_path = tmp_path / "large.xlsx"
-    df = pd.DataFrame({
-        "id": range(100),
-        "value": [i * 10 for i in range(100)],
-        "label": [f"Row_{i}" for i in range(100)]
-    })
+    df = pd.DataFrame(
+        {
+            "id": range(100),
+            "value": [i * 10 for i in range(100)],
+            "label": [f"Row_{i}" for i in range(100)],
+        }
+    )
     df.to_excel(file_path, index=False)
     return file_path
 
@@ -173,7 +171,7 @@ class TestExcelDataSourceInitialization:
         test_file = tmp_path / "test.xls"
         df = pd.DataFrame({"A": [1, 2]})
         # Use openpyxl but save with .xls extension
-        df.to_excel(test_file, index=False, engine='openpyxl')
+        df.to_excel(test_file, index=False, engine="openpyxl")
 
         source = ExcelDataSource(test_file)
         assert source.file_path == test_file
@@ -191,7 +189,9 @@ class TestExcelDataSourceInitialization:
         test_file = tmp_path / "test.csv"
         test_file.touch()
 
-        with pytest.raises(ValueError, match="Unsupported file type.*Expected .xlsx or .xls"):
+        with pytest.raises(
+            ValueError, match="Unsupported file type.*Expected .xlsx or .xls"
+        ):
             ExcelDataSource(test_file)
 
     def test_unsupported_file_type_txt(self, tmp_path):
@@ -199,7 +199,9 @@ class TestExcelDataSourceInitialization:
         test_file = tmp_path / "test.txt"
         test_file.touch()
 
-        with pytest.raises(ValueError, match="Unsupported file type.*Expected .xlsx or .xls"):
+        with pytest.raises(
+            ValueError, match="Unsupported file type.*Expected .xlsx or .xls"
+        ):
             ExcelDataSource(test_file)
 
     def test_sheet_name_as_string(self, multi_sheet_excel):
@@ -435,10 +437,7 @@ class TestExcelDataSourceTypePreservation:
     async def test_all_none_values_in_column(self, tmp_path):
         """Test column with all None values."""
         test_file = tmp_path / "all_none.xlsx"
-        df = pd.DataFrame({
-            "A": [1, 2, 3],
-            "B": [None, None, None]
-        })
+        df = pd.DataFrame({"A": [1, 2, 3], "B": [None, None, None]})
         df.to_excel(test_file, index=False)
 
         source = ExcelDataSource(test_file)
@@ -547,10 +546,12 @@ class TestExcelDataSourceEdgeCases:
         test_file = tmp_path / "header_row2.xlsx"
 
         # Create Excel with header in row 2 (index 2)
-        df = pd.DataFrame({
-            "SkipRow1": ["ignore", "Name", "Alice", "Bob"],
-            "SkipRow2": ["ignore", "Age", "30", "25"]
-        })
+        df = pd.DataFrame(
+            {
+                "SkipRow1": ["ignore", "Name", "Alice", "Bob"],
+                "SkipRow2": ["ignore", "Age", "30", "25"],
+            }
+        )
         df.to_excel(test_file, index=False, header=False)
 
         # Read with header at row 1 (0-indexed)
@@ -565,10 +566,7 @@ class TestExcelDataSourceEdgeCases:
     async def test_skip_rows_after_header(self, tmp_path):
         """Test skip_rows parameter."""
         test_file = tmp_path / "skip_rows.xlsx"
-        df = pd.DataFrame({
-            "A": [1, 2, 3, 4, 5],
-            "B": [10, 20, 30, 40, 50]
-        })
+        df = pd.DataFrame({"A": [1, 2, 3, 4, 5], "B": [10, 20, 30, 40, 50]})
         df.to_excel(test_file, index=False)
 
         # Skip first 2 data rows after header
@@ -612,7 +610,7 @@ class TestExcelDataSourceEdgeCases:
         source = ExcelDataSource(simple_excel)
 
         # Mock pd.read_excel to raise ValueError without "Worksheet"
-        with patch('pandas.read_excel', side_effect=ValueError("Invalid parameter")):
+        with patch("pandas.read_excel", side_effect=ValueError("Invalid parameter")):
             with pytest.raises(ValueError, match="Invalid parameter"):
                 await source.fetch()
 
@@ -705,7 +703,14 @@ class TestExcelDataSourceSchemaCompatibility:
         source = ExcelDataSource(simple_excel)
         result = await source.fetch()
 
-        required_fields = ["rows", "columns", "row_count", "sheet_name", "source_file", "file_name"]
+        required_fields = [
+            "rows",
+            "columns",
+            "row_count",
+            "sheet_name",
+            "source_file",
+            "file_name",
+        ]
         for field in required_fields:
             assert field in result
 
@@ -746,7 +751,7 @@ class TestExcelDataSourceConfiguration:
     @pytest.mark.asyncio
     async def test_validate_config_empty_workbook(self, simple_excel):
         """Test validate_config handles empty sheet names list."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         source = ExcelDataSource(simple_excel)
 
@@ -756,20 +761,22 @@ class TestExcelDataSourceConfiguration:
         mock_xls.__enter__ = MagicMock(return_value=mock_xls)
         mock_xls.__exit__ = MagicMock(return_value=False)
 
-        with patch('pandas.ExcelFile', return_value=mock_xls):
+        with patch("pandas.ExcelFile", return_value=mock_xls):
             is_valid = await source.validate_config()
             # Should return False - no sheets
             assert is_valid is False
 
     @pytest.mark.asyncio
-    async def test_validate_config_pandas_not_installed(self, simple_excel, monkeypatch):
+    async def test_validate_config_pandas_not_installed(
+        self, simple_excel, monkeypatch
+    ):
         """Test validate_config handles pandas ImportError."""
         from unittest.mock import patch
 
         source = ExcelDataSource(simple_excel)
 
         # Mock pandas import to fail in validate_config
-        with patch('pandas.ExcelFile', side_effect=ImportError("pandas not available")):
+        with patch("pandas.ExcelFile", side_effect=ImportError("pandas not available")):
             is_valid = await source.validate_config()
             assert is_valid is False
 
@@ -781,7 +788,7 @@ class TestExcelDataSourceConfiguration:
         source = ExcelDataSource(simple_excel)
 
         # Mock file.exists() to raise PermissionError
-        with patch.object(Path, 'exists', side_effect=PermissionError("Access denied")):
+        with patch.object(Path, "exists", side_effect=PermissionError("Access denied")):
             is_valid = await source.validate_config()
             assert is_valid is False
 
@@ -793,7 +800,7 @@ class TestExcelDataSourceConfiguration:
         source = ExcelDataSource(simple_excel)
 
         # Mock file operations to raise generic exception
-        with patch.object(Path, 'exists', side_effect=RuntimeError("Unexpected error")):
+        with patch.object(Path, "exists", side_effect=RuntimeError("Unexpected error")):
             is_valid = await source.validate_config()
             assert is_valid is False
 
@@ -858,6 +865,7 @@ class TestExcelDataSourcePrivateMethods:
         """Test _clean_data converts NaN to None."""
         # Create source (file doesn't matter for this test)
         import tempfile
+
         with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as f:
             temp_path = Path(f.name)
             df = pd.DataFrame({"A": [1]})
@@ -867,10 +875,7 @@ class TestExcelDataSourcePrivateMethods:
             source = ExcelDataSource(temp_path)
 
             # Test data with NaN
-            raw_rows = [
-                {"A": 1, "B": float("nan")},
-                {"A": float("nan"), "B": 2}
-            ]
+            raw_rows = [{"A": 1, "B": float("nan")}, {"A": float("nan"), "B": 2}]
 
             cleaned = source._clean_data(raw_rows)
 
@@ -882,6 +887,7 @@ class TestExcelDataSourcePrivateMethods:
     def test_clean_data_preserves_valid_values(self):
         """Test _clean_data preserves non-NaN values."""
         import tempfile
+
         with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as f:
             temp_path = Path(f.name)
             df = pd.DataFrame({"A": [1]})
@@ -890,9 +896,7 @@ class TestExcelDataSourcePrivateMethods:
         try:
             source = ExcelDataSource(temp_path)
 
-            raw_rows = [
-                {"A": 1, "B": "text", "C": 3.14, "D": True}
-            ]
+            raw_rows = [{"A": 1, "B": "text", "C": 3.14, "D": True}]
 
             cleaned = source._clean_data(raw_rows)
 
@@ -944,7 +948,7 @@ class TestExcelDataSourcePrivateMethods:
         source = ExcelDataSource(simple_excel, sheet_name=0)
 
         # Mock pd.ExcelFile to raise an exception
-        with patch('pandas.ExcelFile', side_effect=Exception("Mock error")):
+        with patch("pandas.ExcelFile", side_effect=Exception("Mock error")):
             active_name = source._get_active_sheet_name()
             # Should return fallback name
             assert "Sheet0" in active_name
@@ -995,7 +999,9 @@ class TestExcelDataSourceErrorHandling:
         with caplog.at_level(logging.INFO):
             source = ExcelDataSource(simple_excel)
 
-        assert any("Initialized ExcelDataSource" in record.message for record in caplog.records)
+        assert any(
+            "Initialized ExcelDataSource" in record.message for record in caplog.records
+        )
 
     @pytest.mark.asyncio
     async def test_logging_on_fetch(self, simple_excel, caplog):

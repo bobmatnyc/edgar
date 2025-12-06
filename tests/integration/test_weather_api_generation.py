@@ -36,20 +36,20 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 import pytest
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
+from edgar_analyzer.agents.sonnet45_agent import Sonnet45Agent
 from edgar_analyzer.models.project_config import ProjectConfig
 from edgar_analyzer.services.code_generator import CodeGeneratorService
 from edgar_analyzer.services.example_parser import ExampleParser
-from edgar_analyzer.agents.sonnet45_agent import Sonnet45Agent
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -88,9 +88,7 @@ def code_generator(api_key: str, project_path: Path) -> CodeGeneratorService:
     """Create CodeGeneratorService instance."""
     output_dir = project_path / "generated"
     return CodeGeneratorService(
-        api_key=api_key,
-        output_dir=output_dir,
-        model="anthropic/claude-sonnet-4.5"
+        api_key=api_key, output_dir=output_dir, model="anthropic/claude-sonnet-4.5"
     )
 
 
@@ -127,7 +125,7 @@ class TestProjectLoading:
         logger.info(
             "Project loaded successfully",
             name=project_config.project.name,
-            version=project_config.project.version
+            version=project_config.project.version,
         )
 
     def test_data_sources_configured(self, project_config: ProjectConfig):
@@ -140,15 +138,14 @@ class TestProjectLoading:
         assert "openweathermap.org" in source.endpoint
 
         logger.info(
-            "Data source validated",
-            source_type=source.type,
-            endpoint=source.endpoint
+            "Data source validated", source_type=source.type, endpoint=source.endpoint
         )
 
     def test_examples_loaded(self, project_config: ProjectConfig):
         """Verify all 7 examples are loaded."""
-        assert len(project_config.examples) == 7, \
-            f"Expected 7 examples, got {len(project_config.examples)}"
+        assert (
+            len(project_config.examples) == 7
+        ), f"Expected 7 examples, got {len(project_config.examples)}"
 
         # Check example diversity
         cities = [ex.output.get("city") for ex in project_config.examples]
@@ -158,9 +155,7 @@ class TestProjectLoading:
         assert "Dubai" in cities
 
         logger.info(
-            "Examples loaded",
-            count=len(project_config.examples),
-            cities=cities
+            "Examples loaded", count=len(project_config.examples), cities=cities
         )
 
     def test_validation_rules_configured(self, project_config: ProjectConfig):
@@ -172,7 +167,7 @@ class TestProjectLoading:
 
         logger.info(
             "Validation rules loaded",
-            required_fields=project_config.validation.required_fields
+            required_fields=project_config.validation.required_fields,
         )
 
 
@@ -185,74 +180,73 @@ class TestExampleParsing:
     """Test example parsing and pattern extraction."""
 
     def test_parse_examples(
-        self,
-        example_parser: ExampleParser,
-        project_config: ProjectConfig
+        self, example_parser: ExampleParser, project_config: ProjectConfig
     ):
         """Test Example Parser extracts patterns from Weather API examples."""
         parsed = example_parser.parse_examples(project_config.examples)
 
         assert parsed is not None
         assert parsed.num_examples == 7
-        assert len(parsed.patterns) >= 3, \
-            f"Expected at least 3 patterns, got {len(parsed.patterns)}"
+        assert (
+            len(parsed.patterns) >= 3
+        ), f"Expected at least 3 patterns, got {len(parsed.patterns)}"
 
         logger.info(
             "Examples parsed",
             num_examples=parsed.num_examples,
             num_patterns=len(parsed.patterns),
             input_fields=len(parsed.input_schema.fields),
-            output_fields=len(parsed.output_schema.fields)
+            output_fields=len(parsed.output_schema.fields),
         )
 
     def test_field_mapping_pattern(
-        self,
-        example_parser: ExampleParser,
-        project_config: ProjectConfig
+        self, example_parser: ExampleParser, project_config: ProjectConfig
     ):
         """Verify field mapping patterns are detected."""
         parsed = example_parser.parse_examples(project_config.examples)
 
         # Check for field mapping patterns (pattern.type can be enum or string)
-        field_mappings = [p for p in parsed.patterns if str(p.type).upper() == "FIELD_MAPPING" or "field_mapping" in str(p.type).lower()]
-        assert len(field_mappings) > 0, f"No field mapping patterns found. Total patterns: {len(parsed.patterns)}, Types: {[str(p.type) for p in parsed.patterns[:5]]}"
+        field_mappings = [
+            p
+            for p in parsed.patterns
+            if str(p.type).upper() == "FIELD_MAPPING"
+            or "field_mapping" in str(p.type).lower()
+        ]
+        assert (
+            len(field_mappings) > 0
+        ), f"No field mapping patterns found. Total patterns: {len(parsed.patterns)}, Types: {[str(p.type) for p in parsed.patterns[:5]]}"
 
-        logger.info(
-            "Field mapping patterns detected: %d",
-            len(field_mappings)
-        )
+        logger.info("Field mapping patterns detected: %d", len(field_mappings))
 
     def test_nested_extraction_pattern(
-        self,
-        example_parser: ExampleParser,
-        project_config: ProjectConfig
+        self, example_parser: ExampleParser, project_config: ProjectConfig
     ):
         """Verify nested field extraction patterns are detected."""
         parsed = example_parser.parse_examples(project_config.examples)
 
         # Check for nested extraction patterns (e.g., main.temp -> temperature_c)
-        nested_patterns = [p for p in parsed.patterns if "NESTED" in p.type or "nested" in str(p.transformation).lower()]
+        nested_patterns = [
+            p
+            for p in parsed.patterns
+            if "NESTED" in p.type or "nested" in str(p.transformation).lower()
+        ]
 
-        logger.info(
-            "Nested extraction patterns",
-            count=len(nested_patterns)
-        )
+        logger.info("Nested extraction patterns", count=len(nested_patterns))
 
     def test_array_handling_pattern(
-        self,
-        example_parser: ExampleParser,
-        project_config: ProjectConfig
+        self, example_parser: ExampleParser, project_config: ProjectConfig
     ):
         """Verify array handling patterns are detected."""
         parsed = example_parser.parse_examples(project_config.examples)
 
         # Check for array patterns (e.g., weather[0].description)
-        array_patterns = [p for p in parsed.patterns if "ARRAY" in p.type or "[0]" in str(p.transformation)]
+        array_patterns = [
+            p
+            for p in parsed.patterns
+            if "ARRAY" in p.type or "[0]" in str(p.transformation)
+        ]
 
-        logger.info(
-            "Array handling patterns",
-            count=len(array_patterns)
-        )
+        logger.info("Array handling patterns", count=len(array_patterns))
 
 
 # ============================================================================
@@ -268,7 +262,7 @@ class TestPMModePlanning:
         self,
         code_generator: CodeGeneratorService,
         example_parser: ExampleParser,
-        project_config: ProjectConfig
+        project_config: ProjectConfig,
     ):
         """Test PM mode creates implementation plan."""
         # Parse examples first (synchronous)
@@ -285,7 +279,7 @@ class TestPMModePlanning:
             "PM mode plan created",
             num_classes=len(plan.classes),
             num_dependencies=len(plan.dependencies),
-            strategy=plan.strategy[:100] if plan.strategy else None
+            strategy=plan.strategy[:100] if plan.strategy else None,
         )
 
     @pytest.mark.asyncio
@@ -293,7 +287,7 @@ class TestPMModePlanning:
         self,
         code_generator: CodeGeneratorService,
         example_parser: ExampleParser,
-        project_config: ProjectConfig
+        project_config: ProjectConfig,
     ):
         """Verify plan includes WeatherExtractor class."""
         parsed = example_parser.parse_examples(project_config.examples)
@@ -301,20 +295,18 @@ class TestPMModePlanning:
 
         # Check for extractor class
         class_names = [cls.name for cls in plan.classes]
-        assert any("Extractor" in name for name in class_names), \
-            f"No extractor class found in plan. Classes: {class_names}"
+        assert any(
+            "Extractor" in name for name in class_names
+        ), f"No extractor class found in plan. Classes: {class_names}"
 
-        logger.info(
-            "Extractor class found in plan",
-            classes=class_names
-        )
+        logger.info("Extractor class found in plan", classes=class_names)
 
     @pytest.mark.asyncio
     async def test_plan_includes_dependencies(
         self,
         code_generator: CodeGeneratorService,
         example_parser: ExampleParser,
-        project_config: ProjectConfig
+        project_config: ProjectConfig,
     ):
         """Verify plan includes required dependencies."""
         parsed = example_parser.parse_examples(project_config.examples)
@@ -325,10 +317,7 @@ class TestPMModePlanning:
         # Should include Pydantic for models
         deps = [str(d).lower() for d in plan.dependencies]
 
-        logger.info(
-            "Plan dependencies",
-            dependencies=plan.dependencies
-        )
+        logger.info("Plan dependencies", dependencies=plan.dependencies)
 
 
 # ============================================================================
@@ -344,7 +333,7 @@ class TestCoderModeGeneration:
         self,
         code_generator: CodeGeneratorService,
         example_parser: ExampleParser,
-        project_config: ProjectConfig
+        project_config: ProjectConfig,
     ):
         """Test Coder mode generates valid Python code."""
         # Parse and plan
@@ -353,9 +342,7 @@ class TestCoderModeGeneration:
 
         # Generate code
         generated = await code_generator.agent.code(
-            plan,
-            parsed.patterns,
-            project_config.examples
+            plan, parsed.patterns, project_config.examples
         )
 
         assert generated is not None
@@ -369,9 +356,9 @@ class TestCoderModeGeneration:
         logger.info(
             "Code generated",
             total_lines=generated.total_lines,
-            extractor_lines=len(generated.extractor_code.split('\n')),
-            models_lines=len(generated.models_code.split('\n')),
-            tests_lines=len(generated.tests_code.split('\n'))
+            extractor_lines=len(generated.extractor_code.split("\n")),
+            models_lines=len(generated.models_code.split("\n")),
+            tests_lines=len(generated.tests_code.split("\n")),
         )
 
     @pytest.mark.asyncio
@@ -379,63 +366,64 @@ class TestCoderModeGeneration:
         self,
         code_generator: CodeGeneratorService,
         example_parser: ExampleParser,
-        project_config: ProjectConfig
+        project_config: ProjectConfig,
     ):
         """Verify generated extractor contains extractor class."""
         parsed = example_parser.parse_examples(project_config.examples)
         plan = await code_generator.agent.plan(parsed.patterns, project_config)
-        generated = await code_generator.agent.code(plan, parsed.patterns, project_config.examples)
+        generated = await code_generator.agent.code(
+            plan, parsed.patterns, project_config.examples
+        )
 
         assert "class" in generated.extractor_code
         assert "Extractor" in generated.extractor_code
 
-        logger.info(
-            "Extractor class found in generated code"
-        )
+        logger.info("Extractor class found in generated code")
 
     @pytest.mark.asyncio
     async def test_generated_code_implements_interface(
         self,
         code_generator: CodeGeneratorService,
         example_parser: ExampleParser,
-        project_config: ProjectConfig
+        project_config: ProjectConfig,
     ):
         """Verify generated code implements IDataExtractor interface."""
         parsed = example_parser.parse_examples(project_config.examples)
         plan = await code_generator.agent.plan(parsed.patterns, project_config)
-        generated = await code_generator.agent.code(plan, parsed.patterns, project_config.examples)
+        generated = await code_generator.agent.code(
+            plan, parsed.patterns, project_config.examples
+        )
 
         # Check for interface implementation
-        assert "IDataExtractor" in generated.extractor_code or \
-               "async def extract" in generated.extractor_code, \
-            "Generated code does not implement IDataExtractor interface"
+        assert (
+            "IDataExtractor" in generated.extractor_code
+            or "async def extract" in generated.extractor_code
+        ), "Generated code does not implement IDataExtractor interface"
 
-        logger.info(
-            "Interface implementation found"
-        )
+        logger.info("Interface implementation found")
 
     @pytest.mark.asyncio
     async def test_generated_tests_exist(
         self,
         code_generator: CodeGeneratorService,
         example_parser: ExampleParser,
-        project_config: ProjectConfig
+        project_config: ProjectConfig,
     ):
         """Verify generated tests exist and contain test functions."""
         parsed = example_parser.parse_examples(project_config.examples)
         plan = await code_generator.agent.plan(parsed.patterns, project_config)
-        generated = await code_generator.agent.code(plan, parsed.patterns, project_config.examples)
+        generated = await code_generator.agent.code(
+            plan, parsed.patterns, project_config.examples
+        )
 
-        assert "def test_" in generated.tests_code or \
-               "async def test_" in generated.tests_code, \
-            "No test functions found in generated tests"
+        assert (
+            "def test_" in generated.tests_code
+            or "async def test_" in generated.tests_code
+        ), "No test functions found in generated tests"
 
         # Count test functions
         test_count = generated.tests_code.count("def test_")
-        logger.info(
-            "Generated tests found",
-            test_count=test_count
-        )
+        logger.info("Generated tests found", test_count=test_count)
 
 
 # ============================================================================
@@ -451,13 +439,15 @@ class TestConstraintValidation:
         self,
         code_generator: CodeGeneratorService,
         example_parser: ExampleParser,
-        project_config: ProjectConfig
+        project_config: ProjectConfig,
     ):
         """Test generated code passes all constraints."""
         # Generate code
         parsed = example_parser.parse_examples(project_config.examples)
         plan = await code_generator.agent.plan(parsed.patterns, project_config)
-        generated = await code_generator.agent.code(plan, parsed.patterns, project_config.examples)
+        generated = await code_generator.agent.code(
+            plan, parsed.patterns, project_config.examples
+        )
 
         # Validate
         result = code_generator.validator.validate(generated)
@@ -466,7 +456,7 @@ class TestConstraintValidation:
         logger.info(
             "Syntax validation passed",
             issues=len(result.issues),
-            recommendations=len(result.recommendations)
+            recommendations=len(result.recommendations),
         )
 
     @pytest.mark.asyncio
@@ -474,12 +464,14 @@ class TestConstraintValidation:
         self,
         code_generator: CodeGeneratorService,
         example_parser: ExampleParser,
-        project_config: ProjectConfig
+        project_config: ProjectConfig,
     ):
         """Verify generated code includes type hints."""
         parsed = example_parser.parse_examples(project_config.examples)
         plan = await code_generator.agent.plan(parsed.patterns, project_config)
-        generated = await code_generator.agent.code(plan, parsed.patterns, project_config.examples)
+        generated = await code_generator.agent.code(
+            plan, parsed.patterns, project_config.examples
+        )
 
         result = code_generator.validator.validate(generated)
 
@@ -487,22 +479,21 @@ class TestConstraintValidation:
         if not result.has_type_hints:
             logger.warning("Generated code lacks type hints")
 
-        logger.info(
-            "Type hints check",
-            has_type_hints=result.has_type_hints
-        )
+        logger.info("Type hints check", has_type_hints=result.has_type_hints)
 
     @pytest.mark.asyncio
     async def test_code_has_docstrings(
         self,
         code_generator: CodeGeneratorService,
         example_parser: ExampleParser,
-        project_config: ProjectConfig
+        project_config: ProjectConfig,
     ):
         """Verify generated code includes docstrings."""
         parsed = example_parser.parse_examples(project_config.examples)
         plan = await code_generator.agent.plan(parsed.patterns, project_config)
-        generated = await code_generator.agent.code(plan, parsed.patterns, project_config.examples)
+        generated = await code_generator.agent.code(
+            plan, parsed.patterns, project_config.examples
+        )
 
         result = code_generator.validator.validate(generated)
 
@@ -510,10 +501,7 @@ class TestConstraintValidation:
         if not result.has_docstrings:
             logger.warning("Generated code lacks docstrings")
 
-        logger.info(
-            "Docstrings check",
-            has_docstrings=result.has_docstrings
-        )
+        logger.info("Docstrings check", has_docstrings=result.has_docstrings)
 
 
 # ============================================================================
@@ -526,14 +514,11 @@ class TestEndToEndGeneration:
 
     @pytest.mark.asyncio
     async def test_end_to_end_generation(
-        self,
-        code_generator: CodeGeneratorService,
-        project_config: ProjectConfig
+        self, code_generator: CodeGeneratorService, project_config: ProjectConfig
     ):
         """Complete end-to-end: load project → generate code → validate → write files."""
         logger.info(
-            "Starting end-to-end generation test",
-            project=project_config.project.name
+            "Starting end-to-end generation test", project=project_config.project.name
         )
 
         # Generate (this runs the entire pipeline)
@@ -541,7 +526,7 @@ class TestEndToEndGeneration:
             examples=project_config.examples,
             project_config=project_config,
             validate=True,
-            write_files=True
+            write_files=True,
         )
 
         # Verify generation succeeded
@@ -550,7 +535,9 @@ class TestEndToEndGeneration:
         assert context.plan is not None
 
         # Verify code was written
-        extractor_path = Path(context.generated_code.metadata.get("output_paths", {}).get("extractor", ""))
+        extractor_path = Path(
+            context.generated_code.metadata.get("output_paths", {}).get("extractor", "")
+        )
         assert extractor_path.exists(), f"Extractor file not written: {extractor_path}"
 
         # Read and verify file contents
@@ -562,7 +549,7 @@ class TestEndToEndGeneration:
             "End-to-end generation completed successfully",
             duration_seconds=context.generation_duration_seconds,
             total_lines=context.generated_code.total_lines,
-            files_written=len(context.generated_code.metadata.get("output_paths", {}))
+            files_written=len(context.generated_code.metadata.get("output_paths", {})),
         )
 
     @pytest.mark.asyncio
@@ -570,7 +557,7 @@ class TestEndToEndGeneration:
         self,
         code_generator: CodeGeneratorService,
         project_config: ProjectConfig,
-        project_path: Path
+        project_path: Path,
     ):
         """Verify all generated files exist."""
         # Generate
@@ -578,7 +565,7 @@ class TestEndToEndGeneration:
             examples=project_config.examples,
             project_config=project_config,
             validate=True,
-            write_files=True
+            write_files=True,
         )
 
         # Check files
@@ -595,43 +582,46 @@ class TestEndToEndGeneration:
             "All generated files exist",
             extractor=str(extractor_path),
             models=str(models_path),
-            tests=str(tests_path)
+            tests=str(tests_path),
         )
 
     @pytest.mark.asyncio
     async def test_generated_code_quality(
-        self,
-        code_generator: CodeGeneratorService,
-        project_config: ProjectConfig
+        self, code_generator: CodeGeneratorService, project_config: ProjectConfig
     ):
         """Verify generated code meets quality standards."""
         context = await code_generator.generate(
             examples=project_config.examples,
             project_config=project_config,
             validate=True,
-            write_files=False  # Don't write for this test
+            write_files=False,  # Don't write for this test
         )
 
         generated = context.generated_code
 
         # Verify extractor structure
         assert "class" in generated.extractor_code
-        assert "async def extract" in generated.extractor_code or \
-               "def extract" in generated.extractor_code
+        assert (
+            "async def extract" in generated.extractor_code
+            or "def extract" in generated.extractor_code
+        )
 
         # Verify models structure
-        assert "class" in generated.models_code or \
-               "BaseModel" in generated.models_code or \
-               "dataclass" in generated.models_code
+        assert (
+            "class" in generated.models_code
+            or "BaseModel" in generated.models_code
+            or "dataclass" in generated.models_code
+        )
 
         # Verify tests structure
-        assert "pytest" in generated.tests_code or \
-               "unittest" in generated.tests_code or \
-               "def test_" in generated.tests_code
+        assert (
+            "pytest" in generated.tests_code
+            or "unittest" in generated.tests_code
+            or "def test_" in generated.tests_code
+        )
 
         logger.info(
-            "Generated code quality verified",
-            total_lines=generated.total_lines
+            "Generated code quality verified", total_lines=generated.total_lines
         )
 
 
@@ -642,13 +632,16 @@ class TestEndToEndGeneration:
 
 def run_tests():
     """Run all tests and report results."""
-    pytest.main([
-        __file__,
-        "-v",
-        "--tb=short",
-        "--capture=no",
-        "-W", "ignore::DeprecationWarning"
-    ])
+    pytest.main(
+        [
+            __file__,
+            "-v",
+            "--tb=short",
+            "--capture=no",
+            "-W",
+            "ignore::DeprecationWarning",
+        ]
+    )
 
 
 if __name__ == "__main__":

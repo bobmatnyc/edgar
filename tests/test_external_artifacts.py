@@ -8,10 +8,10 @@ and edge cases for EDGAR_ARTIFACTS_DIR.
 
 import os
 import shutil
-import tempfile
-from pathlib import Path
 import subprocess
 import sys
+import tempfile
+from pathlib import Path
 
 # Color codes for output
 GREEN = "\033[92m"
@@ -71,7 +71,7 @@ class TestRunner:
                 capture_output=capture_output,
                 text=True,
                 env=env,
-                timeout=30
+                timeout=30,
             )
             return result
         except subprocess.TimeoutExpired:
@@ -89,7 +89,7 @@ class TestRunner:
         # Test import and check default
         result = self.run_command(
             "python -c 'from edgar_analyzer.config.settings import get_artifacts_dir; print(get_artifacts_dir())'",
-            env=env
+            env=env,
         )
 
         if result and result.returncode == 0:
@@ -100,8 +100,10 @@ class TestRunner:
             else:
                 self.log_failure(f"Unexpected default path: {output}")
         else:
-            self.log_failure("Failed to get default artifacts dir",
-                           result.stderr if result else "Command timeout")
+            self.log_failure(
+                "Failed to get default artifacts dir",
+                result.stderr if result else "Command timeout",
+            )
 
     def test_env_var_set(self):
         """Test with EDGAR_ARTIFACTS_DIR set to custom path."""
@@ -113,7 +115,7 @@ class TestRunner:
 
         result = self.run_command(
             "python -c 'from edgar_analyzer.config.settings import get_artifacts_dir; print(get_artifacts_dir())'",
-            env=env
+            env=env,
         )
 
         if result and result.returncode == 0:
@@ -123,8 +125,10 @@ class TestRunner:
             else:
                 self.log_failure(f"Expected {temp_dir} in path, got: {output}")
         else:
-            self.log_failure("Failed to get custom artifacts dir",
-                           result.stderr if result else "Command timeout")
+            self.log_failure(
+                "Failed to get custom artifacts dir",
+                result.stderr if result else "Command timeout",
+            )
 
     def test_tilde_expansion(self):
         """Test with ~ expansion in path."""
@@ -135,7 +139,7 @@ class TestRunner:
 
         result = self.run_command(
             "python -c 'from edgar_analyzer.config.settings import get_artifacts_dir; import os; print(get_artifacts_dir())'",
-            env=env
+            env=env,
         )
 
         if result and result.returncode == 0:
@@ -146,8 +150,10 @@ class TestRunner:
             else:
                 self.log_failure(f"Tilde not expanded properly: {output}")
         else:
-            self.log_failure("Failed to test tilde expansion",
-                           result.stderr if result else "Command timeout")
+            self.log_failure(
+                "Failed to test tilde expansion",
+                result.stderr if result else "Command timeout",
+            )
 
     def test_relative_path(self):
         """Test with relative path."""
@@ -158,7 +164,7 @@ class TestRunner:
 
         result = self.run_command(
             "python -c 'from edgar_analyzer.config.settings import get_artifacts_dir; print(get_artifacts_dir())'",
-            env=env
+            env=env,
         )
 
         if result and result.returncode == 0:
@@ -169,8 +175,10 @@ class TestRunner:
             else:
                 self.log_failure(f"Path not absolute: {output}")
         else:
-            self.log_failure("Failed to test relative path",
-                           result.stderr if result else "Command timeout")
+            self.log_failure(
+                "Failed to test relative path",
+                result.stderr if result else "Command timeout",
+            )
 
     def test_directory_creation(self):
         """Test that directories are created if they don't exist."""
@@ -185,7 +193,7 @@ class TestRunner:
         # Use ensure_artifacts_structure to trigger directory creation
         result = self.run_command(
             "python -c 'from edgar_analyzer.config.settings import ensure_artifacts_structure; ensure_artifacts_structure()'",
-            env=env
+            env=env,
         )
 
         if result and result.returncode == 0:
@@ -198,8 +206,10 @@ class TestRunner:
             else:
                 self.log_failure(f"Directories not created in: {non_existent}")
         else:
-            self.log_failure("Failed to test directory creation",
-                           result.stderr if result else "Command timeout")
+            self.log_failure(
+                "Failed to test directory creation",
+                result.stderr if result else "Command timeout",
+            )
 
     def test_invalid_path(self):
         """Test with invalid/restricted path."""
@@ -212,18 +222,23 @@ class TestRunner:
         result = self.run_command(
             "python -c 'from edgar_analyzer.config.settings import ensure_artifacts_structure; ensure_artifacts_structure()'",
             env=env,
-            capture_output=True
+            capture_output=True,
         )
 
         # Should either fail or warn
         if result:
-            if "Permission denied" in result.stderr or "warning" in result.stderr.lower():
+            if (
+                "Permission denied" in result.stderr
+                or "warning" in result.stderr.lower()
+            ):
                 self.log_success("Invalid path handled appropriately")
             elif result.returncode != 0:
                 self.log_success("Invalid path rejected")
             else:
                 # Might succeed if running as root
-                self.log_warning("Path accepted (possibly running with elevated privileges)")
+                self.log_warning(
+                    "Path accepted (possibly running with elevated privileges)"
+                )
                 self.tests_passed += 1
         else:
             self.log_failure("Failed to test invalid path")
@@ -247,7 +262,7 @@ class TestRunner:
 
             result = self.run_command(
                 "python -c 'from edgar_analyzer.config.settings import get_artifacts_dir; print(get_artifacts_dir())'",
-                env=os.environ.copy()
+                env=os.environ.copy(),
             )
 
             if result and result.returncode == 0:
@@ -256,11 +271,15 @@ class TestRunner:
                     self.log_success(f"Loaded from .env.local: {output}")
                 else:
                     # .env.local might not be loaded if python-dotenv not configured
-                    self.log_warning(f".env.local not loaded (expected: {artifacts_path}, got: {output})")
+                    self.log_warning(
+                        f".env.local not loaded (expected: {artifacts_path}, got: {output})"
+                    )
                     self.tests_passed += 1
             else:
-                self.log_failure("Failed to test .env.local loading",
-                               result.stderr if result else "Command timeout")
+                self.log_failure(
+                    "Failed to test .env.local loading",
+                    result.stderr if result else "Command timeout",
+                )
         finally:
             os.chdir(original_cwd)
 
@@ -276,7 +295,7 @@ class TestRunner:
 
         result = self.run_command(
             "python -c 'from edgar_analyzer.config.settings import ensure_artifacts_structure; ensure_artifacts_structure()'",
-            env=env
+            env=env,
         )
 
         if result and result.returncode == 0:
@@ -284,16 +303,20 @@ class TestRunner:
             if os.path.exists(projects_dir):
                 self.log_success(f"Path with spaces handled: {path_with_spaces}")
             else:
-                self.log_failure(f"Failed to create dirs in path with spaces: {path_with_spaces}")
+                self.log_failure(
+                    f"Failed to create dirs in path with spaces: {path_with_spaces}"
+                )
         else:
-            self.log_failure("Failed to test path with spaces",
-                           result.stderr if result else "Command timeout")
+            self.log_failure(
+                "Failed to test path with spaces",
+                result.stderr if result else "Command timeout",
+            )
 
     def print_summary(self):
         """Print test summary."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("TEST SUMMARY")
-        print("="*70)
+        print("=" * 70)
         print(f"Total Tests: {self.tests_passed + self.tests_failed}")
         print(f"{GREEN}Passed: {self.tests_passed}{RESET}")
         print(f"{RED}Failed: {self.tests_failed}{RESET}")
@@ -307,7 +330,7 @@ class TestRunner:
                     if len(result) > 2 and result[2]:
                         print(f"    {result[2]}")
 
-        print("="*70)
+        print("=" * 70)
 
         return self.tests_failed == 0
 

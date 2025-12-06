@@ -35,7 +35,7 @@ class DataExtractionService(IDataExtractionService):
         edgar_api_service: IEdgarApiService,
         company_service: ICompanyService,
         cache_service: Optional[ICacheService] = None,
-        llm_service: Optional[LLMService] = None
+        llm_service: Optional[LLMService] = None,
     ):
         """Initialize data extraction service."""
         self._edgar_api = edgar_api_service
@@ -45,12 +45,12 @@ class DataExtractionService(IDataExtractionService):
 
         # XBRL tags for tax expense data
         self._tax_expense_tags = [
-            'IncomeTaxExpenseBenefit',
-            'CurrentIncomeTaxExpenseBenefit',
-            'DeferredIncomeTaxExpenseBenefit',
-            'IncomeTaxesPaid',
-            'FederalIncomeTaxExpenseBenefit',
-            'StateAndLocalIncomeTaxExpenseBenefit'
+            "IncomeTaxExpenseBenefit",
+            "CurrentIncomeTaxExpenseBenefit",
+            "DeferredIncomeTaxExpenseBenefit",
+            "IncomeTaxesPaid",
+            "FederalIncomeTaxExpenseBenefit",
+            "StateAndLocalIncomeTaxExpenseBenefit",
         ]
 
         logger.info("Data extraction service initialized")
@@ -67,7 +67,7 @@ class DataExtractionService(IDataExtractionService):
                 logger.warning("No facts data found", cik=cik_formatted, year=year)
                 return None
 
-            us_gaap = facts_data.get('facts', {}).get('us-gaap', {})
+            us_gaap = facts_data.get("facts", {}).get("us-gaap", {})
 
             # Try to extract tax expense using different tags
             for tag in self._tax_expense_tags:
@@ -80,7 +80,7 @@ class DataExtractionService(IDataExtractionService):
                         cik=cik_formatted,
                         year=year,
                         tag=tag,
-                        amount=tax_expense.total_tax_expense
+                        amount=tax_expense.total_tax_expense,
                     )
                     return tax_expense
 
@@ -92,7 +92,7 @@ class DataExtractionService(IDataExtractionService):
                 "Failed to extract tax expense",
                 cik=cik_formatted,
                 year=year,
-                error=str(e)
+                error=str(e),
             )
             return None
 
@@ -104,27 +104,35 @@ class DataExtractionService(IDataExtractionService):
             return None
 
         tag_data = us_gaap[tag]
-        units = tag_data.get('units', {})
+        units = tag_data.get("units", {})
 
-        if 'USD' not in units:
+        if "USD" not in units:
             return None
 
-        usd_facts = units['USD']
+        usd_facts = units["USD"]
 
         # Look for annual data (10-K filings) for the specified year
         for fact in usd_facts:
-            if (fact.get('fy') == year and
-                fact.get('form') in ['10-K', '10-K/A'] and
-                fact.get('val') is not None):
+            if (
+                fact.get("fy") == year
+                and fact.get("form") in ["10-K", "10-K/A"]
+                and fact.get("val") is not None
+            ):
 
                 return TaxExpense(
                     company_cik=cik,
                     fiscal_year=year,
-                    period='annual',
-                    total_tax_expense=Decimal(str(fact['val'])),
-                    filing_date=datetime.fromisoformat(fact.get('filed', '').replace('Z', '+00:00')) if fact.get('filed') else None,
-                    source_filing=fact.get('accn'),
-                    form_type=fact.get('form')
+                    period="annual",
+                    total_tax_expense=Decimal(str(fact["val"])),
+                    filing_date=(
+                        datetime.fromisoformat(
+                            fact.get("filed", "").replace("Z", "+00:00")
+                        )
+                        if fact.get("filed")
+                        else None
+                    ),
+                    source_filing=fact.get("accn"),
+                    form_type=fact.get("form"),
                 )
 
         return None
@@ -137,10 +145,14 @@ class DataExtractionService(IDataExtractionService):
 
         try:
             # Get company submissions to find proxy filings
-            submissions_data = await self._edgar_api.get_company_submissions(cik_formatted)
+            submissions_data = await self._edgar_api.get_company_submissions(
+                cik_formatted
+            )
 
             if not submissions_data:
-                logger.warning("No submissions data found", cik=cik_formatted, year=year)
+                logger.warning(
+                    "No submissions data found", cik=cik_formatted, year=year
+                )
                 return []
 
             # Find DEF 14A (proxy statement) filings for the year
@@ -151,34 +163,42 @@ class DataExtractionService(IDataExtractionService):
                 return []
 
             # Extract compensation data from proxy filings
-            compensations = await self._extract_compensation_from_proxy(proxy_filings, cik_formatted, year)
+            compensations = await self._extract_compensation_from_proxy(
+                proxy_filings, cik_formatted, year
+            )
 
             # Use LLM to validate the extracted data if available
             if compensations and self._llm_service:
                 try:
-                    company = await self._company_service.get_company_by_cik(cik_formatted)
+                    company = await self._company_service.get_company_by_cik(
+                        cik_formatted
+                    )
                     company_name = company.name if company else "Unknown Company"
 
-                    validation_result = await self._llm_service.validate_compensation_data(
-                        compensations, company_name, year
+                    validation_result = (
+                        await self._llm_service.validate_compensation_data(
+                            compensations, company_name, year
+                        )
                     )
 
                     logger.info(
                         "LLM validation completed",
                         cik=cik_formatted,
                         year=year,
-                        quality_score=validation_result.get('overall_quality_score', 0),
-                        authentic=validation_result.get('data_appears_authentic', False),
-                        issues=len(validation_result.get('issues_found', []))
+                        quality_score=validation_result.get("overall_quality_score", 0),
+                        authentic=validation_result.get(
+                            "data_appears_authentic", False
+                        ),
+                        issues=len(validation_result.get("issues_found", [])),
                     )
 
                     # Log any issues found
-                    if validation_result.get('issues_found'):
+                    if validation_result.get("issues_found"):
                         logger.warning(
                             "LLM found data quality issues",
                             cik=cik_formatted,
                             year=year,
-                            issues=validation_result['issues_found']
+                            issues=validation_result["issues_found"],
                         )
 
                 except Exception as e:
@@ -186,14 +206,14 @@ class DataExtractionService(IDataExtractionService):
                         "LLM validation failed",
                         cik=cik_formatted,
                         year=year,
-                        error=str(e)
+                        error=str(e),
                     )
 
             logger.info(
                 "Executive compensation extracted",
                 cik=cik_formatted,
                 year=year,
-                executives=len(compensations)
+                executives=len(compensations),
             )
             return compensations
 
@@ -202,38 +222,42 @@ class DataExtractionService(IDataExtractionService):
                 "Failed to extract executive compensation",
                 cik=cik_formatted,
                 year=year,
-                error=str(e)
+                error=str(e),
             )
             return []
 
     def _find_proxy_filings(self, submissions_data: Dict, year: int) -> List[Dict]:
         """Find proxy statement filings for a specific year."""
         filings = []
-        recent_filings = submissions_data.get('filings', {}).get('recent', {})
+        recent_filings = submissions_data.get("filings", {}).get("recent", {})
 
         if not recent_filings:
             return filings
 
-        forms = recent_filings.get('form', [])
-        filing_dates = recent_filings.get('filingDate', [])
-        accession_numbers = recent_filings.get('accessionNumber', [])
-        primary_documents = recent_filings.get('primaryDocument', [])
+        forms = recent_filings.get("form", [])
+        filing_dates = recent_filings.get("filingDate", [])
+        accession_numbers = recent_filings.get("accessionNumber", [])
+        primary_documents = recent_filings.get("primaryDocument", [])
 
         for i, form in enumerate(forms):
-            if form == 'DEF 14A':
+            if form == "DEF 14A":
                 filing_date = filing_dates[i]
                 if filing_date.startswith(str(year)):
                     # Ensure we have all required fields
-                    if (i < len(accession_numbers) and
-                        i < len(primary_documents) and
-                        primary_documents[i]):
+                    if (
+                        i < len(accession_numbers)
+                        and i < len(primary_documents)
+                        and primary_documents[i]
+                    ):
 
-                        filings.append({
-                            'form': form,
-                            'filingDate': filing_date,
-                            'accessionNumber': accession_numbers[i],
-                            'primaryDocument': primary_documents[i]
-                        })
+                        filings.append(
+                            {
+                                "form": form,
+                                "filingDate": filing_date,
+                                "accessionNumber": accession_numbers[i],
+                                "primaryDocument": primary_documents[i],
+                            }
+                        )
 
         return filings
 
@@ -264,7 +288,9 @@ class DataExtractionService(IDataExtractionService):
         base_ceo = int(base_ceo * year_factor)
 
         # Create realistic executive names and titles based on company
-        executive_names = self._generate_realistic_executive_names(company.name if company else "Unknown Company", cik)
+        executive_names = self._generate_realistic_executive_names(
+            company.name if company else "Unknown Company", cik
+        )
 
         compensations = []
         for i, (name, title) in enumerate(executive_names):
@@ -302,7 +328,9 @@ class DataExtractionService(IDataExtractionService):
 
         return compensations
 
-    def _generate_realistic_executive_names(self, company_name: str, cik: str) -> List[tuple]:
+    def _generate_realistic_executive_names(
+        self, company_name: str, cik: str
+    ) -> List[tuple]:
         """Generate realistic executive names based on company and industry patterns."""
         import hashlib
         import random
@@ -313,19 +341,124 @@ class DataExtractionService(IDataExtractionService):
 
         # Diverse executive name pools
         first_names = {
-            'male': ['James', 'Michael', 'Robert', 'John', 'David', 'William', 'Richard', 'Thomas', 'Christopher', 'Daniel',
-                    'Matthew', 'Anthony', 'Mark', 'Donald', 'Steven', 'Paul', 'Andrew', 'Joshua', 'Kenneth', 'Kevin',
-                    'Brian', 'George', 'Timothy', 'Ronald', 'Jason', 'Edward', 'Jeffrey', 'Ryan', 'Jacob', 'Gary'],
-            'female': ['Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth', 'Barbara', 'Susan', 'Jessica', 'Sarah', 'Karen',
-                      'Nancy', 'Lisa', 'Betty', 'Helen', 'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon', 'Michelle',
-                      'Laura', 'Sarah', 'Kimberly', 'Deborah', 'Dorothy', 'Lisa', 'Nancy', 'Karen', 'Betty', 'Helen']
+            "male": [
+                "James",
+                "Michael",
+                "Robert",
+                "John",
+                "David",
+                "William",
+                "Richard",
+                "Thomas",
+                "Christopher",
+                "Daniel",
+                "Matthew",
+                "Anthony",
+                "Mark",
+                "Donald",
+                "Steven",
+                "Paul",
+                "Andrew",
+                "Joshua",
+                "Kenneth",
+                "Kevin",
+                "Brian",
+                "George",
+                "Timothy",
+                "Ronald",
+                "Jason",
+                "Edward",
+                "Jeffrey",
+                "Ryan",
+                "Jacob",
+                "Gary",
+            ],
+            "female": [
+                "Mary",
+                "Patricia",
+                "Jennifer",
+                "Linda",
+                "Elizabeth",
+                "Barbara",
+                "Susan",
+                "Jessica",
+                "Sarah",
+                "Karen",
+                "Nancy",
+                "Lisa",
+                "Betty",
+                "Helen",
+                "Sandra",
+                "Donna",
+                "Carol",
+                "Ruth",
+                "Sharon",
+                "Michelle",
+                "Laura",
+                "Sarah",
+                "Kimberly",
+                "Deborah",
+                "Dorothy",
+                "Lisa",
+                "Nancy",
+                "Karen",
+                "Betty",
+                "Helen",
+            ],
         }
 
-        last_names = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
-                     'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
-                     'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
-                     'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
-                     'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts']
+        last_names = [
+            "Smith",
+            "Johnson",
+            "Williams",
+            "Brown",
+            "Jones",
+            "Garcia",
+            "Miller",
+            "Davis",
+            "Rodriguez",
+            "Martinez",
+            "Hernandez",
+            "Lopez",
+            "Gonzalez",
+            "Wilson",
+            "Anderson",
+            "Thomas",
+            "Taylor",
+            "Moore",
+            "Jackson",
+            "Martin",
+            "Lee",
+            "Perez",
+            "Thompson",
+            "White",
+            "Harris",
+            "Sanchez",
+            "Clark",
+            "Ramirez",
+            "Lewis",
+            "Robinson",
+            "Walker",
+            "Young",
+            "Allen",
+            "King",
+            "Wright",
+            "Scott",
+            "Torres",
+            "Nguyen",
+            "Hill",
+            "Flores",
+            "Green",
+            "Adams",
+            "Nelson",
+            "Baker",
+            "Hall",
+            "Rivera",
+            "Campbell",
+            "Mitchell",
+            "Carter",
+            "Roberts",
+        ]
 
         # Executive titles
         titles = [
@@ -333,7 +466,7 @@ class DataExtractionService(IDataExtractionService):
             "Chief Financial Officer",
             "Chief Operating Officer",
             "Chief Technology Officer",
-            "Executive Vice President"
+            "Executive Vice President",
         ]
 
         # Generate diverse executive team
@@ -343,9 +476,9 @@ class DataExtractionService(IDataExtractionService):
         for i, title in enumerate(titles):
             # Ensure gender diversity (aim for ~40% female representation)
             if i == 0 or random.random() < 0.4:
-                gender = 'female' if random.random() < 0.4 else 'male'
+                gender = "female" if random.random() < 0.4 else "male"
             else:
-                gender = 'male' if random.random() < 0.6 else 'female'
+                gender = "male" if random.random() < 0.6 else "female"
 
             # Generate unique name
             attempts = 0
@@ -361,7 +494,12 @@ class DataExtractionService(IDataExtractionService):
                 attempts += 1
 
             if attempts >= 50:  # Fallback if we can't find unique name
-                executives.append((f"{random.choice(first_names[gender])} {random.choice(last_names)}-{i}", title))
+                executives.append(
+                    (
+                        f"{random.choice(first_names[gender])} {random.choice(last_names)}-{i}",
+                        title,
+                    )
+                )
 
         # Reset random seed to avoid affecting other random operations
         random.seed()
@@ -369,10 +507,7 @@ class DataExtractionService(IDataExtractionService):
         return executives
 
     async def _extract_compensation_from_proxy(
-        self,
-        proxy_filings: List[Dict],
-        cik: str,
-        year: int
+        self, proxy_filings: List[Dict], cik: str, year: int
     ) -> List[ExecutiveCompensation]:
         """Extract executive compensation from proxy statement filings."""
         compensations = []
@@ -380,8 +515,8 @@ class DataExtractionService(IDataExtractionService):
         for filing in proxy_filings[:1]:  # Use most recent filing
             try:
                 # Construct proper SEC EDGAR URL
-                accession_number = filing['accessionNumber'].replace('-', '')
-                primary_document = filing['primaryDocument']
+                accession_number = filing["accessionNumber"].replace("-", "")
+                primary_document = filing["primaryDocument"]
                 cik_no_leading_zeros = str(int(cik))  # Remove leading zeros
 
                 filing_url = f"https://www.sec.gov/Archives/edgar/data/{cik_no_leading_zeros}/{accession_number}/{primary_document}"
@@ -390,16 +525,16 @@ class DataExtractionService(IDataExtractionService):
                     "Attempting to fetch proxy filing",
                     cik=cik,
                     year=year,
-                    url=filing_url
+                    url=filing_url,
                 )
 
                 # Set proper headers for SEC requests
                 headers = {
-                    'User-Agent': 'Edgar Analyzer Tool contact@example.com',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                    'Accept-Language': 'en-US,en;q=0.5',
-                    'Accept-Encoding': 'gzip, deflate',
-                    'Connection': 'keep-alive',
+                    "User-Agent": "Edgar Analyzer Tool contact@example.com",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.5",
+                    "Accept-Encoding": "gzip, deflate",
+                    "Connection": "keep-alive",
                 }
 
                 async with aiohttp.ClientSession(headers=headers) as session:
@@ -411,11 +546,15 @@ class DataExtractionService(IDataExtractionService):
                                 "Successfully fetched proxy filing",
                                 cik=cik,
                                 year=year,
-                                content_length=len(content)
+                                content_length=len(content),
                             )
 
                             # Parse compensation data from HTML content
-                            parsed_compensations = await self._parse_compensation_from_html(content, cik, year)
+                            parsed_compensations = (
+                                await self._parse_compensation_from_html(
+                                    content, cik, year
+                                )
+                            )
                             compensations.extend(parsed_compensations)
 
                             if compensations:
@@ -423,7 +562,7 @@ class DataExtractionService(IDataExtractionService):
                                     "Successfully extracted compensation data from proxy",
                                     cik=cik,
                                     year=year,
-                                    executives=len(compensations)
+                                    executives=len(compensations),
                                 )
                                 break  # Found data, no need to check other filings
                         else:
@@ -432,7 +571,7 @@ class DataExtractionService(IDataExtractionService):
                                 cik=cik,
                                 year=year,
                                 url=filing_url,
-                                status=response.status
+                                status=response.status,
                             )
 
                         # Rate limiting
@@ -443,8 +582,8 @@ class DataExtractionService(IDataExtractionService):
                     "Failed to extract from proxy filing",
                     cik=cik,
                     year=year,
-                    filing=filing.get('accessionNumber'),
-                    error=str(e)
+                    filing=filing.get("accessionNumber"),
+                    error=str(e),
                 )
                 continue
 
@@ -453,32 +592,30 @@ class DataExtractionService(IDataExtractionService):
             logger.warning(
                 "No real compensation data found, using placeholder data",
                 cik=cik,
-                year=year
+                year=year,
             )
             compensations = await self._create_realistic_compensation(cik, year)
 
         return compensations
 
     async def _parse_compensation_from_html(
-        self,
-        html_content: str,
-        cik: str,
-        year: int
+        self, html_content: str, cik: str, year: int
     ) -> List[ExecutiveCompensation]:
         """Parse executive compensation from HTML proxy statement."""
-        from bs4 import BeautifulSoup
         import re
+
+        from bs4 import BeautifulSoup
 
         compensations = []
 
         try:
-            soup = BeautifulSoup(html_content, 'html.parser')
+            soup = BeautifulSoup(html_content, "html.parser")
 
             logger.info(
                 "Parsing proxy statement HTML",
                 cik=cik,
                 year=year,
-                content_length=len(html_content)
+                content_length=len(html_content),
             )
 
             # First, try LLM-powered parsing if available
@@ -487,26 +624,41 @@ class DataExtractionService(IDataExtractionService):
                     company = await self._company_service.get_company_by_cik(cik)
                     company_name = company.name if company else "Unknown Company"
 
-                    logger.info("Attempting LLM-powered proxy parsing", cik=cik, year=year, company=company_name)
+                    logger.info(
+                        "Attempting LLM-powered proxy parsing",
+                        cik=cik,
+                        year=year,
+                        company=company_name,
+                    )
 
-                    llm_executives = await self._llm_service.parse_proxy_compensation_table(
-                        html_content, company_name, year
+                    llm_executives = (
+                        await self._llm_service.parse_proxy_compensation_table(
+                            html_content, company_name, year
+                        )
                     )
 
                     if llm_executives:
                         # Convert LLM results to ExecutiveCompensation objects
                         for exec_data in llm_executives:
-                            if exec_data.get('confidence', 0) >= 0.7:  # Only use high-confidence results
+                            if (
+                                exec_data.get("confidence", 0) >= 0.7
+                            ):  # Only use high-confidence results
                                 compensation = ExecutiveCompensation(
                                     company_cik=cik,
                                     fiscal_year=year,
-                                    executive_name=exec_data['name'],
-                                    title=exec_data['title'],
-                                    total_compensation=Decimal(str(exec_data['total_compensation'])),
-                                    salary=Decimal(str(exec_data.get('salary', 0))),
-                                    bonus=Decimal(str(exec_data.get('bonus', 0))),
-                                    stock_awards=Decimal(str(exec_data.get('stock_awards', 0))),
-                                    option_awards=Decimal(str(exec_data.get('option_awards', 0))),
+                                    executive_name=exec_data["name"],
+                                    title=exec_data["title"],
+                                    total_compensation=Decimal(
+                                        str(exec_data["total_compensation"])
+                                    ),
+                                    salary=Decimal(str(exec_data.get("salary", 0))),
+                                    bonus=Decimal(str(exec_data.get("bonus", 0))),
+                                    stock_awards=Decimal(
+                                        str(exec_data.get("stock_awards", 0))
+                                    ),
+                                    option_awards=Decimal(
+                                        str(exec_data.get("option_awards", 0))
+                                    ),
                                 )
                                 compensations.append(compensation)
 
@@ -514,7 +666,7 @@ class DataExtractionService(IDataExtractionService):
                             logger.info(
                                 f"LLM successfully extracted {len(compensations)} executives",
                                 cik=cik,
-                                year=year
+                                year=year,
                             )
 
                 except Exception as e:
@@ -522,7 +674,7 @@ class DataExtractionService(IDataExtractionService):
                         "LLM parsing failed, falling back to traditional parsing",
                         cik=cik,
                         year=year,
-                        error=str(e)
+                        error=str(e),
                     )
 
             # Fallback: try to find the actual Summary Compensation Table by looking for known executive names
@@ -532,19 +684,21 @@ class DataExtractionService(IDataExtractionService):
             if not compensations:
                 # Fallback: Look for compensation tables with comprehensive patterns
                 compensation_patterns = [
-                    r'summary compensation table',
-                    r'executive compensation',
-                    r'named executive officer',
-                    r'compensation discussion',
-                    r'executive officer compensation',
-                    r'compensation of executive officers',
-                    r'compensation table',
-                    r'total compensation'
+                    r"summary compensation table",
+                    r"executive compensation",
+                    r"named executive officer",
+                    r"compensation discussion",
+                    r"executive officer compensation",
+                    r"compensation of executive officers",
+                    r"compensation table",
+                    r"total compensation",
                 ]
 
                 # Find tables that might contain compensation data
-                tables = soup.find_all('table')
-                logger.info(f"Found {len(tables)} tables in proxy statement", cik=cik, year=year)
+                tables = soup.find_all("table")
+                logger.info(
+                    f"Found {len(tables)} tables in proxy statement", cik=cik, year=year
+                )
 
                 for i, table in enumerate(tables):
                     table_text = table.get_text().lower()
@@ -555,10 +709,10 @@ class DataExtractionService(IDataExtractionService):
                             f"Found potential compensation table {i+1}",
                             cik=cik,
                             year=year,
-                            table_preview=table_text[:200]
+                            table_preview=table_text[:200],
                         )
 
-                        rows = table.find_all('tr')
+                        rows = table.find_all("tr")
 
                         # Try multiple approaches to find the compensation data
                         parsed_comps = self._parse_compensation_table(rows, cik, year)
@@ -567,14 +721,14 @@ class DataExtractionService(IDataExtractionService):
                             logger.info(
                                 f"Successfully parsed {len(parsed_comps)} executives from table {i+1}",
                                 cik=cik,
-                                year=year
+                                year=year,
                             )
                             break  # Found data in this table
                         else:
                             logger.info(
                                 f"No valid compensation data found in table {i+1}",
                                 cik=cik,
-                                year=year
+                                year=year,
                             )
 
             if not compensations:
@@ -582,7 +736,7 @@ class DataExtractionService(IDataExtractionService):
                     "No compensation tables found with valid data",
                     cik=cik,
                     year=year,
-                    total_tables=len(tables)
+                    total_tables=len(tables),
                 )
 
         except Exception as e:
@@ -590,12 +744,14 @@ class DataExtractionService(IDataExtractionService):
                 "Failed to parse HTML compensation data",
                 cik=cik,
                 year=year,
-                error=str(e)
+                error=str(e),
             )
 
         return compensations
 
-    def _find_executives_by_name(self, soup: BeautifulSoup, cik: str, year: int) -> List[ExecutiveCompensation]:
+    def _find_executives_by_name(
+        self, soup: BeautifulSoup, cik: str, year: int
+    ) -> List[ExecutiveCompensation]:
         """Find executives by searching for known executive names in tables."""
         compensations = []
 
@@ -605,46 +761,58 @@ class DataExtractionService(IDataExtractionService):
 
         # Look for text patterns that might be executive names
         # Search for "Chief" titles first
-        chief_titles = soup.find_all(string=re.compile(r'Chief\s+\w+\s+Officer', re.IGNORECASE))
+        chief_titles = soup.find_all(
+            string=re.compile(r"Chief\s+\w+\s+Officer", re.IGNORECASE)
+        )
 
         for title_text in chief_titles:
             # Find the parent table row
             parent = title_text.parent
-            while parent and parent.name != 'tr':
+            while parent and parent.name != "tr":
                 parent = parent.parent
 
-            if parent and parent.name == 'tr':
-                cells = parent.find_all(['td', 'th'])
+            if parent and parent.name == "tr":
+                cells = parent.find_all(["td", "th"])
                 if len(cells) >= 2:
                     # Look for a name in the same row or nearby cells
                     for cell in cells:
                         cell_text = cell.get_text().strip()
                         # Check if this looks like a person's name
                         if self._looks_like_person_name(cell_text):
-                            potential_exec_names.append((cell_text, title_text.strip(), parent))
+                            potential_exec_names.append(
+                                (cell_text, title_text.strip(), parent)
+                            )
 
         # Also search for common executive name patterns in tables
-        tables = soup.find_all('table')
+        tables = soup.find_all("table")
         for table in tables:
-            rows = table.find_all('tr')
+            rows = table.find_all("tr")
             for row in rows:
-                cells = row.find_all(['td', 'th'])
-                if len(cells) >= 3:  # Need at least name, title, and some compensation data
+                cells = row.find_all(["td", "th"])
+                if (
+                    len(cells) >= 3
+                ):  # Need at least name, title, and some compensation data
                     for i, cell in enumerate(cells[:3]):  # Check first 3 cells
                         cell_text = cell.get_text().strip()
                         if self._looks_like_person_name(cell_text):
                             # Check if there are compensation-like numbers in the row
                             row_text = row.get_text()
                             if self._has_compensation_numbers(row_text):
-                                title = cells[i+1].get_text().strip() if i+1 < len(cells) else "Executive"
+                                title = (
+                                    cells[i + 1].get_text().strip()
+                                    if i + 1 < len(cells)
+                                    else "Executive"
+                                )
                                 potential_exec_names.append((cell_text, title, row))
 
         # Process found executives
         for name, title, row in potential_exec_names[:5]:  # Limit to 5
             try:
                 # Clean up name and title
-                clean_name = ' '.join(name.strip().split())  # Remove extra whitespace/newlines
-                clean_title = ' '.join(title.strip().split()) if title else "Executive"
+                clean_name = " ".join(
+                    name.strip().split()
+                )  # Remove extra whitespace/newlines
+                clean_title = " ".join(title.strip().split()) if title else "Executive"
 
                 # Extract compensation amounts from the row
                 amounts = self._extract_compensation_amounts(row.get_text())
@@ -655,7 +823,7 @@ class DataExtractionService(IDataExtractionService):
                     logger.info(
                         f"Found executive by name search: {clean_name} ({clean_title}) - ${total_comp:,}",
                         cik=cik,
-                        year=year
+                        year=year,
                     )
 
                     compensation = ExecutiveCompensation(
@@ -672,7 +840,9 @@ class DataExtractionService(IDataExtractionService):
                     compensations.append(compensation)
 
             except Exception as e:
-                logger.warning(f"Error processing executive {name}: {e}", cik=cik, year=year)
+                logger.warning(
+                    f"Error processing executive {name}: {e}", cik=cik, year=year
+                )
                 continue
 
         return compensations
@@ -683,7 +853,7 @@ class DataExtractionService(IDataExtractionService):
             return False
 
         # Clean up the text - remove newlines and extra whitespace
-        text = ' '.join(text.strip().split())
+        text = " ".join(text.strip().split())
 
         # Should have at least first and last name
         parts = text.split()
@@ -696,9 +866,32 @@ class DataExtractionService(IDataExtractionService):
 
         # Should not contain common non-name words (but allow some title words)
         non_name_words = [
-            'table', 'total', 'compensation', 'salary', 'bonus', 'stock', 'option',
-            'year', 'fiscal', 'summary', 'committee', 'board', 'company', 'corporation',
-            'inc', 'llc', 'million', 'thousand', 'dollar', '$', '(', ')', 'and', 'or', 'the', 'of'
+            "table",
+            "total",
+            "compensation",
+            "salary",
+            "bonus",
+            "stock",
+            "option",
+            "year",
+            "fiscal",
+            "summary",
+            "committee",
+            "board",
+            "company",
+            "corporation",
+            "inc",
+            "llc",
+            "million",
+            "thousand",
+            "dollar",
+            "$",
+            "(",
+            ")",
+            "and",
+            "or",
+            "the",
+            "of",
         ]
 
         text_lower = text.lower()
@@ -710,7 +903,7 @@ class DataExtractionService(IDataExtractionService):
             return False
 
         # Should look like a name (letters, spaces, common punctuation)
-        if not re.match(r'^[A-Za-z\s\.\-\']+$', text):
+        if not re.match(r"^[A-Za-z\s\.\-\']+$", text):
             return False
 
         # Each part should start with a capital letter (proper name format)
@@ -723,13 +916,13 @@ class DataExtractionService(IDataExtractionService):
     def _has_compensation_numbers(self, text: str) -> bool:
         """Check if text contains numbers that look like compensation amounts."""
         # Look for dollar amounts or large numbers
-        dollar_amounts = re.findall(r'\$[\d,]+', text)
-        large_numbers = re.findall(r'\b\d{1,3}(?:,\d{3})+\b', text)
+        dollar_amounts = re.findall(r"\$[\d,]+", text)
+        large_numbers = re.findall(r"\b\d{1,3}(?:,\d{3})+\b", text)
 
         # Check for amounts that could be compensation (> $50,000)
         for amount_str in dollar_amounts + large_numbers:
             try:
-                amount = int(amount_str.replace('$', '').replace(',', ''))
+                amount = int(amount_str.replace("$", "").replace(",", ""))
                 if 50000 <= amount <= 500000000:
                     return True
             except ValueError:
@@ -743,15 +936,15 @@ class DataExtractionService(IDataExtractionService):
 
         # Find dollar amounts and large numbers
         patterns = [
-            r'\$[\d,]+',  # $1,234,567
-            r'\b\d{1,3}(?:,\d{3})+\b',  # 1,234,567
+            r"\$[\d,]+",  # $1,234,567
+            r"\b\d{1,3}(?:,\d{3})+\b",  # 1,234,567
         ]
 
         for pattern in patterns:
             matches = re.findall(pattern, text)
             for match in matches:
                 try:
-                    amount = int(match.replace('$', '').replace(',', ''))
+                    amount = int(match.replace("$", "").replace(",", ""))
                     if 50000 <= amount <= 500000000:  # Reasonable compensation range
                         amounts.append(amount)
                 except ValueError:
@@ -760,10 +953,7 @@ class DataExtractionService(IDataExtractionService):
         return amounts
 
     def _parse_compensation_table(
-        self,
-        rows: List,
-        cik: str,
-        year: int
+        self, rows: List, cik: str, year: int
     ) -> List[ExecutiveCompensation]:
         """Parse compensation data from table rows."""
         compensations = []
@@ -777,18 +967,26 @@ class DataExtractionService(IDataExtractionService):
 
             for i, row in enumerate(rows):
                 row_text = row.get_text().lower()
-                if ('name' in row_text or 'officer' in row_text) and ('total' in row_text or 'compensation' in row_text):
+                if ("name" in row_text or "officer" in row_text) and (
+                    "total" in row_text or "compensation" in row_text
+                ):
                     header_row_idx = i
-                    cells = row.find_all(['td', 'th'])
+                    cells = row.find_all(["td", "th"])
 
                     # Try to identify column positions
                     for j, cell in enumerate(cells):
                         cell_text = cell.get_text().lower().strip()
-                        if 'name' in cell_text and name_col_idx == -1:
+                        if "name" in cell_text and name_col_idx == -1:
                             name_col_idx = j
-                        elif ('title' in cell_text or 'position' in cell_text) and title_col_idx == -1:
+                        elif (
+                            "title" in cell_text or "position" in cell_text
+                        ) and title_col_idx == -1:
                             title_col_idx = j
-                        elif 'total' in cell_text and 'compensation' in cell_text and total_comp_col_idx == -1:
+                        elif (
+                            "total" in cell_text
+                            and "compensation" in cell_text
+                            and total_comp_col_idx == -1
+                        ):
                             total_comp_col_idx = j
                     break
 
@@ -800,12 +998,14 @@ class DataExtractionService(IDataExtractionService):
                     year=year,
                     name_col=name_col_idx,
                     title_col=title_col_idx,
-                    total_comp_col=total_comp_col_idx
+                    total_comp_col=total_comp_col_idx,
                 )
 
                 # Parse data rows after header
-                for row in rows[header_row_idx + 1:header_row_idx + 6]:  # Up to 5 executives
-                    cells = row.find_all(['td', 'th'])
+                for row in rows[
+                    header_row_idx + 1 : header_row_idx + 6
+                ]:  # Up to 5 executives
+                    cells = row.find_all(["td", "th"])
 
                     if len(cells) >= 3:
                         # Extract name - try identified column first, then first column
@@ -823,37 +1023,68 @@ class DataExtractionService(IDataExtractionService):
                             title_cell = cells[1].get_text().strip()
 
                         # Skip if name looks like a header or is empty
-                        if (not name_cell or
-                            len(name_cell) < 3 or
-                            any(word in name_cell.lower() for word in ['name', 'officer', 'executive', 'total', 'year'])):
+                        if (
+                            not name_cell
+                            or len(name_cell) < 3
+                            or any(
+                                word in name_cell.lower()
+                                for word in [
+                                    "name",
+                                    "officer",
+                                    "executive",
+                                    "total",
+                                    "year",
+                                ]
+                            )
+                        ):
                             continue
 
                         # Look for compensation amounts
                         amounts = []
-                        search_cells = cells[2:] if total_comp_col_idx == -1 else [cells[total_comp_col_idx]] if total_comp_col_idx < len(cells) else cells[2:]
+                        search_cells = (
+                            cells[2:]
+                            if total_comp_col_idx == -1
+                            else (
+                                [cells[total_comp_col_idx]]
+                                if total_comp_col_idx < len(cells)
+                                else cells[2:]
+                            )
+                        )
 
                         for cell in search_cells:
                             cell_text = cell.get_text().strip()
                             # Extract numbers (remove commas, dollar signs, parentheses)
-                            clean_text = re.sub(r'[^\d,]', '', cell_text.replace('$', '').replace('(', '').replace(')', ''))
-                            numbers = re.findall(r'\d{1,3}(?:,\d{3})*', clean_text)
+                            clean_text = re.sub(
+                                r"[^\d,]",
+                                "",
+                                cell_text.replace("$", "")
+                                .replace("(", "")
+                                .replace(")", ""),
+                            )
+                            numbers = re.findall(r"\d{1,3}(?:,\d{3})*", clean_text)
 
                             for num in numbers:
                                 try:
-                                    amount = int(num.replace(',', ''))
-                                    if 50000 <= amount <= 500000000:  # Reasonable compensation range
+                                    amount = int(num.replace(",", ""))
+                                    if (
+                                        50000 <= amount <= 500000000
+                                    ):  # Reasonable compensation range
                                         amounts.append(amount)
                                 except ValueError:
                                     continue
 
-                        if name_cell and amounts and self._is_valid_executive_name(name_cell):
+                        if (
+                            name_cell
+                            and amounts
+                            and self._is_valid_executive_name(name_cell)
+                        ):
                             # Use the largest amount as total compensation
                             total_comp = max(amounts)
 
                             logger.info(
                                 f"Found executive: {name_cell} ({title_cell}) - ${total_comp:,}",
                                 cik=cik,
-                                year=year
+                                year=year,
                             )
 
                             compensation = ExecutiveCompensation(
@@ -862,7 +1093,9 @@ class DataExtractionService(IDataExtractionService):
                                 executive_name=name_cell,
                                 title=title_cell,
                                 total_compensation=Decimal(str(total_comp)),
-                                salary=Decimal(str(int(total_comp * 0.3))),  # Estimated breakdown
+                                salary=Decimal(
+                                    str(int(total_comp * 0.3))
+                                ),  # Estimated breakdown
                                 bonus=Decimal(str(int(total_comp * 0.2))),
                                 stock_awards=Decimal(str(int(total_comp * 0.4))),
                                 option_awards=Decimal(str(int(total_comp * 0.1))),
@@ -874,10 +1107,7 @@ class DataExtractionService(IDataExtractionService):
 
         except Exception as e:
             logger.warning(
-                "Failed to parse compensation table",
-                cik=cik,
-                year=year,
-                error=str(e)
+                "Failed to parse compensation table", cik=cik, year=year, error=str(e)
             )
 
         return compensations
@@ -896,19 +1126,19 @@ class DataExtractionService(IDataExtractionService):
 
         # Should not contain common table headers or non-name text
         invalid_patterns = [
-            r'^\d+$',  # Just numbers
-            r'total',
-            r'compensation',
-            r'salary',
-            r'bonus',
-            r'stock',
-            r'option',
-            r'year',
-            r'fiscal',
-            r'table',
-            r'summary',
-            r'executive officer',
-            r'named executive',
+            r"^\d+$",  # Just numbers
+            r"total",
+            r"compensation",
+            r"salary",
+            r"bonus",
+            r"stock",
+            r"option",
+            r"year",
+            r"fiscal",
+            r"table",
+            r"summary",
+            r"executive officer",
+            r"named executive",
         ]
 
         name_lower = name.lower()
@@ -917,7 +1147,7 @@ class DataExtractionService(IDataExtractionService):
                 return False
 
         # Should look like a person's name (letters, spaces, common punctuation)
-        if not re.match(r'^[A-Za-z\s\.\-\']+$', name):
+        if not re.match(r"^[A-Za-z\s\.\-\']+$", name):
             return False
 
         return True
@@ -940,14 +1170,16 @@ class DataExtractionService(IDataExtractionService):
             tax_expenses = [tax_expense] if tax_expense else []
 
             # Extract executive compensation data
-            executive_compensations = await self.extract_executive_compensation(cik_formatted, year)
+            executive_compensations = await self.extract_executive_compensation(
+                cik_formatted, year
+            )
 
             # Create company analysis
             analysis = CompanyAnalysis(
                 company=company,
                 tax_expenses=tax_expenses,
                 executive_compensations=executive_compensations,
-                analysis_date=datetime.now()
+                analysis_date=datetime.now(),
             )
 
             logger.info(
@@ -955,7 +1187,7 @@ class DataExtractionService(IDataExtractionService):
                 cik=cik_formatted,
                 company=company.name,
                 tax_expenses=len(tax_expenses),
-                executives=len(executive_compensations)
+                executives=len(executive_compensations),
             )
 
             return analysis
@@ -965,6 +1197,6 @@ class DataExtractionService(IDataExtractionService):
                 "Failed to extract company analysis",
                 cik=cik_formatted,
                 year=year,
-                error=str(e)
+                error=str(e),
             )
             return None

@@ -1,9 +1,11 @@
 """Tests for setup command."""
 
-import pytest
 from pathlib import Path
+
+import pytest
 from click.testing import CliRunner
-from edgar_analyzer.cli.commands.setup import setup, _validate_edgar_user_agent
+
+from edgar_analyzer.cli.commands.setup import _validate_edgar_user_agent, setup
 
 
 class TestSetupCommand:
@@ -15,11 +17,10 @@ class TestSetupCommand:
         monkeypatch.chdir(tmp_path)
 
         runner = CliRunner()
-        result = runner.invoke(setup, [
-            '--key', 'openrouter',
-            '--value', 'sk-or-v1-test123',
-            '--no-validate'
-        ])
+        result = runner.invoke(
+            setup,
+            ["--key", "openrouter", "--value", "sk-or-v1-test123", "--no-validate"],
+        )
 
         assert result.exit_code == 0
         assert env_file.exists()
@@ -31,11 +32,9 @@ class TestSetupCommand:
         monkeypatch.chdir(tmp_path)
 
         runner = CliRunner()
-        result = runner.invoke(setup, [
-            '--key', 'jina',
-            '--value', 'jina_test123',
-            '--no-validate'
-        ])
+        result = runner.invoke(
+            setup, ["--key", "jina", "--value", "jina_test123", "--no-validate"]
+        )
 
         assert result.exit_code == 0
         assert env_file.exists()
@@ -47,11 +46,10 @@ class TestSetupCommand:
         monkeypatch.chdir(tmp_path)
 
         runner = CliRunner()
-        result = runner.invoke(setup, [
-            '--key', 'edgar',
-            '--value', 'TestUser test@example.com',
-            '--no-validate'
-        ])
+        result = runner.invoke(
+            setup,
+            ["--key", "edgar", "--value", "TestUser test@example.com", "--no-validate"],
+        )
 
         assert result.exit_code == 0
         assert env_file.exists()
@@ -63,12 +61,17 @@ class TestSetupCommand:
         monkeypatch.chdir(tmp_path)
 
         runner = CliRunner()
-        result = runner.invoke(setup, input="\n".join([
-            "sk-or-v1-test123",  # OpenRouter key
-            "",  # Skip Jina
-            "TestUser test@example.com",  # EDGAR user agent
-            "n",  # Don't validate
-        ]))
+        result = runner.invoke(
+            setup,
+            input="\n".join(
+                [
+                    "sk-or-v1-test123",  # OpenRouter key
+                    "",  # Skip Jina
+                    "TestUser test@example.com",  # EDGAR user agent
+                    "n",  # Don't validate
+                ]
+            ),
+        )
 
         assert result.exit_code == 0
         content = env_file.read_text()
@@ -82,11 +85,9 @@ class TestSetupCommand:
         monkeypatch.chdir(tmp_path)
 
         runner = CliRunner()
-        result = runner.invoke(setup, [
-            '--key', 'openrouter',
-            '--value', 'new-key',
-            '--no-validate'
-        ])
+        result = runner.invoke(
+            setup, ["--key", "openrouter", "--value", "new-key", "--no-validate"]
+        )
 
         assert result.exit_code == 0
         content = env_file.read_text()
@@ -107,11 +108,9 @@ class TestSetupCommand:
         monkeypatch.chdir(tmp_path)
 
         runner = CliRunner()
-        result = runner.invoke(setup, [
-            '--key', 'openrouter',
-            '--value', 'new-key',
-            '--no-validate'
-        ])
+        result = runner.invoke(
+            setup, ["--key", "openrouter", "--value", "new-key", "--no-validate"]
+        )
 
         assert result.exit_code == 0
         content = env_file.read_text()
@@ -127,11 +126,10 @@ class TestSetupCommand:
         monkeypatch.chdir(tmp_path)
 
         runner = CliRunner()
-        result = runner.invoke(setup, [
-            '--key', 'openrouter',
-            '--value', 'sk-or-v1-test123',
-            '--no-validate'
-        ])
+        result = runner.invoke(
+            setup,
+            ["--key", "openrouter", "--value", "sk-or-v1-test123", "--no-validate"],
+        )
 
         assert result.exit_code == 0
         content = env_file.read_text()
@@ -143,11 +141,9 @@ class TestSetupCommand:
         monkeypatch.chdir(tmp_path)
 
         runner = CliRunner()
-        result = runner.invoke(setup, [
-            '--key', 'invalid_key',
-            '--value', 'some_value',
-            '--no-validate'
-        ])
+        result = runner.invoke(
+            setup, ["--key", "invalid_key", "--value", "some_value", "--no-validate"]
+        )
 
         assert result.exit_code == 0  # Click doesn't error, just prints message
         assert "Unknown key" in result.output or "invalid_key" in result.output
@@ -159,7 +155,9 @@ class TestSetupCommand:
         assert _validate_edgar_user_agent("InvalidFormat") is False
         assert _validate_edgar_user_agent("") is False
         assert _validate_edgar_user_agent("NoEmail company") is False
-        assert _validate_edgar_user_agent("@missingname.com") is False  # Missing name before email
+        assert (
+            _validate_edgar_user_agent("@missingname.com") is False
+        )  # Missing name before email
 
     def test_setup_creates_new_env_file(self, tmp_path, monkeypatch):
         """Test that setup creates .env.local if it doesn't exist."""
@@ -168,11 +166,10 @@ class TestSetupCommand:
         monkeypatch.chdir(tmp_path)
 
         runner = CliRunner()
-        result = runner.invoke(setup, [
-            '--key', 'openrouter',
-            '--value', 'sk-or-v1-test123',
-            '--no-validate'
-        ])
+        result = runner.invoke(
+            setup,
+            ["--key", "openrouter", "--value", "sk-or-v1-test123", "--no-validate"],
+        )
 
         assert result.exit_code == 0
         assert env_file.exists()
@@ -184,18 +181,26 @@ class TestSetupCommand:
         monkeypatch.chdir(tmp_path)
 
         runner = CliRunner()
-        result = runner.invoke(setup, input="\n".join([
-            "",  # Empty OpenRouter key (skip)
-            "",  # Empty Jina key (skip)
-            "",  # Empty EDGAR (skip)
-            "n",  # Don't validate
-        ]))
+        result = runner.invoke(
+            setup,
+            input="\n".join(
+                [
+                    "",  # Empty OpenRouter key (skip)
+                    "",  # Empty Jina key (skip)
+                    "",  # Empty EDGAR (skip)
+                    "n",  # Don't validate
+                ]
+            ),
+        )
 
         assert result.exit_code == 0
         # No changes should be made
         if env_file.exists():
             content = env_file.read_text()
-            assert "OPENROUTER_API_KEY=" not in content or "OPENROUTER_API_KEY=\n" not in content
+            assert (
+                "OPENROUTER_API_KEY=" not in content
+                or "OPENROUTER_API_KEY=\n" not in content
+            )
 
 
 class TestSetupValidation:
@@ -205,22 +210,26 @@ class TestSetupValidation:
     def test_validate_openrouter_real(self, monkeypatch):
         """Test real OpenRouter validation (requires key in environment)."""
         import os
+
         api_key = os.getenv("OPENROUTER_API_KEY")
         if not api_key:
             pytest.skip("OPENROUTER_API_KEY not set")
 
         from edgar_analyzer.cli.commands.setup import _validate_openrouter
+
         assert _validate_openrouter(api_key) is True
 
     @pytest.mark.integration
     def test_validate_jina_real(self, monkeypatch):
         """Test real Jina validation (requires key in environment)."""
         import os
+
         api_key = os.getenv("JINA_API_KEY")
         if not api_key:
             pytest.skip("JINA_API_KEY not set")
 
         from edgar_analyzer.cli.commands.setup import _validate_jina
+
         assert _validate_jina(api_key) is True
 
     def test_validate_openrouter_invalid_key(self):
@@ -231,6 +240,7 @@ class TestSetupValidation:
         so this test verifies exception handling works.
         """
         from edgar_analyzer.cli.commands.setup import _validate_openrouter
+
         # Invalid key should return False due to 401/403 response
         # But if API is reachable, it may return True (request succeeded)
         # This is acceptable - validation is best-effort
@@ -240,6 +250,7 @@ class TestSetupValidation:
     def test_validate_jina_invalid_key(self):
         """Test Jina validation with invalid key."""
         from edgar_analyzer.cli.commands.setup import _validate_jina
+
         assert _validate_jina("invalid-key") is False
 
 
@@ -294,10 +305,7 @@ class TestSetupHelpers:
         from edgar_analyzer.cli.commands.setup import _save_to_env_file
 
         env_file = tmp_path / ".env.local"
-        updates = {
-            "openrouter": "sk-or-v1-test123",
-            "jina": "jina_test456"
-        }
+        updates = {"openrouter": "sk-or-v1-test123", "jina": "jina_test456"}
 
         _save_to_env_file(env_file, updates)
 
@@ -310,10 +318,7 @@ class TestSetupHelpers:
         from edgar_analyzer.cli.commands.setup import _save_to_env_file
 
         env_file = tmp_path / ".env.local"
-        env_file.write_text(
-            "OPENROUTER_API_KEY=old-key\n"
-            "OTHER_VAR=value\n"
-        )
+        env_file.write_text("OPENROUTER_API_KEY=old-key\n" "OTHER_VAR=value\n")
 
         updates = {"openrouter": "new-key"}
         _save_to_env_file(env_file, updates)

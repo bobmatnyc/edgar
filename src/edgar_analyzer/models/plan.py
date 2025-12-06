@@ -16,17 +16,13 @@ Migration Status: COMPLETE (1M-378, T3)
 """
 
 # Re-export all models from platform package
-from extract_transform_platform.models.plan import (
-    # PM Mode Outputs
-    MethodSpec,
+from extract_transform_platform.models.plan import (  # PM Mode Outputs; Coder Mode Outputs; Generation Context; Validation Results
     ClassSpec,
-    PlanSpec,
-    # Coder Mode Outputs
-    GeneratedCode,
-    # Generation Context
-    GenerationContext,
-    # Validation Results
     CodeValidationResult,
+    GeneratedCode,
+    GenerationContext,
+    MethodSpec,
+    PlanSpec,
 )
 
 __all__ = [

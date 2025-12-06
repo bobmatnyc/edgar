@@ -6,20 +6,21 @@ inline examples (from project.yaml) and file-based examples (from examples/*.jso
 """
 
 import json
-import pytest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+import pytest
+
 from edgar_analyzer.main_cli import _load_examples_from_config
 from extract_transform_platform.models.project_config import (
-    ProjectConfig,
-    ProjectMetadata,
-    ExampleConfig,
     DataSourceConfig,
     DataSourceType,
+    ExampleConfig,
     OutputConfig,
     OutputDestinationConfig,
-    OutputFormat
+    OutputFormat,
+    ProjectConfig,
+    ProjectMetadata,
 )
 
 
@@ -35,27 +36,26 @@ class TestInlineExamplesCLI:
                 DataSourceConfig(
                     type=DataSourceType.API,
                     name="test_api",
-                    endpoint="https://api.example.com"
+                    endpoint="https://api.example.com",
                 )
             ],
             examples=[
                 ExampleConfig(
                     input={"city": "London", "temp": 15.5},
-                    output={"location": "London", "temperature_c": 15.5}
+                    output={"location": "London", "temperature_c": 15.5},
                 ),
                 ExampleConfig(
                     input={"city": "Tokyo", "temp": 22.3},
-                    output={"location": "Tokyo", "temperature_c": 22.3}
-                )
+                    output={"location": "Tokyo", "temperature_c": 22.3},
+                ),
             ],
             output=OutputConfig(
                 formats=[
                     OutputDestinationConfig(
-                        type=OutputFormat.JSON,
-                        path="output/results.json"
+                        type=OutputFormat.JSON, path="output/results.json"
                     )
                 ]
-            )
+            ),
         )
 
         with TemporaryDirectory() as tmpdir:
@@ -79,18 +79,17 @@ class TestInlineExamplesCLI:
                 DataSourceConfig(
                     type=DataSourceType.FILE,
                     name="test_file",
-                    file_path="input/data.csv"
+                    file_path="input/data.csv",
                 )
             ],
             examples=[],  # No inline examples
             output=OutputConfig(
                 formats=[
                     OutputDestinationConfig(
-                        type=OutputFormat.JSON,
-                        path="output/results.json"
+                        type=OutputFormat.JSON, path="output/results.json"
                     )
                 ]
-            )
+            ),
         )
 
         with TemporaryDirectory() as tmpdir:
@@ -123,23 +122,19 @@ class TestInlineExamplesCLI:
                 DataSourceConfig(
                     type=DataSourceType.API,
                     name="test_api",
-                    endpoint="https://api.example.com"
+                    endpoint="https://api.example.com",
                 )
             ],
             examples=[
-                ExampleConfig(
-                    input={"source": "inline"},
-                    output={"type": "inline"}
-                )
+                ExampleConfig(input={"source": "inline"}, output={"type": "inline"})
             ],
             output=OutputConfig(
                 formats=[
                     OutputDestinationConfig(
-                        type=OutputFormat.JSON,
-                        path="output/results.json"
+                        type=OutputFormat.JSON, path="output/results.json"
                     )
                 ]
-            )
+            ),
         )
 
         with TemporaryDirectory() as tmpdir:
@@ -169,18 +164,17 @@ class TestInlineExamplesCLI:
                 DataSourceConfig(
                     type=DataSourceType.FILE,
                     name="test_file",
-                    file_path="input/data.csv"
+                    file_path="input/data.csv",
                 )
             ],
             examples=[],
             output=OutputConfig(
                 formats=[
                     OutputDestinationConfig(
-                        type=OutputFormat.JSON,
-                        path="output/results.json"
+                        type=OutputFormat.JSON, path="output/results.json"
                     )
                 ]
-            )
+            ),
         )
 
         with TemporaryDirectory() as tmpdir:
@@ -203,18 +197,17 @@ class TestInlineExamplesCLI:
                 DataSourceConfig(
                     type=DataSourceType.FILE,
                     name="test_file",
-                    file_path="input/data.csv"
+                    file_path="input/data.csv",
                 )
             ],
             examples=[],
             output=OutputConfig(
                 formats=[
                     OutputDestinationConfig(
-                        type=OutputFormat.JSON,
-                        path="output/results.json"
+                        type=OutputFormat.JSON, path="output/results.json"
                     )
                 ]
-            )
+            ),
         )
 
         with TemporaryDirectory() as tmpdir:
@@ -245,14 +238,13 @@ class TestInlineExamplesCLI:
         # Create config similar to weather template
         config = ProjectConfig(
             project=ProjectMetadata(
-                name="weather_data_extractor",
-                description="Extract weather data"
+                name="weather_data_extractor", description="Extract weather data"
             ),
             data_sources=[
                 DataSourceConfig(
                     type=DataSourceType.API,
                     name="openweathermap_current",
-                    endpoint="https://api.openweathermap.org/data/2.5/weather"
+                    endpoint="https://api.openweathermap.org/data/2.5/weather",
                 )
             ],
             examples=[
@@ -262,15 +254,15 @@ class TestInlineExamplesCLI:
                         "city": "London",
                         "raw_response": {
                             "main": {"temp": 15.5, "humidity": 72},
-                            "weather": [{"description": "light rain"}]
-                        }
+                            "weather": [{"description": "light rain"}],
+                        },
                     },
                     output={
                         "city": "London",
                         "temperature_c": 15.5,
                         "humidity_percent": 72,
-                        "conditions": "light rain"
-                    }
+                        "conditions": "light rain",
+                    },
                 ),
                 ExampleConfig(
                     description="Clear sky in Tokyo",
@@ -278,15 +270,15 @@ class TestInlineExamplesCLI:
                         "city": "Tokyo",
                         "raw_response": {
                             "main": {"temp": 22.3, "humidity": 65},
-                            "weather": [{"description": "clear sky"}]
-                        }
+                            "weather": [{"description": "clear sky"}],
+                        },
                     },
                     output={
                         "city": "Tokyo",
                         "temperature_c": 22.3,
                         "humidity_percent": 65,
-                        "conditions": "clear sky"
-                    }
+                        "conditions": "clear sky",
+                    },
                 ),
                 ExampleConfig(
                     description="Snowy weather in Moscow",
@@ -294,25 +286,24 @@ class TestInlineExamplesCLI:
                         "city": "Moscow",
                         "raw_response": {
                             "main": {"temp": -5.2, "humidity": 85},
-                            "weather": [{"description": "light snow"}]
-                        }
+                            "weather": [{"description": "light snow"}],
+                        },
                     },
                     output={
                         "city": "Moscow",
                         "temperature_c": -5.2,
                         "humidity_percent": 85,
-                        "conditions": "light snow"
-                    }
-                )
+                        "conditions": "light snow",
+                    },
+                ),
             ],
             output=OutputConfig(
                 formats=[
                     OutputDestinationConfig(
-                        type=OutputFormat.CSV,
-                        path="output/weather_data.csv"
+                        type=OutputFormat.CSV, path="output/weather_data.csv"
                     )
                 ]
-            )
+            ),
         )
 
         with TemporaryDirectory() as tmpdir:
