@@ -56,6 +56,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import structlog
+from openai import AuthenticationError
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
@@ -267,9 +268,24 @@ class InteractiveExtractionSession:
             except EOFError:
                 # Ctrl+D - exit gracefully
                 break
+            except AuthenticationError as e:
+                # Auth error in REPL loop - trigger setup
+                self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
+                self.console.print("[dim]Let's set up a new one...[/dim]\n")
+                await self.cmd_setup("")
+                logger.warning("auth_error_in_repl", error=str(e))
             except Exception as e:
-                self.console.print(f"[red]Error executing command: {e}[/red]")
-                logger.exception("command_error", command=command if 'command' in locals() else "unknown")
+                # Check for auth-related errors in the message
+                error_str = str(e)
+                if "401" in error_str or "authentication" in error_str.lower() or "User not found" in error_str:
+                    # Auth error detected - trigger setup
+                    self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
+                    self.console.print("[dim]Let's set up a new one...[/dim]\n")
+                    await self.cmd_setup("")
+                    logger.warning("auth_error_detected_in_repl", error=error_str[:100])
+                else:
+                    self.console.print(f"[red]Error executing command: {e}[/red]")
+                    logger.exception("command_error", command=command if 'command' in locals() else "unknown")
 
         self.console.print("[yellow]Session ended[/yellow]")
         logger.info("repl_ended")
@@ -573,13 +589,30 @@ Provide a helpful response. If the user is asking how to do something, point the
 
             logger.info("chat_response_displayed", message_length=len(message), response_length=len(response))
 
+        except AuthenticationError as e:
+            # Auth error - trigger setup flow
+            self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
+            self.console.print("[dim]Let's set up a new one...[/dim]\n")
+            await self.cmd_setup("")
+            logger.warning("auth_error_triggered_setup", error=str(e))
+
         except Exception as e:
-            # Graceful error handling
-            self.console.print(
-                f"[yellow]⚠️  I encountered an issue: {str(e)[:100]}[/yellow]\n"
-                "[dim]Try asking in a different way, or use 'help' to see available commands.[/dim]"
-            )
-            logger.exception("chat_error", message=message[:100])
+            # Other errors - show generic message
+            error_str = str(e)
+            # Check for auth-related errors in the message
+            if "401" in error_str or "authentication" in error_str.lower() or "User not found" in error_str:
+                # Auth error detected by message content - trigger setup
+                self.console.print("\n[yellow]🔑 Your API key appears to be invalid or expired.[/yellow]")
+                self.console.print("[dim]Let's set up a new one...[/dim]\n")
+                await self.cmd_setup("")
+                logger.warning("auth_error_detected_by_message", error=error_str[:100])
+            else:
+                # Other errors - show generic message
+                self.console.print(
+                    f"[yellow]⚠️  I encountered an issue: {error_str[:100]}[/yellow]\n"
+                    "[dim]Try asking in a different way, or use 'help' to see available commands.[/dim]"
+                )
+                logger.exception("chat_error", message=message[:100])
 
     async def _parse_natural_language(self, user_input: str) -> Tuple[str, str]:
         """Parse natural language input to command + args using regex + LLM fallback.
@@ -658,6 +691,11 @@ Your response:"""
                     if command in self.commands:
                         logger.debug("nl_parsed_llm", command=command, args=args)
                         return command, args
+
+            except AuthenticationError as e:
+                # Auth error during NL parsing - propagate to be handled by caller
+                logger.warning("auth_error_during_nl_parsing", error=str(e))
+                raise
 
             except Exception as e:
                 logger.debug("nl_parsing_llm_failed", error=str(e))
