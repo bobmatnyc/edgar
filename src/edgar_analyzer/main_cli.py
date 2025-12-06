@@ -829,40 +829,77 @@ def run_extraction(ctx, project_path, output_format):
 
 @cli.command()
 @click.option('--project', type=click.Path(exists=True), help='Project directory path')
+@click.option('--resume', type=str, default=None, help='Resume saved session by name')
+@click.option('--list-sessions', is_flag=True, help='List all saved sessions and exit')
 @click.pass_context
-def chat(ctx, project):
-    """Start interactive extraction session.
+def chat(ctx, project, resume, list_sessions):
+    """Start interactive extraction session with REPL interface.
 
     This command launches an Auggie-style interactive REPL for data extraction
     workflows. It provides a stateful, conversational interface with command history,
-    tab completion, and rich terminal UI.
+    tab completion, natural language understanding, and rich terminal UI.
 
     Features:
+    • Natural language command understanding
     • Tab completion for commands (try pressing Tab)
     • Command history (Ctrl+R to search)
     • Rich tables and progress indicators
-    • Persistent session state
+    • Persistent session state with save/resume
+    • Confidence threshold tuning
     • Integration with all platform services
 
     Examples:
+        # Start fresh session
         edgar-analyzer chat
+
+        # Start with project loaded
         edgar-analyzer chat --project projects/weather_test/
 
+        # Resume last session
+        edgar-analyzer chat --resume last
+
+        # Resume specific session
+        edgar-analyzer chat --resume my_session
+
+        # List all saved sessions
+        edgar-analyzer chat --list-sessions
+
     Available Commands (once in session):
-        help      - Show available commands
-        load      - Load project from path
-        show      - Display project status
-        examples  - List project examples
-        analyze   - Analyze patterns in examples
-        patterns  - Show detected patterns
-        generate  - Generate extraction code
-        extract   - Run data extraction
-        exit      - Exit interactive mode
+        help       - Show available commands
+        load       - Load project from path
+        show       - Display project status
+        examples   - List project examples
+        analyze    - Analyze patterns in examples
+        patterns   - Show detected patterns
+        generate   - Generate extraction code
+        validate   - Validate generated code
+        extract    - Run data extraction
+        confidence - Set confidence threshold (0.0-1.0)
+        threshold  - Show current confidence threshold
+        save       - Save current session
+        resume     - Resume saved session
+        sessions   - List all saved sessions
+        exit       - Exit interactive mode
+
+    Natural Language:
+        You can also ask questions in natural language:
+        • "What patterns did you detect?"
+        • "Show me the examples"
+        • "Generate the code"
     """
     import asyncio
     from pathlib import Path
 
     from edgar_analyzer.interactive import InteractiveExtractionSession
+
+    # Handle --list-sessions flag
+    if list_sessions:
+        async def list_all_sessions():
+            session = InteractiveExtractionSession()
+            await session.cmd_list_sessions()
+
+        asyncio.run(list_all_sessions())
+        return
 
     async def start_chat():
         verbose = ctx.obj.get('verbose', False)
@@ -873,6 +910,11 @@ def chat(ctx, project):
         try:
             project_path = Path(project) if project else None
             session = InteractiveExtractionSession(project_path=project_path)
+
+            # If --resume specified, restore session state before starting REPL
+            if resume:
+                await session.cmd_resume_session(resume)
+
             await session.start()
 
         except Exception as e:

@@ -24,7 +24,7 @@ from typing import Any, Dict
 
 import pytest
 
-from edgar_analyzer.data_sources import PDFDataSource
+from extract_transform_platform.data_sources.file.pdf_source import PDFDataSource
 
 # ============================================================================
 # Test Fixtures - Create PDF files programmatically
@@ -637,6 +637,129 @@ class TestPDFDataSourceConfiguration:
 
         assert source1.get_cache_key() == source2.get_cache_key()
 
+    @pytest.mark.asyncio
+    async def test_validate_config_not_a_file(self, tmp_path):
+        """Test validate_config returns False for directory."""
+        # Create a directory with .pdf name
+        fake_file = tmp_path / "fake.pdf"
+        fake_file.mkdir()
+
+        source = PDFDataSource(fake_file)
+
+        is_valid = await source.validate_config()
+        assert is_valid is False
+
+    @pytest.mark.asyncio
+    async def test_validate_config_wrong_extension(self, tmp_path):
+        """Test validate_config returns False for wrong extension."""
+        # Create file with wrong extension but pass validation at init
+        test_file = tmp_path / "test.pdf"
+        test_file.touch()
+
+        source = PDFDataSource(test_file)
+
+        # Manually change the file extension after init
+        import shutil
+        new_path = tmp_path / "test.txt"
+        shutil.move(test_file, new_path)
+        source.file_path = new_path
+
+        is_valid = await source.validate_config()
+        assert is_valid is False
+
+    @pytest.mark.asyncio
+    async def test_validate_config_empty_pdf_no_pages(self, tmp_path, monkeypatch):
+        """Test validate_config returns False for PDF with no pages."""
+        test_file = tmp_path / "empty.pdf"
+        create_empty_pdf(test_file)
+
+        source = PDFDataSource(test_file)
+
+        # Mock pdfplumber to return PDF with no pages
+        import pdfplumber
+
+        class MockPDF:
+            pages = []
+
+        class MockPDFContext:
+            def __enter__(self):
+                return MockPDF()
+
+            def __exit__(self, *args):
+                pass
+
+        def mock_open(*args, **kwargs):
+            return MockPDFContext()
+
+        monkeypatch.setattr(pdfplumber, "open", mock_open)
+
+        is_valid = await source.validate_config()
+        assert is_valid is False
+
+    @pytest.mark.asyncio
+    async def test_validate_config_invalid_page_type(self, simple_pdf):
+        """Test validate_config returns False for invalid page_number type."""
+        # Create source with invalid page_number (not int or "all")
+        source = PDFDataSource(simple_pdf, page_number=0)
+        source.page_number = 1.5  # Invalid type (float)
+
+        is_valid = await source.validate_config()
+        assert is_valid is False
+
+    @pytest.mark.asyncio
+    async def test_validate_config_pdfplumber_not_installed(self, simple_pdf, monkeypatch):
+        """Test validate_config returns False if pdfplumber not available."""
+        source = PDFDataSource(simple_pdf)
+
+        # Mock pdfplumber import failure
+        import builtins
+        real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name == "pdfplumber":
+                raise ImportError("pdfplumber not installed")
+            return real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        is_valid = await source.validate_config()
+        assert is_valid is False
+
+    @pytest.mark.asyncio
+    async def test_validate_config_permission_error(self, tmp_path, monkeypatch):
+        """Test validate_config returns False on PermissionError."""
+        test_file = tmp_path / "test.pdf"
+        create_simple_pdf(test_file)
+
+        source = PDFDataSource(test_file)
+
+        # Mock to raise PermissionError
+        from pathlib import Path
+
+        def mock_exists(self):
+            raise PermissionError("Permission denied")
+
+        monkeypatch.setattr(Path, "exists", mock_exists)
+
+        is_valid = await source.validate_config()
+        assert is_valid is False
+
+    @pytest.mark.asyncio
+    async def test_validate_config_unexpected_exception(self, simple_pdf, monkeypatch):
+        """Test validate_config returns False on unexpected exception."""
+        source = PDFDataSource(simple_pdf)
+
+        # Mock to raise unexpected exception
+        from pathlib import Path
+
+        def mock_exists(self):
+            raise RuntimeError("Unexpected error")
+
+        monkeypatch.setattr(Path, "exists", mock_exists)
+
+        is_valid = await source.validate_config()
+        assert is_valid is False
+
 
 # ============================================================================
 # Test Error Handling
@@ -649,9 +772,137 @@ class TestPDFDataSourceErrorHandling:
     @pytest.mark.asyncio
     async def test_pdfplumber_not_installed_error(self, simple_pdf, monkeypatch):
         """Test ImportError if pdfplumber not available."""
-        # This would require mocking the import, skip for now
-        # Integration tests would catch this
-        pass
+        import sys
+
+        source = PDFDataSource(simple_pdf)
+
+        # Mock pdfplumber import failure
+        import builtins
+        real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name == "pdfplumber":
+                raise ImportError("pdfplumber not installed")
+            return real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        with pytest.raises(ImportError, match="pdfplumber is required"):
+            await source.fetch()
+
+    @pytest.mark.asyncio
+    async def test_pandas_not_installed_error(self, simple_pdf, monkeypatch):
+        """Test ImportError if pandas not available."""
+        import sys
+
+        source = PDFDataSource(simple_pdf)
+
+        # Mock pandas import failure
+        import builtins
+        real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name == "pandas":
+                raise ImportError("pandas not installed")
+            return real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        with pytest.raises(ImportError, match="pandas is required"):
+            await source.fetch()
+
+    @pytest.mark.asyncio
+    async def test_invalid_page_number_type(self, simple_pdf, monkeypatch):
+        """Test ValueError for invalid page_number type."""
+        import pdfplumber
+
+        source = PDFDataSource(simple_pdf, page_number="invalid")
+
+        with pytest.raises(ValueError, match="page_number must be int or 'all'"):
+            await source.fetch()
+
+    @pytest.mark.asyncio
+    async def test_negative_page_number(self, simple_pdf):
+        """Test ValueError for negative page number."""
+        source = PDFDataSource(simple_pdf, page_number=-1)
+
+        with pytest.raises(ValueError, match="out of range"):
+            await source.fetch()
+
+    @pytest.mark.asyncio
+    async def test_table_with_insufficient_data(self, tmp_path):
+        """Test ValueError when table has only header (no data rows)."""
+        # Create PDF with only header row
+        try:
+            from reportlab.lib import colors
+            from reportlab.lib.pagesizes import letter
+            from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+        except ImportError:
+            pytest.skip("reportlab not installed")
+
+        file_path = tmp_path / "header_only.pdf"
+        doc = SimpleDocTemplate(str(file_path), pagesize=letter)
+
+        # Only header, no data rows
+        data = [["Name", "Age", "City"]]
+
+        table = Table(data)
+        table.setStyle(
+            TableStyle([("GRID", (0, 0), (-1, -1), 1, colors.black)])
+        )
+        doc.build([table])
+
+        source = PDFDataSource(file_path)
+
+        with pytest.raises(ValueError, match="insufficient data"):
+            await source.fetch()
+
+    @pytest.mark.asyncio
+    async def test_runtime_error_on_pdf_parsing_failure(self, tmp_path, monkeypatch):
+        """Test RuntimeError when PDF parsing fails unexpectedly."""
+        # Create a valid PDF first
+        file_path = tmp_path / "valid.pdf"
+        create_simple_pdf(file_path)
+
+        source = PDFDataSource(file_path)
+
+        # Mock pdfplumber to raise unexpected exception
+        import pdfplumber
+
+        def mock_open(*args, **kwargs):
+            raise Exception("Unexpected PDF parsing error")
+
+        monkeypatch.setattr(pdfplumber, "open", mock_open)
+
+        with pytest.raises(RuntimeError, match="Failed to read PDF file"):
+            await source.fetch()
+
+    @pytest.mark.asyncio
+    async def test_skip_rows_functionality(self, large_pdf):
+        """Test skip_rows parameter skips rows correctly."""
+        source = PDFDataSource(large_pdf, skip_rows=5)
+        result = await source.fetch()
+
+        # Should skip first 5 data rows (after header)
+        # First row should be row 5 (id=5)
+        assert result["rows"][0]["id"] == 5
+
+    @pytest.mark.asyncio
+    async def test_table_bbox_cropping(self, tmp_path):
+        """Test table_bbox parameter crops page correctly."""
+        # Create PDF with table
+        file_path = tmp_path / "bbox_test.pdf"
+        create_simple_pdf(file_path)
+
+        # Create source with bounding box
+        # Note: bbox values are illustrative
+        bbox = (0, 0, 612, 792)  # Full page dimensions
+        source = PDFDataSource(file_path, table_bbox=bbox)
+
+        result = await source.fetch()
+
+        # Should still read the table (within bounds)
+        assert result["row_count"] > 0
 
     def test_logging_on_initialization(self, simple_pdf, caplog):
         """Test that initialization logs info message."""

@@ -1,0 +1,261 @@
+project:
+  name: weather_final_test
+  description: Extract current weather data for multiple cities worldwide
+  version: 1.0.0
+  author: Platform User
+  created: '2025-12-05T15:20:14.057294'
+  updated: '2025-12-05T15:20:14.057298'
+  tags:
+  - weather
+  - api
+  - openweathermap
+  - example
+data_sources:
+- type: api
+  name: openweathermap_current
+  endpoint: https://api.openweathermap.org/data/2.5/weather
+  auth:
+    type: api_key
+    key: ${OPENWEATHER_API_KEY}
+    param_name: appid
+  parameters:
+    q: ${city}
+    units: metric
+    lang: en
+  headers:
+    Accept: application/json
+    User-Agent: WeatherExtractor/1.0
+  cache:
+    enabled: true
+    ttl: 3600
+    max_size_mb: 10
+    cache_dir: data/cache/weather
+  rate_limit:
+    requests_per_second: 1.0
+    burst_size: 5
+  timeout: 10
+  max_retries: 3
+  options: {}
+examples:
+- input:
+    city: London
+    raw_response:
+      coord:
+        lon: -0.1257
+        lat: 51.5085
+      weather:
+      - id: 500
+        main: Rain
+        description: light rain
+        icon: 10d
+      base: stations
+      main:
+        temp: 15.5
+        feels_like: 14.2
+        temp_min: 13.8
+        temp_max: 17.1
+        pressure: 1013
+        humidity: 72
+      visibility: 10000
+      wind:
+        speed: 4.1
+        deg: 230
+      clouds:
+        all: 75
+      dt: 1699200000
+      sys:
+        type: 2
+        id: 2019646
+        country: GB
+        sunrise: 1699167000
+        sunset: 1699199000
+      timezone: 0
+      id: 2643743
+      name: London
+      cod: 200
+  output:
+    city: London
+    country: GB
+    temperature_c: 15.5
+    feels_like_c: 14.2
+    humidity_percent: 72
+    pressure_hpa: 1013
+    conditions: light rain
+    wind_speed_ms: 4.1
+    wind_direction_deg: 230
+    cloud_cover_percent: 75
+    visibility_m: 10000
+    timestamp: 1699200000
+  description: Rainy weather with moderate temperature
+- input:
+    city: Tokyo
+    raw_response:
+      coord:
+        lon: 139.6917
+        lat: 35.6895
+      weather:
+      - id: 800
+        main: Clear
+        description: clear sky
+        icon: 01d
+      base: stations
+      main:
+        temp: 22.3
+        feels_like: 21.8
+        temp_min: 20.5
+        temp_max: 24.1
+        pressure: 1015
+        humidity: 65
+      visibility: 10000
+      wind:
+        speed: 2.5
+        deg: 180
+      clouds:
+        all: 0
+      dt: 1699200000
+      sys:
+        type: 2
+        id: 2001249
+        country: JP
+        sunrise: 1699134000
+        sunset: 1699172000
+      timezone: 32400
+      id: 1850144
+      name: Tokyo
+      cod: 200
+  output:
+    city: Tokyo
+    country: JP
+    temperature_c: 22.3
+    feels_like_c: 21.8
+    humidity_percent: 65
+    pressure_hpa: 1015
+    conditions: clear sky
+    wind_speed_ms: 2.5
+    wind_direction_deg: 180
+    cloud_cover_percent: 0
+    visibility_m: 10000
+    timestamp: 1699200000
+  description: Clear weather with warmer temperature
+- input:
+    city: Moscow
+    raw_response:
+      coord:
+        lon: 37.6156
+        lat: 55.7522
+      weather:
+      - id: 600
+        main: Snow
+        description: light snow
+        icon: 13d
+      base: stations
+      main:
+        temp: -5.2
+        feels_like: -9.1
+        temp_min: -7.0
+        temp_max: -3.5
+        pressure: 1020
+        humidity: 85
+      visibility: 5000
+      wind:
+        speed: 3.5
+        deg: 45
+      clouds:
+        all: 90
+      dt: 1699200000
+      sys:
+        type: 2
+        id: 2000314
+        country: RU
+        sunrise: 1699157000
+        sunset: 1699188000
+      timezone: 10800
+      id: 524901
+      name: Moscow
+      cod: 200
+  output:
+    city: Moscow
+    country: RU
+    temperature_c: -5.2
+    feels_like_c: -9.1
+    humidity_percent: 85
+    pressure_hpa: 1020
+    conditions: light snow
+    wind_speed_ms: 3.5
+    wind_direction_deg: 45
+    cloud_cover_percent: 90
+    visibility_m: 5000
+    timestamp: 1699200000
+  description: Snowy weather with freezing temperature
+validation:
+  required_fields:
+  - city
+  - country
+  - temperature_c
+  - conditions
+  - timestamp
+  field_types:
+    city: str
+    country: str
+    temperature_c: float
+    feels_like_c: float
+    humidity_percent: int
+    pressure_hpa: int
+    conditions: str
+    wind_speed_ms: float
+    wind_direction_deg: int
+    cloud_cover_percent: int
+    visibility_m: int
+    timestamp: int
+  constraints:
+    temperature_c:
+      min: -50.0
+      max: 60.0
+    humidity_percent:
+      min: 0
+      max: 100
+    pressure_hpa:
+      min: 870
+      max: 1085
+    wind_speed_ms:
+      min: 0.0
+      max: 100.0
+    cloud_cover_percent:
+      min: 0
+      max: 100
+    visibility_m:
+      min: 0
+      max: 10000
+  allow_extra_fields: true
+output:
+  formats:
+  - type: csv
+    path: output/weather_data.csv
+    include_timestamp: true
+    pretty_print: false
+    options:
+      delimiter: ','
+      quoting: minimal
+      index: false
+  - type: json
+    path: output/weather_data.json
+    include_timestamp: true
+    pretty_print: true
+    options:
+      indent: 2
+      ensure_ascii: false
+  - type: excel
+    path: output/weather_data.xlsx
+    include_timestamp: false
+    pretty_print: false
+    options:
+      sheet_name: Weather Data
+      freeze_panes: A2
+runtime:
+  log_level: INFO
+  parallel: true
+  max_workers: 4
+  error_strategy: continue
+  checkpoint_enabled: true
+  checkpoint_interval: 5
+  checkpoint_dir: data/checkpoints/weather

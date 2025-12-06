@@ -49,9 +49,10 @@ Performance:
 
 import importlib.util
 import json
+import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import structlog
 from prompt_toolkit import PromptSession
@@ -137,6 +138,8 @@ class InteractiveExtractionSession:
             "save": self.cmd_save_session,
             "resume": self.cmd_resume_session,
             "sessions": self.cmd_list_sessions,
+            "confidence": self.cmd_set_confidence,
+            "threshold": self.cmd_get_confidence,
             "exit": self.cmd_exit,
         }
 
@@ -191,10 +194,20 @@ class InteractiveExtractionSession:
                 if not user_input:
                     continue
 
-                # Parse command and arguments
-                parts = user_input.split(maxsplit=1)
-                command = parts[0].lower()
-                args = parts[1] if len(parts) > 1 else ""
+                # Check if input looks like natural language
+                word_count = len(user_input.split())
+                is_natural = word_count > 3 or "?" in user_input or (user_input and user_input[0].isupper())
+
+                if is_natural:
+                    # Parse with NL understanding
+                    command, args = await self._parse_natural_language(user_input)
+                    if command != user_input.split()[0].lower():  # Only show if interpreted differently
+                        self.console.print(f"[dim]→ Interpreted as: {command} {args}[/dim]")
+                else:
+                    # Traditional command parsing
+                    parts = user_input.split(maxsplit=1)
+                    command = parts[0].lower()
+                    args = parts[1] if len(parts) > 1 else ""
 
                 logger.debug("command_received", command=command, args=args)
 
@@ -205,7 +218,7 @@ class InteractiveExtractionSession:
                         break
                 else:
                     self.console.print(f"[red]Unknown command: {command}[/red]")
-                    self.console.print("Type 'help' for available commands")
+                    self.console.print("[dim]Try: help, or ask a natural language question[/dim]")
 
             except KeyboardInterrupt:
                 # Ctrl+C - just continue
@@ -248,6 +261,8 @@ class InteractiveExtractionSession:
             ("generate", "", "Generate extraction code from patterns"),
             ("validate", "", "Validate generated code quality"),
             ("extract", "", "Run extraction on project data"),
+            ("confidence", "<0.0-1.0>", "Set confidence threshold and re-analyze"),
+            ("threshold", "", "Show current confidence threshold"),
             ("save", "[name]", "Save current session (default: 'last')"),
             ("resume", "[name]", "Resume saved session (default: 'last')"),
             ("sessions", "", "List all saved sessions"),
@@ -267,6 +282,90 @@ class InteractiveExtractionSession:
         self.console.print(tip)
 
         logger.info("help_displayed")
+
+    async def _parse_natural_language(self, user_input: str) -> Tuple[str, str]:
+        """Parse natural language input to command + args using regex + LLM fallback.
+
+        Returns:
+            tuple[command, args]: Parsed command and arguments
+        """
+        # Common NL → Command mappings (fast path, no LLM needed)
+        nl_mappings = {
+            r"what patterns.*detect": ("patterns", ""),
+            r"show.*patterns": ("patterns", ""),
+            r"list.*patterns": ("patterns", ""),
+            r"what.*examples": ("examples", ""),
+            r"show.*examples": ("examples", ""),
+            r"list.*examples": ("examples", ""),
+            r"analyze.*project": ("analyze", ""),
+            r"run.*analysis": ("analyze", ""),
+            r"analyze": ("analyze", ""),
+            r"generate.*code": ("generate", ""),
+            r"create.*code": ("generate", ""),
+            r"validate.*code": ("validate", ""),
+            r"check.*code": ("validate", ""),
+            r"run.*extraction": ("extract", ""),
+            r"extract.*data": ("extract", ""),
+            r"save.*session": ("save", ""),
+            r"load.*project": ("load", ""),
+            r"show.*status": ("show", ""),
+            r"what.*status": ("show", ""),
+            r"what.*confidence": ("threshold", ""),
+            r"show.*confidence": ("threshold", ""),
+            r"set.*confidence": ("confidence", ""),
+        }
+
+        # Try fast regex matching first
+        user_lower = user_input.lower()
+
+        for pattern, (command, default_args) in nl_mappings.items():
+            if re.search(pattern, user_lower):
+                logger.debug("nl_parsed_regex", pattern=pattern, command=command)
+                return command, default_args
+
+        # If no match and OpenRouter client available, use LLM
+        if self.openrouter_client:
+            try:
+                prompt = f"""Parse this natural language command for a data extraction tool.
+
+Available commands: {', '.join(self.commands.keys())}
+
+User input: "{user_input}"
+
+Return ONLY the command name and arguments in format: command|args
+
+Examples:
+"What patterns did you find?" → patterns|
+"Show me the first 3 examples" → examples|
+"Generate the extraction code" → generate|
+"Set confidence to 0.85" → confidence|0.85
+
+If unclear, return: help|
+
+Your response:"""
+
+                response = await self.openrouter_client.complete(
+                    prompt=prompt,
+                    max_tokens=50,
+                    temperature=0.1
+                )
+
+                # Parse response
+                if "|" in response:
+                    parts = response.split("|", 1)
+                    command = parts[0].strip()
+                    args = parts[1].strip() if len(parts) > 1 else ""
+
+                    # Validate command exists
+                    if command in self.commands:
+                        logger.debug("nl_parsed_llm", command=command, args=args)
+                        return command, args
+
+            except Exception as e:
+                logger.debug("nl_parsing_llm_failed", error=str(e))
+
+        # Fallback: treat as unknown command (first word)
+        return user_input.split()[0] if user_input else "help", ""
 
     async def cmd_load_project(self, path: str) -> None:
         """Load project configuration.
@@ -967,6 +1066,72 @@ class GeneratedExtractor:
 
         self.console.print(table)
         logger.info("sessions_listed", count=len(session_files))
+
+    async def cmd_set_confidence(self, args: str):
+        """Set confidence threshold and re-analyze."""
+        try:
+            threshold = float(args.strip())
+
+            if not (0.0 <= threshold <= 1.0):
+                self.console.print("[red]❌ Confidence must be between 0.0 and 1.0[/red]")
+                return
+
+            old_threshold = self.project_config.confidence_threshold if self.project_config else 0.7
+
+            # Update config
+            if self.project_config:
+                self.project_config.confidence_threshold = threshold
+            else:
+                self.console.print("[yellow]⚠️  No project loaded[/yellow]")
+                return
+
+            self.console.print(f"[green]✅ Confidence threshold: {old_threshold:.1%} → {threshold:.1%}[/green]")
+
+            # If already analyzed, re-run with new threshold
+            if self.analysis_results:
+                self.console.print("[dim]Re-analyzing with new threshold...[/dim]")
+
+                # Store old patterns
+                old_patterns = self.analysis_results.get("patterns", [])
+                old_count = len(old_patterns)
+
+                # Re-analyze
+                await self.cmd_analyze()
+
+                # Show diff
+                new_patterns = self.analysis_results.get("patterns", [])
+                new_count = len(new_patterns)
+
+                diff_table = Table(title="Pattern Changes")
+                diff_table.add_column("Metric", style="cyan")
+                diff_table.add_column("Before", style="yellow")
+                diff_table.add_column("After", style="green")
+
+                diff_table.add_row("Pattern Count", str(old_count), str(new_count))
+                diff_table.add_row("Threshold", f"{old_threshold:.1%}", f"{threshold:.1%}")
+
+                # Calculate change
+                change = new_count - old_count
+                change_str = f"+{change}" if change > 0 else str(change)
+                diff_table.add_row("Change", "", change_str)
+
+                self.console.print(diff_table)
+            else:
+                self.console.print("[dim]Run 'analyze' to detect patterns with new threshold[/dim]")
+
+            logger.info("confidence_threshold_updated", old=old_threshold, new=threshold)
+
+        except ValueError:
+            self.console.print(f"[red]❌ Invalid threshold: {args}[/red]")
+            self.console.print("[dim]Usage: confidence <0.0-1.0>[/dim]")
+
+    async def cmd_get_confidence(self, args: str = ""):
+        """Get current confidence threshold."""
+        if self.project_config:
+            threshold = self.project_config.confidence_threshold or 0.7
+            self.console.print(f"[cyan]Current confidence threshold: {threshold:.1%}[/cyan]")
+        else:
+            self.console.print("[yellow]⚠️  No project loaded[/yellow]")
 
     async def cmd_exit(self, args: str = "") -> str:
         """Exit session with auto-save.
