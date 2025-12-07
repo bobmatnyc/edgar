@@ -1,0 +1,48 @@
+"""
+{{ domain | title }} Extractor Package.
+
+This package contains the {{ domain }} data extractor and related models.
+
+Main Components:
+- {{ extractor_name }}: Service for extracting {{ domain }} data from SEC filings
+- {{ data_model_class }}: Pydantic model for structured {{ domain }} data
+- {{ result_class }}: Result wrapper with success/error status
+
+Example:
+    >>> from edgar_analyzer.clients.openrouter_client import OpenRouterClient
+    >>> from .{{ domain }}_extractor import {{ extractor_name }}
+    >>>
+    >>> openrouter = OpenRouterClient(api_key="sk-or-v1-...")
+    >>> extractor = {{ extractor_name }}(openrouter)
+    >>> result = await extractor.extract(
+    ...     filing_url="https://www.sec.gov/Archives/edgar/data/...",
+    ...     cik="0000320193",
+    ...     company_name="Apple Inc.",
+    ...     ticker="AAPL"
+    ... )
+    >>> if result.success:
+    ...     print(f"Extraction successful")
+    ...     print(result.data)
+"""
+
+from .{{ domain }}_extractor import {{ extractor_name }}
+from .{{ domain }}_models import (
+    {{ data_model_class }},
+    {{ result_class }},
+    {% for model in models %}
+    {{ model.name }},
+    {% endfor %}
+)
+
+__all__ = [
+    "{{ extractor_name }}",
+    "{{ data_model_class }}",
+    "{{ result_class }}",
+    {% for model in models %}
+    "{{ model.name }}",
+    {% endfor %}
+]
+
+__version__ = "1.0.0"
+__author__ = "EDGAR Analyzer Team"
+__description__ = "{{ extractor_description }}"
