@@ -26,6 +26,10 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
+# Load environment variables from .env.local
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).parent.parent / ".env.local", override=True)
+
 from edgar_analyzer.clients.openrouter_client import OpenRouterClient
 from edgar_analyzer.services.sct_extractor_service import SCTExtractorService
 
