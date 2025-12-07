@@ -16,6 +16,7 @@ from edgar_analyzer.models.company import (
     ExecutiveCompensation,
     TaxExpense,
 )
+from edgar_analyzer.services.fiscal_year_mapper import FiscalYearMapper
 from edgar_analyzer.services.interfaces import (
     ICacheService,
     ICompanyService,
@@ -36,12 +37,14 @@ class DataExtractionService(IDataExtractionService):
         company_service: ICompanyService,
         cache_service: Optional[ICacheService] = None,
         llm_service: Optional[LLMService] = None,
+        fiscal_year_mapper: Optional[FiscalYearMapper] = None,
     ):
         """Initialize data extraction service."""
         self._edgar_api = edgar_api_service
         self._company_service = company_service
         self._cache = cache_service
         self._llm_service = llm_service
+        self._fiscal_year_mapper = fiscal_year_mapper or FiscalYearMapper()
 
         # XBRL tags for tax expense data
         self._tax_expense_tags = [
@@ -99,7 +102,14 @@ class DataExtractionService(IDataExtractionService):
     async def _extract_tax_from_tag(
         self, us_gaap: Dict, tag: str, cik: str, year: int
     ) -> Optional[TaxExpense]:
-        """Extract tax expense from specific XBRL tag."""
+        """Extract tax expense from specific XBRL tag.
+
+        Uses period end date to determine fiscal year, not the XBRL 'fy' field.
+        The 'fy' field represents the filing year, not the fiscal year of the data.
+
+        Bug Fix (2025-12-06): Replaced fy field check with period end date parsing
+        to correctly handle non-calendar fiscal years and avoid 2-year data lag.
+        """
         if tag not in us_gaap:
             return None
 
@@ -113,15 +123,47 @@ class DataExtractionService(IDataExtractionService):
 
         # Look for annual data (10-K filings) for the specified year
         for fact in usd_facts:
-            if (
-                fact.get("fy") == year
-                and fact.get("form") in ["10-K", "10-K/A"]
-                and fact.get("val") is not None
-            ):
+            # Filter for 10-K annual filings only
+            if fact.get("form") not in ["10-K", "10-K/A"]:
+                continue
+
+            if fact.get("val") is None:
+                continue
+
+            # CRITICAL FIX: Use period end date to determine fiscal year
+            # The XBRL 'fy' field represents filing year, not data year
+            period_end = fact.get("end")
+            if not period_end:
+                logger.debug(
+                    "Skipping fact without period end date",
+                    cik=cik,
+                    tag=tag,
+                    fy=fact.get("fy"),
+                )
+                continue
+
+            try:
+                # Map period end date to fiscal year using FiscalYearMapper
+                fiscal_year = self._fiscal_year_mapper.get_fiscal_year(cik, period_end)
+
+                # Check if this matches the requested year
+                if fiscal_year != year:
+                    continue
+
+                logger.info(
+                    "Found matching tax data",
+                    cik=cik,
+                    requested_year=year,
+                    fiscal_year=fiscal_year,
+                    period_end=period_end,
+                    xbrl_fy=fact.get("fy"),
+                    tag=tag,
+                    amount=fact["val"],
+                )
 
                 return TaxExpense(
                     company_cik=cik,
-                    fiscal_year=year,
+                    fiscal_year=fiscal_year,  # Use calculated fiscal year
                     period="annual",
                     total_tax_expense=Decimal(str(fact["val"])),
                     filing_date=(
@@ -134,6 +176,16 @@ class DataExtractionService(IDataExtractionService):
                     source_filing=fact.get("accn"),
                     form_type=fact.get("form"),
                 )
+
+            except ValueError as e:
+                logger.warning(
+                    "Invalid period end date in XBRL fact",
+                    cik=cik,
+                    tag=tag,
+                    period_end=period_end,
+                    error=str(e),
+                )
+                continue
 
         return None
 
