@@ -474,11 +474,21 @@ Extract the data now, returning ONLY valid JSON.
             json.JSONDecodeError: If response is not valid JSON
             pydantic.ValidationError: If response doesn't match schema
         """
-        # Parse JSON
+        # Parse JSON - strip markdown code fences if present
         try:
-            data_dict = json.loads(response_json)
+            content = response_json.strip()
+            # Strip markdown code fences (Claude often wraps JSON in ```json ... ```)
+            if content.startswith("```json"):
+                content = content[7:]
+            elif content.startswith("```"):
+                content = content[3:]
+            if content.endswith("```"):
+                content = content[:-3]
+            content = content.strip()
+
+            data_dict = json.loads(content)
         except json.JSONDecodeError as e:
-            logger.error("Failed to parse JSON response", error=str(e))
+            logger.error("Failed to parse JSON response", error=str(e), raw_response=response_json[:200])
             raise ValueError(f"Invalid JSON response: {str(e)}")
 
         # Add filing URL if not present
