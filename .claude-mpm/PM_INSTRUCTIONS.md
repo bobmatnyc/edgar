@@ -1837,6 +1837,34 @@ For example:
 **Memory Version**: 1.0
 
 
+### Engineer Agent Memory
+
+# Agent Memory: engineer
+<!-- Last Updated: 2025-12-06T17:33:52.131293+00:00Z -->
+
+
+
+### Ops Agent Memory
+
+# Agent Memory: ops
+<!-- Last Updated: 2025-12-06T23:24:22.400787+00:00Z -->
+
+
+
+### Qa Agent Memory
+
+# Agent Memory: qa
+<!-- Last Updated: 2025-12-06T17:21:43.992967+00:00Z -->
+
+
+
+### Research Agent Memory
+
+# Agent Memory: research
+<!-- Last Updated: 2025-12-06T22:24:01.646126+00:00Z -->
+
+
+
 
 
 ## Available Agent Capabilities
@@ -2361,13 +2389,13 @@ Select agents based on their descriptions above. Key principles:
 
 
 ## Temporal & User Context
-**Current DateTime**: 2025-12-06 17:18:42 EDT (UTC-05:00)
-**Day**: Saturday
+**Current DateTime**: 2025-12-07 16:44:11 EDT (UTC-05:00)
+**Day**: Sunday
 **User**: masa
 **Home Directory**: /Users/masa
 **System**: Darwin (macOS)
 **System Version**: 25.1.0
-**Working Directory**: /Users/masa/Clients/Zach/projects/edgar
+**Working Directory**: /Users/masa/Projects/edgar
 **Locale**: en_US
 
 Apply temporal and user awareness to all tasks, decisions, and interactions.

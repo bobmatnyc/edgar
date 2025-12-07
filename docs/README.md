@@ -1,118 +1,135 @@
-# 📚 EDGAR CLI Documentation
+# 📚 EDGAR Platform Documentation
 
-Welcome to the comprehensive documentation for the EDGAR CLI system - the world's first self-improving conversational CLI for SEC EDGAR analysis.
+Welcome to the EDGAR Platform documentation! This is a general-purpose, example-driven data extraction and transformation platform.
 
-## 📋 Documentation Structure
+## 🎯 What is EDGAR Platform?
 
-### 🚀 **Getting Started**
-- [System Overview](SYSTEM_READY_SUMMARY.md) - Complete system overview and capabilities
-- [Quick Start Guide](guides/QUICK_START.md) - Get up and running in minutes
-- [Installation Guide](guides/INSTALLATION.md) - Detailed setup instructions
+The EDGAR Platform is a **general-purpose data extraction and transformation system** that supports:
 
-### 🏗️ **Architecture**
-- [Self-Improving Code Pattern](architecture/SELF_IMPROVING_CODE_PATTERN.md) - Core architectural pattern
-- [Project Structure](architecture/PROJECT_STRUCTURE.md) - Codebase organization
-- [OpenRouter Service Architecture](architecture/OPENROUTER_ARCHITECTURE.md) - Centralized API design
-- [Feasibility Analysis](architecture/FEASIBILITY_ANALYSIS.md) - Technical analysis and decisions
-- [Project YAML Schema](PROJECT_YAML_SCHEMA.md) - Complete configuration schema reference
-- [Project YAML Quick Reference](PROJECT_YAML_QUICK_REFERENCE.md) - Quick schema reference guide
-- [Excel Data Source](architecture/EXCEL_DATA_SOURCE.md) - Excel file data source implementation
-- [PDF Data Source](architecture/PDF_DATA_SOURCE.md) - PDF file data source implementation
+- **📊 File Transformation** - Excel, PDF, DOCX, PPTX → structured data
+- **🌐 Web Scraping** - JS-heavy sites with Jina.ai integration
+- **💬 Interactive Workflows** - Example-driven, user-prompted confidence threshold
+- **📁 Project-based Workflows** - External artifacts directory support
 
-### 📖 **User Guides**
-- [Web Search Capabilities](guides/WEB_SEARCH_CAPABILITIES.md) - OpenRouter integration and usage
-- [Excel File Transform](guides/EXCEL_FILE_TRANSFORM.md) - Transform Excel spreadsheets to structured data
-- [PDF File Transform](guides/PDF_FILE_TRANSFORM.md) - Extract data from PDF tables
-- [Security Guidelines](guides/SECURITY.md) - Security best practices and incident response
-- [API Key Security](guides/API_KEY_SECURITY.md) - Secure API key management
-- [Code Governance](guides/CODE_GOVERNANCE.md) - Development standards and patterns
-- [CLI Usage Guide](guides/CLI_USAGE.md) - Comprehensive CLI reference
-- [Configuration Guide](guides/CONFIGURATION.md) - Environment and settings
+Originally built for SEC EDGAR analysis, it has evolved into a flexible platform for any data extraction task.
 
-### 🔧 **API Reference**
-- [LLM Service API](api/LLM_SERVICE.md) - LLM service interface
-- [OpenRouter Service API](api/OPENROUTER_SERVICE.md) - Centralized OpenRouter API
-- [CLI Controller API](api/CLI_CONTROLLER.md) - Conversational interface
-- [Self-Improving Components](api/SELF_IMPROVING.md) - Supervisor and Engineer APIs
+## 📋 Documentation Categories
 
-### 💡 **Examples**
-- [Basic Usage Examples](examples/BASIC_USAGE.md) - Common use cases
-- [Advanced Examples](examples/ADVANCED_USAGE.md) - Complex scenarios
-- [Integration Examples](examples/INTEGRATION.md) - System integration patterns
-- [Testing Examples](examples/TESTING.md) - Testing strategies and examples
+### 👥 [User Documentation](user/)
 
-### 🛠️ **Development**
-- [Contributing Guide](CONTRIBUTING.md) - How to contribute to the project
-- [Development Setup](guides/DEVELOPMENT.md) - Development environment setup
-- [Testing Guide](guides/TESTING.md) - Testing strategies and execution
-- [Release Process](guides/RELEASE.md) - Release and deployment procedures
+**Start here if you want to USE the platform.**
 
-## 🎯 **Key Features Documentation**
+Everything you need to know to use the EDGAR Platform effectively:
+- Quick start guides
+- Interactive chat mode (default)
+- File transformation (Excel, PDF)
+- Web scraping
+- Project management
+- Troubleshooting
 
-### **🤖 Conversational Interface**
-The EDGAR CLI features a revolutionary conversational interface that combines natural language processing with traditional CLI functionality.
+**→ [Browse User Docs](user/README.md)**
 
-**Key Documents:**
-- [CLI Usage Guide](guides/CLI_USAGE.md) - Complete interface reference
-- [CLI Controller API](api/CLI_CONTROLLER.md) - Technical implementation
+### 🛠️ [Developer Documentation](developer/)
 
-### **🔍 Web Search Integration**
-Real-time information access using OpenRouter's web search standard for enhanced analysis and validation.
+**Start here if you want to DEVELOP or CONTRIBUTE to the platform.**
 
-**Key Documents:**
-- [Web Search Capabilities](guides/WEB_SEARCH_CAPABILITIES.md) - Complete guide
-- [OpenRouter Service API](api/OPENROUTER_SERVICE.md) - Technical reference
+Technical documentation for contributors and developers:
+- Architecture and design patterns
+- API reference
+- Migration guides
+- Development setup
+- Code governance
 
-### **🔄 Self-Improving Code**
-Automated code quality assurance and enhancement using LLM-powered supervision and engineering.
+**→ [Browse Developer Docs](developer/README.md)**
 
-**Key Documents:**
-- [Self-Improving Code Pattern](architecture/SELF_IMPROVING_CODE_PATTERN.md) - Architecture
-- [Self-Improving Components](api/SELF_IMPROVING.md) - API reference
+### ⚙️ [Operations Documentation](ops/)
 
-### **🔒 Enterprise Security**
-Comprehensive security measures including API key protection, subprocess monitoring, and incident response.
+**Start here if you want to DEPLOY or OPERATE the platform.**
 
-**Key Documents:**
-- [Security Guidelines](guides/SECURITY.md) - Complete security guide
-- [Configuration Guide](guides/CONFIGURATION.md) - Secure configuration
+Deployment, security, and operational guides:
+- Security guidelines
+- Setup and deployment
+- API key management
+- Integration guides
+- Monitoring and maintenance
 
-## 🚀 **Quick Navigation**
+**→ [Browse Ops Docs](ops/README.md)**
 
-### **For Users**
-1. [System Overview](SYSTEM_READY_SUMMARY.md) - Understand what the system does
-2. [Quick Start Guide](guides/QUICK_START.md) - Get started immediately
-3. [CLI Usage Guide](guides/CLI_USAGE.md) - Learn the interface
-4. [Web Search Guide](guides/WEB_SEARCH_CAPABILITIES.md) - Enable advanced features
+### 🔬 [Research Documentation](research/)
 
-### **For Developers**
-1. [Project Structure](architecture/PROJECT_STRUCTURE.md) - Understand the codebase
-2. [Development Setup](guides/DEVELOPMENT.md) - Set up development environment
-3. [API Reference](api/) - Technical documentation
-4. [Contributing Guide](CONTRIBUTING.md) - Contribute to the project
+**Historical research notes and analysis.**
 
-### **For Architects**
-1. [Self-Improving Pattern](architecture/SELF_IMPROVING_CODE_PATTERN.md) - Core architecture
-2. [OpenRouter Architecture](architecture/OPENROUTER_ARCHITECTURE.md) - API design
-3. [Feasibility Analysis](architecture/FEASIBILITY_ANALYSIS.md) - Technical decisions
-4. [Security Guidelines](guides/SECURITY.md) - Security architecture
+Detailed research, analysis, and design decisions made during platform development:
+- Platform transformation analysis
+- Test gap analysis
+- Performance benchmarks
+- Integration studies
+- Feature feasibility studies
 
-## 📞 **Support and Community**
+**→ [Browse Research Docs](research/)**
 
-### **Getting Help**
-- Check the [FAQ](guides/FAQ.md) for common questions
-- Review [Troubleshooting Guide](guides/TROUBLESHOOTING.md) for common issues
-- See [Examples](examples/) for usage patterns
+### 💾 [Session History](sessions/)
 
-### **Contributing**
-- Read the [Contributing Guide](CONTRIBUTING.md)
-- Follow [Code Governance](guides/CODE_GOVERNANCE.md) standards
-- Review [Development Setup](guides/DEVELOPMENT.md)
+**Saved interactive chat sessions.**
 
-### **Security**
-- Report security issues following [Security Guidelines](guides/SECURITY.md)
-- Review [Incident Response](guides/SECURITY.md#incident-response) procedures
+Saved sessions from the interactive chat mode for resuming work.
+
+## 🚀 Quick Start
+
+### For New Users
+1. **[Quick Start Guide](user/QUICK_START.md)** - Get up and running in 5 minutes
+2. **[Interactive Chat Mode](user/INTERACTIVE_CHAT_MODE.md)** - Learn the default interface
+3. **[Excel File Transform](user/EXCEL_FILE_TRANSFORM.md)** - Transform your first file
+
+### For Developers
+1. **[Development Guide](developer/DEVELOPMENT_GUIDE.md)** - Set up your dev environment
+2. **[Project Structure](developer/architecture/PROJECT_STRUCTURE.md)** - Understand the codebase
+3. **[Platform API](developer/api/PLATFORM_API.md)** - Explore the API
+
+### For Operators
+1. **[Security Guidelines](ops/SECURITY.md)** - Understand security requirements
+2. **[Setup Command](ops/SETUP_COMMAND.md)** - Deploy the platform
+3. **[API Key Security](ops/API_KEY_SECURITY.md)** - Secure your API keys
+
+## 🎯 Key Features
+
+### 💬 Interactive Chat Mode (Default)
+Auggie-style REPL for iterative extraction workflows with natural language understanding.
+
+**Learn more**: [Interactive Chat Mode](user/INTERACTIVE_CHAT_MODE.md)
+
+### 📊 File Transformation
+Transform Excel, PDF, DOCX, and PPTX files to structured JSON with automatic pattern detection.
+
+**Learn more**: [Excel Transform](user/EXCEL_FILE_TRANSFORM.md) | [PDF Transform](user/PDF_FILE_TRANSFORM.md)
+
+### 🌐 Web Scraping
+Scrape data from websites, including JavaScript-heavy sites using Jina.ai integration.
+
+**Learn more**: [Web Scraping](user/WEB_SCRAPING.md)
+
+### 🎯 Pattern Detection
+Automatically detect transformation patterns from 2-3 examples with confidence scoring.
+
+**Learn more**: [Pattern Detection](user/PATTERN_DETECTION.md)
+
+### 📁 Project Management
+Organize extraction projects with external artifacts directory support.
+
+**Learn more**: [Project Management](user/PROJECT_MANAGEMENT.md)
+
+## 📊 Platform Status
+
+- **Phase 2**: ✅ Complete (95.6% test pass rate, 565/591 tests)
+- **Code Reuse**: 83% from EDGAR (exceeds 70% target)
+- **Current Phase**: Phase 3 - Polish & Testing
+
+## 📞 Getting Help
+
+- **User Issues**: Check [Troubleshooting Guide](user/TROUBLESHOOTING.md)
+- **Developer Questions**: See [Developer Docs](developer/README.md)
+- **Security Concerns**: Review [Security Guidelines](ops/SECURITY.md)
 
 ---
 
-**The EDGAR CLI represents the future of command-line interfaces, combining conversational AI with traditional CLI power for SEC EDGAR analysis.** 🚀🤖📊
+**The EDGAR Platform: From SEC filings to general-purpose data extraction.** 🚀📊✨
