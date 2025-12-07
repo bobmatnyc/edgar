@@ -1,0 +1,908 @@
+{
+  "metadata": {
+    "generated_date": "2025-12-06",
+    "total_companies": 100,
+    "companies_with_ciks": 92,
+    "companies_without_ciks": 8,
+    "filings_found": 88,
+    "companies_without_filings": 4
+  },
+  "filings": [
+    {
+      "cik": "0000104169",
+      "company_name": "Walmart",
+      "ticker": "WMT",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-24",
+      "accession_number": "0000104169-25-000055",
+      "primary_document": "wmt-20250424.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/104169/000010416925000055/wmt-20250424.htm"
+    },
+    {
+      "cik": "0001018724",
+      "company_name": "Amazon.com",
+      "ticker": "AMZN",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-10",
+      "accession_number": "0001104659-25-033442",
+      "primary_document": "tm252295-1_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1018724/000110465925033442/tm252295-1_def14a.htm"
+    },
+    {
+      "cik": "0000320193",
+      "company_name": "Apple",
+      "ticker": "AAPL",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-01-10",
+      "accession_number": "0001308179-25-000008",
+      "primary_document": "aapl4359751-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/320193/000130817925000008/aapl4359751-def14a.htm"
+    },
+    {
+      "cik": "0000731766",
+      "company_name": "UnitedHealth Group",
+      "ticker": "UNH",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-21",
+      "accession_number": "0001104659-25-036829",
+      "primary_document": "tm252303-2_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/731766/000110465925036829/tm252303-2_def14a.htm"
+    },
+    {
+      "cik": "0001067983",
+      "company_name": "Berkshire Hathaway",
+      "ticker": "BRK.A",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-14",
+      "accession_number": "0001193125-25-054877",
+      "primary_document": "d812428ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1067983/000119312525054877/d812428ddef14a.htm"
+    },
+    {
+      "cik": "0000064803",
+      "company_name": "CVS Health",
+      "ticker": "CVS",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-04",
+      "accession_number": "0001308179-25-000386",
+      "primary_document": "cvs012729_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/64803/000130817925000386/cvs012729_def14a.htm"
+    },
+    {
+      "cik": "0000034088",
+      "company_name": "Exxon Mobil",
+      "ticker": "XOM",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-07",
+      "accession_number": "0001193125-25-073986",
+      "primary_document": "d895092ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/34088/000119312525073986/d895092ddef14a.htm"
+    },
+    {
+      "cik": "0001652044",
+      "company_name": "Alphabet",
+      "ticker": "GOOGL",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-25",
+      "accession_number": "0001308179-25-000511",
+      "primary_document": "goog012701-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817925000511/goog012701-def14a.htm"
+    },
+    {
+      "cik": "0000927653",
+      "company_name": "McKesson",
+      "ticker": "MCK",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-06-20",
+      "accession_number": "0000927653-25-000061",
+      "primary_document": "mck-20250620.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/927653/000092765325000061/mck-20250620.htm"
+    },
+    {
+      "cik": "0001140859",
+      "company_name": "Cencora",
+      "ticker": "COR",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-01-23",
+      "accession_number": "0001140859-25-000017",
+      "primary_document": "cor-20250123.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1140859/000114085925000017/cor-20250123.htm"
+    },
+    {
+      "cik": "0000909832",
+      "company_name": "Costco Wholesale",
+      "ticker": "COST",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-12-04",
+      "accession_number": "0000909832-25-000159",
+      "primary_document": "cost-20251204.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000159/cost-20251204.htm"
+    },
+    {
+      "cik": "0000789019",
+      "company_name": "Microsoft",
+      "ticker": "MSFT",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-10-21",
+      "accession_number": "0001193125-25-245150",
+      "primary_document": "d908201ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312525245150/d908201ddef14a.htm"
+    },
+    {
+      "cik": "0000093410",
+      "company_name": "Chevron",
+      "ticker": "CVX",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-09",
+      "accession_number": "0001193125-25-076803",
+      "primary_document": "d891532ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/93410/000119312525076803/d891532ddef14a.htm"
+    },
+    {
+      "cik": "0000721371",
+      "company_name": "Cardinal Health",
+      "ticker": "CAH",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-09-16",
+      "accession_number": "0000721371-25-000114",
+      "primary_document": "cah-20250916.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/721371/000072137125000114/cah-20250916.htm"
+    },
+    {
+      "cik": "0000831001",
+      "company_name": "Citigroup",
+      "ticker": "C",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-18",
+      "accession_number": "0001145443-25-000075",
+      "primary_document": "citi4405291-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/831001/000114544325000075/citi4405291-def14a.htm"
+    },
+    {
+      "cik": "0001534701",
+      "company_name": "Phillips 66",
+      "ticker": "PSX",
+      "filing_type": "DEF 14A",
+      "filing_date": "2024-04-03",
+      "accession_number": "0001534701-24-000095",
+      "primary_document": "psx-20240402.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1534701/000153470124000095/psx-20240402.htm"
+    },
+    {
+      "cik": "0001510295",
+      "company_name": "Marathon Petroleum",
+      "ticker": "MPC",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-17",
+      "accession_number": "0001510295-25-000023",
+      "primary_document": "mpc-20250317.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1510295/000151029525000023/mpc-20250317.htm"
+    },
+    {
+      "cik": "0001071739",
+      "company_name": "Centene",
+      "ticker": "CNC",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-27",
+      "accession_number": "0001071739-25-000063",
+      "primary_document": "cnc-20250327.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1071739/000107173925000063/cnc-20250327.htm"
+    },
+    {
+      "cik": "0000037996",
+      "company_name": "Ford Motor",
+      "ticker": "F",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-28",
+      "accession_number": "0001104659-25-029100",
+      "primary_document": "tm2416981-6_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/37996/000110465925029100/tm2416981-6_def14a.htm"
+    },
+    {
+      "cik": "0000354950",
+      "company_name": "Home Depot",
+      "ticker": "HD",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-07",
+      "accession_number": "0000354950-25-000123",
+      "primary_document": "hd-20250407.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/354950/000035495025000123/hd-20250407.htm"
+    },
+    {
+      "cik": "0000019617",
+      "company_name": "JPMorgan Chase",
+      "ticker": "JPM",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-07",
+      "accession_number": "0000019617-25-000321",
+      "primary_document": "jpm-20250405.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/19617/000001961725000321/jpm-20250405.htm"
+    },
+    {
+      "cik": "0000070858",
+      "company_name": "Bank of America",
+      "ticker": "BAC",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-10",
+      "accession_number": "0001193125-25-050578",
+      "primary_document": "d897280ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/70858/000119312525050578/d897280ddef14a.htm"
+    },
+    {
+      "cik": "0001156039",
+      "company_name": "Elevance Health",
+      "ticker": "ELV",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-28",
+      "accession_number": "0001156039-25-000046",
+      "primary_document": "elv-20250328.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1156039/000115603925000046/elv-20250328.htm"
+    },
+    {
+      "cik": "0001035002",
+      "company_name": "Valero Energy",
+      "ticker": "VLO",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-18",
+      "accession_number": "0001035002-25-000010",
+      "primary_document": "vlo-20250318.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1035002/000103500225000010/vlo-20250318.htm"
+    },
+    {
+      "cik": "0000056873",
+      "company_name": "Kroger",
+      "ticker": "KR",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-05-15",
+      "accession_number": "0001104659-25-049009",
+      "primary_document": "tm252618d1_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/56873/000110465925049009/tm252618d1_def14a.htm"
+    },
+    {
+      "cik": "0001467858",
+      "company_name": "General Motors",
+      "ticker": "GM",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-22",
+      "accession_number": "0001467858-25-000084",
+      "primary_document": "gm-20250422.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1467858/000146785825000084/gm-20250422.htm"
+    },
+    {
+      "cik": "0001618921",
+      "company_name": "Walgreens Boots Alliance",
+      "ticker": "WBA",
+      "filing_type": "DEF 14A",
+      "filing_date": "2024-12-13",
+      "accession_number": "0001558370-24-016214",
+      "primary_document": "tmb-20250130xdef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1618921/000155837024016214/tmb-20250130xdef14a.htm"
+    },
+    {
+      "cik": "0000732712",
+      "company_name": "Verizon Communications",
+      "ticker": "VZ",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-07",
+      "accession_number": "0001308179-25-000404",
+      "primary_document": "vz4363511-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/732712/000130817925000404/vz4363511-def14a.htm"
+    },
+    {
+      "cik": "0001326801",
+      "company_name": "Meta Platforms",
+      "ticker": "META",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-17",
+      "accession_number": "0001326801-25-000040",
+      "primary_document": "meta-20250417.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680125000040/meta-20250417.htm"
+    },
+    {
+      "cik": "0001166691",
+      "company_name": "Comcast",
+      "ticker": "CMCSA",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-25",
+      "accession_number": "0001308179-25-000504",
+      "primary_document": "cmcsa012438-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1166691/000130817925000504/cmcsa012438-def14a.htm"
+    },
+    {
+      "cik": "0000732717",
+      "company_name": "AT&T",
+      "ticker": "T",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-04",
+      "accession_number": "0001193125-25-073402",
+      "primary_document": "d900144ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/732717/000119312525073402/d900144ddef14a.htm"
+    },
+    {
+      "cik": "0001318605",
+      "company_name": "Tesla",
+      "ticker": "TSLA",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-09-17",
+      "accession_number": "0001104659-25-090866",
+      "primary_document": "tm252289-12_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465925090866/tm252289-12_def14a.htm"
+    },
+    {
+      "cik": "0000027419",
+      "company_name": "Target",
+      "ticker": "TGT",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-28",
+      "accession_number": "0001628280-25-020275",
+      "primary_document": "tgt-20250428.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/27419/000162828025020275/tgt-20250428.htm"
+    },
+    {
+      "cik": "0000072971",
+      "company_name": "Wells Fargo",
+      "ticker": "WFC",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-19",
+      "accession_number": "0000072971-25-000090",
+      "primary_document": "wfc-20250317.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/72971/000007297125000090/wfc-20250317.htm"
+    },
+    {
+      "cik": "0000886982",
+      "company_name": "Goldman Sachs Group",
+      "ticker": "GS",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-14",
+      "accession_number": "0001193125-25-054559",
+      "primary_document": "d863231ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/886982/000119312525054559/d863231ddef14a.htm"
+    },
+    {
+      "cik": "0000049071",
+      "company_name": "Humana",
+      "ticker": "HUM",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-07",
+      "accession_number": "0001193125-25-048976",
+      "primary_document": "d852577ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/49071/000119312525048976/d852577ddef14a.htm"
+    },
+    {
+      "cik": "0000895421",
+      "company_name": "Morgan Stanley",
+      "ticker": "MS",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-04",
+      "accession_number": "0001140361-25-012302",
+      "primary_document": "ny20039620x1_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/895421/000114036125012302/ny20039620x1_def14a.htm"
+    },
+    {
+      "cik": "0000200406",
+      "company_name": "Johnson & Johnson",
+      "ticker": "JNJ",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-12",
+      "accession_number": "0000200406-25-000099",
+      "primary_document": "jnj-20250311.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/200406/000020040625000099/jnj-20250311.htm"
+    },
+    {
+      "cik": "0001744489",
+      "company_name": "Walt Disney",
+      "ticker": "DIS",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-01-23",
+      "accession_number": "0001744489-25-000059",
+      "primary_document": "dis-20250123.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1744489/000174448925000059/dis-20250123.htm"
+    },
+    {
+      "cik": "0001571996",
+      "company_name": "Dell Technologies",
+      "ticker": "DELL",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-05-16",
+      "accession_number": "0001193125-25-121698",
+      "primary_document": "d835807ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1571996/000119312525121698/d835807ddef14a.htm"
+    },
+    {
+      "cik": "0001090727",
+      "company_name": "United Parcel Service",
+      "ticker": "UPS",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-17",
+      "accession_number": "0001090727-25-000038",
+      "primary_document": "ups-20250317.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1090727/000109072725000038/ups-20250317.htm"
+    },
+    {
+      "cik": "0000077476",
+      "company_name": "PepsiCo",
+      "ticker": "PEP",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-28",
+      "accession_number": "0001308179-25-000289",
+      "primary_document": "pep4354281-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/77476/000130817925000289/pep4354281-def14a.htm"
+    },
+    {
+      "cik": "0001048911",
+      "company_name": "FedEx",
+      "ticker": "FDX",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-08-18",
+      "accession_number": "0001104659-25-079800",
+      "primary_document": "tm2512613-2_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1048911/000110465925079800/tm2512613-2_def14a.htm"
+    },
+    {
+      "cik": "0001023844",
+      "company_name": "StoneX Group",
+      "ticker": "SNEX",
+      "filing_type": "DEF 14A",
+      "filing_date": "2020-03-16",
+      "accession_number": "0001437749-20-005309",
+      "primary_document": "nhld20200312_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1023844/000143774920005309/nhld20200312_def14a.htm"
+    },
+    {
+      "cik": "0000007084",
+      "company_name": "Archer-Daniels-Midland",
+      "ticker": "ADM",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-25",
+      "accession_number": "0001193125-25-062691",
+      "primary_document": "d919406ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/7084/000119312525062691/d919406ddef14a.htm"
+    },
+    {
+      "cik": "0001751788",
+      "company_name": "Dow",
+      "ticker": "DOW",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-02-28",
+      "accession_number": "0000950170-25-029994",
+      "primary_document": "dow-20250228.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1751788/000095017025029994/dow-20250228.htm"
+    },
+    {
+      "cik": "0001646972",
+      "company_name": "Albertsons Cos.",
+      "ticker": "ACI",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-06-20",
+      "accession_number": "0001140361-25-023165",
+      "primary_document": "ny20043015x771.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1646972/000114036125023165/ny20043015x771.htm"
+    },
+    {
+      "cik": "0000007084",
+      "company_name": "Archer Daniels Midland",
+      "ticker": "ADM",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-25",
+      "accession_number": "0001193125-25-062691",
+      "primary_document": "d919406ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/7084/000119312525062691/d919406ddef14a.htm"
+    },
+    {
+      "cik": "0000080424",
+      "company_name": "Procter & Gamble",
+      "ticker": "PG",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-08-29",
+      "accession_number": "0001193125-25-191749",
+      "primary_document": "d875382ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/80424/000119312525191749/d875382ddef14a.htm"
+    },
+    {
+      "cik": "0000060667",
+      "company_name": "Lowe's",
+      "ticker": "LOW",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-17",
+      "accession_number": "0001193125-25-083589",
+      "primary_document": "d873071ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/60667/000119312525083589/d873071ddef14a.htm"
+    },
+    {
+      "cik": "0000101829",
+      "company_name": "RTX",
+      "ticker": "RTX",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-10",
+      "accession_number": "0001308179-25-000067",
+      "primary_document": "rtx4383903-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/101829/000130817925000067/rtx4383903-def14a.htm"
+    },
+    {
+      "cik": "0001646972",
+      "company_name": "Albertsons",
+      "ticker": "ACI",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-06-20",
+      "accession_number": "0001140361-25-023165",
+      "primary_document": "ny20043015x771.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1646972/000114036125023165/ny20043015x771.htm"
+    },
+    {
+      "cik": "0000096021",
+      "company_name": "Sysco",
+      "ticker": "SYY",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-10-02",
+      "accession_number": "0000096021-25-000147",
+      "primary_document": "syy-20251001.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/96021/000009602125000147/syy-20251001.htm"
+    },
+    {
+      "cik": "0000080661",
+      "company_name": "Progressive",
+      "ticker": "PGR",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-24",
+      "accession_number": "0000080661-25-000018",
+      "primary_document": "pgr-20250324.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/80661/000008066125000018/pgr-20250324.htm"
+    },
+    {
+      "cik": "0000004962",
+      "company_name": "American Express",
+      "ticker": "AXP",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-14",
+      "accession_number": "0001193125-25-054588",
+      "primary_document": "d804836ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/4962/000119312525054588/d804836ddef14a.htm"
+    },
+    {
+      "cik": "0000936468",
+      "company_name": "Lockheed Martin",
+      "ticker": "LMT",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-27",
+      "accession_number": "0000936468-25-000015",
+      "primary_document": "lmt-20250327.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/936468/000093646825000015/lmt-20250327.htm"
+    },
+    {
+      "cik": "0001099219",
+      "company_name": "MetLife",
+      "ticker": "MET",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-29",
+      "accession_number": "0001099219-25-000126",
+      "primary_document": "met-20250429.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1099219/000109921925000126/met-20250429.htm"
+    },
+    {
+      "cik": "0000860730",
+      "company_name": "HCA Healthcare",
+      "ticker": "HCA",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-14",
+      "accession_number": "0001193125-25-054832",
+      "primary_document": "d880090ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/860730/000119312525054832/d880090ddef14a.htm"
+    },
+    {
+      "cik": "0001137774",
+      "company_name": "Prudential Financial",
+      "ticker": "PRU",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-27",
+      "accession_number": "0001104659-25-028759",
+      "primary_document": "tm2418128-4_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1137774/000110465925028759/tm2418128-4_def14a.htm"
+    },
+    {
+      "cik": "0000012927",
+      "company_name": "Boeing",
+      "ticker": "BA",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-07",
+      "accession_number": "0001193125-25-049921",
+      "primary_document": "d816992ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/12927/000119312525049921/d816992ddef14a.htm"
+    },
+    {
+      "cik": "0000018230",
+      "company_name": "Caterpillar",
+      "ticker": "CAT",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-30",
+      "accession_number": "0001308179-25-000529",
+      "primary_document": "cat012723-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/18230/000130817925000529/cat012723-def14a.htm"
+    },
+    {
+      "cik": "0000310158",
+      "company_name": "Merck",
+      "ticker": "MRK",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-09",
+      "accession_number": "0001193125-25-076859",
+      "primary_document": "d151723ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/310158/000119312525076859/d151723ddef14a.htm"
+    },
+    {
+      "cik": "0000899051",
+      "company_name": "Allstate",
+      "ticker": "ALL",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-17",
+      "accession_number": "0000899051-25-000030",
+      "primary_document": "all-20250417.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/899051/000089905125000030/all-20250417.htm"
+    },
+    {
+      "cik": "0000078003",
+      "company_name": "Pfizer",
+      "ticker": "PFE",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-13",
+      "accession_number": "0000078003-25-000062",
+      "primary_document": "pfe-20250313.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/78003/000007800325000062/pfe-20250313.htm"
+    },
+    {
+      "cik": "0000051143",
+      "company_name": "IBM",
+      "ticker": "IBM",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-10",
+      "accession_number": "0001104659-25-022186",
+      "primary_document": "tm2430706-6_def14aseq1.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/51143/000110465925022186/tm2430706-6_def14aseq1.htm"
+    },
+    {
+      "cik": "0000027904",
+      "company_name": "Delta Air Lines",
+      "ticker": "DAL",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-25",
+      "accession_number": "0001308179-25-000514",
+      "primary_document": "dal013395-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/27904/000130817925000514/dal013395-def14a.htm"
+    },
+    {
+      "cik": "0000100517",
+      "company_name": "United Airlines Holdings",
+      "ticker": "UAL",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-10",
+      "accession_number": "0001558370-25-004681",
+      "primary_document": "tmb-20250521xdef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/100517/000155837025004681/tmb-20250521xdef14a.htm"
+    },
+    {
+      "cik": "0001163165",
+      "company_name": "ConocoPhillips",
+      "ticker": "COP",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-31",
+      "accession_number": "0001308179-25-000308",
+      "primary_document": "cop4372213-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1163165/000130817925000308/cop4372213-def14a.htm"
+    },
+    {
+      "cik": "0000109198",
+      "company_name": "TJX",
+      "ticker": "TJX",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-05-01",
+      "accession_number": "0000109198-25-000024",
+      "primary_document": "tjx-20250501.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/109198/000010919825000024/tjx-20250501.htm"
+    },
+    {
+      "cik": "0001551152",
+      "company_name": "AbbVie",
+      "ticker": "ABBV",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-24",
+      "accession_number": "0001558370-25-003537",
+      "primary_document": "abbv-20250509xdef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1551152/000155837025003537/abbv-20250509xdef14a.htm"
+    },
+    {
+      "cik": "0001061219",
+      "company_name": "Enterprise Products Partners",
+      "ticker": "EPD",
+      "filing_type": "DEF 14A",
+      "filing_date": "2022-10-24",
+      "accession_number": "0001193125-22-267594",
+      "primary_document": "d370912ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1061219/000119312522267594/d370912ddef14a.htm"
+    },
+    {
+      "cik": "0001091667",
+      "company_name": "Charter Communications",
+      "ticker": "CHTR",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-13",
+      "accession_number": "0001140361-25-008627",
+      "primary_document": "ny20042259x1_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1091667/000114036125008627/ny20042259x1_def14a.htm"
+    },
+    {
+      "cik": "0001625941",
+      "company_name": "Performance Food Group",
+      "ticker": "PFGC",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-07",
+      "accession_number": "0001104659-25-032599",
+      "primary_document": "tm252474-2_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1625941/000110465925032599/tm252474-2_def14a.htm"
+    },
+    {
+      "cik": "0000006201",
+      "company_name": "American Airlines Group",
+      "ticker": "AAL",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-28",
+      "accession_number": "0001193125-25-100798",
+      "primary_document": "d850652ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312525100798/d850652ddef14a.htm"
+    },
+    {
+      "cik": "0000927628",
+      "company_name": "Capital One Financial",
+      "ticker": "COF",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-27",
+      "accession_number": "0001193125-25-065530",
+      "primary_document": "d845790ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/927628/000119312525065530/d845790ddef14a.htm"
+    },
+    {
+      "cik": "0000858877",
+      "company_name": "Cisco Systems",
+      "ticker": "CSCO",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-10-28",
+      "accession_number": "0000858877-25-000150",
+      "primary_document": "csco-20251027.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/858877/000085887725000150/csco-20251027.htm"
+    },
+    {
+      "cik": "0000047217",
+      "company_name": "HP",
+      "ticker": "HPQ",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-02-24",
+      "accession_number": "0000047217-25-000014",
+      "primary_document": "hpq-20250223.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/47217/000004721725000014/hpq-20250223.htm"
+    },
+    {
+      "cik": "0000100493",
+      "company_name": "Tyson Foods",
+      "ticker": "TSN",
+      "filing_type": "DEF 14A",
+      "filing_date": "2024-12-18",
+      "accession_number": "0000100493-24-000195",
+      "primary_document": "tsn-20241218.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/100493/000010049324000195/tsn-20241218.htm"
+    },
+    {
+      "cik": "0000050863",
+      "company_name": "Intel",
+      "ticker": "INTC",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-27",
+      "accession_number": "0000050863-25-000054",
+      "primary_document": "intc-20250327.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/50863/000005086325000054/intc-20250327.htm"
+    },
+    {
+      "cik": "0001341439",
+      "company_name": "Oracle",
+      "ticker": "ORCL",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-09-26",
+      "accession_number": "0001193125-25-220801",
+      "primary_document": "d72066ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1341439/000119312525220801/d72066ddef14a.htm"
+    },
+    {
+      "cik": "0001730168",
+      "company_name": "Broadcom",
+      "ticker": "AVGO",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-03",
+      "accession_number": "0001193125-25-044112",
+      "primary_document": "d861439ddef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1730168/000119312525044112/d861439ddef14a.htm"
+    },
+    {
+      "cik": "0000315189",
+      "company_name": "Deere",
+      "ticker": "DE",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-01-10",
+      "accession_number": "0001558370-25-000112",
+      "primary_document": "de-20250226xdef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/315189/000155837025000112/de-20250226xdef14a.htm"
+    },
+    {
+      "cik": "0000320187",
+      "company_name": "Nike",
+      "ticker": "NKE",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-07-17",
+      "accession_number": "0000320187-25-000048",
+      "primary_document": "nke-20250717.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/320187/000032018725000048/nke-20250717.htm"
+    },
+    {
+      "cik": "0001534504",
+      "company_name": "Plains GP Holdings",
+      "ticker": "PAGP",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-18",
+      "accession_number": "0001140361-25-009108",
+      "primary_document": "ny20041944x1_def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/1534504/000114036125009108/ny20041944x1_def14a.htm"
+    },
+    {
+      "cik": "0000014272",
+      "company_name": "Bristol-Myers Squibb",
+      "ticker": "BMY",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-26",
+      "accession_number": "0000014272-25-000075",
+      "primary_document": "bmy-20250326.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/14272/000001427225000075/bmy-20250326.htm"
+    },
+    {
+      "cik": "0000040533",
+      "company_name": "General Dynamics",
+      "ticker": "GD",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-28",
+      "accession_number": "0001308179-25-000291",
+      "primary_document": "gd013194-def14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/40533/000130817925000291/gd013194-def14a.htm"
+    },
+    {
+      "cik": "0000021344",
+      "company_name": "Coca-Cola",
+      "ticker": "KO",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-03-17",
+      "accession_number": "0001558370-25-003056",
+      "primary_document": "ko-20250430xdef14a.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/21344/000155837025003056/ko-20250430xdef14a.htm"
+    },
+    {
+      "cik": "0000086312",
+      "company_name": "Travelers",
+      "ticker": "TRV",
+      "filing_type": "DEF 14A",
+      "filing_date": "2025-04-04",
+      "accession_number": "0000086312-25-000019",
+      "primary_document": "trv-20250403.htm",
+      "filing_url": "https://www.sec.gov/Archives/edgar/data/86312/000008631225000019/trv-20250403.htm"
+    }
+  ],
+  "companies_without_cik": [
+    "State Farm Insurance Cos.",
+    "New York Life Insurance",
+    "Publix Super Markets",
+    "Nationwide",
+    "Liberty Mutual Insurance Group",
+    "USAA",
+    "Ingram Micro Holding",
+    "TIAA"
+  ],
+  "companies_without_filing": [
+    "Fannie Mae",
+    "Freddie Mac",
+    "Energy Transfer",
+    "TD Synnex"
+  ]
+}
