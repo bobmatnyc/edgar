@@ -158,26 +158,71 @@ class SCTExtractorService:
                 ticker=ticker,
             )
 
-            # Step 4: Call Claude Sonnet for extraction
-            logger.debug("Calling OpenRouter for extraction")
-            response_json = await self.openrouter.chat_completion_json(
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an expert at extracting structured data from SEC filings. "
-                        "Extract executive compensation data following the provided schema exactly.",
-                    },
-                    {"role": "user", "content": prompt},
-                ],
-                temperature=0.1,  # Low temperature for consistent extraction
-                max_tokens=8000,
-            )
+            # Step 4: Call Claude Sonnet for extraction with retry logic
+            max_extraction_attempts = 2
+            sct_data = None
 
-            # Step 5: Parse and validate response
-            sct_data = self._parse_response(
-                response_json=response_json,
-                filing_url=filing_url,
-            )
+            for attempt in range(max_extraction_attempts):
+                logger.debug(
+                    "Calling OpenRouter for extraction",
+                    attempt=attempt + 1,
+                    max_attempts=max_extraction_attempts,
+                )
+                response_json = await self.openrouter.chat_completion_json(
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are an expert at extracting structured data from SEC filings. "
+                            "Extract executive compensation data following the provided schema exactly.",
+                        },
+                        {"role": "user", "content": prompt},
+                    ],
+                    temperature=0.1,  # Low temperature for consistent extraction
+                    max_tokens=8000,
+                )
+
+                # Step 5: Parse and validate response
+                try:
+                    sct_data = self._parse_response(
+                        response_json=response_json,
+                        filing_url=filing_url,
+                    )
+
+                    # Validate minimum data requirements
+                    if len(sct_data.executives) == 0:
+                        logger.warning(
+                            "Empty executives array detected, retrying with enhanced prompt",
+                            attempt=attempt + 1,
+                            max_attempts=max_extraction_attempts,
+                        )
+
+                        if attempt < max_extraction_attempts - 1:
+                            # Add explicit instruction for retry
+                            prompt += (
+                                "\n\n**CRITICAL**: You MUST extract at least 1 executive from the table. "
+                                "The executives array cannot be empty. Review the HTML table carefully "
+                                "and extract all Named Executive Officers (typically 5)."
+                            )
+                            continue
+                        else:
+                            raise ValueError(
+                                "Failed to extract executives after all retry attempts. "
+                                "Executives array is empty."
+                            )
+
+                    # Success!
+                    break
+
+                except Exception as e:
+                    logger.error(
+                        "Parsing failed",
+                        error=str(e),
+                        attempt=attempt + 1,
+                        max_attempts=max_extraction_attempts,
+                    )
+                    if attempt < max_extraction_attempts - 1:
+                        continue
+                    raise
 
             extraction_time = time.time() - start_time
             logger.info(
@@ -348,7 +393,7 @@ class SCTExtractorService:
         ticker: Optional[str] = None,
     ) -> str:
         """
-        Build LLM prompt for SCT extraction.
+        Build LLM prompt for SCT extraction with clear structure.
 
         Args:
             sct_html: Extracted SCT section HTML
@@ -359,98 +404,181 @@ class SCTExtractorService:
         Returns:
             Complete prompt text
         """
-        # Load JSON schema
+        # Define JSON schema with type annotations (not example data)
         schema = {
-            "company_name": company_name,
-            "ticker": ticker or "UNKNOWN",
-            "cik": cik,
-            "filing_date": "YYYY-MM-DD",
-            "fiscal_years": [2024, 2023, 2022],
+            "company_name": "string",
+            "ticker": "string (1-5 uppercase letters, e.g., 'AAPL')",
+            "cik": "string (10 digits, e.g., '0000320193')",
+            "filing_date": "string (YYYY-MM-DD format)",
+            "filing_url": "string (optional)",
+            "fiscal_years": ["array of 1-3 integers, e.g., [2024, 2023, 2022]"],
             "executives": [
                 {
-                    "name": "Executive Full Name",
-                    "position": "Title/Position",
-                    "is_ceo": True,
-                    "is_cfo": False,
+                    "name": "string (full name)",
+                    "position": "string (title)",
+                    "is_ceo": "boolean (true if CEO/PEO)",
+                    "is_cfo": "boolean (true if CFO/PFO)",
                     "compensation_by_year": [
                         {
-                            "year": 2024,
-                            "salary": 3000000,
-                            "bonus": 0,
-                            "stock_awards": 58088946,
-                            "option_awards": 0,
-                            "non_equity_incentive": 12000000,
-                            "change_in_pension": 0,
-                            "all_other_compensation": 1520856,
-                            "total": 74609802,
-                            "footnotes": ["3", "4"],
+                            "year": "integer (fiscal year)",
+                            "salary": "integer (no commas/decimals)",
+                            "bonus": "integer (default 0 if missing)",
+                            "stock_awards": "integer",
+                            "option_awards": "integer",
+                            "non_equity_incentive": "integer",
+                            "change_in_pension": "integer",
+                            "all_other_compensation": "integer",
+                            "total": "integer (sum of all above)",
+                            "footnotes": ["array of strings, e.g., ['3', '4']"]
                         }
-                    ],
+                    ]
                 }
             ],
             "footnotes": {
-                "3": "Footnote description",
-                "4": "Another footnote",
+                "1": "string (footnote text)",
+                "2": "string (another footnote)"
             },
             "extraction_metadata": {
-                "extraction_date": datetime.utcnow().isoformat() + "Z",
+                "extraction_date": f"{datetime.utcnow().isoformat()}Z",
                 "model": self.openrouter.model,
-                "confidence": 0.95,
-            },
+                "confidence": 0.95
+            }
         }
 
-        prompt = f"""# Task: Extract Summary Compensation Table from DEF 14A Proxy Filing
+        schema_json = json.dumps(schema, indent=2)
+
+        # Concrete example
+        example_input = """<tr>
+  <td rowspan="3"><b>Tim Cook</b><br/>Chief Executive Officer</td>
+  <td>2024</td><td>3,000,000</td><td>&#160;</td><td>58,088,946</td>
+  <td>&#160;</td><td>12,000,000</td><td>&#160;</td><td>1,520,856</td>
+  <td><sup>(3)(4)</sup></td><td>74,609,802</td>
+</tr>
+<tr>
+  <td>2023</td><td>3,000,000</td><td>&#160;</td><td>46,970,283</td>
+  <td>&#160;</td><td>10,713,450</td><td>&#160;</td><td>2,526,112</td>
+  <td>&#160;</td><td>63,209,845</td>
+</tr>"""
+
+        example_output = {
+            "name": "Tim Cook",
+            "position": "Chief Executive Officer",
+            "is_ceo": True,
+            "is_cfo": False,
+            "compensation_by_year": [
+                {
+                    "year": 2024,
+                    "salary": 3000000,
+                    "bonus": 0,
+                    "stock_awards": 58088946,
+                    "option_awards": 0,
+                    "non_equity_incentive": 12000000,
+                    "change_in_pension": 0,
+                    "all_other_compensation": 1520856,
+                    "total": 74609802,
+                    "footnotes": ["3", "4"]
+                },
+                {
+                    "year": 2023,
+                    "salary": 3000000,
+                    "bonus": 0,
+                    "stock_awards": 46970283,
+                    "option_awards": 0,
+                    "non_equity_incentive": 10713450,
+                    "change_in_pension": 0,
+                    "all_other_compensation": 2526112,
+                    "total": 63209845,
+                    "footnotes": []
+                }
+            ]
+        }
+
+        example_json = json.dumps(example_output, indent=2)
+
+        prompt = f"""# Task: Extract Summary Compensation Table Data
 
 ## Company Information
-- Name: {company_name}
-- CIK: {cik}
-- Ticker: {ticker or 'UNKNOWN'}
+- **Name**: {company_name}
+- **CIK**: {cik}
+- **Ticker**: {ticker or 'UNKNOWN'}
 
-## Instructions
-Extract executive compensation data from the Summary Compensation Table (SCT) below.
+## Your Task
+Extract executive compensation data from the Summary Compensation Table (SCT) in the HTML below.
 
-### Data Requirements
-1. **Executive Names**: Extract full name exactly as shown
-2. **Position**: Extract complete title (may include line breaks)
-3. **Fiscal Years**: Identify years covered (typically 3: 2024, 2023, 2022)
-4. **Compensation Components**: Extract all monetary values as integers (remove commas, no decimals)
-   - Salary: Base salary
-   - Bonus: Annual bonus (may be blank/0)
-   - Stock Awards: Fair value of stock grants
-   - Option Awards: Fair value of option grants (may be blank/0)
-   - Non-Equity Incentive: Performance-based cash compensation
-   - Change in Pension: Pension value changes (may be blank/0)
-   - All Other Compensation: Perks, benefits, 401k matching
-   - Total: Sum of all components
-5. **CEO/CFO Flags**: Identify Principal Executive Officer (CEO) and Principal Financial Officer (CFO)
-6. **Footnotes**: Extract footnote reference IDs (e.g., superscripts like <sup>(3)</sup>)
-7. **Multi-Year Data**: Handle rowspan cells - associate executive name with all fiscal years
+The SCT typically contains:
+- **5 Named Executive Officers (NEOs)**
+- **3 fiscal years** of data per executive
+- Standard compensation columns: Salary, Stock Awards, Non-Equity Incentive, All Other Compensation, Total
 
-### HTML Parsing Rules
-- Skip spacer cells (cells with only &nbsp; or &#160;)
-- Extract numeric values only (remove "$", ",", and whitespace)
-- Handle nested tables (find the data table with compensation values)
-- Decode HTML entities (&#160; → space, &#8212; → dash)
-- Join multi-line positions with space or newline
+## Critical Parsing Rules
 
-### Output Format
-Return valid JSON matching this structure:
+### 1. Rowspan Handling (IMPORTANT!)
+When you see `rowspan="3"` on a name/position cell:
+- That executive name applies to the **next 3 rows**
+- Each row is a different fiscal year (e.g., 2024, 2023, 2022)
+- Extract all 3 years as separate entries in `compensation_by_year` array
+
+### 2. Empty Cells
+- Cells containing only `&#160;`, `&nbsp;`, or whitespace = **$0**
+- Missing columns (e.g., no "Bonus" column) = **default to 0**
+
+### 3. Currency Conversion
+- Convert `"3,000,000"` to integer `3000000`
+- Remove commas, dollar signs, decimals
+- All monetary values must be integers
+
+### 4. Footnote Extraction
+- Extract superscript numbers: `<sup>(3)(4)</sup>` → `["3", "4"]`
+- Store as array of strings in `footnotes` field
+
+### 5. CEO/CFO Identification
+- Set `is_ceo: true` if position contains "Chief Executive Officer" or "CEO"
+- Set `is_cfo: true` if position contains "Chief Financial Officer" or "CFO"
+
+### 6. HTML Entity Decoding
+- `&#160;` → space
+- `&#8212;` → em dash (treat as empty/zero)
+
+## Example Extraction
+
+**Input HTML:**
+```html
+{example_input}
+```
+
+**Output JSON (one executive):**
+```json
+{example_json}
+```
+
+**Explanation:**
+- `rowspan="3"` means Tim Cook appears in next 3 rows (2024, 2023, 2022)
+- Empty cells (`&#160;`) = $0 for Bonus and Option Awards
+- Footnote `<sup>(3)(4)</sup>` → `["3", "4"]`
+- Position "Chief Executive Officer" → `is_ceo: true`
+
+## JSON Schema
+
+Return JSON matching this structure:
 
 ```json
-{schema}
+{schema_json}
 ```
 
 ## HTML Content to Extract
 
 {sct_html}
 
-## Critical Validation
-- Verify: Total = Salary + Bonus + Stock Awards + Option Awards + Non-Equity Incentive + Change in Pension + All Other Compensation
-- Each executive should have 1-3 years of data (3 typical)
-- Typically 5 Named Executive Officers (may vary)
-- All monetary values must be integers (no decimals, no commas)
+## Output Requirements
 
-Extract the data now, returning ONLY valid JSON.
+**CRITICAL**:
+1. Return **ONLY** valid JSON (no markdown code fences, no explanations)
+2. Extract **ALL executives** from the table (typically 5)
+3. Each executive must have **1-3 years** of compensation data
+4. Verify `total` equals sum of all compensation components
+5. Use proper JSON syntax: double quotes, lowercase booleans (`true`/`false`)
+
+Extract the data now.
 """
 
         return prompt
