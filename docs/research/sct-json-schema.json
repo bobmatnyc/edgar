@@ -1,0 +1,218 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Summary Compensation Table",
+  "description": "SEC-mandated Summary Compensation Table (SCT) from DEF 14A proxy filings",
+  "type": "object",
+  "required": ["company", "filing_date", "fiscal_years", "executives"],
+  "properties": {
+    "company": {
+      "type": "object",
+      "description": "Company information",
+      "required": ["name", "ticker", "cik"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Company legal name",
+          "examples": ["Apple Inc.", "Amazon.com, Inc."]
+        },
+        "ticker": {
+          "type": "string",
+          "description": "Stock ticker symbol",
+          "pattern": "^[A-Z]{1,5}$",
+          "examples": ["AAPL", "AMZN"]
+        },
+        "cik": {
+          "type": "string",
+          "description": "SEC Central Index Key (CIK) number",
+          "pattern": "^[0-9]{10}$",
+          "examples": ["0000320193", "0001018724"]
+        }
+      }
+    },
+    "filing_date": {
+      "type": "string",
+      "format": "date",
+      "description": "DEF 14A proxy filing date (YYYY-MM-DD)",
+      "examples": ["2025-01-10"]
+    },
+    "filing_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "SEC EDGAR URL for the DEF 14A filing",
+      "examples": ["https://www.sec.gov/Archives/edgar/data/320193/000130817925000008/aapl4359751-def14a.htm"]
+    },
+    "fiscal_years": {
+      "type": "array",
+      "description": "Fiscal years covered in the SCT (typically 3 most recent years)",
+      "items": {
+        "type": "integer",
+        "minimum": 2000,
+        "maximum": 2100
+      },
+      "minItems": 1,
+      "maxItems": 3,
+      "examples": [[2024, 2023, 2022]]
+    },
+    "executives": {
+      "type": "array",
+      "description": "Named Executive Officers (NEOs) - typically 5 executives",
+      "items": {
+        "type": "object",
+        "required": ["name", "position", "compensation_by_year"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Executive full name",
+            "examples": ["Tim Cook", "Andrew R. Jassy"]
+          },
+          "position": {
+            "type": "string",
+            "description": "Executive title/position",
+            "examples": ["Chief Executive Officer", "Senior Vice President, Chief Financial Officer"]
+          },
+          "is_ceo": {
+            "type": "boolean",
+            "description": "True if CEO or Principal Executive Officer (PEO)",
+            "default": false
+          },
+          "is_cfo": {
+            "type": "boolean",
+            "description": "True if CFO or Principal Financial Officer (PFO)",
+            "default": false
+          },
+          "compensation_by_year": {
+            "type": "array",
+            "description": "Compensation data for each fiscal year (typically 3 years)",
+            "items": {
+              "type": "object",
+              "required": ["year", "total"],
+              "properties": {
+                "year": {
+                  "type": "integer",
+                  "description": "Fiscal year",
+                  "minimum": 2000,
+                  "maximum": 2100
+                },
+                "salary": {
+                  "type": "number",
+                  "description": "Base salary in USD (integer, no decimals)",
+                  "minimum": 0,
+                  "examples": [3000000]
+                },
+                "bonus": {
+                  "type": "number",
+                  "description": "Annual bonus in USD (often 0 or missing)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "stock_awards": {
+                  "type": "number",
+                  "description": "Fair value of stock awards granted in USD",
+                  "minimum": 0,
+                  "default": 0,
+                  "examples": [58088946]
+                },
+                "option_awards": {
+                  "type": "number",
+                  "description": "Fair value of option awards granted in USD",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "non_equity_incentive": {
+                  "type": "number",
+                  "description": "Non-equity incentive plan compensation (performance-based cash) in USD",
+                  "minimum": 0,
+                  "default": 0,
+                  "examples": [12000000]
+                },
+                "change_in_pension": {
+                  "type": "number",
+                  "description": "Change in pension value and nonqualified deferred compensation earnings in USD",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "all_other_compensation": {
+                  "type": "number",
+                  "description": "All other compensation (perks, benefits, etc.) in USD",
+                  "minimum": 0,
+                  "default": 0,
+                  "examples": [1520856]
+                },
+                "total": {
+                  "type": "number",
+                  "description": "Total compensation (sum of all components) in USD",
+                  "minimum": 0,
+                  "examples": [74609802]
+                },
+                "footnotes": {
+                  "type": "array",
+                  "description": "Footnote reference IDs from the SCT table",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[0-9a-zA-Z]+$"
+                  },
+                  "examples": [["3", "4"], ["a", "b"]]
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 3
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 10
+    },
+    "footnotes": {
+      "type": "object",
+      "description": "Footnote definitions extracted from the SCT section",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "examples": [
+        {
+          "3": "Security-related costs including security personnel and equipment",
+          "4": "Matching contributions to the 401(k) Savings Plan"
+        }
+      ]
+    },
+    "extraction_metadata": {
+      "type": "object",
+      "description": "Metadata about the extraction process",
+      "properties": {
+        "extraction_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when data was extracted",
+          "examples": ["2025-12-06T10:30:00Z"]
+        },
+        "model": {
+          "type": "string",
+          "description": "LLM model used for extraction",
+          "examples": ["anthropic/claude-sonnet-4.5", "openai/gpt-4-turbo"]
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Extraction confidence score (0.0 to 1.0)",
+          "minimum": 0,
+          "maximum": 1,
+          "examples": [0.95]
+        },
+        "validation_status": {
+          "type": "string",
+          "description": "Validation result",
+          "enum": ["passed", "failed", "warning"],
+          "examples": ["passed"]
+        },
+        "validation_errors": {
+          "type": "array",
+          "description": "List of validation errors or warnings",
+          "items": {
+            "type": "string"
+          },
+          "examples": [["Total mismatch: expected 74609802, got 74609801"]]
+        }
+      }
+    }
+  }
+}
