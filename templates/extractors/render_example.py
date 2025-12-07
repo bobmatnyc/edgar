@@ -12,6 +12,7 @@ Output:
 """
 
 import json
+import subprocess
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
@@ -68,6 +69,58 @@ def render_extractor_from_config(config_path: Path, output_dir: Path):
 
     print(f"\n✅ Generated {len(templates)} files in {output_dir}")
 
+    # Format generated code
+    format_generated_code(output_dir)
+
+
+def format_generated_code(output_dir: Path) -> None:
+    """
+    Format generated code with black and isort.
+
+    Applies automatic code formatting to Python files in the output directory.
+    Handles missing tools gracefully with warnings.
+
+    Args:
+        output_dir: Directory containing generated Python files
+
+    Note:
+        - Requires black and isort to be installed
+        - Continues silently if tools are unavailable
+        - Logs success/failure status for user awareness
+    """
+    print()
+    print("Formatting generated code...")
+
+    # Format with black
+    try:
+        result = subprocess.run(
+            ["black", str(output_dir)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        print(f"✅ Formatted with black: {output_dir}")
+    except FileNotFoundError:
+        print(f"⚠️  black not installed (optional step)")
+        print("   Install with: pip install black")
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️  black formatting failed: {e.stderr}")
+
+    # Sort imports with isort
+    try:
+        result = subprocess.run(
+            ["isort", str(output_dir)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        print(f"✅ Sorted imports with isort: {output_dir}")
+    except FileNotFoundError:
+        print(f"⚠️  isort not installed (optional step)")
+        print("   Install with: pip install isort")
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️  isort import sorting failed: {e.stderr}")
+
 
 def main():
     """Main entry point for example rendering."""
@@ -105,8 +158,6 @@ def main():
     print(f"   cd {output_dir}")
     print()
     print("2. Check code quality:")
-    print(f"   black {output_dir}")
-    print(f"   isort {output_dir}")
     print(f"   mypy {output_dir}")
     print()
     print("3. Run tests:")
