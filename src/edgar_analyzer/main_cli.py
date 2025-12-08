@@ -50,6 +50,7 @@ from cli_chatbot.fallback.traditional_cli import create_fallback_cli
 
 # Now safe to import modules that use logging
 from edgar_analyzer.services.llm_service import LLMService
+from edgar_analyzer.cli.commands.extractors import extractors_cli
 
 
 @click.group(invoke_without_command=True)
@@ -384,6 +385,10 @@ def extract(ctx, cik, year, output_format):
 # ============================================================================
 # PLATFORM WORKFLOW COMMANDS
 # ============================================================================
+
+
+# Register extractors command group
+cli.add_command(extractors_cli)
 
 
 @cli.group()
