@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "extractors": {
+    "sct_extractor": {
+      "name": "sct_extractor",
+      "class_path": "edgar_analyzer.extractors.sct.extractor.SCTExtractor",
+      "version": "1.0.0",
+      "description": "Extract Summary Compensation Tables from DEF 14A filings",
+      "domain": "sct",
+      "confidence": 0.95,
+      "examples_count": 3,
+      "tags": [
+        "sec",
+        "edgar",
+        "def14a",
+        "compensation"
+      ],
+      "created_at": "2025-12-07T00:00:00",
+      "updated_at": "2025-12-07T00:00:00"
+    }
+  }
+}

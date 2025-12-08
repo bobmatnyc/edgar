@@ -23,6 +23,8 @@ from extract_transform_platform.services.codegen.code_generator import (
     CodeGeneratorService,
 )
 from extract_transform_platform.services.project_manager import ProjectManager
+from edgar_analyzer.extractors.registry import ExtractorRegistry
+from pathlib import Path
 
 
 class Container(containers.DeclarativeContainer):
@@ -95,6 +97,12 @@ class Container(containers.DeclarativeContainer):
         # api_key loaded from environment (OPENROUTER_API_KEY)
         # output_dir defaults to ./generated
         # model defaults to "anthropic/claude-sonnet-4.5"
+    )
+
+    # Extractor registry (Meta-Extractor Phase 2)
+    extractor_registry = providers.Singleton(
+        ExtractorRegistry,
+        registry_path=Path(__file__).parent.parent / "extractors" / "registry.json",
     )
 
     # CLI commands wiring
