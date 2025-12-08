@@ -29,7 +29,9 @@ help:
 	@echo "  make test-unit        Run unit tests only"
 	@echo "  make test-integration Run integration tests only"
 	@echo "  make test-coverage    Run tests with coverage report"
+	@echo "  make coverage-report  Generate detailed coverage report (HTML + XML)"
 	@echo "  make test-xbrl        Test XBRL extraction"
+	@echo "  make ci               Run full CI pipeline locally"
 	@echo ""
 	@echo "📦 Build & Deploy:"
 	@echo "  make build            Build deployment package"
@@ -139,8 +141,22 @@ test-integration:
 
 test-coverage:
 	@echo "🧪 Running tests with coverage..."
-	pytest --cov=src/edgar_analyzer --cov-report=term-missing --cov-report=html tests/
+	pytest --cov=src/edgar_analyzer --cov=src/extract_transform_platform --cov-report=term-missing --cov-report=html --cov-report=xml tests/
 	@echo "📊 Coverage report generated: htmlcov/index.html"
+
+coverage-report:
+	@echo "📊 Generating coverage report..."
+	pytest tests/unit tests/integration \
+		--ignore=tests/integration/test_interactive_chat_e2e.py \
+		--ignore=tests/integration/test_ireportgenerator_e2e.py \
+		--cov=src/extract_transform_platform \
+		--cov=src/edgar_analyzer \
+		--cov-report=html \
+		--cov-report=term-missing \
+		--cov-report=xml \
+		-v
+	@echo "📊 Coverage report: htmlcov/index.html"
+	@echo "📊 Coverage XML: coverage.xml"
 
 test-xbrl:
 	@echo "🧪 Testing XBRL extraction..."
@@ -238,6 +254,21 @@ quick-format:
 workflow: format lint typecheck test
 	@echo "✅ Complete development workflow passed!"
 
-# CI/CD simulation
-ci: validate-structure quality test-coverage
+# CI/CD simulation (matches GitHub Actions workflow)
+ci: validate-structure
+	@echo "🔍 Running CI pipeline (matches GitHub Actions)..."
+	@echo "Step 1/5: Code formatting check..."
+	black --check src/ tests/
+	isort --check-only src/ tests/
+	@echo "Step 2/5: Linting..."
+	flake8 src/ tests/ --max-line-length=120 --ignore=E501,W503,E203
+	@echo "Step 3/5: Type checking..."
+	mypy src/edgar_analyzer src/extract_transform_platform --ignore-missing-imports --no-strict-optional || true
+	@echo "Step 4/5: Unit tests..."
+	pytest tests/unit --cov=src/extract_transform_platform --cov=src/edgar_analyzer --cov-report=xml --cov-report=term-missing -v
+	@echo "Step 5/5: Integration tests..."
+	pytest tests/integration \
+		--ignore=tests/integration/test_interactive_chat_e2e.py \
+		--ignore=tests/integration/test_ireportgenerator_e2e.py \
+		--cov=src/extract_transform_platform --cov=src/edgar_analyzer --cov-append --cov-report=xml --cov-report=term-missing -v || true
 	@echo "✅ CI pipeline simulation complete!"

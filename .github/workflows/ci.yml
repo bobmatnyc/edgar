@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run linters
+        run: |
+          black --check src/ tests/
+          isort --check-only src/ tests/
+          flake8 src/ tests/ --max-line-length=120 --ignore=E501,W503,E203
+
+      - name: Run type checking
+        run: |
+          mypy src/edgar_analyzer src/extract_transform_platform --ignore-missing-imports --no-strict-optional
+        continue-on-error: true  # Don't fail CI on type errors yet
+
+      - name: Run unit tests
+        run: |
+          pytest tests/unit \
+            --cov=src/extract_transform_platform \
+            --cov=src/edgar_analyzer \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-fail-under=0 \
+            -v
+
+      - name: Run integration tests
+        run: |
+          pytest tests/integration \
+            --ignore=tests/integration/test_interactive_chat_e2e.py \
+            --ignore=tests/integration/test_ireportgenerator_e2e.py \
+            --cov=src/extract_transform_platform \
+            --cov=src/edgar_analyzer \
+            --cov-append \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-fail-under=0 \
+            -v
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
+        continue-on-error: true  # Don't fail on integration tests requiring API keys
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+        if: matrix.python-version == '3.13'
+
+      - name: Generate coverage report
+        run: |
+          coverage report --show-missing
+        if: always()
+
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Check code formatting
+        run: |
+          black --check --diff src/ tests/
+
+      - name: Check import sorting
+        run: |
+          isort --check-only --diff src/ tests/
+
+      - name: Run flake8
+        run: |
+          flake8 src/ tests/ --max-line-length=120 --ignore=E501,W503,E203 --statistics

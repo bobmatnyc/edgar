@@ -61,7 +61,7 @@ def project():
 @click.argument("name")
 @click.option(
     "--template",
-    type=click.Choice(["weather", "minimal"], case_sensitive=False),
+    type=click.Choice(["weather", "minimal", "edgar"], case_sensitive=False),
     default="minimal",
     help="Project template to use",
 )
@@ -87,13 +87,14 @@ def create(
 
     Args:
         name: Project name (will be used as directory name)
-        template: Template to use (weather, minimal)
+        template: Template to use (weather, minimal, edgar)
         description: Optional project description
         output_dir: Directory to create project in (default: from environment or ./projects)
 
     Examples:
         edgar-analyzer project create my-api --template weather
         edgar-analyzer project create custom-scraper --template minimal
+        edgar-analyzer project create comp-analysis --template edgar
     """
     try:
         # Resolve paths - use get_projects_dir() if output_dir not specified
@@ -111,6 +112,8 @@ def create(
         # Determine template file
         if template == "weather":
             template_file = templates_dir / "weather_api_project.yaml"
+        elif template == "edgar":
+            template_file = templates_dir / "edgar_executive_comp" / "project.yaml"
         else:
             template_file = templates_dir / "project.yaml.template"
 
@@ -180,7 +183,7 @@ See the main EDGAR Analyzer documentation for details on:
         with open(project_path / "README.md", "w") as f:
             f.write(readme_content)
 
-        # Copy template examples if using weather template
+        # Copy template examples if using weather or edgar template
         if template == "weather":
             weather_examples = (
                 Path(__file__).parent.parent.parent.parent.parent
@@ -191,6 +194,18 @@ See the main EDGAR Analyzer documentation for details on:
             if weather_examples.exists():
                 for example_file in weather_examples.glob("*.json"):
                     shutil.copy(example_file, project_path / "examples")
+        elif template == "edgar":
+            edgar_examples = templates_dir / "edgar_executive_comp" / "examples"
+            if edgar_examples.exists():
+                # Copy example files
+                for example_file in edgar_examples.glob("*.json"):
+                    shutil.copy(example_file, project_path / "examples")
+                # Copy examples README
+                examples_readme = edgar_examples / "README.md"
+                if examples_readme.exists():
+                    shutil.copy(
+                        examples_readme, project_path / "examples" / "README.md"
+                    )
 
         # Success message
         console.print()

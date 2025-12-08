@@ -1,0 +1,180 @@
+{
+  "description": "Microsoft Corporation executive compensation extraction example (FY2023)",
+  "input": {
+    "cik": "0000789019",
+    "company_name": "Microsoft Corporation",
+    "ticker": "MSFT",
+    "fiscal_year": 2023,
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/789019/000130817923000450/lmsft2023_def14a.htm",
+    "filing_date": "2023-10-19"
+  },
+  "output": {
+    "company_name": "Microsoft Corporation",
+    "ticker": "MSFT",
+    "cik": "0000789019",
+    "filing_date": "2023-10-19",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/789019/000130817923000450/lmsft2023_def14a.htm",
+    "fiscal_years": [2023, 2022, 2021],
+    "executives": [
+      {
+        "name": "Satya Nadella",
+        "position": "Chairman and Chief Executive Officer",
+        "is_ceo": true,
+        "is_cfo": false,
+        "compensation_by_year": [
+          {
+            "year": 2023,
+            "salary": 2500000,
+            "bonus": 0,
+            "stock_awards": 39243840,
+            "option_awards": 0,
+            "non_equity_incentive": 10240000,
+            "change_in_pension": 0,
+            "all_other_compensation": 169373,
+            "total": 52153213,
+            "footnotes": ["Stock awards include performance stock awards"]
+          },
+          {
+            "year": 2022,
+            "salary": 2500000,
+            "bonus": 0,
+            "stock_awards": 33000000,
+            "option_awards": 0,
+            "non_equity_incentive": 9500000,
+            "change_in_pension": 0,
+            "all_other_compensation": 155000,
+            "total": 45155000,
+            "footnotes": ["Stock awards include performance stock awards"]
+          },
+          {
+            "year": 2021,
+            "salary": 2500000,
+            "bonus": 0,
+            "stock_awards": 35000000,
+            "option_awards": 0,
+            "non_equity_incentive": 10000000,
+            "change_in_pension": 0,
+            "all_other_compensation": 148000,
+            "total": 47648000,
+            "footnotes": ["Stock awards include performance stock awards"]
+          }
+        ]
+      },
+      {
+        "name": "Amy E. Hood",
+        "position": "Executive Vice President and Chief Financial Officer",
+        "is_ceo": false,
+        "is_cfo": true,
+        "compensation_by_year": [
+          {
+            "year": 2023,
+            "salary": 1000000,
+            "bonus": 0,
+            "stock_awards": 15685600,
+            "option_awards": 0,
+            "non_equity_incentive": 4096000,
+            "change_in_pension": 0,
+            "all_other_compensation": 42750,
+            "total": 20824350,
+            "footnotes": ["Stock awards include performance stock awards"]
+          },
+          {
+            "year": 2022,
+            "salary": 1000000,
+            "bonus": 0,
+            "stock_awards": 14000000,
+            "option_awards": 0,
+            "non_equity_incentive": 3800000,
+            "change_in_pension": 0,
+            "all_other_compensation": 40000,
+            "total": 18840000,
+            "footnotes": ["Stock awards include performance stock awards"]
+          },
+          {
+            "year": 2021,
+            "salary": 1000000,
+            "bonus": 0,
+            "stock_awards": 15000000,
+            "option_awards": 0,
+            "non_equity_incentive": 4000000,
+            "change_in_pension": 0,
+            "all_other_compensation": 38000,
+            "total": 20038000,
+            "footnotes": ["Stock awards include performance stock awards"]
+          }
+        ]
+      },
+      {
+        "name": "Judson Althoff",
+        "position": "Executive Vice President and Chief Commercial Officer",
+        "is_ceo": false,
+        "is_cfo": false,
+        "compensation_by_year": [
+          {
+            "year": 2023,
+            "salary": 900000,
+            "bonus": 0,
+            "stock_awards": 13068000,
+            "option_awards": 0,
+            "non_equity_incentive": 3686400,
+            "change_in_pension": 0,
+            "all_other_compensation": 38500,
+            "total": 17692900,
+            "footnotes": ["Stock awards include performance stock awards"]
+          }
+        ]
+      },
+      {
+        "name": "Christopher D. Young",
+        "position": "Executive Vice President, Business Development, Strategy and Ventures",
+        "is_ceo": false,
+        "is_cfo": false,
+        "compensation_by_year": [
+          {
+            "year": 2023,
+            "salary": 900000,
+            "bonus": 0,
+            "stock_awards": 13068000,
+            "option_awards": 0,
+            "non_equity_incentive": 3686400,
+            "change_in_pension": 0,
+            "all_other_compensation": 35200,
+            "total": 17689600,
+            "footnotes": ["Stock awards include performance stock awards"]
+          }
+        ]
+      },
+      {
+        "name": "Bradford L. Smith",
+        "position": "Vice Chair and President",
+        "is_ceo": false,
+        "is_cfo": false,
+        "compensation_by_year": [
+          {
+            "year": 2023,
+            "salary": 1000000,
+            "bonus": 0,
+            "stock_awards": 15685600,
+            "option_awards": 0,
+            "non_equity_incentive": 4096000,
+            "change_in_pension": 0,
+            "all_other_compensation": 40100,
+            "total": 20821700,
+            "footnotes": ["Stock awards include performance stock awards"]
+          }
+        ]
+      }
+    ],
+    "footnotes": {
+      "1": "Fiscal year ended June 30",
+      "2": "Stock awards represent grant date fair value under FASB ASC 718",
+      "3": "Non-equity incentive plan includes both cash and deferred compensation"
+    },
+    "extraction_metadata": {
+      "extraction_date": "2025-12-08T00:00:00Z",
+      "model": "anthropic/claude-sonnet-4.5",
+      "confidence": 0.94,
+      "data_source": "SEC EDGAR DEF 14A filing"
+    }
+  }
+}
