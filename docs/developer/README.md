@@ -20,11 +20,15 @@ Understand the platform's technical architecture:
 - **[OpenRouter Architecture](architecture/OPENROUTER_ARCHITECTURE.md)** - Centralized API design
 - **[MCP Architecture](architecture/MCP_ARCHITECTURE.md)** - Model Context Protocol integration
 
+### Meta-Extractor System
+- **[Meta-Extractor Architecture](architecture/META_EXTRACTOR_ARCHITECTURE.md)** - Auto-generation system design and data flow
+
 ## 📖 API Reference
 
 Detailed API documentation:
 
 - **[Platform API](api/PLATFORM_API.md)** - Core platform API reference
+- **[Meta-Extractor API](api/META_EXTRACTOR_API.md)** - Auto-generation system API (Phase 4)
 - **[Project Manager API](api/PROJECT_MANAGER_API.md)** - Project management service API
 - **[OpenRouter Service API](api/OPENROUTER_SERVICE.md)** - OpenRouter client API
 - **[Report Generator API](api/REPORT_GENERATOR_API.md)** - Report generation API

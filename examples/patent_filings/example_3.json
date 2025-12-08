@@ -1,0 +1,72 @@
+{
+  "example_id": "example_3",
+  "input": {
+    "url": "https://patents.google.com/patent/US11876543B2",
+    "patent_number": "US11876543B2",
+    "publication_number": "US11876543B2",
+    "html_content": "<html><head><title>US11876543B2 - Wireless charging system with adaptive power delivery</title></head><body>...</body></html>",
+    "api_response": {
+      "patent_id": "US11876543B2",
+      "title": "Wireless charging system with adaptive power delivery",
+      "abstract": "A wireless power transfer system that dynamically adjusts charging parameters based on real-time monitoring of device characteristics and environmental conditions. The system employs machine learning algorithms to optimize power delivery efficiency across multiple devices simultaneously while preventing overheating and ensuring safety compliance. Novel coil design enables charging through metal surfaces and at extended distances.",
+      "inventors": [
+        {
+          "name": "Kevin Park",
+          "location": "Austin, TX"
+        },
+        {
+          "name": "Lisa Martinez",
+          "location": "San Jose, CA"
+        },
+        {
+          "name": "Robert Singh",
+          "location": "Cupertino, CA"
+        },
+        {
+          "name": "Amanda Foster",
+          "location": "Sunnyvale, CA"
+        },
+        {
+          "name": "David Nguyen",
+          "location": "Fremont, CA"
+        }
+      ],
+      "assignee": {
+        "name": "PowerWave Technologies Inc.",
+        "location": "San Jose, CA"
+      },
+      "filing_date": "2020-11-22",
+      "publication_date": "2024-01-16",
+      "grant_date": "2024-01-16",
+      "priority_date": "2019-11-22",
+      "application_number": "US17/101,456",
+      "classifications": {
+        "cpc": ["H02J50/12", "H02J50/80", "H02J7/00"],
+        "ipc": ["H02J50/12", "H02J7/00"]
+      },
+      "claims": {
+        "independent_claims": 12,
+        "dependent_claims": 48,
+        "total_claims": 60
+      },
+      "citations": {
+        "cited_by_examiner": 28,
+        "cited_by_applicant": 35
+      },
+      "legal_status": "Active"
+    }
+  },
+  "output": {
+    "patent_number": "US11876543B2",
+    "title": "Wireless charging system with adaptive power delivery",
+    "inventors": ["Kevin Park", "Lisa Martinez", "Robert Singh", "Amanda Foster", "David Nguyen"],
+    "assignee": "PowerWave Technologies Inc.",
+    "filing_date": "2020-11-22",
+    "grant_date": "2024-01-16",
+    "claims_count": 60,
+    "abstract": "A wireless power transfer system that dynamically adjusts charging parameters based on real-time monitoring of device characteristics and environmental conditions. The system employs machine learning algorithms to optimize power delivery efficiency across multiple devices simultaneously while preventing overheating and ensuring safety compliance. Novel coil design enables charging through metal surfaces and at extended distances.",
+    "status": "Active",
+    "classifications": ["H02J50/12", "H02J50/80", "H02J7/00"]
+  },
+  "description": "Electronics patent with 5 inventors - demonstrates handling of large inventor arrays and multiple classifications with priority date different from filing date"
+}

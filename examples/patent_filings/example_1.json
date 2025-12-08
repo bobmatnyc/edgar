@@ -1,0 +1,64 @@
+{
+  "example_id": "example_1",
+  "input": {
+    "url": "https://patents.google.com/patent/US11234567B2",
+    "patent_number": "US11234567B2",
+    "publication_number": "US11234567B2",
+    "html_content": "<html><head><title>US11234567B2 - Method for optimizing neural network inference using dynamic quantization</title></head><body>...</body></html>",
+    "api_response": {
+      "patent_id": "US11234567B2",
+      "title": "Method for optimizing neural network inference using dynamic quantization",
+      "abstract": "A method for improving the efficiency of neural network models during inference by applying dynamic quantization techniques. The method includes analyzing activation distributions during runtime and selecting optimal bit-widths for different layers. This results in reduced computational requirements while maintaining model accuracy within acceptable thresholds.",
+      "inventors": [
+        {
+          "name": "Sarah Chen",
+          "location": "Palo Alto, CA"
+        },
+        {
+          "name": "Michael Rodriguez",
+          "location": "Mountain View, CA"
+        },
+        {
+          "name": "Emily Watkins",
+          "location": "San Francisco, CA"
+        }
+      ],
+      "assignee": {
+        "name": "AI Innovations Corp.",
+        "location": "Santa Clara, CA"
+      },
+      "filing_date": "2022-03-15",
+      "publication_date": "2023-12-26",
+      "grant_date": "2023-12-26",
+      "priority_date": "2022-03-15",
+      "application_number": "US17/696,234",
+      "classifications": {
+        "cpc": ["G06N3/08", "G06N3/04"],
+        "ipc": ["G06N3/08"]
+      },
+      "claims": {
+        "independent_claims": 15,
+        "dependent_claims": 35,
+        "total_claims": 50
+      },
+      "citations": {
+        "cited_by_examiner": 12,
+        "cited_by_applicant": 8
+      },
+      "legal_status": "Active"
+    }
+  },
+  "output": {
+    "patent_number": "US11234567B2",
+    "title": "Method for optimizing neural network inference using dynamic quantization",
+    "inventors": ["Sarah Chen", "Michael Rodriguez", "Emily Watkins"],
+    "assignee": "AI Innovations Corp.",
+    "filing_date": "2022-03-15",
+    "grant_date": "2023-12-26",
+    "claims_count": 50,
+    "abstract": "A method for improving the efficiency of neural network models during inference by applying dynamic quantization techniques. The method includes analyzing activation distributions during runtime and selecting optimal bit-widths for different layers. This results in reduced computational requirements while maintaining model accuracy within acceptable thresholds.",
+    "status": "Active",
+    "classifications": ["G06N3/08", "G06N3/04"]
+  },
+  "description": "AI/ML patent with multiple inventors - demonstrates array flattening and nested object extraction"
+}

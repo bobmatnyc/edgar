@@ -103,6 +103,11 @@ Transform Excel, PDF, DOCX, and PPTX files to structured JSON with automatic pat
 
 **Learn more**: [Excel Transform](user/EXCEL_FILE_TRANSFORM.md) | [PDF Transform](user/PDF_FILE_TRANSFORM.md)
 
+### ✨ Meta-Extractor (NEW - Phase 4)
+Auto-generate custom extractors from 2-3 examples in <5 seconds. Create production-ready extractors for any domain.
+
+**Learn more**: [User Guide](user/META_EXTRACTOR_USER_GUIDE.md) | [API Reference](developer/api/META_EXTRACTOR_API.md) | [Architecture](developer/architecture/META_EXTRACTOR_ARCHITECTURE.md)
+
 ### 🌐 Web Scraping
 Scrape data from websites, including JavaScript-heavy sites using Jina.ai integration.
 

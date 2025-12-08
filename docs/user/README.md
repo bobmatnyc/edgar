@@ -27,6 +27,13 @@ Transform various file formats to structured data:
 - **[PDF File Transform](PDF_FILE_TRANSFORM.md)** - Extract data from PDF tables
 - **[Web Scraping](WEB_SCRAPING.md)** - Scrape data from websites (including JS-heavy sites)
 
+## ✨ Meta-Extractor (Auto-Generate Extractors)
+
+Automatically create custom extractors from examples:
+
+- **[Meta-Extractor User Guide](META_EXTRACTOR_USER_GUIDE.md)** - Create extractors in 5 minutes from 2-3 examples
+- **[Meta-Extractor Troubleshooting](META_EXTRACTOR_TROUBLESHOOTING.md)** - Common issues and solutions
+
 ## 🎯 Core Features
 
 Master the platform's key capabilities:

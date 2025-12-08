@@ -1,0 +1,56 @@
+{
+  "example_id": "example_2",
+  "input": {
+    "url": "https://patents.google.com/patent/US10987654B1",
+    "patent_number": "US10987654B1",
+    "publication_number": "US10987654B1",
+    "html_content": "<html><head><title>US10987654B1 - Biodegradable packaging material with enhanced moisture barrier</title></head><body>...</body></html>",
+    "api_response": {
+      "patent_id": "US10987654B1",
+      "title": "Biodegradable packaging material with enhanced moisture barrier",
+      "abstract": "A biodegradable packaging material comprising a cellulose-based substrate coated with a bio-derived polymer blend. The material exhibits superior moisture barrier properties compared to conventional biodegradable alternatives while maintaining complete compostability. The coating formulation includes modified chitosan and alginate derivatives in a specific ratio that optimizes both barrier performance and degradation kinetics.",
+      "inventors": [
+        {
+          "name": "Dr. James Thompson",
+          "location": "Seattle, WA"
+        }
+      ],
+      "assignee": {
+        "name": "GreenPack Solutions LLC",
+        "location": "Portland, OR"
+      },
+      "filing_date": "2021-06-10",
+      "publication_date": "2023-09-19",
+      "grant_date": "2023-09-19",
+      "priority_date": "2021-06-10",
+      "application_number": "US17/345,789",
+      "classifications": {
+        "cpc": ["B65D65/40", "C09J7/38", "B32B27/08"],
+        "ipc": ["B65D65/40"]
+      },
+      "claims": {
+        "independent_claims": 8,
+        "dependent_claims": 17,
+        "total_claims": 25
+      },
+      "citations": {
+        "cited_by_examiner": 15,
+        "cited_by_applicant": 22
+      },
+      "legal_status": "Active"
+    }
+  },
+  "output": {
+    "patent_number": "US10987654B1",
+    "title": "Biodegradable packaging material with enhanced moisture barrier",
+    "inventors": ["Dr. James Thompson"],
+    "assignee": "GreenPack Solutions LLC",
+    "filing_date": "2021-06-10",
+    "grant_date": "2023-09-19",
+    "claims_count": 25,
+    "abstract": "A biodegradable packaging material comprising a cellulose-based substrate coated with a bio-derived polymer blend. The material exhibits superior moisture barrier properties compared to conventional biodegradable alternatives while maintaining complete compostability. The coating formulation includes modified chitosan and alginate derivatives in a specific ratio that optimizes both barrier performance and degradation kinetics.",
+    "status": "Active",
+    "classifications": ["B65D65/40", "C09J7/38", "B32B27/08"]
+  },
+  "description": "Materials science patent with single inventor - demonstrates handling of different claim counts and classification types"
+}

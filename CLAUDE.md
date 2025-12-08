@@ -192,6 +192,137 @@ from edgar_analyzer.services.openrouter_client import OpenRouterClient  # OLD
 - **OpenRouter Client** (T5) - 100% platform code, Sonnet 4.5 integration
 - **IDataExtractor Interface** (T6) - Abstract interface for generated extractors
 
+### Batch 4: Meta-Extractor System ✅ (Phase 4 Complete)
+- **MetaExtractor** (629 LOC) - End-to-end orchestrator for extractor generation
+- **ExtractorSynthesizer** (790 LOC) - Pattern analysis & code generation from examples
+- **ExtractorRegistry** (509 LOC) - Dynamic loading & versioning of extractors
+- **SelfImprovementLoop** (787 LOC) - Iterative refinement based on test failures
+- **FailureAnalyzer** (739 LOC) - Failure categorization & improvement suggestions
+- **Patent Extractor** (POC) - Production-ready extractor for USPTO patent data
+
+---
+
+## Meta-Extractor: Auto-Generate Custom Extractors ✨
+
+**Create production-ready extractors from 2-3 examples in <5 seconds!**
+
+### Quick Start
+
+```bash
+# Create examples (input/output pairs)
+mkdir -p examples/my_domain/
+cat > examples/my_domain/example1.json <<EOF
+{
+  "input": {"html": "<table>...</table>", "url": "https://..."},
+  "output": {"records": [...], "count": 1}
+}
+EOF
+
+# Generate extractor automatically
+edgar extractors create my_extractor \
+  --examples examples/my_domain/ \
+  --description "Extract data from HTML tables"
+
+# Output:
+# ✅ Extractor created successfully!
+#    Domain: my_domain
+#    Confidence: 94.2%
+#    Files: 4
+#    Time: 3.42s
+#    Registered as: my_extractor
+```
+
+### CLI Commands
+
+```bash
+# Create extractor from examples
+edgar extractors create <name> --examples <dir> [OPTIONS]
+
+# List registered extractors
+edgar extractors list [--domain <domain>] [--min-confidence <0.0-1.0>]
+
+# Show extractor details
+edgar extractors info <name>
+
+# Validate extractor
+edgar extractors validate <name>
+```
+
+### Usage Example
+
+```python
+from edgar_analyzer.extractors.registry import ExtractorRegistry
+from edgar_analyzer.services.openrouter_client import OpenRouterClient
+
+# Load extractor dynamically
+registry = ExtractorRegistry()
+ExtractorClass = registry.get("my_extractor")
+
+# Initialize with OpenRouter client
+openrouter = OpenRouterClient()
+extractor = ExtractorClass(openrouter_client=openrouter)
+
+# Extract data
+input_data = {"html": "<html>...</html>", "url": "https://example.com"}
+result = extractor.extract(input_data)
+print(result)  # {"records": [...], "count": 1}
+```
+
+### Key Features
+
+1. **Automatic Pattern Detection** - Analyzes examples to detect 14 transformation types
+2. **Code Generation** - Renders Jinja2 templates for complete extractor packages
+3. **Validation** - Ensures generated code meets quality standards
+4. **Registry** - Dynamic loading and versioning
+5. **Self-Improvement** - Iteratively refines based on test failures (Phase 4)
+
+### Generated Files
+
+```
+src/edgar_analyzer/extractors/my_domain/
+├── __init__.py            # Package initialization
+├── extractor.py           # Main extractor class (~200 LOC)
+├── models.py              # Pydantic models (~80 LOC)
+├── prompts.py             # LLM system prompts (~50 LOC)
+└── test_my_extractor.py   # Unit tests (~150 LOC)
+```
+
+### Confidence Scores
+
+| Score | Meaning | Action |
+|-------|---------|--------|
+| 0.95-1.00 | Excellent | ✅ Production ready |
+| 0.85-0.94 | Good | ✅ Safe to use |
+| 0.70-0.84 | Fair | ⚠️ Review code |
+| <0.70 | Poor | ❌ Improve examples |
+
+### Key Files
+
+```
+src/edgar_analyzer/extractors/
+├── meta_extractor.py       # Orchestrator (629 LOC)
+├── synthesizer.py          # Pattern analysis (790 LOC)
+├── registry.py             # Dynamic loading (509 LOC)
+├── self_improvement.py     # Iterative refinement (787 LOC)
+├── failure_analyzer.py     # Failure analysis (739 LOC)
+├── templates/              # Jinja2 code templates
+│   ├── extractor.py.j2
+│   ├── models.py.j2
+│   ├── prompts.py.j2
+│   └── test_extractor.py.j2
+└── patent/                 # Example: Patent extractor (POC)
+    ├── extractor.py
+    ├── models.py
+    └── prompts.py
+```
+
+### Documentation
+
+- **[User Guide](docs/user/META_EXTRACTOR_USER_GUIDE.md)** - Complete usage guide with examples
+- **[API Reference](docs/developer/api/META_EXTRACTOR_API.md)** - Detailed API documentation
+- **[Architecture](docs/developer/architecture/META_EXTRACTOR_ARCHITECTURE.md)** - System design & diagrams
+- **[Troubleshooting](docs/user/META_EXTRACTOR_TROUBLESHOOTING.md)** - Common issues & solutions
+
 ---
 
 ## File Transform Workflows
