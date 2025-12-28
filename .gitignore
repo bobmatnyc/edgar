@@ -73,3 +73,8 @@ logs/
 *.bak
 *.swp
 .temp/
+
+# Claude AI Agent
+.claude-mpm/
+.claude/
+.mcp.json
