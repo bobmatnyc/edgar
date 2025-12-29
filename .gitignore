@@ -78,3 +78,13 @@ logs/
 .claude-mpm/
 .claude/
 .mcp.json
+
+# Generated output data
+output/
+
+# Debug data
+*.debug.json
+*.debug.html
+
+# Temporary analysis files
+*.tmp
