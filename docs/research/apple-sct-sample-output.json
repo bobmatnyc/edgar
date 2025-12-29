@@ -1,0 +1,246 @@
+{
+  "company": {
+    "name": "Apple Inc.",
+    "ticker": "AAPL",
+    "cik": "0000320193"
+  },
+  "filing_date": "2025-01-10",
+  "filing_url": "https://www.sec.gov/Archives/edgar/data/320193/000130817925000008/aapl4359751-def14a.htm",
+  "fiscal_years": [2024, 2023, 2022],
+  "executives": [
+    {
+      "name": "Tim Cook",
+      "position": "Chief Executive Officer",
+      "is_ceo": true,
+      "is_cfo": false,
+      "compensation_by_year": [
+        {
+          "year": 2024,
+          "salary": 3000000,
+          "bonus": 0,
+          "stock_awards": 58088946,
+          "option_awards": 0,
+          "non_equity_incentive": 12000000,
+          "change_in_pension": 0,
+          "all_other_compensation": 1520856,
+          "total": 74609802,
+          "footnotes": ["3", "4"]
+        },
+        {
+          "year": 2023,
+          "salary": 3000000,
+          "bonus": 0,
+          "stock_awards": 46970283,
+          "option_awards": 0,
+          "non_equity_incentive": 10713450,
+          "change_in_pension": 0,
+          "all_other_compensation": 2526112,
+          "total": 63209845,
+          "footnotes": []
+        },
+        {
+          "year": 2022,
+          "salary": 3000000,
+          "bonus": 0,
+          "stock_awards": 82994164,
+          "option_awards": 0,
+          "non_equity_incentive": 12000000,
+          "change_in_pension": 0,
+          "all_other_compensation": 1425933,
+          "total": 99420097,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "name": "Luca Maestri",
+      "position": "Former Senior Vice President, Chief Financial Officer",
+      "is_ceo": false,
+      "is_cfo": true,
+      "compensation_by_year": [
+        {
+          "year": 2024,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22157075,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "change_in_pension": 0,
+          "all_other_compensation": 22182,
+          "total": 27179257,
+          "footnotes": ["4", "5"]
+        },
+        {
+          "year": 2023,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22323641,
+          "option_awards": 0,
+          "non_equity_incentive": 3571150,
+          "change_in_pension": 0,
+          "all_other_compensation": 41092,
+          "total": 26935883,
+          "footnotes": []
+        },
+        {
+          "year": 2022,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22132015,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "change_in_pension": 0,
+          "all_other_compensation": 19783,
+          "total": 27151798,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "name": "Kate Adams",
+      "position": "Senior Vice President, General Counsel and Secretary",
+      "is_ceo": false,
+      "is_cfo": false,
+      "compensation_by_year": [
+        {
+          "year": 2024,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22157075,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "change_in_pension": 0,
+          "all_other_compensation": 22182,
+          "total": 27179257,
+          "footnotes": ["4", "5"]
+        },
+        {
+          "year": 2023,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22323641,
+          "option_awards": 0,
+          "non_equity_incentive": 3571150,
+          "change_in_pension": 0,
+          "all_other_compensation": 46914,
+          "total": 26941705,
+          "footnotes": []
+        },
+        {
+          "year": 2022,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22132015,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "change_in_pension": 0,
+          "all_other_compensation": 15208,
+          "total": 27147223,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "name": "Deirdre O'Brien",
+      "position": "Senior Vice President, Retail + People",
+      "is_ceo": false,
+      "is_cfo": false,
+      "compensation_by_year": [
+        {
+          "year": 2024,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22157075,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "change_in_pension": 0,
+          "all_other_compensation": 22182,
+          "total": 27179257,
+          "footnotes": ["4", "6"]
+        },
+        {
+          "year": 2023,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22323641,
+          "option_awards": 0,
+          "non_equity_incentive": 3571150,
+          "change_in_pension": 0,
+          "all_other_compensation": 18667,
+          "total": 26914458,
+          "footnotes": []
+        },
+        {
+          "year": 2022,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22132015,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "change_in_pension": 0,
+          "all_other_compensation": 18667,
+          "total": 27150682,
+          "footnotes": []
+        }
+      ]
+    },
+    {
+      "name": "Jeff Williams",
+      "position": "Chief Operating Officer",
+      "is_ceo": false,
+      "is_cfo": false,
+      "compensation_by_year": [
+        {
+          "year": 2024,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22157075,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "change_in_pension": 0,
+          "all_other_compensation": 22182,
+          "total": 27179257,
+          "footnotes": ["4", "7"]
+        },
+        {
+          "year": 2023,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22323641,
+          "option_awards": 0,
+          "non_equity_incentive": 3571150,
+          "change_in_pension": 0,
+          "all_other_compensation": 20042,
+          "total": 26914833,
+          "footnotes": []
+        },
+        {
+          "year": 2022,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 22132015,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "change_in_pension": 0,
+          "all_other_compensation": 18667,
+          "total": 27150682,
+          "footnotes": []
+        }
+      ]
+    }
+  ],
+  "footnotes": {
+    "3": "Represents the aggregate incremental cost to Apple of security-related costs, including security personnel and equipment for business and personal purposes",
+    "4": "Represents Apple's matching contributions to the named executive officer's account in the 401(k) Savings Plan",
+    "5": "For Mr. Maestri, represents $6,450 in matching contributions to the 401(k) Savings Plan and $15,732 for life insurance premiums",
+    "6": "For Ms. O'Brien, represents $6,450 in matching contributions to the 401(k) Savings Plan and $15,732 for life insurance premiums",
+    "7": "For Mr. Williams, represents $6,450 in matching contributions to the 401(k) Savings Plan and $15,732 for life insurance premiums"
+  },
+  "extraction_metadata": {
+    "extraction_date": "2025-12-06T22:45:00Z",
+    "model": "anthropic/claude-sonnet-4.5",
+    "confidence": 0.98,
+    "validation_status": "passed",
+    "validation_errors": []
+  }
+}

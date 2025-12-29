@@ -1,0 +1,105 @@
+{
+  "total_companies": 100,
+  "successful": 81,
+  "failed": 19,
+  "success_rate": 0.81,
+  "total_duration": 75.21833404200152,
+  "requests_made": 100,
+  "failures": [
+    {
+      "company": "Walgreens Boots Alliance Inc.",
+      "rank": 18,
+      "error": "Income tax expense table not found"
+    },
+    {
+      "company": "Lowe's Companies Inc.",
+      "rank": 36,
+      "error": "Income tax expense table not found"
+    },
+    {
+      "company": "Johnson & Johnson",
+      "rank": 37,
+      "error": "Income tax expense table not found"
+    },
+    {
+      "company": "Wells Fargo & Co.",
+      "rank": 38,
+      "error": "Income tax expense table not found"
+    },
+    {
+      "company": "State Farm Insurance Cos.",
+      "rank": 39,
+      "error": "Client error '404 Not Found' for url 'https://data.sec.gov/submissions/CIK0000933471.json'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    },
+    {
+      "company": "Boeing Co.",
+      "rank": 51,
+      "error": "Income tax expense table not found"
+    },
+    {
+      "company": "Caterpillar Inc.",
+      "rank": 56,
+      "error": "Income tax expense table not found"
+    },
+    {
+      "company": "IBM Corp.",
+      "rank": 57,
+      "error": "Income tax expense table not found"
+    },
+    {
+      "company": "Enterprise Products Partners LP",
+      "rank": 58,
+      "error": "Income tax expense table not found"
+    },
+    {
+      "company": "Delta Air Lines Inc.",
+      "rank": 62,
+      "error": "Income tax expense table not found"
+    },
+    {
+      "company": "World Kinect Corp.",
+      "rank": 64,
+      "error": "Client error '404 Not Found' for url 'https://data.sec.gov/submissions/CIK0000350733.json'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    },
+    {
+      "company": "Liberty Mutual Holding Co.",
+      "rank": 70,
+      "error": "Client error '404 Not Found' for url 'https://data.sec.gov/submissions/CIK0000935840.json'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    },
+    {
+      "company": "Stellantis N.V.",
+      "rank": 76,
+      "error": "No 10-K filing found for CIK 0001830219"
+    },
+    {
+      "company": "Freddie Mac",
+      "rank": 78,
+      "error": "Income tax expense table not found"
+    },
+    {
+      "company": "USAA",
+      "rank": 81,
+      "error": "No 10-K filing found for CIK 0000913130"
+    },
+    {
+      "company": "Performance Food Group Co.",
+      "rank": 84,
+      "error": "No 10-K filing found for CIK 0001625105"
+    },
+    {
+      "company": "TIAA",
+      "rank": 93,
+      "error": "Client error '404 Not Found' for url 'https://data.sec.gov/submissions/CIK0000098430.json'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    },
+    {
+      "company": "TD Synnex Corp.",
+      "rank": 99,
+      "error": "No 10-K filing found for CIK 0001482649"
+    },
+    {
+      "company": "New York Life Insurance Co.",
+      "rank": 100,
+      "error": "Client error '404 Not Found' for url 'https://data.sec.gov/submissions/CIK0000932841.json'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+Metadata-Version: 2.4
+Name: edgar-analyzer
+Version: 0.1.0
+Summary: SEC EDGAR Executive Compensation vs Tax Expense Analysis Tool
+Author-email: Edgar Analyzer Team <team@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/example/edgar-analyzer
+Project-URL: Repository, https://github.com/example/edgar-analyzer
+Project-URL: Documentation, https://edgar-analyzer.readthedocs.io
+Project-URL: Bug Tracker, https://github.com/example/edgar-analyzer/issues
+Keywords: sec,edgar,executive-compensation,tax-analysis,financial-data
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Financial and Insurance Industry
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Office/Business :: Financial
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: click>=8.1.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: openpyxl>=3.1.0
+Requires-Dist: beautifulsoup4>=4.12.0
+Requires-Dist: lxml>=4.9.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: dependency-injector>=4.41.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: structlog>=23.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: pytest-mock>=3.10.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: pre-commit>=3.0.0; extra == "dev"
+
+# EDGAR Executive Compensation vs Tax Expense Analysis
+
+## Project Overview
+
+This project builds a Python tool to extract and analyze data from SEC EDGAR filings to create a report comparing executive compensation to tax expenses for the 500 largest public companies, similar to the reference Excel file in `docs/`.
+
+## Feasibility Assessment: ✅ HIGHLY FEASIBLE
+
+### ✅ Confirmed Working
+- **SEC EDGAR API Access**: Successfully tested with real data
+- **Tax Expense Extraction**: XBRL data extraction working (tested with Apple Inc.)
+- **Data Availability**: Comprehensive access to all required filing types
+- **Python Ecosystem**: Strong library support for SEC data processing
+
+### 📊 Test Results
+```
+Apple Inc. (CIK: 0000320193)
+Tax Expense 2025: $20,719,000,000
+API Response: < 2 seconds
+Data Quality: Clean XBRL structure
+```
+
+## Technical Implementation
+
+### Core Technologies
+- **Python 3.13+** with virtual environment
+- **SEC EDGAR API** (free, no authentication required)
+- **XBRL Data Processing** for structured financial data
+- **Pandas** for data analysis and Excel generation
+
+### Key Data Sources
+1. **Tax Expense Data**: 10-K/10-Q filings via XBRL tags
+   - Primary: `us-gaap:IncomeTaxExpenseBenefit`
+   - Secondary: `us-gaap:CurrentIncomeTaxExpenseBenefit`
+
+2. **Executive Compensation**: DEF 14A proxy statements
+   - Summary Compensation Table
+   - Annual filing requirement
+
+3. **Company Identification**: Fortune 500 list with CIK mapping
+
+### Project Structure
+```
+edgar/
+├── docs/                          # Reference materials
+├── venv/                          # Python virtual environment
+├── FEASIBILITY_ANALYSIS.md        # Detailed feasibility study
+├── DATA_SOURCES.md                # XBRL tags and data sources
+├── edgar_analyzer_prototype.py    # Main implementation prototype
+├── test_edgar_api.py              # API testing script
+├── requirements.txt               # Python dependencies
+└── README.md                      # This file
+```
+
+## Getting Started
+
+### 1. Environment Setup
+```bash
+# Clone and navigate to project
+cd edgar
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Test API Access
+```bash
+# Test basic EDGAR API functionality
+python3 test_edgar_api.py
+```
+
+### 3. Run Prototype
+```bash
+# Run the prototype analyzer
+python3 edgar_analyzer_prototype.py
+```
+
+## Development Roadmap
+
+### ✅ Completed
+- [x] Feasibility analysis and research
+- [x] Data source identification and validation
+- [x] Basic API testing and proof of concept
+- [x] Python environment setup
+
+### 🔄 Next Steps
+- [ ] Fortune 500 company CIK database creation
+- [ ] Executive compensation data extraction
+- [ ] Data processing and validation pipeline
+- [ ] Excel report generation
+- [ ] Batch processing for 500 companies
+
+## Key Findings
+
+### Strengths
+1. **Free Data Access**: SEC provides comprehensive, real-time API access
+2. **Standardized Format**: XBRL ensures consistent tax expense data
+3. **Rich Data**: Access to 30+ years of filing history
+4. **Strong Tools**: Excellent Python library ecosystem
+
+### Challenges
+1. **Executive Compensation Complexity**: May require text parsing from proxy statements
+2. **Data Consistency**: Different companies may report compensation differently
+3. **Rate Limiting**: 10 requests/second limit requires careful batch processing
+4. **Data Volume**: 500 companies × multiple years = significant processing time
+
+### Risk Mitigation
+- **Robust Error Handling**: Handle missing data and API failures gracefully
+- **Data Validation**: Cross-reference multiple sources for accuracy
+- **Incremental Processing**: Build and test with small company sets first
+- **Caching Strategy**: Store processed data to avoid re-processing
+
+## Estimated Timeline
+- **Phase 1**: Company database and basic extraction (1-2 weeks)
+- **Phase 2**: Data processing and validation (1-2 weeks)
+- **Phase 3**: Report generation and testing (1 week)
+- **Total**: 3-5 weeks for full implementation
+
+## Conclusion
+
+**The project is highly feasible** with excellent data availability through SEC APIs. The main technical challenges around data consistency and processing complexity are manageable with proper validation and error handling.
+
+**Recommended next step**: Proceed with Fortune 500 company CIK mapping and expand the prototype to handle multiple companies.

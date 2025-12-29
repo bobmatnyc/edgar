@@ -1,0 +1,53 @@
+# Constraint Enforcer Configuration
+# Controls validation rules for AI-generated code
+
+# Code Quality Constraints
+max_complexity: 10  # Maximum cyclomatic complexity per method (McCabe threshold)
+max_method_lines: 50  # Maximum lines per method (readability threshold)
+max_class_lines: 300  # Maximum lines per class (single responsibility)
+
+# Security: Forbidden Imports
+# These modules pose security risks and are not allowed in generated code
+forbidden_imports:
+  - os  # File system access, shell commands
+  - subprocess  # Shell command execution
+  - eval  # Dynamic code execution
+  - exec  # Dynamic code execution
+  - compile  # Dynamic code compilation
+  - __import__  # Dynamic module loading
+
+# Dependency Injection: Required Decorators
+# Specifies which decorators are required on specific methods
+required_decorators:
+  __init__:
+    - inject  # Dependency injection for testability
+
+# Code Quality: Enforcement Flags
+enforce_type_hints: true  # Require type hints on all methods
+enforce_docstrings: true  # Require Google-style docstrings
+enforce_interface: true  # Require IDataExtractor implementation
+allow_print_statements: false  # Prohibit print() in production code
+
+# Severity Levels
+# ERROR: Must be fixed (blocks code acceptance)
+# WARNING: Should be fixed (non-blocking)
+# INFO: Informational (best practice suggestion)
+
+# Validation Performance Targets
+# - AST parsing: <1ms for 500 LOC
+# - Each validator: <0.5ms per validator
+# - Total validation: <100ms for typical extractor
+
+# Configuration Notes:
+# - Adjust max_complexity for domain-specific needs (10 is industry standard)
+# - Add to forbidden_imports with security team approval only
+# - Update required_decorators when adding new DI patterns
+# - Set enforce_* flags to false only for legacy code migration
+
+# Example Usage:
+# from edgar_analyzer.models.validation import ConstraintConfig
+# import yaml
+#
+# with open('constraints.yaml') as f:
+#     config_dict = yaml.safe_load(f)
+# config = ConstraintConfig.from_dict(config_dict)

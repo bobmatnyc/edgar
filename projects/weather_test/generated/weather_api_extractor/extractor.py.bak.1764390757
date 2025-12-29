@@ -1,0 +1,277 @@
+"""
+WeatherExtractor - OpenWeatherMap API Data Extractor
+Extracts and transforms current weather data from OpenWeatherMap API to a
+simplified output schema. Implements async HTTP requests with retry logic,
+caching, and rate limiting.
+"""
+from typing import Dict, List, Optional, Any, Tuple
+import asyncio
+import time
+import structlog
+from dependency_injector.wiring import inject, Provide
+import aiohttp
+from edgar_analyzer.config.container import Container
+from .models import WeatherInputSchema, WeatherOutputSchema
+logger = structlog.get_logger(__name__)
+class IDataExtractor:
+    """Interface for data extractors."""
+    async def extract(self, **kwargs) -> Optional[Dict[str, Any]]:
+        """Extract and transform data.
+        Args:
+            **kwargs: Extraction parameters
+        Returns:
+            Extracted data or None on failure
+        """
+        raise NotImplementedError
+class WeatherExtractor(IDataExtractor):
+    """Extract and transform current weather data from OpenWeatherMap API.
+    This implementation follows the design specified by the Planning Manager.
+    Design Decisions:
+    - Async HTTP with aiohttp for non-blocking I/O
+    - In-memory cache with TTL to reduce API calls
+    - Token bucket rate limiting (0.5 req/s, burst 3)
+    - Exponential backoff retry (3 attempts: 1s, 2s, 4s)
+    - Pydantic validation for input/output schemas
+    Example:
+        >>> extractor = WeatherExtractor(config={"api_key": "..."})
+        >>> result = await extractor.extract(city="London")
+        >>> print(result["temperature_c"])
+        15.5
+    """
+    @inject
+    def __init__(
+        self,
+        config: Dict[str, Any],
+        logger: structlog.BoundLogger = Provide[Container.logger]
+    ) -> None:
+        """Initialize WeatherExtractor with configuration.
+        Args:
+            config: Configuration dictionary containing:
+                - api_key: OpenWeatherMap API key
+                - cache_ttl: Cache TTL in seconds (default: 1800)
+                - timeout: Request timeout in seconds (default: 10)
+                - max_retries: Maximum retry attempts (default: 3)
+            logger: Structured logger instance
+        """
+        self.config = config
+        self.logger = logger
+        self.api_key = config.get("api_key", "")
+        self.base_url = "https://api.openweathermap.org/data/2.5/weather"
+        self.session: Optional[aiohttp.ClientSession] = None
+        self.cache: Dict[str, Tuple[float, Dict[str, Any]]] = {}
+        self.cache_ttl = config.get("cache_ttl", 1800)
+        self.timeout = config.get("timeout", 10)
+        self.max_retries = config.get("max_retries", 3)
+        self.rate_limiter: Dict[str, Any] = {
+            "tokens": 3.0,
+            "max_tokens": 3.0,
+            "rate": 0.5,  # tokens per second
+            "last_update": time.time()
+        }
+    async def _get_session(self) -> aiohttp.ClientSession:
+        """Get or create aiohttp session.
+        Returns:
+            Active aiohttp ClientSession
+        """
+        if self.session is None or self.session.closed:
+            self.session = aiohttp.ClientSession()
+        return self.session
+    async def extract(self, **kwargs) -> Optional[Dict[str, Any]]:
+        """Extract and transform weather data for a city.
+        Args:
+            **kwargs: Must contain 'city' parameter
+        Returns:
+            Transformed weather data dictionary, or None on failure
+        Raises:
+            None - errors are logged and None is returned
+        Example:
+            >>> result = await extractor.extract(city="London")
+            >>> print(result["conditions"])
+            'light rain'
+        """
+        city = kwargs.get("city")
+        if not city:
+            self.logger.error("extract_missing_city", error="City parameter required")
+            return None
+        self.logger.info("extract_start", city=city)
+        try:
+            cached_data = self._get_cached(city)
+            if cached_data:
+                self.logger.info("extract_cache_hit", city=city)
+                return cached_data
+            await self._apply_rate_limit()
+            raw_data = await self._fetch_from_api(city)
+            transformed_data = self._transform_response(raw_data)
+            if not self._validate_output(transformed_data):
+                self.logger.error("extract_validation_failed", city=city)
+                return None
+            self._set_cache(city, transformed_data)
+            self.logger.info("extract_success", city=city)
+            return transformed_data
+        except Exception as e:
+            self.logger.error(
+                "extract_failed",
+                city=city,
+                error=str(e),
+                error_type=type(e).__name__
+            )
+            return None
+    async def _fetch_from_api(self, city: str) -> Dict[str, Any]:
+        """Fetch raw weather data from OpenWeatherMap API with retry logic.
+        Args:
+            city: City name to fetch weather for
+        Returns:
+            Raw API response as dictionary
+        Raises:
+            Exception: On final retry failure
+        """
+        session = await self._get_session()
+        url = f"{self.base_url}?q={city}&appid={self.api_key}&units=metric"
+        for attempt in range(self.max_retries):
+            try:
+                self.logger.info(
+                    "api_request",
+                    city=city,
+                    attempt=attempt + 1,
+                    max_retries=self.max_retries
+                )
+                async with session.get(
+                    url,
+                    timeout=aiohttp.ClientTimeout(total=self.timeout)
+                ) as response:
+                    if response.status == 429:
+                        backoff = 30
+                        self.logger.warning(
+                            "api_rate_limited",
+                            city=city,
+                            backoff_seconds=backoff
+                        )
+                        await asyncio.sleep(backoff)
+                        continue
+                    response.raise_for_status()
+                    data = await response.json()
+                    WeatherInputSchema(**data)
+                    return data
+            except aiohttp.ClientError as e:
+                backoff = 2 ** attempt  # Exponential: 1s, 2s, 4s
+                self.logger.warning(
+                    "api_request_failed",
+                    city=city,
+                    attempt=attempt + 1,
+                    error=str(e),
+                    backoff_seconds=backoff
+                )
+                if attempt < self.max_retries - 1:
+                    await asyncio.sleep(backoff)
+                else:
+                    raise
+        raise Exception(f"Failed to fetch data for {city} after {self.max_retries} attempts")
+    def _get_cached(self, city: str) -> Optional[Dict[str, Any]]:
+        """Retrieve cached weather data if available and not expired.
+        Args:
+            city: City name to lookup
+        Returns:
+            Cached data dictionary or None if expired/missing
+        """
+        if city not in self.cache:
+            return None
+        timestamp, data = self.cache[city]
+        age = time.time() - timestamp
+        if age > self.cache_ttl:
+            self.logger.info("cache_expired", city=city, age_seconds=age)
+            del self.cache[city]
+            return None
+        self.logger.info("cache_hit", city=city, age_seconds=age)
+        return data
+    def _set_cache(self, city: str, data: Dict[str, Any]) -> None:
+        """Store weather data in cache with timestamp.
+        Args:
+            city: City name as cache key
+            data: Weather data to cache
+        """
+        self.cache[city] = (time.time(), data)
+        self.logger.info("cache_set", city=city, cache_size=len(self.cache))
+    def _transform_response(self, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Transform raw API response to output schema using detected patterns.
+        Args:
+            raw_data: Raw API response dictionary
+        Returns:
+            Transformed data matching output schema
+        """
+        return {
+            "city": raw_data.get("name"),
+            "country": self._extract_nested_field(raw_data, "sys.country"),
+            "temperature_c": self._extract_nested_field(raw_data, "main.temp"),
+            "feels_like_c": self._extract_nested_field(raw_data, "main.feels_like"),
+            "humidity_percent": self._extract_nested_field(raw_data, "main.humidity"),
+            "pressure_hpa": self._extract_nested_field(raw_data, "main.pressure"),
+            "wind_speed_ms": self._extract_nested_field(raw_data, "wind.speed"),
+            "conditions": self._extract_nested_field(raw_data, "weather[0].description"),
+            "cloudiness_percent": self._extract_nested_field(raw_data, "clouds.all"),
+            "visibility_m": raw_data.get("visibility")
+        }
+    def _extract_nested_field(self, data: Dict[str, Any], path: str) -> Any:
+        """Safely extract nested field using dot notation path.
+        Args:
+            data: Source data dictionary
+            path: Dot-notation path (e.g., 'main.temp', 'weather[0].description')
+        Returns:
+            Extracted value or None if path not found
+        """
+        try:
+            parts = path.replace("]", "").split("[")
+            current = data
+            for part in parts:
+                if "." in part:
+                    for key in part.split("."):
+                        current = current[key]
+                else:
+                    if part.isdigit():
+                        current = current[int(part)]
+                    else:
+                        current = current[part]
+            return current
+        except (KeyError, IndexError, TypeError) as e:
+            self.logger.info(
+                "field_extraction_failed",
+                path=path,
+                error=str(e)
+            )
+            return None
+    def _validate_output(self, data: Dict[str, Any]) -> bool:
+        """Validate transformed data against output schema and constraints.
+        Args:
+            data: Transformed data dictionary
+        Returns:
+            True if validation passes, False otherwise
+        """
+        try:
+            WeatherOutputSchema(**data)
+            return True
+        except Exception as e:
+            self.logger.error(
+                "output_validation_failed",
+                error=str(e),
+                data=data
+            )
+            return False
+    async def _apply_rate_limit(self) -> None:
+        """Enforce rate limiting before API calls using token bucket algorithm."""
+        now = time.time()
+        elapsed = now - self.rate_limiter["last_update"]
+        self.rate_limiter["tokens"] = min(
+            self.rate_limiter["max_tokens"],
+            self.rate_limiter["tokens"] + elapsed * self.rate_limiter["rate"]
+        )
+        self.rate_limiter["last_update"] = now
+        if self.rate_limiter["tokens"] < 1.0:
+            wait_time = (1.0 - self.rate_limiter["tokens"]) / self.rate_limiter["rate"]
+            self.logger.info("rate_limit_wait", wait_seconds=wait_time)
+            await asyncio.sleep(wait_time)
+            self.rate_limiter["tokens"] = 1.0
+        self.rate_limiter["tokens"] -= 1.0
+    async def close(self) -> None:
+        """Close aiohttp session and cleanup resources."""
+        if self.session and not self.session.closed:
+            await self.session.close()
+            self.logger.info("session_closed")

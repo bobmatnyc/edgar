@@ -1,0 +1,43 @@
+name: Invoice Data Extraction
+description: Extract and transform invoice data from PDF files
+version: 1.0.0
+
+data_source:
+  type: pdf
+  config:
+    file_path: input/invoice_001.pdf
+    page_number: 0
+    table_strategy: lines  # Use lines strategy for bordered tables
+    skip_rows: 0
+
+examples:
+  - examples/invoice_001.json
+  - examples/invoice_002.json
+
+transformations:
+  # Schema analyzer will detect these automatically from examples
+  - type: field_rename
+    description: Rename Item to product
+  - type: type_conversion
+    description: Convert Qty string to integer quantity
+  - type: field_rename_and_conversion
+    description: Convert Price string to float unit_price (remove $ symbol)
+  - type: field_rename_and_conversion
+    description: Convert Total string to float line_total (remove $ symbol)
+
+target_schema:
+  product: string
+  quantity: integer
+  unit_price: number
+  line_total: number
+
+output:
+  format: json
+  schema_version: "1.0"
+
+metadata:
+  created: "2025-11-29"
+  poc: true
+  work_path: "pdf-file-transform"
+  ticket: "1M-384"
+  pattern_reference: "projects/employee_roster (Excel POC)"

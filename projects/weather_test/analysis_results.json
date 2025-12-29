@@ -1,0 +1,938 @@
+{
+  "patterns": [
+    {
+      "type": "field_mapping",
+      "confidence": 1.0,
+      "source_path": "name",
+      "target_path": "city",
+      "transformation": "Map field 'name' to 'city'",
+      "examples": [
+        [
+          "Singapore",
+          "Singapore"
+        ],
+        [
+          "Oslo",
+          "Oslo"
+        ],
+        [
+          "London",
+          "London"
+        ],
+        [
+          "Tokyo",
+          "Tokyo"
+        ],
+        [
+          "Moscow",
+          "Moscow"
+        ],
+        [
+          "Dubai",
+          "Dubai"
+        ],
+        [
+          "New York",
+          "New York"
+        ]
+      ],
+      "source_type": "str",
+      "target_type": "str",
+      "code_snippet": null,
+      "notes": null
+    },
+    {
+      "type": "field_extraction",
+      "confidence": 1.0,
+      "source_path": "sys.country",
+      "target_path": "country",
+      "transformation": "Extract nested field from 'sys.country'",
+      "examples": [
+        [
+          "SG",
+          "SG"
+        ],
+        [
+          "NO",
+          "NO"
+        ],
+        [
+          "GB",
+          "GB"
+        ],
+        [
+          "JP",
+          "JP"
+        ],
+        [
+          "RU",
+          "RU"
+        ],
+        [
+          "AE",
+          "AE"
+        ],
+        [
+          "US",
+          "US"
+        ]
+      ],
+      "source_type": "str",
+      "target_type": "str",
+      "code_snippet": null,
+      "notes": null
+    },
+    {
+      "type": "field_extraction",
+      "confidence": 1.0,
+      "source_path": "main.temp",
+      "target_path": "temperature_c",
+      "transformation": "Extract nested field from 'main.temp'",
+      "examples": [
+        [
+          28.0,
+          28.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          15.5,
+          15.5
+        ],
+        [
+          18.2,
+          18.2
+        ],
+        [
+          -8.0,
+          -8.0
+        ],
+        [
+          35.0,
+          35.0
+        ],
+        [
+          12.0,
+          12.0
+        ]
+      ],
+      "source_type": "float",
+      "target_type": "float",
+      "code_snippet": null,
+      "notes": null
+    },
+    {
+      "type": "field_extraction",
+      "confidence": 1.0,
+      "source_path": "main.feels_like",
+      "target_path": "feels_like_c",
+      "transformation": "Extract nested field from 'main.feels_like'",
+      "examples": [
+        [
+          32.5,
+          32.5
+        ],
+        [
+          -3.0,
+          -3.0
+        ],
+        [
+          14.2,
+          14.2
+        ],
+        [
+          17.5,
+          17.5
+        ],
+        [
+          -12.5,
+          -12.5
+        ],
+        [
+          38.5,
+          38.5
+        ],
+        [
+          10.5,
+          10.5
+        ]
+      ],
+      "source_type": "float",
+      "target_type": "float",
+      "code_snippet": null,
+      "notes": null
+    },
+    {
+      "type": "field_extraction",
+      "confidence": 1.0,
+      "source_path": "main.humidity",
+      "target_path": "humidity_percent",
+      "transformation": "Extract nested field from 'main.humidity'",
+      "examples": [
+        [
+          88,
+          88
+        ],
+        [
+          78,
+          78
+        ],
+        [
+          72,
+          72
+        ],
+        [
+          55,
+          55
+        ],
+        [
+          85,
+          85
+        ],
+        [
+          25,
+          25
+        ],
+        [
+          68,
+          68
+        ]
+      ],
+      "source_type": "int",
+      "target_type": "int",
+      "code_snippet": null,
+      "notes": null
+    },
+    {
+      "type": "field_extraction",
+      "confidence": 1.0,
+      "source_path": "main.pressure",
+      "target_path": "pressure_hpa",
+      "transformation": "Extract nested field from 'main.pressure'",
+      "examples": [
+        [
+          1008,
+          1008
+        ],
+        [
+          1005,
+          1005
+        ],
+        [
+          1012,
+          1012
+        ],
+        [
+          1015,
+          1015
+        ],
+        [
+          1020,
+          1020
+        ],
+        [
+          1010,
+          1010
+        ],
+        [
+          1013,
+          1013
+        ]
+      ],
+      "source_type": "int",
+      "target_type": "int",
+      "code_snippet": null,
+      "notes": null
+    },
+    {
+      "type": "field_extraction",
+      "confidence": 1.0,
+      "source_path": "wind.speed",
+      "target_path": "wind_speed_ms",
+      "transformation": "Extract nested field from 'wind.speed'",
+      "examples": [
+        [
+          1.5,
+          1.5
+        ],
+        [
+          7.5,
+          7.5
+        ],
+        [
+          4.1,
+          4.1
+        ],
+        [
+          2.5,
+          2.5
+        ],
+        [
+          5.5,
+          5.5
+        ],
+        [
+          3.5,
+          3.5
+        ],
+        [
+          3.0,
+          3.0
+        ]
+      ],
+      "source_type": "float",
+      "target_type": "float",
+      "code_snippet": null,
+      "notes": null
+    },
+    {
+      "type": "field_extraction",
+      "confidence": 1.0,
+      "source_path": "weather[0].description",
+      "target_path": "conditions",
+      "transformation": "Extract nested field from 'weather[0].description'",
+      "examples": [
+        [
+          "moderate rain",
+          "moderate rain"
+        ],
+        [
+          "broken clouds",
+          "broken clouds"
+        ],
+        [
+          "light rain",
+          "light rain"
+        ],
+        [
+          "clear sky",
+          "clear sky"
+        ],
+        [
+          "snow",
+          "snow"
+        ],
+        [
+          "clear sky",
+          "clear sky"
+        ],
+        [
+          "mist",
+          "mist"
+        ]
+      ],
+      "source_type": "str",
+      "target_type": "str",
+      "code_snippet": null,
+      "notes": null
+    },
+    {
+      "type": "field_extraction",
+      "confidence": 1.0,
+      "source_path": "clouds.all",
+      "target_path": "cloudiness_percent",
+      "transformation": "Extract nested field from 'clouds.all'",
+      "examples": [
+        [
+          85,
+          85
+        ],
+        [
+          60,
+          60
+        ],
+        [
+          75,
+          75
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          90,
+          90
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          50,
+          50
+        ]
+      ],
+      "source_type": "int",
+      "target_type": "int",
+      "code_snippet": null,
+      "notes": null
+    },
+    {
+      "type": "field_mapping",
+      "confidence": 1.0,
+      "source_path": "visibility",
+      "target_path": "visibility_m",
+      "transformation": "Map field 'visibility' to 'visibility_m'",
+      "examples": [
+        [
+          7000,
+          7000
+        ],
+        [
+          8000,
+          8000
+        ],
+        [
+          10000,
+          10000
+        ],
+        [
+          10000,
+          10000
+        ],
+        [
+          5000,
+          5000
+        ],
+        [
+          10000,
+          10000
+        ],
+        [
+          6000,
+          6000
+        ]
+      ],
+      "source_type": "int",
+      "target_type": "int",
+      "code_snippet": null,
+      "notes": null
+    }
+  ],
+  "input_schema": {
+    "fields": [
+      {
+        "path": "coord.lon",
+        "field_type": "float",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          -0.1257,
+          37.6156,
+          103.8501
+        ]
+      },
+      {
+        "path": "coord.lat",
+        "field_type": "float",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          1.2897,
+          35.6895,
+          40.7128
+        ]
+      },
+      {
+        "path": "weather[0].id",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 2,
+        "is_array": true,
+        "array_item_type": "int",
+        "sample_values": [
+          800,
+          803,
+          500
+        ]
+      },
+      {
+        "path": "weather[0].main",
+        "field_type": "str",
+        "required": true,
+        "nullable": false,
+        "nested_level": 2,
+        "is_array": true,
+        "array_item_type": "str",
+        "sample_values": [
+          "Clouds",
+          "Rain",
+          "Clear"
+        ]
+      },
+      {
+        "path": "weather[0].description",
+        "field_type": "str",
+        "required": true,
+        "nullable": false,
+        "nested_level": 2,
+        "is_array": true,
+        "array_item_type": "str",
+        "sample_values": [
+          "mist",
+          "clear sky",
+          "snow"
+        ]
+      },
+      {
+        "path": "weather[0].icon",
+        "field_type": "str",
+        "required": true,
+        "nullable": false,
+        "nested_level": 2,
+        "is_array": true,
+        "array_item_type": "str",
+        "sample_values": [
+          "04d",
+          "10d",
+          "13d"
+        ]
+      },
+      {
+        "path": "base",
+        "field_type": "str",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          "stations"
+        ]
+      },
+      {
+        "path": "main.temp",
+        "field_type": "float",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          2.0,
+          35.0,
+          12.0
+        ]
+      },
+      {
+        "path": "main.feels_like",
+        "field_type": "float",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          32.5,
+          38.5,
+          10.5
+        ]
+      },
+      {
+        "path": "main.temp_min",
+        "field_type": "float",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          0.0,
+          33.0,
+          10.0
+        ]
+      },
+      {
+        "path": "main.temp_max",
+        "field_type": "float",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          4.0,
+          37.0,
+          14.0
+        ]
+      },
+      {
+        "path": "main.pressure",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          1005,
+          1008,
+          1010
+        ]
+      },
+      {
+        "path": "main.humidity",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          68,
+          72,
+          78
+        ]
+      },
+      {
+        "path": "visibility",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          8000,
+          5000,
+          10000
+        ]
+      },
+      {
+        "path": "wind.speed",
+        "field_type": "float",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          1.5,
+          2.5,
+          3.5
+        ]
+      },
+      {
+        "path": "wind.deg",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          320,
+          230,
+          200
+        ]
+      },
+      {
+        "path": "clouds.all",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          0,
+          75,
+          50
+        ]
+      },
+      {
+        "path": "dt",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          1701360000
+        ]
+      },
+      {
+        "path": "sys.type",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          1,
+          2
+        ]
+      },
+      {
+        "path": "sys.id",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          9470,
+          4610,
+          9029
+        ]
+      },
+      {
+        "path": "sys.country",
+        "field_type": "str",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          "SG",
+          "JP",
+          "GB"
+        ]
+      },
+      {
+        "path": "sys.sunrise",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          1701300000,
+          1701295200,
+          1701331200
+        ]
+      },
+      {
+        "path": "sys.sunset",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 1,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          1701343200,
+          1701331200,
+          1701357600
+        ]
+      },
+      {
+        "path": "timezone",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          28800,
+          0,
+          14400
+        ]
+      },
+      {
+        "path": "id",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          1850144,
+          524901,
+          5128581
+        ]
+      },
+      {
+        "path": "name",
+        "field_type": "str",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          "Dubai",
+          "London",
+          "New York"
+        ]
+      },
+      {
+        "path": "cod",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          200
+        ]
+      }
+    ],
+    "is_nested": true,
+    "has_arrays": true
+  },
+  "output_schema": {
+    "fields": [
+      {
+        "path": "city",
+        "field_type": "str",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          "Dubai",
+          "London",
+          "New York"
+        ]
+      },
+      {
+        "path": "country",
+        "field_type": "str",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          "SG",
+          "JP",
+          "GB"
+        ]
+      },
+      {
+        "path": "temperature_c",
+        "field_type": "float",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          2.0,
+          35.0,
+          12.0
+        ]
+      },
+      {
+        "path": "feels_like_c",
+        "field_type": "float",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          32.5,
+          38.5,
+          10.5
+        ]
+      },
+      {
+        "path": "humidity_percent",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          68,
+          72,
+          78
+        ]
+      },
+      {
+        "path": "pressure_hpa",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          1005,
+          1008,
+          1010
+        ]
+      },
+      {
+        "path": "wind_speed_ms",
+        "field_type": "float",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          1.5,
+          2.5,
+          3.5
+        ]
+      },
+      {
+        "path": "conditions",
+        "field_type": "str",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          "mist",
+          "clear sky",
+          "snow"
+        ]
+      },
+      {
+        "path": "cloudiness_percent",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          0,
+          75,
+          50
+        ]
+      },
+      {
+        "path": "visibility_m",
+        "field_type": "int",
+        "required": true,
+        "nullable": false,
+        "nested_level": 0,
+        "is_array": false,
+        "array_item_type": null,
+        "sample_values": [
+          8000,
+          5000,
+          10000
+        ]
+      }
+    ],
+    "is_nested": false,
+    "has_arrays": false
+  },
+  "num_examples": 7
+}

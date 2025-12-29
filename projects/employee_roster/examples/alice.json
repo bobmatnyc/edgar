@@ -1,0 +1,21 @@
+{
+  "example_id": "hr_roster_e1001_alice",
+  "description": "Transform Alice Johnson employee record",
+  "input": {
+    "employee_id": "E1001",
+    "first_name": "Alice",
+    "last_name": "Johnson",
+    "department": "Engineering",
+    "hire_date": "2020-03-15",
+    "salary": 95000,
+    "is_manager": "Yes"
+  },
+  "output": {
+    "id": "E1001",
+    "full_name": "Alice Johnson",
+    "dept": "Engineering",
+    "hired": "2020-03-15",
+    "annual_salary_usd": 95000.0,
+    "manager": true
+  }
+}

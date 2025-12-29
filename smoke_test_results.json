@@ -1,0 +1,142 @@
+{
+  "test_run": {
+    "date": "2025-12-06",
+    "commit": "08c5927",
+    "description": "P0 Bug Fixes Smoke Test",
+    "duration_minutes": 10,
+    "status": "CONDITIONAL_APPROVAL"
+  },
+  "summary": {
+    "total_tests": 10,
+    "passed": 9,
+    "failed": 1,
+    "pass_rate": 0.90,
+    "p0_bugs_fixed": 3,
+    "p0_bugs_introduced": 0,
+    "p1_bugs_introduced": 1
+  },
+  "test_results": [
+    {
+      "id": 1,
+      "name": "Import & Initialization",
+      "status": "PASS",
+      "notes": "Clean import, all services initialized correctly. No AttributeErrors."
+    },
+    {
+      "id": 2,
+      "name": "CLI Help",
+      "status": "PASS",
+      "notes": "Help text displays all flags correctly (--project, --resume, --list-sessions)."
+    },
+    {
+      "id": 3,
+      "name": "Basic Commands (No Project)",
+      "status": "PASS",
+      "notes": "Rich table renders correctly. No crashes. Clean exit."
+    },
+    {
+      "id": 4,
+      "name": "Load & Show Commands",
+      "status": "PASS",
+      "notes": "Project loads successfully. P0 Bug #2 FIXED: No AttributeError on data_source.type access."
+    },
+    {
+      "id": 5,
+      "name": "Examples Command",
+      "status": "PASS",
+      "notes": "P0 Bug #3 FIXED: No AttributeError on output_data/output field access."
+    },
+    {
+      "id": 6,
+      "name": "Analysis Command",
+      "status": "PASS",
+      "notes": "P0 Bug #1 FIXED: Pattern objects have source_field/target_field attributes."
+    },
+    {
+      "id": 7,
+      "name": "Patterns Command",
+      "status": "PASS",
+      "notes": "Patterns command loads without AttributeError. P0 Bug #1 FIXED."
+    },
+    {
+      "id": 8,
+      "name": "Full Workflow",
+      "status": "PASS",
+      "notes": "All individual commands work. Sequential execution confirmed."
+    },
+    {
+      "id": 9,
+      "name": "Session Save/Resume",
+      "status": "FAIL",
+      "error": "TypeError: Object of type datetime is not JSON serializable",
+      "location": "src/edgar_analyzer/interactive/session.py:991",
+      "severity": "P1",
+      "notes": "ProjectConfig.model_dump() returns datetime objects. Use model_dump(mode='json')."
+    },
+    {
+      "id": 10,
+      "name": "CLI Flags",
+      "status": "PASS",
+      "notes": "--list-sessions flag works correctly. Displays table and exits cleanly."
+    }
+  ],
+  "p0_bugs_verified": [
+    {
+      "id": 1,
+      "name": "Pattern AttributeError (source_field, target_field)",
+      "status": "FIXED",
+      "verified_by": ["Test 6", "Test 7"]
+    },
+    {
+      "id": 2,
+      "name": "ProjectConfig AttributeError (data_source.type)",
+      "status": "FIXED",
+      "verified_by": ["Test 4"]
+    },
+    {
+      "id": 3,
+      "name": "ExampleConfig AttributeError (output_data/output)",
+      "status": "FIXED",
+      "verified_by": ["Test 5"]
+    }
+  ],
+  "new_bugs": [
+    {
+      "severity": "P1",
+      "name": "Session Save - datetime JSON Serialization Error",
+      "location": "src/edgar_analyzer/interactive/session.py:991",
+      "impact": "Cannot save/resume sessions",
+      "frequency": 1.0,
+      "blocking": false,
+      "fix_estimate_minutes": 30,
+      "fix_description": "Use model_dump(mode='json') instead of model_dump()"
+    }
+  ],
+  "recommendation": {
+    "decision": "APPROVE",
+    "condition": "documented_limitation",
+    "rationale": [
+      "Core extraction workflow fully functional (9/10 tests pass)",
+      "All 3 P0 bugs confirmed fixed",
+      "No AttributeErrors in critical paths",
+      "Session persistence is optional convenience feature",
+      "Risk: LOW - session save failure doesn't block alpha testing"
+    ],
+    "next_steps": [
+      "Document session save limitation in release notes",
+      "Create ticket for P1 bug fix (30-min fix)",
+      "Proceed with user acceptance testing",
+      "Fix session save in parallel"
+    ],
+    "alternative": "Block for P1 fix (~45 min total including regression)"
+  },
+  "metrics": {
+    "test_pass_rate": 0.90,
+    "threshold_pass_rate": 0.80,
+    "p0_fix_rate": 1.00,
+    "new_p0_bugs": 0,
+    "new_p1_bugs": 1,
+    "core_workflow_functional": true,
+    "attribute_errors": 0
+  }
+}

@@ -1,0 +1,4684 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-21T14:29:50.514042",
+    "total_companies": 5,
+    "total_validations": 353,
+    "report_name": "quality_test_2023"
+  },
+  "summary": {
+    "overall_quality_score": 0.8556301571018736,
+    "overall_grade": "B",
+    "total_validations": 353,
+    "critical_issues": 0,
+    "errors": 3,
+    "warnings": 18,
+    "info_messages": 332,
+    "companies_by_grade": {
+      "A": 0,
+      "B": 5,
+      "C": 0,
+      "D": 0,
+      "F": 0
+    },
+    "validation_types": {
+      "tax_expense": {
+        "total": 30,
+        "passed": 15,
+        "failed": 15
+      },
+      "executive_compensation": {
+        "total": 300,
+        "passed": 298,
+        "failed": 2
+      },
+      "source_verification": {
+        "total": 7,
+        "passed": 4,
+        "failed": 3
+      },
+      "spot_check": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "sanity_check": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      }
+    }
+  },
+  "company_scores": {
+    "Walmart Inc.": {
+      "score": 0.8416107382550337,
+      "grade": "B",
+      "critical_issues": 0,
+      "errors": 2,
+      "warnings": 3,
+      "total_validations": 71
+    },
+    "Amazon.com Inc.": {
+      "score": 0.8448979591836738,
+      "grade": "B",
+      "critical_issues": 0,
+      "errors": 0,
+      "warnings": 5,
+      "total_validations": 71
+    },
+    "Apple Inc.": {
+      "score": 0.857823129251701,
+      "grade": "B",
+      "critical_issues": 0,
+      "errors": 1,
+      "warnings": 3,
+      "total_validations": 71
+    },
+    "CVS Health Corporation": {
+      "score": 0.8699300699300703,
+      "grade": "B",
+      "critical_issues": 0,
+      "errors": 0,
+      "warnings": 3,
+      "total_validations": 70
+    },
+    "UnitedHealth Group Incorporated": {
+      "score": 0.8638888888888892,
+      "grade": "B",
+      "critical_issues": 0,
+      "errors": 0,
+      "warnings": 4,
+      "total_validations": 70
+    }
+  },
+  "detailed_validations": [
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 1114000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 1,114,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 1114000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 1337000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 1,337,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 1337000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 1285000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 1,285,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 1285000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 28655203.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 11279273.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 17706961.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 10030180.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 11143458.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 24936220.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 14888530.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 15869900.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 9475345.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 7231349.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 39638784.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 28179508.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 14071051.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 14443773.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 11019672.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax expense below expected range for Walmart Inc. (2023): $1,285,000,000 < $4,000,000,000",
+        "severity": "ERROR",
+        "field_name": "tax_expense_benchmark",
+        "expected_value": "$4,000,000,000-$6,000,000,000",
+        "actual_value": 1285000000.0,
+        "suggestion": "Verify tax expense extraction - value seems low compared to known data"
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.2,
+        "message": "CEO compensation outside expected range for Walmart Inc. (2023): $39,638,784",
+        "severity": "ERROR",
+        "field_name": "ceo_compensation_benchmark",
+        "expected_value": "$20,000,000-$30,000,000",
+        "actual_value": 39638784.0,
+        "suggestion": "Verify CEO compensation extraction against known public data"
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Company name has proper corporate suffix: Walmart Inc.",
+        "severity": "INFO",
+        "field_name": "company_name_format",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Ticker symbol format looks good: WMT",
+        "severity": "INFO",
+        "field_name": "ticker_symbol",
+        "expected_value": null,
+        "actual_value": "WMT",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Walmart Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Fortune 500 ranking is valid: #1",
+        "severity": "INFO",
+        "field_name": "fortune_ranking",
+        "expected_value": null,
+        "actual_value": 1,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 2374000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 2,374,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 2374000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 2863000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 2,863,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 2863000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 4791000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 4,791,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 4791000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 40655140.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 18037323.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 18233201.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.4,
+        "message": "Compensation components don't sum to total: 18,944,242 \u2260 18,233,201",
+        "severity": "WARNING",
+        "field_name": "compensation_consistency",
+        "expected_value": 18944242.0,
+        "actual_value": 18233201.0,
+        "suggestion": "Verify all compensation components are captured correctly"
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 16923006.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 12851188.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 44264509.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 35066857.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 22407562.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 16934734.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 13327473.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 32883775.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 15593511.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 17685492.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 15007236.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 12332335.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.4,
+        "message": "Compensation components don't sum to total: 12,489,008 \u2260 12,332,335",
+        "severity": "WARNING",
+        "field_name": "compensation_consistency",
+        "expected_value": 12489008.0,
+        "actual_value": 12332335.0,
+        "suggestion": "Verify all compensation components are captured correctly"
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.5,
+        "message": "No industry benchmarks available for sector: Consumer Discretionary",
+        "severity": "INFO",
+        "field_name": "industry_benchmark",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.5,
+        "message": "No benchmark data available for Amazon.com Inc.",
+        "severity": "INFO",
+        "field_name": "benchmark_verification",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Company name has proper corporate suffix: Amazon.com Inc.",
+        "severity": "INFO",
+        "field_name": "company_name_format",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Ticker symbol format looks good: AMZN",
+        "severity": "INFO",
+        "field_name": "ticker_symbol",
+        "expected_value": null,
+        "actual_value": "AMZN",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Fortune 500 ranking is valid: #2",
+        "severity": "INFO",
+        "field_name": "fortune_ranking",
+        "expected_value": null,
+        "actual_value": 2,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 10481000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 10,481,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 10481000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 9680000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 9,680,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 9680000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 14527000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 14,527,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 14527000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 39347118.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 17075186.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 19360774.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 21039621.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 16566156.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 22285233.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 12939982.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 13999897.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 9466177.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 7511130.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 22278137.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 11665879.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 8848520.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 10776796.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 6214236.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax expense within expected range for Apple Inc. (2023): $14,527,000,000",
+        "severity": "INFO",
+        "field_name": "tax_expense_benchmark",
+        "expected_value": null,
+        "actual_value": 14527000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.2,
+        "message": "CEO compensation outside expected range for Apple Inc. (2023): $22,278,137",
+        "severity": "ERROR",
+        "field_name": "ceo_compensation_benchmark",
+        "expected_value": "$60,000,000-$100,000,000",
+        "actual_value": 22278137.0,
+        "suggestion": "Verify CEO compensation extraction against known public data"
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Company name has proper corporate suffix: Apple Inc.",
+        "severity": "INFO",
+        "field_name": "company_name_format",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Ticker symbol format looks good: AAPL",
+        "severity": "INFO",
+        "field_name": "ticker_symbol",
+        "expected_value": null,
+        "actual_value": "AAPL",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "Apple Inc.",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Fortune 500 ranking is valid: #3",
+        "severity": "INFO",
+        "field_name": "fortune_ranking",
+        "expected_value": null,
+        "actual_value": 3,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 2366000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 2,366,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 2366000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 2569000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 2,569,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 2569000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 2548000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 2,548,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 2548000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 53161574.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 39653989.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 30607957.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 18584995.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 24393629.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 18214418.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 7661693.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 9248699.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 5988942.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 5831687.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 50820824.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 28128358.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 24927753.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 19618093.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 20056532.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.5,
+        "message": "No benchmark data available for CVS Health Corporation",
+        "severity": "INFO",
+        "field_name": "benchmark_verification",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Company name has proper corporate suffix: CVS Health Corporation",
+        "severity": "INFO",
+        "field_name": "company_name_format",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Ticker symbol format looks good: CVS",
+        "severity": "INFO",
+        "field_name": "ticker_symbol",
+        "expected_value": null,
+        "actual_value": "CVS",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "CVS Health Corporation",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Fortune 500 ranking is valid: #4",
+        "severity": "INFO",
+        "field_name": "fortune_ranking",
+        "expected_value": null,
+        "actual_value": 4,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 3742000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 3,742,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 3742000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 4973000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 4,973,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 4973000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Tax Expense within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_tax_expense",
+        "expected_value": null,
+        "actual_value": 4578000000.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": false,
+        "confidence_score": 0.3,
+        "message": "Tax components don't sum to total: 0 + 0 \u2260 4,578,000,000",
+        "severity": "WARNING",
+        "field_name": "tax_expense_consistency",
+        "expected_value": 0.0,
+        "actual_value": 4578000000.0,
+        "suggestion": "Check if there are additional tax components not captured"
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 34466420.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 26229811.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 16170011.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 8937296.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 12672845.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 20441187.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 9380757.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 14448505.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 8895094.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 7436519.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 33568480.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Executive Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Executive Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'John Smith'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "John Smith",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 26108013.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Financial Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Financial Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Sarah Johnson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Sarah Johnson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 17499301.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Operating Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Operating Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Michael Brown'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Michael Brown",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 12879775.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Executive Vice President",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Executive Vice President",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Jennifer Davis'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Jennifer Davis",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Total Compensation within reasonable range",
+        "severity": "INFO",
+        "field_name": "total_compensation",
+        "expected_value": null,
+        "actual_value": 13286922.0,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Compensation components are consistent",
+        "severity": "INFO",
+        "field_name": "compensation_consistency",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Recognized executive title: Chief Technology Officer",
+        "severity": "INFO",
+        "field_name": "executive_title",
+        "expected_value": null,
+        "actual_value": "Chief Technology Officer",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Executive name format looks good: 'Robert Wilson'",
+        "severity": "INFO",
+        "field_name": "executive_name",
+        "expected_value": null,
+        "actual_value": "Robert Wilson",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.5,
+        "message": "No benchmark data available for UnitedHealth Group Incorporated",
+        "severity": "INFO",
+        "field_name": "benchmark_verification",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.6,
+        "message": "Company name missing typical corporate suffix: UnitedHealth Group Incorporated",
+        "severity": "WARNING",
+        "field_name": "company_name_format",
+        "expected_value": null,
+        "actual_value": null,
+        "suggestion": "Verify complete company name extraction"
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.9,
+        "message": "Ticker symbol format looks good: UNH",
+        "severity": "INFO",
+        "field_name": "ticker_symbol",
+        "expected_value": null,
+        "actual_value": "UNH",
+        "suggestion": null
+      }
+    },
+    {
+      "company": "UnitedHealth Group Incorporated",
+      "validation": {
+        "is_valid": true,
+        "confidence_score": 0.95,
+        "message": "Fortune 500 ranking is valid: #5",
+        "severity": "INFO",
+        "field_name": "fortune_ranking",
+        "expected_value": null,
+        "actual_value": 5,
+        "suggestion": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "analysis_id": "fortune500_2023_7bcd7fa0",
+  "target_year": 2023,
+  "analysis_years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "total_companies": 2,
+  "created_at": "2025-11-21T13:49:46.606977",
+  "last_updated": "2025-11-21T13:49:47.935633",
+  "completed_companies": 2,
+  "failed_companies": 0,
+  "config": {
+    "limit": 2,
+    "save_frequency": 5
+  },
+  "companies": [
+    {
+      "cik": "0000066740",
+      "name": "Walmart Inc.",
+      "ticker": "WMT",
+      "fortune_rank": 1,
+      "sector": "Consumer Staples",
+      "industry": "Retail - General Merchandise",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T13:49:46.607461",
+      "extraction_end_time": "2025-11-21T13:49:47.272470",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {},
+      "compensation_data": {},
+      "total_compensation_by_year": {},
+      "compensation_vs_tax_ratios": {}
+    },
+    {
+      "cik": "0001018724",
+      "name": "Amazon.com Inc.",
+      "ticker": "AMZN",
+      "fortune_rank": 2,
+      "sector": "Consumer Discretionary",
+      "industry": "E-commerce & Cloud Computing",
+      "status": "completed",
+      "extraction_start_time": "2025-11-21T13:49:47.273007",
+      "extraction_end_time": "2025-11-21T13:49:47.935127",
+      "error_message": null,
+      "retry_count": 0,
+      "tax_data": {},
+      "compensation_data": {},
+      "total_compensation_by_year": {},
+      "compensation_vs_tax_ratios": {}
+    }
+  ],
+  "global_errors": []
+}

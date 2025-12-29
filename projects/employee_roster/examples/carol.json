@@ -1,0 +1,21 @@
+{
+  "example_id": "hr_roster_e1003_carol",
+  "description": "Transform Carol Davis employee record",
+  "input": {
+    "employee_id": "E1003",
+    "first_name": "Carol",
+    "last_name": "Davis",
+    "department": "Engineering",
+    "hire_date": "2021-01-10",
+    "salary": 85000,
+    "is_manager": "Yes"
+  },
+  "output": {
+    "id": "E1003",
+    "full_name": "Carol Davis",
+    "dept": "Engineering",
+    "hired": "2021-01-10",
+    "annual_salary_usd": 85000.0,
+    "manager": true
+  }
+}

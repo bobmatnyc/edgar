@@ -1,0 +1,19 @@
+{
+  "input": {
+    "employee_id": "E1002",
+    "first_name": "Bob",
+    "last_name": "Smith",
+    "department": "Sales",
+    "hire_date": "2021-06-20",
+    "salary": 75000,
+    "is_manager": "No"
+  },
+  "output": {
+    "id": "E1002",
+    "full_name": "Bob Smith",
+    "dept": "Sales",
+    "hired": "2021-06-20",
+    "annual_salary_usd": 75000.0,
+    "manager": false
+  }
+}

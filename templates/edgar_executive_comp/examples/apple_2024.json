@@ -1,0 +1,180 @@
+{
+  "description": "Apple Inc. executive compensation extraction example (FY2024)",
+  "input": {
+    "cik": "0000320193",
+    "company_name": "Apple Inc.",
+    "ticker": "AAPL",
+    "fiscal_year": 2024,
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/320193/000130817924000010/laapl2024_def14a.htm",
+    "filing_date": "2024-01-10"
+  },
+  "output": {
+    "company_name": "Apple Inc.",
+    "ticker": "AAPL",
+    "cik": "0000320193",
+    "filing_date": "2024-01-10",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/320193/000130817924000010/laapl2024_def14a.htm",
+    "fiscal_years": [2024, 2023, 2022],
+    "executives": [
+      {
+        "name": "Timothy D. Cook",
+        "position": "Chief Executive Officer",
+        "is_ceo": true,
+        "is_cfo": false,
+        "compensation_by_year": [
+          {
+            "year": 2024,
+            "salary": 3000000,
+            "bonus": 0,
+            "stock_awards": 58088946,
+            "option_awards": 0,
+            "non_equity_incentive": 12000000,
+            "change_in_pension": 0,
+            "all_other_compensation": 1520856,
+            "total": 74609802,
+            "footnotes": ["Stock awards are fair value per FASB ASC 718", "Security costs included in other compensation"]
+          },
+          {
+            "year": 2023,
+            "salary": 3000000,
+            "bonus": 0,
+            "stock_awards": 40000000,
+            "option_awards": 0,
+            "non_equity_incentive": 10500000,
+            "change_in_pension": 0,
+            "all_other_compensation": 1425000,
+            "total": 54925000,
+            "footnotes": ["Stock awards are fair value per FASB ASC 718"]
+          },
+          {
+            "year": 2022,
+            "salary": 3000000,
+            "bonus": 0,
+            "stock_awards": 42000000,
+            "option_awards": 0,
+            "non_equity_incentive": 11000000,
+            "change_in_pension": 0,
+            "all_other_compensation": 1380000,
+            "total": 57380000,
+            "footnotes": ["Stock awards are fair value per FASB ASC 718"]
+          }
+        ]
+      },
+      {
+        "name": "Luca Maestri",
+        "position": "Senior Vice President, Chief Financial Officer",
+        "is_ceo": false,
+        "is_cfo": true,
+        "compensation_by_year": [
+          {
+            "year": 2024,
+            "salary": 1000000,
+            "bonus": 0,
+            "stock_awards": 13986049,
+            "option_awards": 0,
+            "non_equity_incentive": 5040000,
+            "change_in_pension": 0,
+            "all_other_compensation": 47095,
+            "total": 20073144,
+            "footnotes": ["Stock awards are fair value per FASB ASC 718"]
+          },
+          {
+            "year": 2023,
+            "salary": 1000000,
+            "bonus": 0,
+            "stock_awards": 12000000,
+            "option_awards": 0,
+            "non_equity_incentive": 4500000,
+            "change_in_pension": 0,
+            "all_other_compensation": 45000,
+            "total": 17545000,
+            "footnotes": ["Stock awards are fair value per FASB ASC 718"]
+          },
+          {
+            "year": 2022,
+            "salary": 1000000,
+            "bonus": 0,
+            "stock_awards": 13000000,
+            "option_awards": 0,
+            "non_equity_incentive": 4700000,
+            "change_in_pension": 0,
+            "all_other_compensation": 43000,
+            "total": 18743000,
+            "footnotes": ["Stock awards are fair value per FASB ASC 718"]
+          }
+        ]
+      },
+      {
+        "name": "Katherine L. Adams",
+        "position": "Senior Vice President, General Counsel and Secretary",
+        "is_ceo": false,
+        "is_cfo": false,
+        "compensation_by_year": [
+          {
+            "year": 2024,
+            "salary": 1000000,
+            "bonus": 0,
+            "stock_awards": 13986049,
+            "option_awards": 0,
+            "non_equity_incentive": 5040000,
+            "change_in_pension": 0,
+            "all_other_compensation": 47095,
+            "total": 20073144,
+            "footnotes": ["Stock awards are fair value per FASB ASC 718"]
+          }
+        ]
+      },
+      {
+        "name": "Deirdre O'Brien",
+        "position": "Senior Vice President, Retail",
+        "is_ceo": false,
+        "is_cfo": false,
+        "compensation_by_year": [
+          {
+            "year": 2024,
+            "salary": 1000000,
+            "bonus": 0,
+            "stock_awards": 13986049,
+            "option_awards": 0,
+            "non_equity_incentive": 5040000,
+            "change_in_pension": 0,
+            "all_other_compensation": 47095,
+            "total": 20073144,
+            "footnotes": ["Stock awards are fair value per FASB ASC 718"]
+          }
+        ]
+      },
+      {
+        "name": "Jeff Williams",
+        "position": "Chief Operating Officer",
+        "is_ceo": false,
+        "is_cfo": false,
+        "compensation_by_year": [
+          {
+            "year": 2024,
+            "salary": 1000000,
+            "bonus": 0,
+            "stock_awards": 13986049,
+            "option_awards": 0,
+            "non_equity_incentive": 5040000,
+            "change_in_pension": 0,
+            "all_other_compensation": 47095,
+            "total": 20073144,
+            "footnotes": ["Stock awards are fair value per FASB ASC 718"]
+          }
+        ]
+      }
+    ],
+    "footnotes": {
+      "1": "Amounts shown represent the fiscal year ended September 30",
+      "2": "Stock awards represent the fair value on the grant date calculated in accordance with FASB ASC 718",
+      "3": "For Mr. Cook, includes security costs of $1,473,761"
+    },
+    "extraction_metadata": {
+      "extraction_date": "2025-12-08T00:00:00Z",
+      "model": "anthropic/claude-sonnet-4.5",
+      "confidence": 0.95,
+      "data_source": "SEC EDGAR DEF 14A filing"
+    }
+  }
+}

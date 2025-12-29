@@ -1,0 +1,21 @@
+{
+  "example_id": "hr_roster_e1002_bob",
+  "description": "Transform Bob Smith employee record",
+  "input": {
+    "employee_id": "E1002",
+    "first_name": "Bob",
+    "last_name": "Smith",
+    "department": "Marketing",
+    "hire_date": "2019-07-22",
+    "salary": 78000,
+    "is_manager": "No"
+  },
+  "output": {
+    "id": "E1002",
+    "full_name": "Bob Smith",
+    "dept": "Marketing",
+    "hired": "2019-07-22",
+    "annual_salary_usd": 78000.0,
+    "manager": false
+  }
+}

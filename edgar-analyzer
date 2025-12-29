@@ -1,0 +1,289 @@
+#!/usr/bin/env python3
+"""
+Edgar Analyzer - Self-Contained Fortune 500 Analysis Tool
+
+This executable automatically handles:
+- Virtual environment setup
+- Dependency installation
+- Application execution
+
+Usage:
+    ./edgar-analyzer analyze --limit 50
+    ./edgar-analyzer checkpoint-analysis --list-checkpoints
+    ./edgar-analyzer --help
+"""
+
+import os
+import sys
+import subprocess
+import platform
+from pathlib import Path
+
+
+class EdgarAnalyzerBootstrap:
+    """Bootstrap class for Edgar Analyzer self-contained execution."""
+    
+    def __init__(self):
+        """Initialize bootstrap."""
+        self.script_dir = Path(__file__).parent.absolute()
+        self.venv_dir = self.script_dir / "venv"
+        self.src_dir = self.script_dir / "src"
+        self.requirements_file = self.script_dir / "requirements.txt"
+        self.python_executable = self._get_python_executable()
+        
+    def _get_python_executable(self) -> str:
+        """Get the appropriate Python executable for the platform."""
+        system = platform.system().lower()
+        
+        if system == "windows":
+            return str(self.venv_dir / "Scripts" / "python.exe")
+        else:
+            return str(self.venv_dir / "bin" / "python")
+    
+    def _get_pip_executable(self) -> str:
+        """Get the appropriate pip executable for the platform."""
+        system = platform.system().lower()
+        
+        if system == "windows":
+            return str(self.venv_dir / "Scripts" / "pip.exe")
+        else:
+            return str(self.venv_dir / "bin" / "pip")
+    
+    def _get_edgar_analyzer_executable(self) -> str:
+        """Get the edgar-analyzer executable path."""
+        system = platform.system().lower()
+        
+        if system == "windows":
+            return str(self.venv_dir / "Scripts" / "edgar-analyzer.exe")
+        else:
+            return str(self.venv_dir / "bin" / "edgar-analyzer")
+    
+    def check_python_version(self) -> bool:
+        """Check if Python version is compatible."""
+        version = sys.version_info
+        if version.major != 3 or version.minor < 8:
+            print(f"❌ Python 3.8+ required. Found Python {version.major}.{version.minor}")
+            return False
+        
+        print(f"✅ Python {version.major}.{version.minor}.{version.micro} detected")
+        return True
+    
+    def create_virtual_environment(self) -> bool:
+        """Create virtual environment if it doesn't exist."""
+        if self.venv_dir.exists():
+            print(f"✅ Virtual environment already exists: {self.venv_dir}")
+            return True
+        
+        print(f"🔧 Creating virtual environment: {self.venv_dir}")
+        
+        try:
+            subprocess.run([
+                sys.executable, "-m", "venv", str(self.venv_dir)
+            ], check=True, capture_output=True, text=True)
+            
+            print("✅ Virtual environment created successfully")
+            return True
+            
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Failed to create virtual environment: {e}")
+            print(f"Error output: {e.stderr}")
+            return False
+    
+    def install_dependencies(self) -> bool:
+        """Install dependencies in virtual environment."""
+        if not self.requirements_file.exists():
+            print(f"❌ Requirements file not found: {self.requirements_file}")
+            return False
+        
+        print("🔧 Installing dependencies...")
+        
+        try:
+            # Upgrade pip first
+            subprocess.run([
+                self.python_executable, "-m", "pip", "install", "--upgrade", "pip"
+            ], check=True, capture_output=True, text=True)
+            
+            # Install requirements
+            subprocess.run([
+                self.python_executable, "-m", "pip", "install", "-r", str(self.requirements_file)
+            ], check=True, capture_output=True, text=True)
+            
+            print("✅ Dependencies installed successfully")
+            return True
+            
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Failed to install dependencies: {e}")
+            print(f"Error output: {e.stderr}")
+            return False
+    
+    def install_package(self) -> bool:
+        """Install the edgar-analyzer package in development mode."""
+        print("🔧 Installing edgar-analyzer package...")
+        
+        try:
+            subprocess.run([
+                self.python_executable, "-m", "pip", "install", "-e", "."
+            ], cwd=str(self.script_dir), check=True, capture_output=True, text=True)
+            
+            print("✅ Edgar Analyzer package installed successfully")
+            return True
+            
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Failed to install package: {e}")
+            print(f"Error output: {e.stderr}")
+            return False
+    
+    def check_installation(self) -> bool:
+        """Check if edgar-analyzer is properly installed."""
+        edgar_analyzer_path = Path(self._get_edgar_analyzer_executable())
+        
+        if not edgar_analyzer_path.exists():
+            print(f"❌ Edgar Analyzer executable not found: {edgar_analyzer_path}")
+            return False
+        
+        try:
+            result = subprocess.run([
+                self.python_executable, "-m", "edgar_analyzer.cli.main", "--version"
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                print("✅ Edgar Analyzer installation verified")
+                return True
+            else:
+                print(f"❌ Edgar Analyzer verification failed: {result.stderr}")
+                return False
+                
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+            print(f"❌ Edgar Analyzer verification failed: {e}")
+            return False
+
+    def setup_environment(self) -> bool:
+        """Complete environment setup process."""
+        print("🚀 Edgar Analyzer - Self-Contained Setup")
+        print("=" * 50)
+
+        # Check Python version
+        if not self.check_python_version():
+            return False
+
+        # Create virtual environment
+        if not self.create_virtual_environment():
+            return False
+
+        # Install dependencies
+        if not self.install_dependencies():
+            return False
+
+        # Install package
+        if not self.install_package():
+            return False
+
+        # Verify installation
+        if not self.check_installation():
+            return False
+
+        print("=" * 50)
+        print("✅ Edgar Analyzer setup complete!")
+        print("🎉 Ready to analyze Fortune 500 companies!")
+        print()
+
+        return True
+
+    def execute_command(self, args: list) -> int:
+        """Execute edgar-analyzer command with given arguments."""
+        try:
+            # Use the installed edgar-analyzer command
+            edgar_cmd = self._get_edgar_analyzer_executable()
+
+            if Path(edgar_cmd).exists():
+                # Use the installed executable
+                result = subprocess.run([edgar_cmd] + args)
+                return result.returncode
+            else:
+                # Fallback to module execution
+                result = subprocess.run([
+                    self.python_executable, "-m", "edgar_analyzer.cli.main"
+                ] + args)
+                return result.returncode
+
+        except KeyboardInterrupt:
+            print("\n🛑 Operation cancelled by user")
+            return 130
+        except Exception as e:
+            print(f"❌ Error executing command: {e}")
+            return 1
+
+    def show_help(self):
+        """Show help information."""
+        print("""
+🚀 Edgar Analyzer - Fortune 500 Analysis Tool
+
+USAGE:
+    ./edgar-analyzer <command> [options]
+
+COMMANDS:
+    analyze                     Smart analysis with auto-resume
+    checkpoint-analysis         Manual checkpoint control
+    enhanced-fortune500         Enhanced analysis with historical data
+    fortune500                  Basic Fortune 500 analysis
+    search                      Search for companies
+
+EXAMPLES:
+    # Smart analysis (recommended)
+    ./edgar-analyzer analyze --limit 50
+
+    # Force new analysis
+    ./edgar-analyzer analyze --limit 25 --force-new
+
+    # List checkpoints
+    ./edgar-analyzer checkpoint-analysis --list-checkpoints
+
+    # Resume specific analysis
+    ./edgar-analyzer checkpoint-analysis --resume fortune500_2023_abc12345
+
+    # Enhanced analysis with historical data
+    ./edgar-analyzer enhanced-fortune500 --limit 10 --historical
+
+SETUP:
+    The first run will automatically:
+    ✅ Create virtual environment
+    ✅ Install dependencies
+    ✅ Configure the application
+
+    Subsequent runs will use the existing environment.
+
+REQUIREMENTS:
+    - Python 3.8+
+    - Internet connection (for SEC EDGAR API)
+    - ~500MB disk space for dependencies
+
+For detailed help on any command:
+    ./edgar-analyzer <command> --help
+        """)
+
+
+def main():
+    """Main entry point for the self-contained executable."""
+    bootstrap = EdgarAnalyzerBootstrap()
+
+    # Handle special cases
+    if len(sys.argv) == 1 or (len(sys.argv) == 2 and sys.argv[1] in ['--help', '-h', 'help']):
+        bootstrap.show_help()
+        return 0
+
+    # Check if setup is needed
+    needs_setup = not bootstrap.venv_dir.exists() or not Path(bootstrap._get_edgar_analyzer_executable()).exists()
+
+    if needs_setup:
+        print("🔧 First run detected - setting up environment...")
+        if not bootstrap.setup_environment():
+            print("❌ Setup failed. Please check the error messages above.")
+            return 1
+        print()
+
+    # Execute the command
+    return bootstrap.execute_command(sys.argv[1:])
+
+
+if __name__ == "__main__":
+    sys.exit(main())

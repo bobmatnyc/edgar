@@ -1,3 +1,15 @@
+# EDGAR CLI - Git Ignore File
+
+# API Keys and Secrets (CRITICAL SECURITY)
+.env
+.env.local
+.env.production
+.env.staging
+*.key
+*.pem
+secrets.json
+config/secrets.py
+
 # Python
 __pycache__/
 *.py[cod]
@@ -23,11 +35,12 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Virtual Environment
+# Virtual Environments
 venv/
-ENV/
 env/
-.venv
+ENV/
+env.bak/
+venv.bak/
 
 # IDE
 .vscode/
@@ -36,55 +49,200 @@ env/
 *.swo
 *~
 
-# Environment
-.env
-.env.local
-.env.*.local
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Testing
-.pytest_cache/
-.coverage
-.coverage.*
-htmlcov/
-.tox/
+# Logs (now in tests/)
+tests/logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env.test
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Application specific
+data/cache/
+data/temp/
+tests/output/temp/
+*.tmp
+*.bak
+
+# Test results (now in tests/)
+tests/results/
+test-results/
+coverage.xml
+*.cover
 .hypothesis/
+.pytest_cache/
 
-# Type Checking
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
 .mypy_cache/
 .dmypy.json
 dmypy.json
-.pytype/
+
+# Pyre type checker
 .pyre/
 
-# Profiling
-*.prof
-
-# MacOS
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Logs
-*.log
+# Added by Claude MPM /mpm-init
+$RECYCLE.BIN/
+*.backup
+*.cab
+*.cache
+*.cert
+*.crt
+*.db
+*.lnk
+*.manifest
+*.mpm.tmp
+*.msi
+*.msm
+*.msp
+*.old
+*.pytest_cache
+*.spec
+*.sql
+*.sqlite
+*.sqlite3
+*.sublime-project
+*.sublime-workspace
+*.temp
+.claude-mpm/cache/
+.claude-mpm/logs/
+.claude-mpm/sessions/
+.claude-mpm/tmp/
+.claude-mpm/*.log
+.claude/cache/
+.claude/sessions/
+.conda/
+.coverage
+.coverage.*
+.env.*
+.kuzu-memory/
+.mcp-vector-search/
+.nox/
+.project
+.pydevproject
+.pytype/
+.secrets/
+.settings/
+.tox/
+.venv
+.yarn/
+Desktop.ini
+_build/
+backup/
+backups/
+conda-env/
+credentials/
+docs/_build/
+htmlcov/
+kuzu-memories/
 logs/
+site/
+temp/
+tmp/
+virtualenv/
 
-# Temporary files
-*.tmp
-*.bak
-*.swp
-.temp/
+# Claude MPM - Keep config directory but ignore sensitive data
+!.claude-mpm/
+!.claude-mpm/config/
+!.claude-mpm/memories/
+.claude-mpm/config/*.local
 
-# Claude AI Agent
-.claude-mpm/
-.claude/
-.mcp.json
+# Keep .claude directory structure for agents
+!.claude/
+!.claude/agents/
+.claude/*.local.json
+.claude/mcp.local.json
 
-# Generated output data
-output/
+# MCP Ticketer
+.mcp-ticketer/
 
-# Debug data
-*.debug.json
-*.debug.html
+# Ticket tracking (local workflow data)
+.aitrackdown/
 
-# Temporary analysis files
-*.tmp
+# Test projects (created during project command tests)
+projects/test-*/

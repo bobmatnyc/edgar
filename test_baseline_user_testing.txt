@@ -1,0 +1,162 @@
+EE...EFE
+==================================== ERRORS ====================================
+_ ERROR at setup of TestConfidenceThresholdCLIFlag.test_generate_with_threshold_flag _
+tests/integration/test_analyze_project_threshold.py:47: in mock_project_manager
+    with patch('edgar_analyzer.cli.commands.project.Container.project_manager') as mock:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1481: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/pkgutil.py:528: in resolve_name
+    result = getattr(result, p)
+             ^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'edgar_analyzer.cli.commands.project' has no attribute 'Container'
+_ ERROR at setup of TestConfidenceThresholdCLIFlag.test_generate_without_threshold_flag_skips_prompt _
+tests/integration/test_analyze_project_threshold.py:47: in mock_project_manager
+    with patch('edgar_analyzer.cli.commands.project.Container.project_manager') as mock:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1481: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/pkgutil.py:528: in resolve_name
+    result = getattr(result, p)
+             ^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'edgar_analyzer.cli.commands.project' has no attribute 'Container'
+_ ERROR at setup of TestEdgeCases.test_no_patterns_detected_skips_threshold_prompt _
+tests/integration/test_analyze_project_threshold.py:47: in mock_project_manager
+    with patch('edgar_analyzer.cli.commands.project.Container.project_manager') as mock:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1481: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/pkgutil.py:528: in resolve_name
+    result = getattr(result, p)
+             ^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'edgar_analyzer.cli.commands.project' has no attribute 'Container'
+_ ERROR at setup of TestBackwardCompatibility.test_generate_without_threshold_still_works _
+tests/integration/test_analyze_project_threshold.py:47: in mock_project_manager
+    with patch('edgar_analyzer.cli.commands.project.Container.project_manager') as mock:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1481: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/pkgutil.py:528: in resolve_name
+    result = getattr(result, p)
+             ^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'edgar_analyzer.cli.commands.project' has no attribute 'Container'
+=================================== FAILURES ===================================
+________ TestEdgeCases.test_all_patterns_excluded_still_generates_code _________
+tests/integration/test_analyze_project_threshold.py:334: in test_all_patterns_excluded_still_generates_code
+    result = filter_service.filter_patterns(sample_parsed_examples, threshold=1.1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/extract_transform_platform/services/analysis/pattern_filter.py:75: in filter_patterns
+    raise ValueError(f"Threshold must be in [0.0, 1.0], got {threshold}")
+E   ValueError: Threshold must be in [0.0, 1.0], got 1.1
+=============================== warnings summary ===============================
+src/edgar_analyzer/models/company.py:23
+  /Users/masa/Clients/Zach/projects/edgar/src/edgar_analyzer/models/company.py:23: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    @validator('cik')
+
+src/edgar_analyzer/models/company.py:28
+  /Users/masa/Clients/Zach/projects/edgar/src/edgar_analyzer/models/company.py:28: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    @validator('ticker')
+
+tests/integration/test_weather_api_e2e.py:151
+  /Users/masa/Clients/Zach/projects/edgar/tests/integration/test_weather_api_e2e.py:151: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/integration/test_weather_api_e2e.py:473
+  /Users/masa/Clients/Zach/projects/edgar/tests/integration/test_weather_api_e2e.py:473: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/integration/test_weather_api_e2e.py:511
+  /Users/masa/Clients/Zach/projects/edgar/tests/integration/test_weather_api_e2e.py:511: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/integration/test_weather_api_e2e.py:651
+  /Users/masa/Clients/Zach/projects/edgar/tests/integration/test_weather_api_e2e.py:651: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+src/edgar_analyzer/data_sources/__init__.py:18
+  /Users/masa/Clients/Zach/projects/edgar/src/edgar_analyzer/data_sources/__init__.py:18: DeprecationWarning: edgar_analyzer.data_sources.base is deprecated. Import from extract_transform_platform.core instead:
+    from extract_transform_platform.core import BaseDataSource, IDataSource
+    from .base import IDataSource, BaseDataSource
+
+src/edgar_analyzer/data_sources/__init__.py:19
+  /Users/masa/Clients/Zach/projects/edgar/src/edgar_analyzer/data_sources/__init__.py:19: DeprecationWarning: edgar_analyzer.data_sources.api_source is deprecated. Use 'from extract_transform_platform.data_sources.web import APIDataSource' instead. This wrapper will be removed in a future version.
+    from .api_source import APIDataSource
+
+src/edgar_analyzer/data_sources/__init__.py:21
+  /Users/masa/Clients/Zach/projects/edgar/src/edgar_analyzer/data_sources/__init__.py:21: DeprecationWarning: edgar_analyzer.data_sources.file_source is deprecated. Use extract_transform_platform.data_sources.file.file_source instead. This module will be removed in version 2.0.0.
+    from .file_source import FileDataSource
+
+src/edgar_analyzer/data_sources/__init__.py:22
+  /Users/masa/Clients/Zach/projects/edgar/src/edgar_analyzer/data_sources/__init__.py:22: DeprecationWarning: edgar_analyzer.data_sources.excel_source is deprecated. Import from extract_transform_platform.data_sources.file.excel_source instead. This wrapper will be removed in a future version.
+    from .excel_source import ExcelDataSource
+
+src/edgar_analyzer/data_sources/__init__.py:24
+  /Users/masa/Clients/Zach/projects/edgar/src/edgar_analyzer/data_sources/__init__.py:24: DeprecationWarning: edgar_analyzer.data_sources.url_source is deprecated. Use extract_transform_platform.data_sources.URLDataSource instead.
+    from .url_source import URLDataSource
+
+tests/test_external_artifacts.py:24
+  /Users/masa/Clients/Zach/projects/edgar/tests/test_external_artifacts.py:24: PytestCollectionWarning: cannot collect test class 'TestRunner' because it has a __init__ constructor (from: tests/test_external_artifacts.py)
+    class TestRunner:
+
+tests/test_skip_decorator.py:26
+  /Users/masa/Clients/Zach/projects/edgar/tests/test_skip_decorator.py:26: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+venv/lib/python3.13/site-packages/PyPDF2/__init__.py:21
+  /Users/masa/Clients/Zach/projects/edgar/venv/lib/python3.13/site-packages/PyPDF2/__init__.py:21: DeprecationWarning: PyPDF2 is deprecated. Please move to the pypdf library instead.
+    warnings.warn(
+
+tests/unit/services/test_code_generator_progress.py:320
+  /Users/masa/Clients/Zach/projects/edgar/tests/unit/services/test_code_generator_progress.py:320: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/unit/services/test_code_generator_progress.py:420
+  /Users/masa/Clients/Zach/projects/edgar/tests/unit/services/test_code_generator_progress.py:420: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/unit/services/test_code_generator_progress.py:494
+  /Users/masa/Clients/Zach/projects/edgar/tests/unit/services/test_code_generator_progress.py:494: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/unit/services/test_code_generator_progress.py:582
+  /Users/masa/Clients/Zach/projects/edgar/tests/unit/services/test_code_generator_progress.py:582: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/unit/services/test_code_generator_progress.py:635
+  /Users/masa/Clients/Zach/projects/edgar/tests/unit/services/test_code_generator_progress.py:635: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/unit/services/test_code_generator_progress.py:717
+  /Users/masa/Clients/Zach/projects/edgar/tests/unit/services/test_code_generator_progress.py:717: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/unit/services/test_code_generator_progress.py:785
+  /Users/masa/Clients/Zach/projects/edgar/tests/unit/services/test_code_generator_progress.py:785: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/unit/services/test_code_generator_progress.py:848
+  /Users/masa/Clients/Zach/projects/edgar/tests/unit/services/test_code_generator_progress.py:848: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/unit/services/test_code_generator_progress.py:912
+  /Users/masa/Clients/Zach/projects/edgar/tests/unit/services/test_code_generator_progress.py:912: PytestUnknownMarkWarning: Unknown pytest.mark.requires_api - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.requires_api
+
+tests/unit/test_data_sources.py:31
+  /Users/masa/Clients/Zach/projects/edgar/tests/unit/test_data_sources.py:31: DeprecationWarning: edgar_analyzer.utils.rate_limiter is deprecated. Import from extract_transform_platform.utils instead:
+    from extract_transform_platform.utils import RateLimiter
+    from edgar_analyzer.utils.rate_limiter import RateLimiter
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_analyze_project_threshold.py::TestEdgeCases::test_all_patterns_excluded_still_generates_code
+ERROR tests/integration/test_analyze_project_threshold.py::TestConfidenceThresholdCLIFlag::test_generate_with_threshold_flag
+ERROR tests/integration/test_analyze_project_threshold.py::TestConfidenceThresholdCLIFlag::test_generate_without_threshold_flag_skips_prompt
+ERROR tests/integration/test_analyze_project_threshold.py::TestEdgeCases::test_no_patterns_detected_skips_threshold_prompt
+ERROR tests/integration/test_analyze_project_threshold.py::TestBackwardCompatibility::test_generate_without_threshold_still_works
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 5 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 3 passed, 24 warnings, 4 errors in 2.70s

@@ -1,0 +1,33 @@
+{
+  "example_id": "example_2",
+  "description": "Extract weather data for Tokyo with clear sky",
+  "input": {
+    "coord": {
+      "lon": 139.69,
+      "lat": 35.69
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01d"
+      }
+    ],
+    "main": {
+      "temp": 22.3,
+      "feels_like": 21.8,
+      "temp_min": 21,
+      "temp_max": 24,
+      "pressure": 1015,
+      "humidity": 65
+    },
+    "name": "Tokyo"
+  },
+  "output": {
+    "city": "Tokyo",
+    "temperature_c": 22.3,
+    "humidity_percent": 65,
+    "conditions": "clear sky"
+  }
+}

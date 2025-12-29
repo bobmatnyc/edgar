@@ -1,0 +1,70 @@
+{
+  "total_companies": 100,
+  "successful": 88,
+  "failed": 12,
+  "success_rate": 0.88,
+  "total_duration": 45.363973249914125,
+  "requests_made": 100,
+  "failures": [
+    {
+      "company": "State Farm Insurance Cos.",
+      "rank": 39,
+      "error": "Client error '404 Not Found' for url 'https://data.sec.gov/submissions/CIK0000933471.json'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    },
+    {
+      "company": "Energy Transfer LP",
+      "rank": 46,
+      "error": "No DEF 14A filing found for CIK 0001276187"
+    },
+    {
+      "company": "World Kinect Corp.",
+      "rank": 64,
+      "error": "Client error '404 Not Found' for url 'https://data.sec.gov/submissions/CIK0000350733.json'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    },
+    {
+      "company": "Liberty Mutual Holding Co.",
+      "rank": 70,
+      "error": "Client error '404 Not Found' for url 'https://data.sec.gov/submissions/CIK0000935840.json'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    },
+    {
+      "company": "Fannie Mae",
+      "rank": 73,
+      "error": "No DEF 14A filing found for CIK 0000310522"
+    },
+    {
+      "company": "Stellantis N.V.",
+      "rank": 76,
+      "error": "No DEF 14A filing found for CIK 0001830219"
+    },
+    {
+      "company": "Freddie Mac",
+      "rank": 78,
+      "error": "Summary Compensation Table not found"
+    },
+    {
+      "company": "USAA",
+      "rank": 81,
+      "error": "Summary Compensation Table not found"
+    },
+    {
+      "company": "Performance Food Group Co.",
+      "rank": 84,
+      "error": "No DEF 14A filing found for CIK 0001625105"
+    },
+    {
+      "company": "TIAA",
+      "rank": 93,
+      "error": "Client error '404 Not Found' for url 'https://data.sec.gov/submissions/CIK0000098430.json'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    },
+    {
+      "company": "TD Synnex Corp.",
+      "rank": 99,
+      "error": "No DEF 14A filing found for CIK 0001482649"
+    },
+    {
+      "company": "New York Life Insurance Co.",
+      "rank": 100,
+      "error": "Client error '404 Not Found' for url 'https://data.sec.gov/submissions/CIK0000932841.json'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+"""
+Pydantic models for {{ domain }} data extraction.
+
+These models define the structure for {{ domain }} data
+extracted from SEC filings.
+
+Design Decisions:
+- **Schema Validation**: Strict typing matches disclosure requirements
+- **Optional Fields**: Some fields may be missing (defaults provided)
+- **Nested Structure**: Supports hierarchical data
+- **Metadata**: Extraction tracking for quality assurance
+
+Example:
+    >>> data = {{ models[0].name if models else 'DataModel' }}(
+    ...     # Field values here
+    ... )
+"""
+
+from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field, field_validator
+
+
+{% for model in models %}
+class {{ model.name }}(BaseModel):
+    """{{ model.description }}
+
+    {% if model.notes %}
+    Notes:
+    {{ model.notes | indent(4) }}
+    {% endif %}
+    """
+
+    {% for field in model.fields %}
+    {{ field.name }}: {{ field.type }} = Field(
+        {% if field.required %}...{% else %}default={{ field.default if field.default is not none else 'None' }}{% endif %},
+        description="{{ field.description }}"
+        {%- if field.ge is defined %}, ge={{ field.ge }}{% endif %}
+        {%- if field.le is defined %}, le={{ field.le }}{% endif %}
+        {%- if field.min_length is defined %}, min_length={{ field.min_length }}{% endif %}
+        {%- if field.max_length is defined %}, max_length={{ field.max_length }}{% endif %}
+        {%- if field.pattern is defined %}, pattern=r"{{ field.pattern }}"{% endif %}
+    )
+    {% endfor %}
+
+    {% if model.validators %}
+    {% for validator in model.validators %}
+    @field_validator('{{ validator.field }}')
+    @classmethod
+    def {{ validator.name }}(cls, v: {{ validator.type }}, info) -> {{ validator.type }}:
+        """{{ validator.description }}"""
+        {{ validator.code | indent(8) }}
+        return v
+    {% endfor %}
+    {% endif %}
+
+    {% if model.methods %}
+    {% for method in model.methods %}
+    def {{ method.name }}(self{% for param in method.params %}, {{ param.name }}: {{ param.type }}{% endfor %}) -> {{ method.return_type }}:
+        """{{ method.description }}"""
+        {{ method.code | indent(8) }}
+    {% endfor %}
+    {% endif %}
+
+
+{% endfor %}
+
+{% if result_model %}
+class {{ result_model.name }}(BaseModel):
+    """Result of {{ domain }} extraction operation.
+
+    Wraps data with success/error status and metadata.
+    Used for API responses and error handling.
+    """
+
+    success: bool = Field(..., description="Whether extraction succeeded")
+
+    data: Optional[{{ result_model.data_class }}] = Field(
+        default=None,
+        description="Extracted {{ domain }} data (if successful)"
+    )
+
+    error_message: Optional[str] = Field(
+        default=None,
+        description="Error message (if failed)"
+    )
+
+    extraction_time_seconds: float = Field(
+        default=0.0,
+        description="Time taken for extraction"
+    )
+
+    model_used: str = Field(
+        default="",
+        description="LLM model identifier"
+    )
+
+    tokens_used: Optional[dict[str, int]] = Field(
+        default=None,
+        description="Token usage (input/output)"
+    )
+{% endif %}

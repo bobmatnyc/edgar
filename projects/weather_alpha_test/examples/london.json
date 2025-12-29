@@ -1,0 +1,34 @@
+{
+  "input": {
+    "city": "London",
+    "raw_response": {
+      "coord": {"lon": -0.1257, "lat": 51.5085},
+      "weather": [{"id": 500, "main": "Rain", "description": "light rain", "icon": "10d"}],
+      "base": "stations",
+      "main": {"temp": 15.5, "feels_like": 14.2, "temp_min": 13.8, "temp_max": 17.1, "pressure": 1013, "humidity": 72},
+      "visibility": 10000,
+      "wind": {"speed": 4.1, "deg": 230},
+      "clouds": {"all": 75},
+      "dt": 1699200000,
+      "sys": {"type": 2, "id": 2019646, "country": "GB", "sunrise": 1699167000, "sunset": 1699199000},
+      "timezone": 0,
+      "id": 2643743,
+      "name": "London",
+      "cod": 200
+    }
+  },
+  "output": {
+    "city": "London",
+    "country": "GB",
+    "temperature_c": 15.5,
+    "feels_like_c": 14.2,
+    "humidity_percent": 72,
+    "pressure_hpa": 1013,
+    "conditions": "light rain",
+    "wind_speed_ms": 4.1,
+    "wind_direction_deg": 230,
+    "cloud_cover_percent": 75,
+    "visibility_m": 10000,
+    "timestamp": 1699200000
+  }
+}

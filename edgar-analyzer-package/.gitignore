@@ -1,0 +1,25 @@
+# Virtual environment
+venv/
+.venv/
+
+# Output files
+output/*.xlsx
+output/*.json
+
+# Checkpoints
+data/checkpoints/*.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

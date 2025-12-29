@@ -1,0 +1,410 @@
+# ============================================================================
+# EDGAR Executive Compensation Extraction Project
+# ============================================================================
+#
+# Extract executive compensation data from SEC EDGAR DEF 14A proxy filings
+# using the Summary Compensation Table (SCT) extraction capabilities.
+#
+# Prerequisites:
+# 1. Set SEC_EDGAR_USER_AGENT in .env.local: "YourName/YourEmail"
+# 2. Set OPENROUTER_API_KEY for AI-powered extraction
+# 3. Run: python -m edgar_analyzer analyze-project edgar_executive_comp
+#
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Project Metadata
+# ----------------------------------------------------------------------------
+project:
+  name: "edgar_executive_comp"
+  description: "Extract executive compensation from SEC EDGAR proxy filings (DEF 14A)"
+  version: "1.0.0"
+  author: "Platform User"
+  tags:
+    - edgar
+    - sec
+    - executive-compensation
+    - proxy-filing
+    - def14a
+    - xbrl
+
+# ----------------------------------------------------------------------------
+# Data Sources
+# ----------------------------------------------------------------------------
+data_sources:
+  # SEC EDGAR Company Facts API (Primary)
+  - type: api
+    name: "edgar_company_facts"
+    endpoint: "https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json"
+
+    # SEC EDGAR requires User-Agent header
+    headers:
+      User-Agent: "${SEC_EDGAR_USER_AGENT}"
+      Accept: "application/json"
+
+    # Parameters for company identification
+    parameters:
+      cik: "${cik}"  # 10-digit CIK (zero-padded)
+
+    # Rate limiting (SEC: 10 requests/second max)
+    rate_limit:
+      requests_per_second: 5  # Conservative limit
+      burst_size: 3
+
+    # Caching (proxy filings rarely change)
+    cache:
+      enabled: true
+      ttl: 86400  # 24 hours
+      max_size_mb: 100
+      cache_dir: "data/cache/edgar"
+
+    # Request configuration
+    timeout: 30  # SEC responses can be slow
+    max_retries: 3
+
+  # SEC EDGAR Proxy Filing (DEF 14A) - HTML extraction
+  - type: web
+    name: "edgar_proxy_filing"
+    endpoint: "https://www.sec.gov/cgi-bin/browse-edgar"
+
+    # Filing-specific parameters
+    parameters:
+      action: "getcompany"
+      CIK: "${cik}"
+      type: "DEF 14A"
+      dateb: ""
+      owner: "exclude"
+      count: "10"
+      search_text: ""
+
+    # SEC rate limits
+    rate_limit:
+      requests_per_second: 5
+      burst_size: 3
+
+    headers:
+      User-Agent: "${SEC_EDGAR_USER_AGENT}"
+      Accept: "text/html,application/xhtml+xml"
+
+    # Caching
+    cache:
+      enabled: true
+      ttl: 86400
+      cache_dir: "data/cache/edgar_filings"
+
+    timeout: 30
+    max_retries: 3
+
+# ----------------------------------------------------------------------------
+# Example Input/Output Pairs (Teaches AI transformation patterns)
+# ----------------------------------------------------------------------------
+examples:
+  # Example 1: Apple Inc. - Tech company with high stock compensation
+  - description: "Apple Inc. executive compensation (FY2024)"
+    input:
+      cik: "0000320193"
+      company_name: "Apple Inc."
+      ticker: "AAPL"
+      fiscal_year: 2024
+    output:
+      company_name: "Apple Inc."
+      ticker: "AAPL"
+      cik: "0000320193"
+      filing_date: "2024-01-10"
+      fiscal_years: [2024, 2023, 2022]
+      executives:
+        - name: "Timothy D. Cook"
+          position: "Chief Executive Officer"
+          is_ceo: true
+          is_cfo: false
+          compensation_by_year:
+            - year: 2024
+              salary: 3000000
+              bonus: 0
+              stock_awards: 58088946
+              option_awards: 0
+              non_equity_incentive: 12000000
+              change_in_pension: 0
+              all_other_compensation: 1520856
+              total: 74609802
+        - name: "Luca Maestri"
+          position: "Senior Vice President, Chief Financial Officer"
+          is_ceo: false
+          is_cfo: true
+          compensation_by_year:
+            - year: 2024
+              salary: 1000000
+              bonus: 0
+              stock_awards: 13986049
+              option_awards: 0
+              non_equity_incentive: 5040000
+              change_in_pension: 0
+              all_other_compensation: 47095
+              total: 20073144
+
+  # Example 2: JPMorgan Chase - Financial services with bonus-heavy comp
+  - description: "JPMorgan Chase executive compensation (FY2023)"
+    input:
+      cik: "0000019617"
+      company_name: "JPMorgan Chase & Co."
+      ticker: "JPM"
+      fiscal_year: 2023
+    output:
+      company_name: "JPMorgan Chase & Co."
+      ticker: "JPM"
+      cik: "0000019617"
+      filing_date: "2023-03-30"
+      fiscal_years: [2023, 2022, 2021]
+      executives:
+        - name: "James Dimon"
+          position: "Chairman and Chief Executive Officer"
+          is_ceo: true
+          is_cfo: false
+          compensation_by_year:
+            - year: 2023
+              salary: 1500000
+              bonus: 0
+              stock_awards: 20000000
+              option_awards: 0
+              non_equity_incentive: 10000000
+              change_in_pension: 0
+              all_other_compensation: 280476
+              total: 31780476
+        - name: "Jeremy Barnum"
+          position: "Chief Financial Officer"
+          is_ceo: false
+          is_cfo: true
+          compensation_by_year:
+            - year: 2023
+              salary: 500000
+              bonus: 0
+              stock_awards: 6500000
+              option_awards: 0
+              non_equity_incentive: 2500000
+              change_in_pension: 0
+              all_other_compensation: 45200
+              total: 9545200
+
+  # Example 3: Walmart - Retail with balanced compensation structure
+  - description: "Walmart Inc. executive compensation (FY2023)"
+    input:
+      cik: "0000066740"
+      company_name: "Walmart Inc."
+      ticker: "WMT"
+      fiscal_year: 2023
+    output:
+      company_name: "Walmart Inc."
+      ticker: "WMT"
+      cik: "0000066740"
+      filing_date: "2023-04-20"
+      fiscal_years: [2023, 2022, 2021]
+      executives:
+        - name: "C. Douglas McMillon"
+          position: "President and Chief Executive Officer"
+          is_ceo: true
+          is_cfo: false
+          compensation_by_year:
+            - year: 2023
+              salary: 1400000
+              bonus: 0
+              stock_awards: 15730000
+              option_awards: 0
+              non_equity_incentive: 7400000
+              change_in_pension: 0
+              all_other_compensation: 175000
+              total: 24705000
+        - name: "John David Rainey"
+          position: "Executive Vice President and Chief Financial Officer"
+          is_ceo: false
+          is_cfo: true
+          compensation_by_year:
+            - year: 2023
+              salary: 875000
+              bonus: 1750000
+              stock_awards: 8000000
+              option_awards: 0
+              non_equity_incentive: 3500000
+              change_in_pension: 0
+              all_other_compensation: 85000
+              total: 14210000
+
+# ----------------------------------------------------------------------------
+# Validation Rules
+# ----------------------------------------------------------------------------
+validation:
+  # Required top-level fields
+  required_fields:
+    - company_name
+    - cik
+    - fiscal_years
+    - executives
+
+  # Field type definitions
+  field_types:
+    company_name: str
+    ticker: str
+    cik: str
+    filing_date: str
+    fiscal_years: list
+    executives: list
+
+  # Nested validation for executive records
+  executive_fields:
+    required:
+      - name
+      - position
+      - compensation_by_year
+    types:
+      name: str
+      position: str
+      is_ceo: bool
+      is_cfo: bool
+      compensation_by_year: list
+
+  # Compensation year validation
+  compensation_fields:
+    required:
+      - year
+      - salary
+      - total
+    types:
+      year: int
+      salary: float
+      bonus: float
+      stock_awards: float
+      option_awards: float
+      non_equity_incentive: float
+      change_in_pension: float
+      all_other_compensation: float
+      total: float
+
+  # Constraints
+  constraints:
+    cik:
+      pattern: "^\\d{10}$"  # Must be 10-digit zero-padded
+    year:
+      min: 2015
+      max: 2030
+    salary:
+      min: 0
+      max: 100000000  # $100M max salary (sanity check)
+    total:
+      min: 0
+      max: 1000000000  # $1B max total (sanity check)
+
+  # Business logic validation
+  custom_validators:
+    - name: "total_equals_sum"
+      description: "Verify total equals sum of components"
+      expression: "total == salary + bonus + stock_awards + option_awards + non_equity_incentive + change_in_pension + all_other_compensation"
+    - name: "ceo_present"
+      description: "At least one executive marked as CEO"
+      expression: "any(exec.is_ceo for exec in executives)"
+
+  # Allow additional fields
+  allow_extra_fields: true
+
+# ----------------------------------------------------------------------------
+# Transformation Patterns (Detected from Examples)
+# ----------------------------------------------------------------------------
+patterns:
+  - type: FIELD_MAPPING
+    description: "Map XBRL concept names to standardized field names"
+    confidence_threshold: 0.85
+
+  - type: TYPE_CONVERSION
+    description: "Convert XBRL values (strings) to numeric types"
+    confidence_threshold: 0.90
+
+  - type: NESTED_ACCESS
+    description: "Navigate nested XBRL fact structure to extract values"
+    confidence_threshold: 0.85
+
+  - type: VALUE_MAPPING
+    description: "Map executive roles to boolean flags (is_ceo, is_cfo)"
+    confidence_threshold: 0.90
+
+  - type: LIST_AGGREGATION
+    description: "Aggregate compensation data across multiple fiscal years"
+    confidence_threshold: 0.85
+
+# ----------------------------------------------------------------------------
+# Output Configuration
+# ----------------------------------------------------------------------------
+output:
+  formats:
+    # JSON output (structured data)
+    - type: json
+      path: "output/executive_comp_${cik}_${fiscal_year}.json"
+      pretty_print: true
+      include_timestamp: true
+      options:
+        indent: 2
+        ensure_ascii: false
+
+    # CSV output (flat structure for analysis)
+    - type: csv
+      path: "output/executive_comp_${cik}_${fiscal_year}.csv"
+      include_timestamp: true
+      options:
+        delimiter: ","
+        quoting: "minimal"
+        index: false
+
+    # Excel output (formatted for reporting)
+    - type: excel
+      path: "output/executive_comp_${cik}_${fiscal_year}.xlsx"
+      include_timestamp: false
+      options:
+        sheet_name: "Executive Compensation"
+        freeze_panes: "A2"
+
+# ----------------------------------------------------------------------------
+# Runtime Configuration
+# ----------------------------------------------------------------------------
+runtime:
+  # Logging
+  log_level: INFO
+
+  # AI model configuration
+  ai:
+    provider: "openrouter"
+    model: "anthropic/claude-sonnet-4.5"
+    temperature: 0.0  # Deterministic extraction
+    max_tokens: 16000
+
+  # Parallel processing (careful with SEC rate limits!)
+  parallel: false  # Sequential to respect rate limits
+  max_workers: 1
+
+  # Error handling
+  error_strategy: continue  # Continue on individual failures
+
+  # Checkpointing
+  checkpoint_enabled: true
+  checkpoint_interval: 1  # Save after each company
+  checkpoint_dir: "data/checkpoints/edgar_comp"
+
+# ============================================================================
+# Usage Examples
+# ============================================================================
+#
+# 1. Extract single company:
+#    python -m edgar_analyzer analyze-project edgar_executive_comp \
+#      --cik 0000320193 --fiscal-year 2024
+#
+# 2. Extract multiple companies from list:
+#    python -m edgar_analyzer analyze-project edgar_executive_comp \
+#      --companies-file companies.txt
+#
+# 3. Interactive chat mode:
+#    python -m edgar_analyzer chat --project edgar_executive_comp
+#
+# 4. Generate extraction code:
+#    python -m edgar_analyzer generate-code edgar_executive_comp
+#
+# 5. Validate extracted data:
+#    python -m edgar_analyzer validate edgar_executive_comp \
+#      --output output/executive_comp_0000320193_2024.json
+#
+# ============================================================================
