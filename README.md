@@ -2,250 +2,132 @@
 
 **E**xample-**D**riven **G**eneration with **A**I **R**easoning
 
-AI-powered data extraction platform that generates production-ready Python code from API response examples using Sonnet 4.5.
+AI-powered data extraction platform for SEC filings with self-refining extractors. Generates production-ready Python code from examples using Claude Sonnet 4.5.
 
-## Overview
+## Features
 
-EDGAR uses a two-phase AI approach to transform API response examples into type-safe, validated data extraction code:
-
-1. **PM Mode (Analysis)**: Sonnet 4.5 analyzes API response examples and designs a structured extraction strategy
-2. **Coder Mode (Implementation)**: Sonnet 4.5 generates production-ready Python code implementing the strategy
-3. **Validation Pipeline**: Automated validation ensures code quality, correctness, and architecture compliance
-
-### Key Features
-
-- **Example-Driven Design**: Show examples, get code - no manual API documentation needed
-- **Type-Safe Code Generation**: Pydantic models with full type hints
-- **Architecture Enforcement**: Generated code follows DI patterns and interfaces
-- **Validation Pipeline**: AST validation, constraint checking, accuracy testing
-- **Conversation Context**: Iterative refinement through multi-turn conversations
+- **SEC EDGAR Integration**: Extract data from DEF 14A (proxy statements) and 10-K (annual reports)
+- **Fortune 100 Analysis**: Batch processing with rate limiting for all Fortune 100 companies
+- **Executive Compensation**: Extract Summary Compensation Table (SCT) data
+- **Corporate Tax**: Extract income tax expense and effective tax rates
+- **Self-Refining**: Automatic analysis of extraction failures with pattern-based improvements
+- **Type-Safe**: Pydantic models with full type hints and validation
 
 ## Quick Start
 
-### 1. Setup Virtual Environment
+### 1. Setup
 
 ```bash
-cd /Users/masa/Projects/edgar-platform
+cd /Users/masa/Projects/edgar
 python3.11 -m venv venv
 source venv/bin/activate
 pip install -e ".[dev]"
 ```
 
-### 2. Configure OpenRouter API Key
+### 2. Configure API Key
 
-Create `.env` file with your OpenRouter API key:
+Create `.env` file:
 
 ```bash
 OPENROUTER_API_KEY=sk-or-v1-...
-EDGAR_MODEL=anthropic/claude-sonnet-4.5
+EDGAR_MODEL=anthropic/claude-sonnet-4
 ```
 
 ### 3. Run Tests
 
 ```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=edgar --cov-report=html
-
-# Run specific test suite
-pytest tests/unit/
-pytest tests/integration/
+pytest                           # All tests
+pytest tests/unit/               # Unit tests only
+pytest tests/integration/        # Integration tests
 ```
 
-### 4. Run E2E Test
+### 4. Run Fortune 100 Analysis
 
 ```bash
-# Run complete end-to-end extraction test
-python3 scripts/e2e_edgar_extraction.py
+# Full Fortune 100 pipeline (100 companies)
+python scripts/fortune100_analysis.py --companies 1-100 -v
 
-# Run with verbose output
-python3 scripts/e2e_edgar_extraction.py -v
-
-# Run via CLI
-edgar e2e-test
+# Quick test with top 10
+python scripts/fortune100_analysis.py --companies 1-10 -v
 ```
 
-See [E2E Quick Start Guide](docs/e2e_quick_start.md) for details.
+**Output Files** (`output/fortune100/`):
+- `executive_compensation.csv` - Individual executive compensation records
+- `corporate_tax.csv` - Corporate tax expense by fiscal year
+- `compensation_vs_tax.csv` - Combined analysis with ratios
 
-### 5. Type Checking and Linting
+## Pipeline Success Rates
 
-```bash
-# Type checking
-mypy src/
-
-# Linting
-ruff check src/
-
-# Formatting
-black src/
-```
+| Extraction Type | Success Rate |
+|-----------------|--------------|
+| DEF 14A (Executive Comp) | 88% |
+| 10-K (Corporate Tax) | 81% |
+| Combined (Both) | 79% |
 
 ## Project Structure
 
 ```
-edgar-platform/
+edgar/
 ├── src/edgar/
-│   ├── services/           # Core AI services
-│   │   ├── sonnet_service.py      # Main Sonnet4_5Service orchestrator
-│   │   ├── openrouter_client.py   # OpenRouter API client
-│   │   └── context_manager.py     # Conversation context management
-│   ├── prompts/           # AI prompt templates
-│   │   ├── pm_mode.txt           # PM mode analysis prompt
-│   │   └── coder_mode.txt        # Coder mode generation prompt
-│   ├── validators/        # Code validation pipeline
-│   │   ├── ast_validator.py      # Python AST syntax validation
-│   │   ├── constraint_validator.py # Architecture constraint checking
-│   │   └── accuracy_validator.py  # Example accuracy testing
-│   └── models/            # Data models
-│       ├── extraction_strategy.py # Strategy data model
-│       └── constraints.py         # Architecture constraints
-├── tests/
-│   ├── unit/              # Unit tests
-│   └── integration/       # Integration tests
-└── examples/
-    └── weather_api/       # Example project (Weather API extractor)
+│   ├── extractors/
+│   │   ├── sct/              # Summary Compensation Table extractor
+│   │   └── tax/              # Income Tax extractor
+│   ├── services/
+│   │   ├── sec_edgar_client.py   # SEC EDGAR API client
+│   │   ├── batch_processor.py    # Rate-limited batch processing
+│   │   └── pattern_analyzer.py   # Transformation pattern detection
+│   ├── data/
+│   │   └── fortune100.py         # Fortune 100 company registry
+│   ├── exporters/
+│   │   └── csv_exporter.py       # CSV export utilities
+│   ├── analysis/
+│   │   └── analyzer.py           # Comp vs. Tax analysis
+│   └── refinement/
+│       └── refiner.py            # Self-refinement engine
+├── scripts/
+│   ├── fortune100_analysis.py    # Main pipeline script
+│   └── refine_extractors.py      # Self-refinement CLI
+└── tests/
+    ├── unit/
+    └── integration/
 ```
 
-## Architecture
+## Self-Refinement
 
-### Service-Oriented Design
+EDGAR automatically analyzes extraction failures and improves its extractors:
 
-EDGAR follows service-oriented architecture with dependency injection:
+```bash
+# Analyze recent failures
+python scripts/refine_extractors.py --analyze
 
-```python
-# Example: Using Sonnet4_5Service
-from edgar.services import Sonnet4_5Service, OpenRouterClient, ContextManager
-
-# Initialize with dependency injection
-client = OpenRouterClient(api_key="sk-or-v1-...")
-context = ContextManager(max_messages=20)
-service = Sonnet4_5Service(client=client, context=context)
-
-# PM Mode: Analyze examples
-strategy = await service.analyze_examples(
-    examples=[{"temp": 72, "condition": "sunny"}],
-    target_schema=WeatherData
-)
-
-# Coder Mode: Generate code
-code = await service.generate_code(
-    strategy=strategy,
-    constraints=architecture_constraints
-)
+# Apply suggested improvements
+python scripts/refine_extractors.py --apply
 ```
 
-### Validation Pipeline
-
-Generated code passes through three validation stages:
-
-1. **AST Validation**: Ensures syntactically valid Python code
-2. **Constraint Validation**: Checks architecture compliance (interfaces, DI, type hints)
-3. **Accuracy Validation**: Tests code against provided examples
+The self-refinement cycle:
+1. **Run Pipeline** → Identify failures
+2. **Analyze Patterns** → Detect common issues
+3. **Apply Fixes** → Update extractors
+4. **Verify** → Run regression tests
+5. **Iterate** → Continuous improvement
 
 ## Development
 
-### Requirements
-
-- **Python**: 3.11 or higher
-- **OpenRouter API Key**: Required for Sonnet 4.5 access
-- **Dependencies**: See `pyproject.toml`
-
-### Development Workflow
-
-1. **Create Feature Branch**
-   ```bash
-   git checkout -b feature/your-feature
-   ```
-
-2. **Write Tests First** (TDD)
-   ```bash
-   # Create test file
-   touch tests/unit/test_your_feature.py
-
-   # Run tests (they should fail)
-   pytest tests/unit/test_your_feature.py
-   ```
-
-3. **Implement Feature**
-   ```bash
-   # Create implementation file
-   touch src/edgar/your_feature.py
-
-   # Run tests until they pass
-   pytest tests/unit/test_your_feature.py
-   ```
-
-4. **Validate Code Quality**
-   ```bash
-   # Type checking
-   mypy src/
-
-   # Linting
-   ruff check src/
-
-   # Formatting
-   black src/
-
-   # Full test suite
-   pytest --cov=edgar
-   ```
-
-5. **Commit and Push**
-   ```bash
-   git add .
-   git commit -m "feat: your feature description"
-   git push origin feature/your-feature
-   ```
-
-### Code Quality Standards
-
-- **Type Safety**: 100% mypy strict compliance
-- **Test Coverage**: 90%+ coverage required
-- **Code Style**: Black + Ruff (PEP 8)
-- **Documentation**: Docstrings for all public APIs
-- **Complexity**: Max cyclomatic complexity of 10
-
-## Examples
-
-### Weather API Extractor
-
-See `examples/weather_api/` for a complete example of using EDGAR to generate a weather data extractor.
-
-### E2E EDGAR Extraction Test
-
-The E2E runbook demonstrates the complete extraction pipeline:
+### Code Quality
 
 ```bash
-python3 scripts/e2e_edgar_extraction.py
+mypy src/                    # Type checking
+ruff check src/              # Linting
+black src/                   # Formatting
+pytest --cov=edgar           # Coverage
 ```
 
-**Pipeline Phases**:
-1. **Data Acquisition**: Fetch SEC filing from EDGAR
-2. **Pattern Analysis**: Detect transformation patterns
-3. **Extractor Verification**: Verify code generation
-4. **Extraction Execution**: Run and validate results
+### Requirements
 
-See [E2E Runbook Documentation](docs/e2e_runbook.md) for complete details.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Write tests and implementation
-4. Ensure all tests pass and coverage is >90%
-5. Submit a pull request
+- Python 3.11+
+- OpenRouter API Key (for Claude Sonnet access)
+- See `pyproject.toml` for dependencies
 
 ## License
 
 MIT License - See LICENSE file for details
-
-## Related Projects
-
-- **mcp-smartthings**: SmartThings MCP server (parent project)
-- **OpenRouter**: AI model routing platform
-
-## Support
-
-For issues and questions, please open an issue on GitHub.

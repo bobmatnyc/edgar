@@ -1,0 +1,202 @@
+Fortune 100 Analysis Pipeline - Data Flow Diagram
+================================================
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       FORTUNE 100 ANALYSIS PIPELINE                      │
+└─────────────────────────────────────────────────────────────────────────┘
+
+INPUT: Company Rank Range (e.g., 1-10, 1-100)
+│
+│
+▼
+╔═════════════════════════════════════════════════════════════════════════╗
+║ PHASE 1: LOAD COMPANIES                                                 ║
+╚═════════════════════════════════════════════════════════════════════════╝
+│
+│  Fortune100Registry.load_default()
+│  └─> fortune100_2024.json
+│       ├─> get_by_rank_range(start, end)
+│       └─> Filter companies by rank
+│
+│  Output: list[Company] (rank, name, ticker, cik, sector)
+│
+▼
+╔═════════════════════════════════════════════════════════════════════════╗
+║ PHASE 2: DEF 14A EXTRACTION (Executive Compensation)                    ║
+╚═════════════════════════════════════════════════════════════════════════╝
+│
+│  For each company (rate-limited 8 req/sec, 5 concurrent):
+│
+│  ┌─────────────────────────────────────────────────────────────┐
+│  │ BatchProcessor.process_companies()                          │
+│  │   ├─> RateLimiter.acquire()          [Token bucket]        │
+│  │   ├─> SecEdgarClient.get_latest_filing("DEF 14A")          │
+│  │   ├─> SecEdgarClient.fetch_filing_html(url)                │
+│  │   └─> SCTExtractor.extract(html)                           │
+│  │       └─> Parse Summary Compensation Table                  │
+│  │           ├─> Executive names, titles                       │
+│  │           ├─> Salary, bonus, stock awards                   │
+│  │           ├─> Options, non-equity incentive                 │
+│  │           └─> Total compensation                            │
+│  └─────────────────────────────────────────────────────────────┘
+│
+│  Output: BatchResult[SCTData]
+│    ├─> successful: list[ExtractionResult[SCTData]]
+│    └─> failed: list[ExtractionResult[None]]
+│
+▼
+╔═════════════════════════════════════════════════════════════════════════╗
+║ PHASE 3: 10-K EXTRACTION (Corporate Tax)                                ║
+╚═════════════════════════════════════════════════════════════════════════╝
+│
+│  For each company (rate-limited 8 req/sec, 5 concurrent):
+│
+│  ┌─────────────────────────────────────────────────────────────┐
+│  │ BatchProcessor.process_companies()                          │
+│  │   ├─> RateLimiter.acquire()          [Token bucket]        │
+│  │   ├─> SecEdgarClient.get_latest_filing("10-K")             │
+│  │   ├─> SecEdgarClient.fetch_filing_html(url)                │
+│  │   └─> TaxExtractor.extract(html)                           │
+│  │       └─> Parse Income Tax Note                             │
+│  │           ├─> Current tax (federal, state, foreign)         │
+│  │           ├─> Deferred tax (federal, state, foreign)        │
+│  │           ├─> Total tax expense                             │
+│  │           ├─> Pretax income                                 │
+│  │           ├─> Effective tax rate                            │
+│  │           └─> Cash taxes paid                               │
+│  └─────────────────────────────────────────────────────────────┘
+│
+│  Output: BatchResult[TaxData]
+│    ├─> successful: list[ExtractionResult[TaxData]]
+│    └─> failed: list[ExtractionResult[None]]
+│
+▼
+╔═════════════════════════════════════════════════════════════════════════╗
+║ PHASE 4: EXPORT RESULTS                                                 ║
+╚═════════════════════════════════════════════════════════════════════════╝
+│
+│  CSVExporter
+│  ├─> export_compensation(def14a_results)
+│  │   └─> executive_compensation.csv
+│  │       Schema: rank, company, ticker, cik, fiscal_year, executive_name,
+│  │               title, salary, bonus, stock_awards, option_awards,
+│  │               non_equity_incentive, pension_change, other_comp, total_comp
+│  │
+│  ├─> export_tax(form10k_results)
+│  │   └─> corporate_tax.csv
+│  │       Schema: rank, company, ticker, cik, fiscal_year, current_federal,
+│  │               current_state, current_foreign, total_current, deferred_federal,
+│  │               deferred_state, deferred_foreign, total_deferred,
+│  │               total_tax_expense, pretax_income, effective_tax_rate,
+│  │               cash_taxes_paid
+│  │
+│  └─> export_combined(def14a_results, form10k_results)
+│      └─> compensation_vs_tax.csv
+│          Schema: rank, company, ticker, cik, fiscal_year, num_executives,
+│                  total_exec_comp, ceo_name, ceo_comp, median_exec_comp,
+│                  total_tax_expense, effective_tax_rate, cash_taxes_paid,
+│                  comp_to_tax_ratio, ceo_to_tax_ratio
+│
+│  JSON Summaries
+│  ├─> def14a_results.json
+│  │   └─> { total_companies, successful, failed, success_rate, duration, ... }
+│  │
+│  ├─> 10k_results.json
+│  │   └─> { total_companies, successful, failed, success_rate, duration, ... }
+│  │
+│  └─> analysis_summary.json
+│      └─> { timestamp, companies_analyzed, success_rates, total_duration }
+│
+▼
+OUTPUT:
+├─> output/fortune100/executive_compensation.csv
+├─> output/fortune100/corporate_tax.csv
+├─> output/fortune100/compensation_vs_tax.csv
+├─> output/fortune100/def14a_results.json
+├─> output/fortune100/10k_results.json
+└─> output/fortune100/analysis_summary.json
+
+
+RATE LIMITING FLOW
+==================
+
+Token Bucket Algorithm (8 req/sec):
+
+┌───────────────────────┐
+│   Token Bucket        │
+│   Capacity: 8 tokens  │
+│   Refill: 8/sec       │
+└───────────────────────┘
+         │
+         ├─> Request 1: Consume 1 token → API call
+         ├─> Request 2: Consume 1 token → API call
+         ├─> Request 3: Consume 1 token → API call
+         ├─> ...
+         ├─> Request 8: Consume 1 token → API call
+         ├─> Request 9: Wait 125ms for refill → API call
+         └─> Request 10: Wait 125ms for refill → API call
+
+
+CONCURRENT PROCESSING
+=====================
+
+Semaphore (Max 5 concurrent):
+
+Worker 1: ████████████████████ (Company 1)
+Worker 2: ████████████████████ (Company 2)
+Worker 3: ████████████████████ (Company 3)
+Worker 4: ████████████████████ (Company 4)
+Worker 5: ████████████████████ (Company 5)
+Queue:    [Company 6, Company 7, ..., Company 100]
+          ↓ Wait for worker to finish
+Worker 1: ████████████████████ (Company 6)
+...
+
+
+ERROR HANDLING
+==============
+
+Individual Failure Isolation:
+
+Company 1: ✅ Success → Add to successful list
+Company 2: ❌ Failed  → Add to failed list (with error message)
+Company 3: ✅ Success → Add to successful list
+...
+Company N: ✅ Success → Add to successful list
+
+Pipeline Result:
+├─> Successful extractions → Export to CSV
+├─> Failed extractions → Log in JSON summary
+└─> Exit code: 0 (if any successes), 1 (if all failed)
+
+
+RETRY LOGIC
+===========
+
+Exponential Backoff (Max 3 retries):
+
+Attempt 1: ❌ Failed
+  └─> Wait 2 seconds
+Attempt 2: ❌ Failed
+  └─> Wait 4 seconds
+Attempt 3: ❌ Failed
+  └─> Wait 8 seconds (Not used if final attempt)
+Result: Mark as failed
+
+Attempt 1: ❌ Failed
+  └─> Wait 2 seconds
+Attempt 2: ✅ Success
+  └─> Return result
+
+
+PERFORMANCE ESTIMATES
+=====================
+
+Companies | API Calls | Est. Duration | Throughput
+----------|-----------|---------------|------------
+10        | 20        | 3-5 sec       | 4-6 req/sec
+50        | 100       | 12-15 sec     | 6-8 req/sec
+100       | 200       | 25-30 sec     | 6-8 req/sec
+
+*Assumes successful requests with no retries
+*Actual duration may vary based on network latency and SEC API response time

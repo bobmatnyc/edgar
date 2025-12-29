@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "edgar-platform"
-version = "0.1.0"
+version = "0.1.1"
 description = "Example-driven data extraction platform with AI code generation"
 requires-python = ">=3.11"
 dependencies = [
