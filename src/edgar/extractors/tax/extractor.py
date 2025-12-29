@@ -108,19 +108,49 @@ class TaxExtractor:
         """Check if table looks like an income tax expense table.
 
         Validates table contains tax-related keywords.
+        Supports both detailed tables (federal/state/foreign, current/deferred)
+        and simplified summary tables (provision for income taxes with years).
         """
         text = table.get_text().lower()
-        # Tax table should have federal, state, or foreign and current or deferred
+
+        # Pattern 1: Detailed table with geographic and timing breakdowns
         location_indicators = ["federal", "state", "foreign"]
         timing_indicators = ["current", "deferred"]
 
         has_location = any(indicator in text for indicator in location_indicators)
         has_timing = any(indicator in text for indicator in timing_indicators)
 
-        return has_location and has_timing
+        if has_location and has_timing:
+            return True
+
+        # Pattern 2: Simplified summary table (Apple, Alphabet style)
+        # Look for "provision for income taxes" or "income tax expense" WITH years
+        has_provision = "provision for income tax" in text or "income tax expense" in text
+        has_years = bool(re.search(r"20[12][0-9]", text))  # Years like 2020-2029
+
+        if has_provision and has_years:
+            return True
+
+        return False
 
     def _extract_tax_years(self, table: Tag) -> list[TaxYear]:
         """Extract tax year data from income tax expense table.
+
+        Tries detailed extraction first (federal/state/foreign, current/deferred).
+        Falls back to simplified extraction if detailed parsing finds no meaningful data.
+        """
+        # Try detailed extraction first
+        detailed_results = self._extract_detailed_tax_years(table)
+
+        # Check if detailed extraction found meaningful data (non-zero tax amounts)
+        if detailed_results and any(year.total_tax_expense > 0 for year in detailed_results):
+            return detailed_results
+
+        # Fallback to simplified extraction for summary tables
+        return self._extract_simplified_tax_years(table)
+
+    def _extract_detailed_tax_years(self, table: Tag) -> list[TaxYear]:
+        """Extract from detailed tax tables with federal/state/foreign, current/deferred breakdown.
 
         Parses table rows to build TaxYear objects with current/deferred
         federal/state/foreign tax components.
@@ -187,6 +217,79 @@ class TaxExtractor:
                 tax_year.deferred_federal + tax_year.deferred_state + tax_year.deferred_foreign
             )
             tax_year.total_tax_expense = tax_year.total_current + tax_year.total_deferred
+
+        # Return list sorted by year (most recent first)
+        return sorted(tax_years_dict.values(), key=lambda x: x.year, reverse=True)
+
+    def _extract_simplified_tax_years(self, table: Tag) -> list[TaxYear]:
+        """Extract from simplified tax summary tables (Apple, Alphabet style).
+
+        These tables have "Provision for income taxes" row with total amounts per year,
+        but no breakdown by federal/state/foreign or current/deferred.
+        """
+        tax_years_dict: dict[int, TaxYear] = {}
+        rows = table.find_all("tr")
+
+        # First pass: find years in header row
+        years: list[int] = []
+        year_indices: list[int] = []
+
+        for row in rows:
+            cells = row.find_all(["td", "th"])
+            if len(cells) < 2:
+                continue
+
+            values = [self._clean_cell(cell.get_text()) for cell in cells]
+
+            # Check if this is a header row with years
+            for i, val in enumerate(values):
+                if val.isdigit() and 2000 <= int(val) <= 2030:
+                    years.append(int(val))
+                    year_indices.append(i)
+
+            if years:
+                # Initialize TaxYear objects
+                for year in years:
+                    tax_years_dict[year] = TaxYear(year=year)
+                break
+
+        if not years:
+            return []
+
+        # Second pass: find row with "provision for income tax" or "income tax expense"
+        for row in rows:
+            cells = row.find_all(["td", "th"])
+            if len(cells) < 2:
+                continue
+
+            values = [self._clean_cell(cell.get_text()) for cell in cells]
+            row_label = values[0].lower() if values else ""
+
+            # Look for provision row
+            if "provision for income tax" in row_label or "income tax expense" in row_label:
+                # Extract tax amounts - find all numeric values that look like tax amounts
+                # Build list of (column_index, amount) pairs
+                amounts_found: list[tuple[int, float]] = []
+
+                for col_idx, val in enumerate(values[1:], start=1):  # Skip first column (label)
+                    # Try to parse as number (handles $ signs, commas, etc.)
+                    amount = self._to_number(val)
+                    # Tax amounts are typically > 0 and in millions (> 100)
+                    if amount > 100:  # Filter out small numbers like percentages
+                        amounts_found.append((col_idx, amount))
+
+                # Match amounts to years based on proximity
+                # For each year, find the closest amount column that comes after it
+                for idx, year_idx in enumerate(year_indices):
+                    year = years[idx]
+
+                    # Find first amount column that's after this year column
+                    for amt_col, amt_val in amounts_found:
+                        if amt_col > year_idx:
+                            tax_years_dict[year].total_tax_expense = amt_val
+                            # Remove this amount so it's not matched again
+                            amounts_found.remove((amt_col, amt_val))
+                            break
 
         # Return list sorted by year (most recent first)
         return sorted(tax_years_dict.values(), key=lambda x: x.year, reverse=True)

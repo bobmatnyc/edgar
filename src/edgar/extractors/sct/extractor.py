@@ -69,7 +69,7 @@ class SCTExtractor:
     def _find_sct_table(self, soup: BeautifulSoup) -> Tag | None:
         """Find the Summary Compensation Table in the document.
 
-        Searches for table following SCT header text.
+        Searches for table following SCT header text or containing SCT text.
         """
         # Look for SCT header
         sct_patterns = [
@@ -77,6 +77,7 @@ class SCTExtractor:
             "summary of compensation",
         ]
 
+        # Strategy 1: Search header tags followed by table
         for tag in soup.find_all(["h1", "h2", "h3", "h4", "p", "b", "strong", "span"]):
             text = tag.get_text(strip=True).lower()
             if any(pattern in text for pattern in sct_patterns):
@@ -84,6 +85,17 @@ class SCTExtractor:
                     # Find next table
                     table = tag.find_next("table")
                     if table and self._looks_like_sct(table):
+                        return table
+
+        # Strategy 2: Search tables directly containing SCT text
+        # (handles cases where "Summary Compensation Table" is in <td> cells)
+        for table in soup.find_all("table"):
+            table_text = table.get_text().lower()
+            # Check if table contains SCT pattern
+            if any(pattern in table_text for pattern in sct_patterns):
+                # Exclude tables with narrative/footnote text
+                if "narrative" not in table_text and "footnote" not in table_text[:200]:
+                    if self._looks_like_sct(table):
                         return table
 
         return None
@@ -245,6 +257,19 @@ class SCTExtractor:
                     total=monetary_values[4],
                     bonus=0.0,
                     option_awards=0.0,
+                    pension_change=0.0,
+                )
+            elif len(monetary_values) >= 4:
+                # Simplified table (Berkshire style): Salary, Bonus, Other, Total
+                return CompensationYear(
+                    year=year,
+                    salary=monetary_values[0],
+                    bonus=monetary_values[1],
+                    other_compensation=monetary_values[2],
+                    total=monetary_values[3],
+                    stock_awards=0.0,
+                    option_awards=0.0,
+                    non_equity_incentive=0.0,
                     pension_change=0.0,
                 )
             else:
