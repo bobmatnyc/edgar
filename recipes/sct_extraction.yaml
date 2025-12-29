@@ -1,0 +1,77 @@
+version: "1.0"
+name: sct_extraction
+title: Summary Compensation Table (SCT) Extraction
+description: |
+  Extract executive compensation data from DEF 14A proxy statements using the
+  SCTAdapter. This recipe processes a list of companies and extracts SCT tables
+  for each company's most recent DEF 14A filing.
+
+parameters:
+  - name: companies
+    type: list
+    required: true
+    description: List of company dictionaries with name, cik, ticker
+
+  - name: output_dir
+    type: string
+    required: false
+    default: "output/sct"
+    description: Output directory for SCT data
+
+  - name: format
+    type: string
+    required: false
+    default: "json"
+    description: Output format (json, csv, both)
+
+  - name: year
+    type: integer
+    required: false
+    default: 2023
+    description: Target fiscal year for DEF 14A filings
+
+steps:
+  - name: fetch_def14a_filings
+    type: python
+    python:
+      function: edgar_analyzer.data_sources.edgar_api.fetch_company_filings
+    inputs:
+      companies: $params.companies
+      filing_type: "DEF 14A"
+      year: $params.year
+    outputs:
+      - filings
+
+  - name: extract_sct_tables
+    type: extractor
+    extractor:
+      extractor: SCTAdapter
+      filing_type: "DEF 14A"
+    inputs:
+      filings: $steps.fetch_def14a_filings.filings
+    outputs:
+      - sct_data
+
+  - name: validate_sct_data
+    type: python
+    python:
+      function: edgar_analyzer.validators.sct_validator.validate_sct_data
+    inputs:
+      sct_data: $steps.extract_sct_tables.sct_data
+    outputs:
+      - validated_data
+
+  - name: write_sct_results
+    type: python
+    python:
+      function: edgar_analyzer.utils.write_results
+    inputs:
+      results: $steps.validate_sct_data.validated_data
+      output_dir: $params.output_dir
+      format: $params.format
+      prefix: "sct_"
+
+error_handling:
+  on_step_failure: continue
+  collect_errors: true
+  max_retries: 2

@@ -1,0 +1,110 @@
+version: "1.0"
+name: fortune100_pipeline
+title: Fortune 100 SCT + Tax Extraction Pipeline
+description: |
+  Full pipeline for extracting executive compensation (SCT) and tax expense data
+  from Fortune 100 companies. This recipe orchestrates two sub-recipes:
+  1. SCT extraction from DEF 14A proxy statements
+  2. Tax extraction from 10-K annual reports
+
+parameters:
+  - name: rank_start
+    type: integer
+    required: true
+    description: Starting rank for Fortune 100 companies (1-100)
+    validation:
+      min: 1
+      max: 100
+
+  - name: rank_end
+    type: integer
+    required: true
+    description: Ending rank for Fortune 100 companies (1-100)
+    validation:
+      min: 1
+      max: 100
+
+  - name: sector
+    type: string
+    required: false
+    default: null
+    description: Filter by sector (Technology, Healthcare, Energy, etc.)
+
+  - name: output_dir
+    type: string
+    required: false
+    default: "output/fortune100"
+    description: Output directory for results
+
+  - name: format
+    type: string
+    required: false
+    default: "json"
+    description: Output format (json, csv, both)
+    validation:
+      choices: ["json", "csv", "both"]
+
+  - name: max_concurrent
+    type: integer
+    required: false
+    default: 5
+    description: Maximum concurrent workers for parallel extraction
+
+steps:
+  - name: load_fortune100_companies
+    type: python
+    python:
+      function: edgar_analyzer.data.fortune100_loader.load_fortune_100_companies
+    inputs:
+      rank_start: $params.rank_start
+      rank_end: $params.rank_end
+      sector: $params.sector
+    outputs:
+      - companies
+
+  - name: extract_sct_data
+    type: sub_recipe
+    sub_recipe:
+      recipe: sct_extraction.yaml
+    inputs:
+      companies: $steps.load_fortune100_companies.companies
+      output_dir: $params.output_dir
+      format: $params.format
+    outputs:
+      - sct_results
+
+  - name: extract_tax_data
+    type: sub_recipe
+    sub_recipe:
+      recipe: tax_extraction.yaml
+    inputs:
+      companies: $steps.load_fortune100_companies.companies
+      output_dir: $params.output_dir
+      format: $params.format
+    outputs:
+      - tax_results
+
+  - name: combine_results
+    type: python
+    python:
+      function: edgar_analyzer.utils.combine_company_results
+    inputs:
+      sct_results: $steps.extract_sct_data.sct_results
+      tax_results: $steps.extract_tax_data.tax_results
+    outputs:
+      - combined_results
+
+  - name: write_output
+    type: python
+    python:
+      function: edgar_analyzer.utils.write_results
+    inputs:
+      results: $steps.combine_results.combined_results
+      output_dir: $params.output_dir
+      format: $params.format
+
+error_handling:
+  on_step_failure: continue
+  collect_errors: true
+  max_retries: 3
+  retry_delay: 5

@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: edgar-analyzer
-Version: 0.1.0
+Version: 0.2.0
 Summary: SEC EDGAR Executive Compensation vs Tax Expense Analysis Tool
 Author-email: Edgar Analyzer Team <team@example.com>
 License: MIT
@@ -54,6 +54,7 @@ Requires-Dist: flake8>=6.0.0; extra == "dev"
 Requires-Dist: mypy>=1.0.0; extra == "dev"
 Requires-Dist: pre-commit>=3.0.0; extra == "dev"
 Requires-Dist: reportlab>=4.0.0; extra == "dev"
+Requires-Dist: PyPDF2>=3.0.0; extra == "dev"
 Requires-Dist: prompt-toolkit>=3.0.43; extra == "dev"
 Requires-Dist: rich>=13.7.0; extra == "dev"
 Requires-Dist: pygments>=2.17.2; extra == "dev"

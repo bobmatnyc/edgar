@@ -28,7 +28,7 @@ from rich.traceback import install
 from edgar_analyzer.cli.commands.project import project
 from edgar_analyzer.cli.commands.setup import setup
 from edgar_analyzer.cli.commands.extractors import extractors_cli
-from edgar_analyzer.cli.commands.fortune100 import fortune100_cli
+from edgar_analyzer.cli.commands.recipes import recipes_cli
 from edgar_analyzer.config.container import Container
 from edgar_analyzer.config.settings import ConfigService
 from edgar_analyzer.services.enhanced_report_service import EnhancedReportService
@@ -1478,7 +1478,7 @@ def cache_clear(ctx: click.Context) -> None:
 cli.add_command(project)
 cli.add_command(setup)
 cli.add_command(extractors_cli)
-cli.add_command(fortune100_cli)
+cli.add_command(recipes_cli)
 
 
 def _display_analysis_results(analysis, year: int) -> None:

@@ -1,0 +1,77 @@
+version: "1.0"
+name: tax_extraction
+title: Tax Expense Extraction
+description: |
+  Extract tax expense data from 10-K annual reports using the TaxAdapter.
+  This recipe processes a list of companies and extracts tax expense information
+  from each company's most recent 10-K filing.
+
+parameters:
+  - name: companies
+    type: list
+    required: true
+    description: List of company dictionaries with name, cik, ticker
+
+  - name: output_dir
+    type: string
+    required: false
+    default: "output/tax"
+    description: Output directory for tax data
+
+  - name: format
+    type: string
+    required: false
+    default: "json"
+    description: Output format (json, csv, both)
+
+  - name: year
+    type: integer
+    required: false
+    default: 2023
+    description: Target fiscal year for 10-K filings
+
+steps:
+  - name: fetch_10k_filings
+    type: python
+    python:
+      function: edgar_analyzer.data_sources.edgar_api.fetch_company_filings
+    inputs:
+      companies: $params.companies
+      filing_type: "10-K"
+      year: $params.year
+    outputs:
+      - filings
+
+  - name: extract_tax_tables
+    type: extractor
+    extractor:
+      extractor: TaxAdapter
+      filing_type: "10-K"
+    inputs:
+      filings: $steps.fetch_10k_filings.filings
+    outputs:
+      - tax_data
+
+  - name: validate_tax_data
+    type: python
+    python:
+      function: edgar_analyzer.validators.tax_validator.validate_tax_data
+    inputs:
+      tax_data: $steps.extract_tax_tables.tax_data
+    outputs:
+      - validated_data
+
+  - name: write_tax_results
+    type: python
+    python:
+      function: edgar_analyzer.utils.write_results
+    inputs:
+      results: $steps.validate_tax_data.validated_data
+      output_dir: $params.output_dir
+      format: $params.format
+      prefix: "tax_"
+
+error_handling:
+  on_step_failure: continue
+  collect_errors: true
+  max_retries: 2
