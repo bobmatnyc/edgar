@@ -5,9 +5,10 @@ All recipe YAML files are validated against these schemas.
 """
 
 from enum import Enum
+from pathlib import Path
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, computed_field
 
 
 class ParameterType(str, Enum):
@@ -165,7 +166,14 @@ class Recipe(BaseModel):
     A recipe defines a sequence of steps to extract and process data from SEC filings.
     Recipes can be parameterized and composed using sub-recipes.
 
-    Example YAML:
+    Directory Structure:
+        recipes/
+        ├── recipe_name/
+        │   ├── config.yaml      # Recipe definition
+        │   ├── input/           # Input files (optional)
+        │   └── output/          # Output files (generated)
+
+    Example YAML (config.yaml):
         version: "1.0"
         name: fortune100_pipeline
         title: Fortune 100 SCT + Tax Extraction
@@ -183,7 +191,7 @@ class Recipe(BaseModel):
             function: load_fortune_100_companies
           - name: extract_sct
             type: sub_recipe
-            recipe: sct_extraction.yaml
+            recipe: sct_extraction
     """
 
     version: str = Field(default="1.0", description="Recipe schema version")
@@ -194,6 +202,13 @@ class Recipe(BaseModel):
     steps: list[Step] = Field(default_factory=list, description="Execution steps")
     error_handling: Optional[dict[str, Any]] = Field(
         default=None, description="Error handling configuration"
+    )
+
+    # Recipe directory metadata (set by loader)
+    recipe_dir: Optional[Path] = Field(
+        default=None,
+        description="Absolute path to recipe directory",
+        exclude=True  # Not part of YAML definition
     )
 
     @field_validator("name")
@@ -212,3 +227,39 @@ class Recipe(BaseModel):
         if len(step_names) != len(set(step_names)):
             raise ValueError("Step names must be unique within a recipe")
         return v
+
+    @computed_field
+    @property
+    def input_dir(self) -> Optional[Path]:
+        """Get the input directory for this recipe.
+
+        Returns:
+            Path to input/ subdirectory if recipe_dir is set, None otherwise
+        """
+        if self.recipe_dir:
+            return self.recipe_dir / "input"
+        return None
+
+    @computed_field
+    @property
+    def output_dir(self) -> Optional[Path]:
+        """Get the output directory for this recipe.
+
+        Returns:
+            Path to output/ subdirectory if recipe_dir is set, None otherwise
+        """
+        if self.recipe_dir:
+            return self.recipe_dir / "output"
+        return None
+
+    @computed_field
+    @property
+    def config_path(self) -> Optional[Path]:
+        """Get the config.yaml path for this recipe.
+
+        Returns:
+            Path to config.yaml if recipe_dir is set, None otherwise
+        """
+        if self.recipe_dir:
+            return self.recipe_dir / "config.yaml"
+        return None

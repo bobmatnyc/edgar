@@ -65,7 +65,7 @@ steps:
   - name: extract_sct_data
     type: sub_recipe
     sub_recipe:
-      recipe: sct_extraction.yaml
+      recipe: sct_extraction
     inputs:
       companies: $steps.load_fortune100_companies.companies
       output_dir: $params.output_dir
@@ -76,7 +76,7 @@ steps:
   - name: extract_tax_data
     type: sub_recipe
     sub_recipe:
-      recipe: tax_extraction.yaml
+      recipe: tax_extraction
     inputs:
       companies: $steps.load_fortune100_companies.companies
       output_dir: $params.output_dir

@@ -2,8 +2,9 @@
 
 Commands:
 - edgar recipes list - List available recipes
-- edgar recipes validate <recipe> - Validate a recipe file
+- edgar recipes validate <recipe> - Validate a recipe directory
 - edgar recipes info <recipe> - Show recipe information
+- edgar recipes init <name> - Create new recipe directory structure
 """
 
 from pathlib import Path
@@ -16,7 +17,7 @@ from pydantic import ValidationError
 import yaml
 
 from edgar_analyzer.recipes import load_recipe, discover_recipes, validate_recipe
-from edgar_analyzer.recipes.loader import get_recipe_info
+from edgar_analyzer.recipes.loader import get_recipe_info, ensure_recipe_dirs
 
 console = Console()
 
@@ -33,18 +34,18 @@ def recipes_cli():
     "-d",
     type=click.Path(exists=True, path_type=Path),
     default=Path("recipes"),
-    help="Directory to search for recipes (default: recipes/)",
+    help="Directory to search for recipe directories (default: recipes/)",
 )
 @click.option(
     "--verbose",
     "-v",
     is_flag=True,
-    help="Show detailed information",
+    help="Show detailed information including directory paths",
 )
 def list_recipes(directory: Path, verbose: bool):
     """List available recipes.
 
-    Discovers all recipe YAML files in the specified directory and displays
+    Discovers all recipe directories containing config.yaml and displays
     their metadata.
 
     Example:
@@ -58,6 +59,7 @@ def list_recipes(directory: Path, verbose: bool):
 
         if not recipes:
             console.print(f"[yellow]No recipes found in {directory}[/yellow]")
+            console.print("[dim]Tip: Recipe directories must contain a config.yaml file[/dim]")
             return
 
         # Create table
@@ -68,6 +70,7 @@ def list_recipes(directory: Path, verbose: bool):
         table.add_column("Parameters", style="blue", justify="right")
 
         if verbose:
+            table.add_column("Location", style="magenta")
             table.add_column("Description", style="yellow")
 
         for recipe in recipes:
@@ -80,6 +83,10 @@ def list_recipes(directory: Path, verbose: bool):
             ]
 
             if verbose:
+                # Show relative path from current directory
+                recipe_location = recipe.recipe_dir.name if recipe.recipe_dir else "N/A"
+                row.append(recipe_location)
+
                 description = info["description"]
                 # Truncate long descriptions
                 if len(description) > 50:
@@ -100,27 +107,28 @@ def list_recipes(directory: Path, verbose: bool):
 
 
 @recipes_cli.command(name="validate")
-@click.argument("recipe_path", type=click.Path(exists=True, path_type=Path))
+@click.argument("recipe_dir", type=click.Path(exists=True, path_type=Path))
 @click.option(
     "--verbose",
     "-v",
     is_flag=True,
     help="Show detailed validation results",
 )
-def validate_recipe_cmd(recipe_path: Path, verbose: bool):
-    """Validate a recipe file.
+def validate_recipe_cmd(recipe_dir: Path, verbose: bool):
+    """Validate a recipe directory.
 
     Checks recipe syntax, schema validity, and semantic correctness.
+    The recipe directory must contain a config.yaml file.
 
     Example:
-        edgar recipes validate recipes/fortune100.yaml
-        edgar recipes validate my_recipe.yaml --verbose
+        edgar recipes validate recipes/fortune100
+        edgar recipes validate my_recipe/ --verbose
     """
-    console.print(f"[cyan]Validating recipe: {recipe_path}[/cyan]\n")
+    console.print(f"[cyan]Validating recipe: {recipe_dir}[/cyan]\n")
 
     try:
         # Load recipe (includes Pydantic validation)
-        recipe = load_recipe(recipe_path)
+        recipe = load_recipe(recipe_dir)
 
         console.print(f"[green]✓ YAML syntax valid[/green]")
         console.print(f"[green]✓ Schema validation passed[/green]")
@@ -169,26 +177,26 @@ def validate_recipe_cmd(recipe_path: Path, verbose: bool):
 
 
 @recipes_cli.command(name="info")
-@click.argument("recipe_path", type=click.Path(exists=True, path_type=Path))
+@click.argument("recipe_dir", type=click.Path(exists=True, path_type=Path))
 @click.option(
     "--show-steps",
     "-s",
     is_flag=True,
     help="Show detailed step information",
 )
-def show_recipe_info(recipe_path: Path, show_steps: bool):
+def show_recipe_info(recipe_dir: Path, show_steps: bool):
     """Show detailed recipe information.
 
-    Displays recipe metadata, parameters, and steps.
+    Displays recipe metadata, parameters, and steps from a recipe directory.
 
     Example:
-        edgar recipes info recipes/fortune100.yaml
-        edgar recipes info my_recipe.yaml --show-steps
+        edgar recipes info recipes/fortune100
+        edgar recipes info my_recipe/ --show-steps
     """
-    console.print(f"[cyan]Loading recipe: {recipe_path}[/cyan]\n")
+    console.print(f"[cyan]Loading recipe: {recipe_dir}[/cyan]\n")
 
     try:
-        recipe = load_recipe(recipe_path)
+        recipe = load_recipe(recipe_dir)
         info = get_recipe_info(recipe)
 
         # Main info panel
@@ -265,3 +273,194 @@ def show_recipe_info(recipe_path: Path, show_steps: bool):
         console.print(f"[red]{e}[/red]")
     except Exception as e:
         console.print(f"[red]Unexpected error: {e}[/red]")
+
+
+@recipes_cli.command(name="init")
+@click.argument("name")
+@click.option(
+    "--directory",
+    "-d",
+    type=click.Path(path_type=Path),
+    default=Path("recipes"),
+    help="Parent directory for recipe (default: recipes/)",
+)
+@click.option(
+    "--title",
+    "-t",
+    help="Recipe title (defaults to capitalized name)",
+)
+@click.option(
+    "--description",
+    help="Recipe description",
+)
+def init_recipe(name: str, directory: Path, title: str | None, description: str | None):
+    """Create a new recipe directory structure.
+
+    Scaffolds a new recipe with:
+    - config.yaml template
+    - input/ directory for input files
+    - output/ directory for generated files
+    - README.md with basic documentation
+
+    Example:
+        edgar recipes init my_recipe
+        edgar recipes init fraud_detection --title "Fraud Detection Pipeline"
+        edgar recipes init custom --directory my_recipes/
+    """
+    # Validate recipe name
+    if not name.isidentifier():
+        console.print(f"[red]Error: Recipe name must be a valid identifier: {name}[/red]")
+        console.print("[dim]Use only letters, numbers, and underscores (no spaces)[/dim]")
+        return
+
+    recipe_dir = directory / name
+
+    # Check if recipe directory already exists
+    if recipe_dir.exists():
+        console.print(f"[red]Error: Recipe directory already exists: {recipe_dir}[/red]")
+        return
+
+    try:
+        # Create directory structure
+        recipe_dir.mkdir(parents=True, exist_ok=False)
+        (recipe_dir / "input").mkdir()
+        (recipe_dir / "output").mkdir()
+
+        console.print(f"[green]✓ Created recipe directory: {recipe_dir}[/green]")
+
+        # Generate config.yaml template
+        recipe_title = title or name.replace("_", " ").title()
+        recipe_description = description or f"Recipe for {recipe_title.lower()}"
+
+        config_template = f"""version: "1.0"
+name: {name}
+title: {recipe_title}
+description: |
+  {recipe_description}
+
+parameters:
+  - name: output_dir
+    type: string
+    required: false
+    default: "output/{name}"
+    description: Output directory for results
+
+  # Add your custom parameters here
+  # - name: my_param
+  #   type: string
+  #   required: true
+  #   description: Description of my parameter
+
+steps:
+  # Add your recipe steps here
+  # Example Python step:
+  # - name: my_step
+  #   type: python
+  #   python:
+  #     function: my_module.my_function
+  #   inputs:
+  #     param: $params.my_param
+  #   outputs:
+  #     - result
+
+  # Example extractor step:
+  # - name: extract_data
+  #   type: extractor
+  #   extractor:
+  #     extractor: MyAdapter
+  #     filing_type: "10-K"
+  #   inputs:
+  #     cik: $params.cik
+  #   outputs:
+  #     - extracted_data
+
+  # Example sub-recipe step:
+  # - name: run_sub_recipe
+  #   type: sub_recipe
+  #   sub_recipe:
+  #     recipe: other_recipe_name
+  #   inputs:
+  #     data: $steps.my_step.result
+  #   outputs:
+  #     - final_result
+
+error_handling:
+  on_step_failure: stop  # or 'continue'
+  collect_errors: true
+  max_retries: 2
+"""
+
+        config_path = recipe_dir / "config.yaml"
+        with open(config_path, "w") as f:
+            f.write(config_template)
+
+        console.print(f"[green]✓ Created config.yaml[/green]")
+
+        # Generate README.md
+        readme_content = f"""# {recipe_title}
+
+{recipe_description}
+
+## Directory Structure
+
+```
+{name}/
+├── config.yaml      # Recipe definition
+├── input/           # Input files (optional)
+├── output/          # Output files (generated)
+└── README.md        # This file
+```
+
+## Usage
+
+Validate the recipe:
+```bash
+edgar recipes validate recipes/{name}
+```
+
+Show recipe info:
+```bash
+edgar recipes info recipes/{name}
+```
+
+Execute the recipe (once implemented):
+```bash
+edgar recipes run recipes/{name} --param value
+```
+
+## Parameters
+
+- `output_dir`: Output directory for results (default: output/{name})
+
+Add more parameters in `config.yaml` as needed.
+
+## Steps
+
+Add your recipe steps in `config.yaml`. See the template for examples.
+
+## Development Notes
+
+Add any development notes, requirements, or special instructions here.
+"""
+
+        readme_path = recipe_dir / "README.md"
+        with open(readme_path, "w") as f:
+            f.write(readme_content)
+
+        console.print(f"[green]✓ Created README.md[/green]")
+
+        # Summary
+        console.print(f"\n[bold green]Recipe '{name}' created successfully![/bold green]")
+        console.print(f"\n[cyan]Next steps:[/cyan]")
+        console.print(f"  1. Edit {config_path} to define your recipe")
+        console.print(f"  2. Add input files to {recipe_dir / 'input'}/")
+        console.print(f"  3. Validate with: [bold]edgar recipes validate {recipe_dir}[/bold]")
+        console.print(f"  4. View info with: [bold]edgar recipes info {recipe_dir}[/bold]")
+
+    except Exception as e:
+        console.print(f"[red]Error creating recipe: {e}[/red]")
+        # Clean up on error
+        if recipe_dir.exists():
+            import shutil
+            shutil.rmtree(recipe_dir)
+            console.print(f"[yellow]Cleaned up partial recipe directory[/yellow]")
