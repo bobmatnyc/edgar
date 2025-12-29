@@ -24,6 +24,9 @@ dev = [
     "mypy>=1.7.0"
 ]
 
+[project.scripts]
+edgar = "edgar.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

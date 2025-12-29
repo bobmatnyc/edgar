@@ -54,7 +54,22 @@ pytest tests/unit/
 pytest tests/integration/
 ```
 
-### 4. Type Checking and Linting
+### 4. Run E2E Test
+
+```bash
+# Run complete end-to-end extraction test
+python3 scripts/e2e_edgar_extraction.py
+
+# Run with verbose output
+python3 scripts/e2e_edgar_extraction.py -v
+
+# Run via CLI
+edgar e2e-test
+```
+
+See [E2E Quick Start Guide](docs/e2e_quick_start.md) for details.
+
+### 5. Type Checking and Linting
 
 ```bash
 # Type checking
@@ -197,6 +212,22 @@ Generated code passes through three validation stages:
 ### Weather API Extractor
 
 See `examples/weather_api/` for a complete example of using EDGAR to generate a weather data extractor.
+
+### E2E EDGAR Extraction Test
+
+The E2E runbook demonstrates the complete extraction pipeline:
+
+```bash
+python3 scripts/e2e_edgar_extraction.py
+```
+
+**Pipeline Phases**:
+1. **Data Acquisition**: Fetch SEC filing from EDGAR
+2. **Pattern Analysis**: Detect transformation patterns
+3. **Extractor Verification**: Verify code generation
+4. **Extraction Execution**: Run and validate results
+
+See [E2E Runbook Documentation](docs/e2e_runbook.md) for complete details.
 
 ## Contributing
 
