@@ -1,204 +1,121 @@
 # EDGAR Scripts
 
-Utility scripts for testing, validation, and automation.
+Utility scripts for testing, validation, and ad-hoc operations.
 
-## Available Scripts
+## Directory Structure
+
+```
+scripts/
+├── e2e_edgar_extraction.py      # E2E extraction test
+├── analyze_patterns.py          # Pattern analysis utility
+├── fetch_apple_def14a.py        # Fetch sample filing
+├── refine_extractors.py         # Self-refinement CLI
+├── adhoc/                       # Ad-hoc scripts (not production)
+│   └── fortune100_analysis.py   # Original pipeline script
+└── debug/                       # Debugging utilities
+    └── debug_table_detection.py # Table detection debugger
+```
+
+## Production Commands
+
+For production use, prefer the CLI commands over scripts:
+
+```bash
+# Fortune 100 Analysis (recommended)
+edgar fortune100 -c 1-100 -v
+
+# E2E Test (recommended)
+edgar e2e-test
+
+# Interactive Exploration (recommended)
+jupyter notebook notebooks/
+```
+
+## Scripts
 
 ### E2E Extraction Test
 **File**: `e2e_edgar_extraction.py`
 
 End-to-end test of the complete EDGAR extraction pipeline.
 
-**Usage**:
 ```bash
-# Run full test
-python3 scripts/e2e_edgar_extraction.py
-
-# Verbose output
-python3 scripts/e2e_edgar_extraction.py -v
-
-# Run specific phase only
-python3 scripts/e2e_edgar_extraction.py --phase 1  # Data acquisition
-python3 scripts/e2e_edgar_extraction.py --phase 2  # Pattern analysis
-python3 scripts/e2e_edgar_extraction.py --phase 3  # Extractor verification
-python3 scripts/e2e_edgar_extraction.py --phase 4  # Extraction execution
+python scripts/e2e_edgar_extraction.py -v
 ```
 
-**Via CLI**:
+### Pattern Analysis
+**File**: `analyze_patterns.py`
+
+Analyze transformation patterns from SEC filings.
+
 ```bash
-edgar e2e-test
-edgar e2e-test -v
-edgar e2e-test --phase 2
+python scripts/analyze_patterns.py
 ```
 
-**Pipeline Phases**:
-1. **Data Acquisition**: Fetch SEC filing from EDGAR
-2. **Pattern Analysis**: Detect transformation patterns
-3. **Extractor Verification**: Verify code generation
-4. **Extraction Execution**: Run extractor and validate
+### Self-Refinement
+**File**: `refine_extractors.py`
 
-**Output Files**:
-- `data/e2e_test/apple_def14a_raw.html` - Raw filing HTML
-- `data/e2e_test/apple_sct_ground_truth.json` - Validation rules
-- `data/e2e_test/pattern_analysis.json` - Pattern detection results
-- `output/e2e_test/apple_sct_extracted.json` - Extracted compensation data
-- `output/e2e_test/e2e_runbook_result.json` - Test execution summary
+Analyze extraction failures and suggest improvements.
 
-**Exit Codes**:
-- `0` - All phases passed
-- `1` - One or more phases failed
-
-**Documentation**:
-- [E2E Runbook Guide](../docs/e2e_runbook.md) - Comprehensive documentation
-- [E2E Quick Start](../docs/e2e_quick_start.md) - Quick reference
-
-### Fortune 100 Analysis
-**File**: `fortune100_analysis.py`
-
-Batch extraction and analysis of Fortune 100 executive compensation vs. corporate tax.
-
-**Usage**:
 ```bash
-# Full pipeline (all 100 companies)
-python3 scripts/fortune100_analysis.py
+# Analyze recent failures
+python scripts/refine_extractors.py --analyze
 
-# Top 10 companies only (for testing)
-python3 scripts/fortune100_analysis.py --companies 1-10
-
-# Specific fiscal year
-python3 scripts/fortune100_analysis.py --year 2024
-
-# Verbose output
-python3 scripts/fortune100_analysis.py -v
-
-# Custom output directory
-python3 scripts/fortune100_analysis.py --output ./results
-
-# Combined options
-python3 scripts/fortune100_analysis.py -c 1-20 -v -o ./output/top20
-
-# Skip phases (incremental runs)
-python3 scripts/fortune100_analysis.py --skip-def14a  # Only tax data
-python3 scripts/fortune100_analysis.py --skip-10k     # Only compensation
+# Apply suggested fixes
+python scripts/refine_extractors.py --apply
 ```
 
-**Via CLI**:
+## Ad-Hoc Scripts
+
+Scripts in `adhoc/` are for one-off operations and experimentation.
+They are **not part of the production pipeline**.
+
 ```bash
-edgar fortune100 -c 1-10 -v
+# Legacy Fortune 100 script (use CLI instead)
+python scripts/adhoc/fortune100_analysis.py --companies 1-10
 ```
 
-**Pipeline Phases**:
-1. **Load Companies**: Fortune 100 registry lookup
-2. **DEF 14A Extraction**: Executive compensation (Summary Compensation Table)
-3. **10-K Extraction**: Corporate tax data
-4. **Export Results**: CSV and JSON output
+## Debug Scripts
 
-**Output Files**:
-- `output/fortune100/executive_compensation.csv` - Executive compensation data
-- `output/fortune100/corporate_tax.csv` - Corporate tax data
-- `output/fortune100/compensation_vs_tax.csv` - Combined analysis
-- `output/fortune100/def14a_results.json` - DEF 14A extraction summary
-- `output/fortune100/10k_results.json` - 10-K extraction summary
-- `output/fortune100/analysis_summary.json` - Overall metrics
+Scripts in `debug/` are for troubleshooting extraction issues.
 
-**Performance**:
-- **Rate Limiting**: 8 req/sec (SEC compliant)
-- **Concurrent Requests**: 5 (configurable)
-- **Est. Duration**: ~25-30s for all 100 companies
-
-**Documentation**:
-- [Fortune 100 Pipeline Guide](../docs/fortune100_pipeline.md) - Comprehensive documentation
-
-## Future Scripts
-
-Planned utility scripts for common tasks:
-
-- `validate_filing.py` - Validate specific SEC filing
-- `benchmark_extractors.py` - Performance benchmarking
-- `generate_extractor.py` - Interactive extractor generation
-- `analyze_patterns.py` - Standalone pattern analysis tool
+```bash
+# Debug table detection
+python scripts/debug/debug_table_detection.py
+```
 
 ## Development
 
 ### Adding New Scripts
 
-1. **Create script** in `scripts/` directory
-2. **Add shebang**: `#!/usr/bin/env python3`
-3. **Make executable**: `chmod +x scripts/your_script.py`
-4. **Add CLI entry** (optional) in `src/edgar/cli.py`
-5. **Document** in this README
+For **production features**, add to `src/edgar/` and expose via CLI.
+
+For **ad-hoc tasks**, add to `scripts/adhoc/`.
+
+For **debugging**, add to `scripts/debug/`.
 
 ### Script Template
 
 ```python
 #!/usr/bin/env python3
-"""Brief description of script purpose.
+"""Brief description."""
 
-Detailed description of what the script does and when to use it.
-
-Usage:
-    python scripts/your_script.py [options]
-"""
-
-import argparse
 import sys
 from pathlib import Path
 
-# Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from edgar.services import YourService
 
-
 def main() -> None:
-    """CLI entry point."""
-    parser = argparse.ArgumentParser(
-        description="Your script description",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    parser.add_argument(
-        "-v", "--verbose",
-        action="store_true",
-        help="Enable verbose output",
-    )
-
-    args = parser.parse_args()
-
-    # Your script logic here
-
-    sys.exit(0)
-
+    # Your logic here
+    pass
 
 if __name__ == "__main__":
     main()
 ```
 
-## Testing
-
-All scripts should have corresponding test files in `tests/`:
-
-```bash
-# Test E2E runbook
-pytest tests/test_e2e_runbook.py -v
-```
-
-## CI/CD Integration
-
-Scripts can be integrated into GitHub Actions workflows:
-
-```yaml
-- name: Run E2E test
-  run: python3 scripts/e2e_edgar_extraction.py -v
-
-- name: Upload results
-  uses: actions/upload-artifact@v3
-  with:
-    name: e2e-results
-    path: output/e2e_test/
-```
-
 ## Related Documentation
 
-- [E2E Runbook Guide](../docs/e2e_runbook.md)
-- [E2E Quick Start](../docs/e2e_quick_start.md)
-- [Phase 5 Completion Summary](../docs/phase5_completion.md)
+- [CLI Usage](../README.md)
+- [Jupyter Notebooks](../notebooks/)
+- [Pipeline Module](../src/edgar/pipelines/)
