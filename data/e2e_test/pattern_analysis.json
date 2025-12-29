@@ -1,0 +1,315 @@
+{
+  "patterns": [
+    {
+      "pattern_type": "FIELD_MAPPING",
+      "source_path": "table.column[2]",
+      "target_field": "salary",
+      "transformation": "Currency string to int",
+      "confidence": 0.95,
+      "examples": [
+        {
+          "input": "$3,000,000",
+          "output": 3000000
+        }
+      ]
+    },
+    {
+      "pattern_type": "FIELD_MAPPING",
+      "source_path": "table.column[3]",
+      "target_field": "bonus",
+      "transformation": "Currency string to int",
+      "confidence": 0.95,
+      "examples": [
+        {
+          "input": "$3,000,000",
+          "output": 3000000
+        }
+      ]
+    },
+    {
+      "pattern_type": "FIELD_MAPPING",
+      "source_path": "table.column[4]",
+      "target_field": "stock_awards",
+      "transformation": "Currency string to int",
+      "confidence": 0.95,
+      "examples": [
+        {
+          "input": "$3,000,000",
+          "output": 3000000
+        }
+      ]
+    },
+    {
+      "pattern_type": "FIELD_MAPPING",
+      "source_path": "table.column[5]",
+      "target_field": "option_awards",
+      "transformation": "Currency string to int",
+      "confidence": 0.95,
+      "examples": [
+        {
+          "input": "$3,000,000",
+          "output": 3000000
+        }
+      ]
+    },
+    {
+      "pattern_type": "FIELD_MAPPING",
+      "source_path": "table.column[6]",
+      "target_field": "non_equity_incentive",
+      "transformation": "Currency string to int",
+      "confidence": 0.95,
+      "examples": [
+        {
+          "input": "$3,000,000",
+          "output": 3000000
+        }
+      ]
+    },
+    {
+      "pattern_type": "FIELD_MAPPING",
+      "source_path": "table.column[7]",
+      "target_field": "pension_change",
+      "transformation": "Currency string to int",
+      "confidence": 0.95,
+      "examples": [
+        {
+          "input": "$3,000,000",
+          "output": 3000000
+        }
+      ]
+    },
+    {
+      "pattern_type": "FIELD_MAPPING",
+      "source_path": "table.column[8]",
+      "target_field": "other_compensation",
+      "transformation": "Currency string to int",
+      "confidence": 0.95,
+      "examples": [
+        {
+          "input": "$3,000,000",
+          "output": 3000000
+        }
+      ]
+    },
+    {
+      "pattern_type": "FIELD_MAPPING",
+      "source_path": "table.column[9]",
+      "target_field": "total",
+      "transformation": "Currency string to int",
+      "confidence": 0.95,
+      "examples": [
+        {
+          "input": "$3,000,000",
+          "output": 3000000
+        }
+      ]
+    },
+    {
+      "pattern_type": "FIELD_MAPPING",
+      "source_path": "table.column[0]",
+      "target_field": "name",
+      "transformation": "Extract executive name from multi-line cell",
+      "confidence": 0.9,
+      "examples": [
+        {
+          "input": "Timothy D. Cook\nChief Executive Officer",
+          "output": "Timothy D. Cook"
+        }
+      ]
+    },
+    {
+      "pattern_type": "FIELD_MAPPING",
+      "source_path": "table.column[0]",
+      "target_field": "title",
+      "transformation": "Extract title from multi-line cell",
+      "confidence": 0.9,
+      "examples": [
+        {
+          "input": "Timothy D. Cook\nChief Executive Officer",
+          "output": "Chief Executive Officer"
+        }
+      ]
+    },
+    {
+      "pattern_type": "TYPE_CONVERSION",
+      "source_path": "currency_cell",
+      "target_field": "numeric_value",
+      "transformation": "Remove $, commas, convert to int. Handle dashes as 0.",
+      "confidence": 0.95,
+      "examples": [
+        {
+          "input": "$3,000,000",
+          "output": 3000000
+        },
+        {
+          "input": "\u2014",
+          "output": 0
+        },
+        {
+          "input": "$58,128,634",
+          "output": 58128634
+        }
+      ]
+    },
+    {
+      "pattern_type": "TYPE_CONVERSION",
+      "source_path": "year_cell",
+      "target_field": "year",
+      "transformation": "Convert year string to integer",
+      "confidence": 0.98,
+      "examples": [
+        {
+          "input": "2024",
+          "output": 2024
+        },
+        {
+          "input": "2023",
+          "output": 2023
+        }
+      ]
+    },
+    {
+      "pattern_type": "NESTED_ACCESS",
+      "source_path": "html > table[contains:'Summary Compensation'] > tbody > tr",
+      "target_field": "executive_rows",
+      "transformation": "Find SCT table by header text, iterate rows",
+      "confidence": 0.85,
+      "examples": [
+        {
+          "selector": "table:contains('Summary Compensation Table')",
+          "action": "find_all('tr')"
+        }
+      ]
+    },
+    {
+      "pattern_type": "NESTED_ACCESS",
+      "source_path": "tr > td",
+      "target_field": "cell_values",
+      "transformation": "Extract td/th cells from each row",
+      "confidence": 0.9,
+      "examples": [
+        {
+          "selector": "row.find_all(['td', 'th'])",
+          "action": "get_text(strip=True)"
+        }
+      ]
+    },
+    {
+      "pattern_type": "AGGREGATION",
+      "source_path": "compensation.*",
+      "target_field": "total",
+      "transformation": "Sum of salary + bonus + stock_awards + option_awards + non_equity_incentive + other",
+      "confidence": 0.95,
+      "examples": [
+        {
+          "input": {
+            "salary": 3000000,
+            "stock_awards": 58128634,
+            "non_equity_incentive": 12000000,
+            "other": 1523232
+          },
+          "output": {
+            "total": 74651866
+          }
+        }
+      ]
+    },
+    {
+      "pattern_type": "AGGREGATION",
+      "source_path": "table_rows",
+      "target_field": "executives",
+      "transformation": "Group consecutive rows by executive name, collect yearly compensation",
+      "confidence": 0.8,
+      "examples": [
+        {
+          "input": "Multiple rows with same executive name",
+          "output": "Single executive object with compensation array"
+        }
+      ]
+    }
+  ],
+  "overall_confidence": 0.926875,
+  "input_schema": {
+    "type": "html",
+    "structure": "table",
+    "table_headers": [
+      "Name and Principal Position",
+      "Year",
+      "Salary",
+      "Bonus",
+      "Stock Awards",
+      "Option Awards",
+      "Non-Equity Incentive Plan Compensation",
+      "Change in Pension Value and Nonqualified Deferred Compensation Earnings",
+      "All Other Compensation",
+      "Total"
+    ],
+    "data_format": {
+      "currency": "$X,XXX,XXX",
+      "year": "YYYY",
+      "empty": "\u2014 or \u2013"
+    }
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "executives": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "compensation": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "integer"
+                  },
+                  "salary": {
+                    "type": "number"
+                  },
+                  "bonus": {
+                    "type": "number"
+                  },
+                  "stock_awards": {
+                    "type": "number"
+                  },
+                  "option_awards": {
+                    "type": "number"
+                  },
+                  "non_equity_incentive": {
+                    "type": "number"
+                  },
+                  "pension_change": {
+                    "type": "number"
+                  },
+                  "other_compensation": {
+                    "type": "number"
+                  },
+                  "total": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "recommendations": [
+    "High confidence patterns (14): Implement directly",
+    "Medium confidence patterns (2): Add validation checks",
+    "Use BeautifulSoup for HTML parsing",
+    "Implement currency_to_int() helper for money conversion",
+    "Handle multi-line cells for name/title extraction",
+    "Add error handling for missing or malformed cells"
+  ]
+}

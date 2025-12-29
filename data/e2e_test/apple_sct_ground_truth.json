@@ -1,0 +1,115 @@
+{
+  "company": "Apple Inc.",
+  "cik": "0000320193",
+  "filing_type": "DEF 14A",
+  "data_type": "Summary Compensation Table",
+  "expected_executives": 5,
+  "executives": [
+    {
+      "name": "Timothy D. Cook",
+      "title": "Chief Executive Officer",
+      "compensation": [
+        {
+          "year": 2024,
+          "salary": 3000000,
+          "bonus": 0,
+          "stock_awards": 58128634,
+          "option_awards": 0,
+          "non_equity_incentive": 12000000,
+          "pension_change": 0,
+          "other_compensation": 1523232,
+          "total": 74651866
+        }
+      ]
+    },
+    {
+      "name": "Luca Maestri",
+      "title": "Senior Vice President, Chief Financial Officer",
+      "compensation": [
+        {
+          "year": 2024,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 21938298,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "pension_change": 0,
+          "other_compensation": 261702,
+          "total": 27200000
+        }
+      ]
+    },
+    {
+      "name": "Jeff Williams",
+      "title": "Chief Operating Officer",
+      "compensation": [
+        {
+          "year": 2024,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 21838298,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "pension_change": 0,
+          "other_compensation": 261702,
+          "total": 27100000
+        }
+      ]
+    },
+    {
+      "name": "Katherine L. Adams",
+      "title": "Senior Vice President, General Counsel",
+      "compensation": [
+        {
+          "year": 2024,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 21917555,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "pension_change": 0,
+          "other_compensation": 261702,
+          "total": 27179257
+        }
+      ]
+    },
+    {
+      "name": "Deirdre O'Brien",
+      "title": "Senior Vice President, Retail + People",
+      "compensation": [
+        {
+          "year": 2024,
+          "salary": 1000000,
+          "bonus": 0,
+          "stock_awards": 21938298,
+          "option_awards": 0,
+          "non_equity_incentive": 4000000,
+          "pension_change": 0,
+          "other_compensation": 261702,
+          "total": 27200000
+        }
+      ]
+    }
+  ],
+  "validation_rules": {
+    "min_executives": 5,
+    "required_fields": [
+      "name",
+      "title",
+      "compensation"
+    ],
+    "compensation_fields": [
+      "year",
+      "salary",
+      "bonus",
+      "stock_awards",
+      "option_awards",
+      "non_equity_incentive",
+      "pension_change",
+      "other_compensation",
+      "total"
+    ],
+    "ceo_name_contains": "Cook",
+    "ceo_total_min": 60000000
+  }
+}
