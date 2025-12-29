@@ -1,0 +1,706 @@
+{
+  "version": "2024",
+  "source": "Fortune 500 2024 Rankings",
+  "companies": [
+    {
+      "rank": 1,
+      "name": "Walmart Inc.",
+      "ticker": "WMT",
+      "cik": "0000104169",
+      "sector": "Retail"
+    },
+    {
+      "rank": 2,
+      "name": "Amazon.com Inc.",
+      "ticker": "AMZN",
+      "cik": "0001018724",
+      "sector": "Technology"
+    },
+    {
+      "rank": 3,
+      "name": "Apple Inc.",
+      "ticker": "AAPL",
+      "cik": "0000320193",
+      "sector": "Technology"
+    },
+    {
+      "rank": 4,
+      "name": "UnitedHealth Group Inc.",
+      "ticker": "UNH",
+      "cik": "0000731766",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 5,
+      "name": "Berkshire Hathaway Inc.",
+      "ticker": "BRK.B",
+      "cik": "0001067983",
+      "sector": "Financials"
+    },
+    {
+      "rank": 6,
+      "name": "CVS Health Corp.",
+      "ticker": "CVS",
+      "cik": "0000064803",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 7,
+      "name": "Exxon Mobil Corp.",
+      "ticker": "XOM",
+      "cik": "0000034088",
+      "sector": "Energy"
+    },
+    {
+      "rank": 8,
+      "name": "Alphabet Inc.",
+      "ticker": "GOOGL",
+      "cik": "0001652044",
+      "sector": "Technology"
+    },
+    {
+      "rank": 9,
+      "name": "McKesson Corp.",
+      "ticker": "MCK",
+      "cik": "0000927653",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 10,
+      "name": "Cencora Inc.",
+      "ticker": "COR",
+      "cik": "0001140859",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 11,
+      "name": "Costco Wholesale Corp.",
+      "ticker": "COST",
+      "cik": "0000909832",
+      "sector": "Retail"
+    },
+    {
+      "rank": 12,
+      "name": "Microsoft Corp.",
+      "ticker": "MSFT",
+      "cik": "0000789019",
+      "sector": "Technology"
+    },
+    {
+      "rank": 13,
+      "name": "Cigna Group",
+      "ticker": "CI",
+      "cik": "0001739940",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 14,
+      "name": "Cardinal Health Inc.",
+      "ticker": "CAH",
+      "cik": "0000721371",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 15,
+      "name": "Chevron Corp.",
+      "ticker": "CVX",
+      "cik": "0000093410",
+      "sector": "Energy"
+    },
+    {
+      "rank": 16,
+      "name": "JPMorgan Chase & Co.",
+      "ticker": "JPM",
+      "cik": "0000019617",
+      "sector": "Financials"
+    },
+    {
+      "rank": 17,
+      "name": "Kroger Co.",
+      "ticker": "KR",
+      "cik": "0000056873",
+      "sector": "Retail"
+    },
+    {
+      "rank": 18,
+      "name": "Walgreens Boots Alliance Inc.",
+      "ticker": "WBA",
+      "cik": "0001618921",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 19,
+      "name": "Bank of America Corp.",
+      "ticker": "BAC",
+      "cik": "0000070858",
+      "sector": "Financials"
+    },
+    {
+      "rank": 20,
+      "name": "Ford Motor Co.",
+      "ticker": "F",
+      "cik": "0000037996",
+      "sector": "Automotive"
+    },
+    {
+      "rank": 21,
+      "name": "General Motors Co.",
+      "ticker": "GM",
+      "cik": "0001467858",
+      "sector": "Automotive"
+    },
+    {
+      "rank": 22,
+      "name": "Home Depot Inc.",
+      "ticker": "HD",
+      "cik": "0000354950",
+      "sector": "Retail"
+    },
+    {
+      "rank": 23,
+      "name": "Marathon Petroleum Corp.",
+      "ticker": "MPC",
+      "cik": "0001510295",
+      "sector": "Energy"
+    },
+    {
+      "rank": 24,
+      "name": "Elevance Health Inc.",
+      "ticker": "ELV",
+      "cik": "0001156039",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 25,
+      "name": "Verizon Communications Inc.",
+      "ticker": "VZ",
+      "cik": "0000732712",
+      "sector": "Telecommunications"
+    },
+    {
+      "rank": 26,
+      "name": "AT&T Inc.",
+      "ticker": "T",
+      "cik": "0000732717",
+      "sector": "Telecommunications"
+    },
+    {
+      "rank": 27,
+      "name": "Centene Corp.",
+      "ticker": "CNC",
+      "cik": "0001071739",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 28,
+      "name": "Meta Platforms Inc.",
+      "ticker": "META",
+      "cik": "0001326801",
+      "sector": "Technology"
+    },
+    {
+      "rank": 29,
+      "name": "Comcast Corp.",
+      "ticker": "CMCSA",
+      "cik": "0001166691",
+      "sector": "Telecommunications"
+    },
+    {
+      "rank": 30,
+      "name": "Valero Energy Corp.",
+      "ticker": "VLO",
+      "cik": "0001035002",
+      "sector": "Energy"
+    },
+    {
+      "rank": 31,
+      "name": "Target Corp.",
+      "ticker": "TGT",
+      "cik": "0000027419",
+      "sector": "Retail"
+    },
+    {
+      "rank": 32,
+      "name": "Phillips 66",
+      "ticker": "PSX",
+      "cik": "0001534701",
+      "sector": "Energy"
+    },
+    {
+      "rank": 33,
+      "name": "Dell Technologies Inc.",
+      "ticker": "DELL",
+      "cik": "0001571996",
+      "sector": "Technology"
+    },
+    {
+      "rank": 34,
+      "name": "United Parcel Service Inc.",
+      "ticker": "UPS",
+      "cik": "0001090727",
+      "sector": "Transportation"
+    },
+    {
+      "rank": 35,
+      "name": "Tesla Inc.",
+      "ticker": "TSLA",
+      "cik": "0001318605",
+      "sector": "Automotive"
+    },
+    {
+      "rank": 36,
+      "name": "Lowe's Companies Inc.",
+      "ticker": "LOW",
+      "cik": "0000060667",
+      "sector": "Retail"
+    },
+    {
+      "rank": 37,
+      "name": "Johnson & Johnson",
+      "ticker": "JNJ",
+      "cik": "0000200406",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 38,
+      "name": "Wells Fargo & Co.",
+      "ticker": "WFC",
+      "cik": "0000072971",
+      "sector": "Financials"
+    },
+    {
+      "rank": 39,
+      "name": "State Farm Insurance Cos.",
+      "ticker": "N/A",
+      "cik": "0000933471",
+      "sector": "Insurance"
+    },
+    {
+      "rank": 40,
+      "name": "PBF Energy Inc.",
+      "ticker": "PBF",
+      "cik": "0001534504",
+      "sector": "Energy"
+    },
+    {
+      "rank": 41,
+      "name": "Citigroup Inc.",
+      "ticker": "C",
+      "cik": "0000831001",
+      "sector": "Financials"
+    },
+    {
+      "rank": 42,
+      "name": "Archer Daniels Midland Co.",
+      "ticker": "ADM",
+      "cik": "0000007084",
+      "sector": "Food & Agriculture"
+    },
+    {
+      "rank": 43,
+      "name": "Albertsons Cos. Inc.",
+      "ticker": "ACI",
+      "cik": "0001646972",
+      "sector": "Retail"
+    },
+    {
+      "rank": 44,
+      "name": "FedEx Corp.",
+      "ticker": "FDX",
+      "cik": "0001048911",
+      "sector": "Transportation"
+    },
+    {
+      "rank": 45,
+      "name": "Humana Inc.",
+      "ticker": "HUM",
+      "cik": "0000049071",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 46,
+      "name": "Energy Transfer LP",
+      "ticker": "ET",
+      "cik": "0001276187",
+      "sector": "Energy"
+    },
+    {
+      "rank": 47,
+      "name": "PepsiCo Inc.",
+      "ticker": "PEP",
+      "cik": "0000077476",
+      "sector": "Consumer Goods"
+    },
+    {
+      "rank": 48,
+      "name": "ConocoPhillips",
+      "ticker": "COP",
+      "cik": "0001163165",
+      "sector": "Energy"
+    },
+    {
+      "rank": 49,
+      "name": "Procter & Gamble Co.",
+      "ticker": "PG",
+      "cik": "0000080424",
+      "sector": "Consumer Goods"
+    },
+    {
+      "rank": 50,
+      "name": "Intel Corp.",
+      "ticker": "INTC",
+      "cik": "0000050863",
+      "sector": "Technology"
+    },
+    {
+      "rank": 51,
+      "name": "Boeing Co.",
+      "ticker": "BA",
+      "cik": "0000012927",
+      "sector": "Aerospace"
+    },
+    {
+      "rank": 52,
+      "name": "American Airlines Group Inc.",
+      "ticker": "AAL",
+      "cik": "0000006201",
+      "sector": "Transportation"
+    },
+    {
+      "rank": 53,
+      "name": "United Airlines Holdings Inc.",
+      "ticker": "UAL",
+      "cik": "0000100517",
+      "sector": "Transportation"
+    },
+    {
+      "rank": 54,
+      "name": "Lockheed Martin Corp.",
+      "ticker": "LMT",
+      "cik": "0000936468",
+      "sector": "Aerospace"
+    },
+    {
+      "rank": 55,
+      "name": "Sysco Corp.",
+      "ticker": "SYY",
+      "cik": "0000096021",
+      "sector": "Food & Agriculture"
+    },
+    {
+      "rank": 56,
+      "name": "Caterpillar Inc.",
+      "ticker": "CAT",
+      "cik": "0000018230",
+      "sector": "Industrial"
+    },
+    {
+      "rank": 57,
+      "name": "IBM Corp.",
+      "ticker": "IBM",
+      "cik": "0000051143",
+      "sector": "Technology"
+    },
+    {
+      "rank": 58,
+      "name": "Enterprise Products Partners LP",
+      "ticker": "EPD",
+      "cik": "0001061219",
+      "sector": "Energy"
+    },
+    {
+      "rank": 59,
+      "name": "Morgan Stanley",
+      "ticker": "MS",
+      "cik": "0000895421",
+      "sector": "Financials"
+    },
+    {
+      "rank": 60,
+      "name": "Goldman Sachs Group Inc.",
+      "ticker": "GS",
+      "cik": "0000886982",
+      "sector": "Financials"
+    },
+    {
+      "rank": 61,
+      "name": "HCA Healthcare Inc.",
+      "ticker": "HCA",
+      "cik": "0000860730",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 62,
+      "name": "Delta Air Lines Inc.",
+      "ticker": "DAL",
+      "cik": "0000027904",
+      "sector": "Transportation"
+    },
+    {
+      "rank": 63,
+      "name": "Pfizer Inc.",
+      "ticker": "PFE",
+      "cik": "0000078003",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 64,
+      "name": "World Kinect Corp.",
+      "ticker": "WKC",
+      "cik": "0000350733",
+      "sector": "Energy"
+    },
+    {
+      "rank": 65,
+      "name": "Charter Communications Inc.",
+      "ticker": "CHTR",
+      "cik": "0001091667",
+      "sector": "Telecommunications"
+    },
+    {
+      "rank": 66,
+      "name": "AbbVie Inc.",
+      "ticker": "ABBV",
+      "cik": "0001551152",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 67,
+      "name": "General Electric Co.",
+      "ticker": "GE",
+      "cik": "0000040545",
+      "sector": "Industrial"
+    },
+    {
+      "rank": 68,
+      "name": "RTX Corp.",
+      "ticker": "RTX",
+      "cik": "0000101829",
+      "sector": "Aerospace"
+    },
+    {
+      "rank": 69,
+      "name": "American Express Co.",
+      "ticker": "AXP",
+      "cik": "0000004962",
+      "sector": "Financials"
+    },
+    {
+      "rank": 70,
+      "name": "Liberty Mutual Holding Co.",
+      "ticker": "N/A",
+      "cik": "0000935840",
+      "sector": "Insurance"
+    },
+    {
+      "rank": 71,
+      "name": "Merck & Co. Inc.",
+      "ticker": "MRK",
+      "cik": "0000310158",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 72,
+      "name": "StoneX Group Inc.",
+      "ticker": "SNEX",
+      "cik": "0000931059",
+      "sector": "Financials"
+    },
+    {
+      "rank": 73,
+      "name": "Fannie Mae",
+      "ticker": "FNMA",
+      "cik": "0000310522",
+      "sector": "Financials"
+    },
+    {
+      "rank": 74,
+      "name": "Nationwide Mutual Insurance Co.",
+      "ticker": "N/A",
+      "cik": "0000912593",
+      "sector": "Insurance"
+    },
+    {
+      "rank": 75,
+      "name": "Philip Morris International Inc.",
+      "ticker": "PM",
+      "cik": "0001413329",
+      "sector": "Consumer Goods"
+    },
+    {
+      "rank": 76,
+      "name": "Stellantis N.V.",
+      "ticker": "STLA",
+      "cik": "0001830219",
+      "sector": "Automotive"
+    },
+    {
+      "rank": 77,
+      "name": "Cisco Systems Inc.",
+      "ticker": "CSCO",
+      "cik": "0000858877",
+      "sector": "Technology"
+    },
+    {
+      "rank": 78,
+      "name": "Freddie Mac",
+      "ticker": "FMCC",
+      "cik": "0000100331",
+      "sector": "Financials"
+    },
+    {
+      "rank": 79,
+      "name": "Coca-Cola Co.",
+      "ticker": "KO",
+      "cik": "0000021344",
+      "sector": "Consumer Goods"
+    },
+    {
+      "rank": 80,
+      "name": "Eli Lilly and Co.",
+      "ticker": "LLY",
+      "cik": "0000059478",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 81,
+      "name": "USAA",
+      "ticker": "N/A",
+      "cik": "0000913130",
+      "sector": "Insurance"
+    },
+    {
+      "rank": 82,
+      "name": "Progressive Corp.",
+      "ticker": "PGR",
+      "cik": "0000080661",
+      "sector": "Insurance"
+    },
+    {
+      "rank": 83,
+      "name": "Allstate Corp.",
+      "ticker": "ALL",
+      "cik": "0000899051",
+      "sector": "Insurance"
+    },
+    {
+      "rank": 84,
+      "name": "Performance Food Group Co.",
+      "ticker": "PFGC",
+      "cik": "0001625105",
+      "sector": "Food & Agriculture"
+    },
+    {
+      "rank": 85,
+      "name": "Walt Disney Co.",
+      "ticker": "DIS",
+      "cik": "0001744489",
+      "sector": "Media"
+    },
+    {
+      "rank": 86,
+      "name": "Nike Inc.",
+      "ticker": "NKE",
+      "cik": "0000320187",
+      "sector": "Consumer Goods"
+    },
+    {
+      "rank": 87,
+      "name": "Best Buy Co. Inc.",
+      "ticker": "BBY",
+      "cik": "0000764478",
+      "sector": "Retail"
+    },
+    {
+      "rank": 88,
+      "name": "Abbott Laboratories",
+      "ticker": "ABT",
+      "cik": "0000001800",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 89,
+      "name": "Publix Super Markets Inc.",
+      "ticker": "N/A",
+      "cik": "0001041061",
+      "sector": "Retail"
+    },
+    {
+      "rank": 90,
+      "name": "Oracle Corp.",
+      "ticker": "ORCL",
+      "cik": "0001341439",
+      "sector": "Technology"
+    },
+    {
+      "rank": 91,
+      "name": "Deere & Co.",
+      "ticker": "DE",
+      "cik": "0000315189",
+      "sector": "Industrial"
+    },
+    {
+      "rank": 92,
+      "name": "TJX Companies Inc.",
+      "ticker": "TJX",
+      "cik": "0000109198",
+      "sector": "Retail"
+    },
+    {
+      "rank": 93,
+      "name": "TIAA",
+      "ticker": "N/A",
+      "cik": "0000098430",
+      "sector": "Financials"
+    },
+    {
+      "rank": 94,
+      "name": "Netflix Inc.",
+      "ticker": "NFLX",
+      "cik": "0001065280",
+      "sector": "Media"
+    },
+    {
+      "rank": 95,
+      "name": "Bristol-Myers Squibb Co.",
+      "ticker": "BMY",
+      "cik": "0000014272",
+      "sector": "Healthcare"
+    },
+    {
+      "rank": 96,
+      "name": "Travelers Companies Inc.",
+      "ticker": "TRV",
+      "cik": "0000086312",
+      "sector": "Insurance"
+    },
+    {
+      "rank": 97,
+      "name": "Nucor Corp.",
+      "ticker": "NUE",
+      "cik": "0000073309",
+      "sector": "Industrial"
+    },
+    {
+      "rank": 98,
+      "name": "Tyson Foods Inc.",
+      "ticker": "TSN",
+      "cik": "0000100493",
+      "sector": "Food & Agriculture"
+    },
+    {
+      "rank": 99,
+      "name": "TD Synnex Corp.",
+      "ticker": "SNX",
+      "cik": "0001482649",
+      "sector": "Technology"
+    },
+    {
+      "rank": 100,
+      "name": "New York Life Insurance Co.",
+      "ticker": "N/A",
+      "cik": "0000932841",
+      "sector": "Insurance"
+    }
+  ]
+}
