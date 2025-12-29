@@ -52,6 +52,63 @@ edgar e2e-test --phase 2
 - [E2E Runbook Guide](../docs/e2e_runbook.md) - Comprehensive documentation
 - [E2E Quick Start](../docs/e2e_quick_start.md) - Quick reference
 
+### Fortune 100 Analysis
+**File**: `fortune100_analysis.py`
+
+Batch extraction and analysis of Fortune 100 executive compensation vs. corporate tax.
+
+**Usage**:
+```bash
+# Full pipeline (all 100 companies)
+python3 scripts/fortune100_analysis.py
+
+# Top 10 companies only (for testing)
+python3 scripts/fortune100_analysis.py --companies 1-10
+
+# Specific fiscal year
+python3 scripts/fortune100_analysis.py --year 2024
+
+# Verbose output
+python3 scripts/fortune100_analysis.py -v
+
+# Custom output directory
+python3 scripts/fortune100_analysis.py --output ./results
+
+# Combined options
+python3 scripts/fortune100_analysis.py -c 1-20 -v -o ./output/top20
+
+# Skip phases (incremental runs)
+python3 scripts/fortune100_analysis.py --skip-def14a  # Only tax data
+python3 scripts/fortune100_analysis.py --skip-10k     # Only compensation
+```
+
+**Via CLI**:
+```bash
+edgar fortune100 -c 1-10 -v
+```
+
+**Pipeline Phases**:
+1. **Load Companies**: Fortune 100 registry lookup
+2. **DEF 14A Extraction**: Executive compensation (Summary Compensation Table)
+3. **10-K Extraction**: Corporate tax data
+4. **Export Results**: CSV and JSON output
+
+**Output Files**:
+- `output/fortune100/executive_compensation.csv` - Executive compensation data
+- `output/fortune100/corporate_tax.csv` - Corporate tax data
+- `output/fortune100/compensation_vs_tax.csv` - Combined analysis
+- `output/fortune100/def14a_results.json` - DEF 14A extraction summary
+- `output/fortune100/10k_results.json` - 10-K extraction summary
+- `output/fortune100/analysis_summary.json` - Overall metrics
+
+**Performance**:
+- **Rate Limiting**: 8 req/sec (SEC compliant)
+- **Concurrent Requests**: 5 (configurable)
+- **Est. Duration**: ~25-30s for all 100 companies
+
+**Documentation**:
+- [Fortune 100 Pipeline Guide](../docs/fortune100_pipeline.md) - Comprehensive documentation
+
 ## Future Scripts
 
 Planned utility scripts for common tasks:
