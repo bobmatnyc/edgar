@@ -83,6 +83,7 @@ class TaxExtractor:
         """Find the Income Tax Expense table in the document.
 
         Searches for table following tax-related header text.
+        Prioritizes detailed tables with component breakdowns.
         """
         # Look for income tax section headers
         tax_patterns = [
@@ -92,6 +93,9 @@ class TaxExtractor:
             "income taxes",
         ]
 
+        # Strategy: Collect ALL candidate tables, then prioritize detailed ones
+        candidate_tables: list[tuple[Tag, bool]] = []  # (table, is_detailed)
+
         for tag in soup.find_all(["h1", "h2", "h3", "h4", "p", "b", "strong", "span"]):
             text = tag.get_text(strip=True).lower()
             if any(pattern in text for pattern in tax_patterns):
@@ -100,9 +104,39 @@ class TaxExtractor:
                     # Find next table
                     table = tag.find_next("table")
                     if table and self._looks_like_tax_table(table):
-                        return table
+                        # Check if it's a detailed table
+                        is_detailed = self._is_detailed_tax_table(table)
+                        candidate_tables.append((table, is_detailed))
 
-        return None
+        if not candidate_tables:
+            return None
+
+        # Prioritize detailed tables
+        detailed_tables = [t for t, is_det in candidate_tables if is_det]
+        if detailed_tables:
+            return detailed_tables[0]
+
+        # Fall back to first candidate
+        return candidate_tables[0][0]
+
+    def _is_detailed_tax_table(self, table: Tag) -> bool:
+        """Check if table has detailed component breakdown.
+
+        Returns True if table contains federal/state/foreign AND current/deferred breakdowns.
+        """
+        text = table.get_text().lower()
+
+        has_federal = "federal" in text
+        has_state = "state" in text
+        has_foreign = "foreign" in text or "international" in text
+        has_current = "current" in text
+        has_deferred = "deferred" in text
+
+        # Detailed table must have geographic (federal/state/foreign) AND timing (current/deferred) dimensions
+        has_geographic = (has_federal and has_state) or (has_federal and has_foreign)
+        has_timing = has_current and has_deferred
+
+        return has_geographic and has_timing
 
     def _looks_like_tax_table(self, table: Tag) -> bool:
         """Check if table looks like an income tax expense table.
@@ -154,12 +188,18 @@ class TaxExtractor:
 
         Parses table rows to build TaxYear objects with current/deferred
         federal/state/foreign tax components.
+
+        Handles two table patterns:
+        1. Section-based: "Current:", "Deferred:" as headers with components below
+        2. Component-based: "Federal:", "State:", "Foreign:" with Current/Deferred rows under each
         """
         tax_years_dict: dict[int, TaxYear] = {}
         rows = table.find_all("tr")
 
         # First pass: find years in header row
         years: list[int] = []
+        year_indices: list[int] = []  # Track column indices of years
+
         for row in rows:
             cells = row.find_all(["td", "th"])
             if len(cells) < 2:
@@ -169,13 +209,12 @@ class TaxExtractor:
             values = [self._clean_cell(cell.get_text()) for cell in cells]
 
             # Check if this is a header row with years
-            year_cols = []
             for i, val in enumerate(values):
                 if val.isdigit() and 2000 <= int(val) <= 2030:
-                    year_cols.append((i, int(val)))
+                    years.append(int(val))
+                    year_indices.append(i)
 
-            if year_cols:
-                years = [year for _, year in year_cols]
+            if years:
                 # Initialize TaxYear objects
                 for year in years:
                     tax_years_dict[year] = TaxYear(year=year)
@@ -185,7 +224,8 @@ class TaxExtractor:
             return []
 
         # Second pass: parse tax data rows
-        current_section = None  # Track whether we're in current or deferred section
+        # Track context: which geographic component (federal/state/foreign) and timing (current/deferred)
+        current_geographic = None  # federal, state, or foreign
 
         for row in rows:
             cells = row.find_all(["td", "th"])
@@ -195,18 +235,45 @@ class TaxExtractor:
             values = [self._clean_cell(cell.get_text()) for cell in cells]
             row_label = values[0].lower() if values else ""
 
-            # Detect section headers
-            if "current" in row_label and ":" in row_label:
-                current_section = "current"
+            # Pattern 1: Detect geographic section headers (Apple style)
+            # "Federal:", "State:", "Foreign:" indicate component sections
+            if "federal:" in row_label or "federal" == row_label:
+                current_geographic = "federal"
                 continue
-            elif "deferred" in row_label and ":" in row_label:
-                current_section = "deferred"
+            elif "state:" in row_label or "state" == row_label:
+                current_geographic = "state"
+                continue
+            elif "foreign:" in row_label or ("foreign" in row_label and ":" in row_label):
+                current_geographic = "foreign"
+                continue
+            elif "international:" in row_label or ("international" in row_label and ":" in row_label):
+                current_geographic = "foreign"
                 continue
 
-            # Parse tax component rows
-            tax_data = self._parse_tax_row(values, row_label)
-            if tax_data and current_section:
-                self._apply_tax_data(tax_years_dict, years, tax_data, current_section, row_label)
+            # Pattern 2: Detect timing rows within geographic sections
+            # "Current" or "Deferred" rows contain actual tax amounts
+            timing = None
+            if row_label == "current":
+                timing = "current"
+            elif row_label == "deferred":
+                timing = "deferred"
+
+            # Extract tax amounts if we have both geographic and timing context
+            if current_geographic and timing:
+                # Strategy: Find all numeric values in the row, then map to years
+                # Collect all non-zero numeric values from the row (skip first column which is label)
+                amounts: list[float] = []
+                for val in values[1:]:  # Skip first column (label)
+                    amount = self._to_number(val)
+                    if amount != 0:  # Found non-zero value
+                        amounts.append(amount)
+
+                # Map amounts to years (should be same length or close)
+                # Typically we expect 3 years -> 3 amounts
+                for i, year in enumerate(years):
+                    if i < len(amounts):
+                        field_name = f"{timing}_{current_geographic}"
+                        setattr(tax_years_dict[year], field_name, amounts[i])
 
         # Calculate totals for each year
         for year, tax_year in tax_years_dict.items():
@@ -389,13 +456,18 @@ class TaxExtractor:
         """Clean a table cell value.
 
         Removes footnote markers and normalizes whitespace.
+        PRESERVES parenthesized numbers (negative values in financial tables).
         """
-        # Remove footnote markers
-        value = re.sub(r"\(\d+\)", "", value)
+        # Remove footnote markers like [1], [2], etc.
+        # BUT preserve parenthesized numbers like (1,234) which indicate negative values
         value = re.sub(r"\[\d+\]", "", value)
+
+        # Remove asterisks (footnote markers)
         value = re.sub(r"\*+", "", value)
+
         # Normalize whitespace
         value = re.sub(r"\s+", " ", value)
+
         return value.strip()
 
     def _find_effective_rate(self, soup: BeautifulSoup) -> float:

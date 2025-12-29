@@ -70,24 +70,42 @@ class SCTExtractor:
         """Find the Summary Compensation Table in the document.
 
         Searches for table following SCT header text or containing SCT text.
+        Uses multiple strategies to handle different proxy formats.
         """
-        # Look for SCT header
+        # Strategy 1: Find table with strong compensation indicators
+        # (most reliable - checks actual table content)
+        # This catches Amazon, Berkshire, and other non-standard formats
+        candidate_tables: list[Tag] = []
+        for table in soup.find_all("table"):
+            if self._is_likely_compensation_table(table):
+                candidate_tables.append(table)
+
+        # Return first strong candidate
+        if candidate_tables:
+            return candidate_tables[0]
+
+        # Strategy 2: Search for "Summary Compensation Table" header followed by table
+        # (handles standard formats like Apple)
         sct_patterns = [
             "summary compensation table",
             "summary of compensation",
         ]
 
-        # Strategy 1: Search header tags followed by table
-        for tag in soup.find_all(["h1", "h2", "h3", "h4", "p", "b", "strong", "span"]):
+        # Look within reasonable distance (next 10 tables)
+        for tag in soup.find_all(["h1", "h2", "h3", "h4", "p", "b", "strong", "span", "div"]):
             text = tag.get_text(strip=True).lower()
             if any(pattern in text for pattern in sct_patterns):
                 if "narrative" not in text and "footnote" not in text:
-                    # Find next table
-                    table = tag.find_next("table")
-                    if table and self._looks_like_sct(table):
-                        return table
+                    # Find next table (try multiple candidates)
+                    next_element = tag
+                    for _ in range(10):  # Look at next 10 siblings/descendants
+                        next_element = next_element.find_next("table")
+                        if next_element and self._looks_like_sct(next_element):
+                            return next_element
+                        if not next_element:
+                            break
 
-        # Strategy 2: Search tables directly containing SCT text
+        # Strategy 3: Search tables directly containing SCT text
         # (handles cases where "Summary Compensation Table" is in <td> cells)
         for table in soup.find_all("table"):
             table_text = table.get_text().lower()
@@ -99,6 +117,73 @@ class SCTExtractor:
                         return table
 
         return None
+
+    def _is_likely_compensation_table(self, table: Tag) -> bool:
+        """Check if table is likely a compensation table based on structure.
+
+        More strict than _looks_like_sct - requires executive names + compensation data.
+        Requires multiple executives to avoid summary tables.
+        """
+        text = table.get_text().lower()
+
+        # Must have key compensation columns
+        has_salary = "salary" in text
+        has_stock = "stock" in text or "award" in text
+        has_total = "total" in text
+        has_year = "year" in text or "20" in text[:500]  # Year in early part of table
+
+        if not (has_salary and has_stock and has_total and has_year):
+            return False
+
+        # Must have executive-like content (names with titles)
+        # Look for common titles
+        executive_titles = [
+            "chief executive", "ceo", "president",
+            "chief financial", "cfo",
+            "chief operating", "coo",
+            "vice president", "vp",
+            "officer", "founder"
+        ]
+
+        has_exec_title = any(title in text for title in executive_titles)
+        if not has_exec_title:
+            return False
+
+        # Must have monetary values (dollar signs)
+        has_dollars = "$" in table.get_text()
+        if not has_dollars:
+            return False
+
+        # CRITICAL: Must have multiple executives (at least 3) to avoid summary tables
+        # Count potential executive rows (rows with names and titles)
+        rows = table.find_all("tr")
+        exec_row_count = 0
+
+        for row in rows:
+            cells = row.find_all(["td", "th"])
+            if len(cells) < 3:  # Need at least 3 columns
+                continue
+
+            # Check first few columns for name-like content
+            for cell in cells[:3]:
+                cell_text = cell.get_text(strip=True)
+                # Skip headers and non-name content
+                if not cell_text or len(cell_text) < 5:
+                    continue
+                if any(h in cell_text.lower() for h in ["name", "year", "salary", "total", "position"]):
+                    continue
+                if cell_text[0].isdigit():
+                    continue
+
+                # Check if cell has title indicators
+                cell_lower = cell_text.lower()
+                if any(title in cell_lower for title in ["officer", "president", "chief", "vice", "ceo", "cfo", "coo"]):
+                    exec_row_count += 1
+                    break
+
+        # Require at least 3 executive rows to be a valid SCT table
+        # This filters out single-executive summary tables (like Apple's Tim Cook summary)
+        return exec_row_count >= 3
 
     def _looks_like_sct(self, table: Tag) -> bool:
         """Check if table looks like a Summary Compensation Table."""
@@ -119,22 +204,27 @@ class SCTExtractor:
             if len(cells) < 3:
                 continue
 
-            # Get cell values - preserve newlines for first cell (name/title)
+            # Get cell values - preserve newlines for name cells
             values = []
             for i, cell in enumerate(cells):
-                if i == 0:
-                    # First cell: preserve line breaks for name/title extraction
+                # Preserve line breaks for first few cells (name might be in column 0, 1, or 2)
+                if i < 3:
                     values.append(self._get_cell_text_with_newlines(cell))
                 else:
-                    # Other cells: normal cleaning
                     values.append(self._clean_cell(cell.get_text()))
 
             # Skip header rows
             if self._is_header_row(values):
                 continue
 
-            # Check for new executive (name in first column)
-            name_info = self._extract_name_title(values[0])
+            # Check for new executive (name might be in first non-empty column)
+            # Amazon has empty first column, so check first 3 columns
+            name_info = None
+            for col_idx in range(min(3, len(values))):
+                name_info = self._extract_name_title(values[col_idx])
+                if name_info:
+                    break
+
             if name_info:
                 current_exec = ExecutiveCompensation(
                     name=name_info["name"],
@@ -159,11 +249,20 @@ class SCTExtractor:
         return self._clean_cell(cell.get_text())
 
     def _clean_cell(self, value: str) -> str:
-        """Clean a table cell value."""
-        # Remove footnote markers
-        value = re.sub(r"\(\d+\)", "", value)
+        """Clean a table cell value.
+
+        Removes footnote markers but preserves parenthesized numbers (negative values).
+        """
+        # Remove footnote markers like [1], [2], etc.
+        # BUT preserve parenthesized numbers like (1,234) which may appear in compensation tables
         value = re.sub(r"\[\d+\]", "", value)
+
+        # Remove asterisks (footnote markers)
         value = re.sub(r"\*+", "", value)
+
+        # Remove zero-width spaces (common in modern HTML tables)
+        value = value.replace("\u200b", "")
+
         # Normalize whitespace (but preserve newlines)
         lines = value.split("\n")
         cleaned_lines = [re.sub(r"\s+", " ", line).strip() for line in lines]
@@ -171,14 +270,40 @@ class SCTExtractor:
 
     def _is_header_row(self, values: list[str]) -> bool:
         """Check if row is a header row."""
-        first = values[0].lower()
-        headers = ["name", "principal", "position", "year", "fiscal"]
-        return any(h in first for h in headers)
+        # Check all non-empty values (not just first column)
+        # Some tables have empty first column with headers in column 2+
+        non_empty_values = [v.lower() for v in values if v.strip()]
+
+        if not non_empty_values:
+            return False
+
+        # Check first non-empty value for header indicators
+        first = non_empty_values[0]
+
+        # Common header patterns
+        headers = [
+            "name", "principal", "position", "year", "fiscal",
+            "salary", "bonus", "stock", "award", "option",
+            "non-equity", "pension", "total", "compensation",
+            "and principal position"  # Specific to Amazon format
+        ]
+
+        # Header if first value contains header keywords
+        if any(h in first for h in headers):
+            return True
+
+        # Also check if multiple values look like column headers
+        # (e.g., "Name", "Year", "Salary", "Total")
+        header_count = sum(1 for v in non_empty_values[:6] if any(h in v for h in headers))
+        return header_count >= 3  # If 3+ columns look like headers, it's a header row
 
     def _extract_name_title(self, text: str) -> dict[str, str] | None:
         """Extract executive name and title from text."""
-        if not text or len(text) < 3:
+        if not text or len(text.strip()) < 3:
             return None
+
+        # Strip leading/trailing whitespace
+        text = text.strip()
 
         # Skip if starts with number (likely year)
         if text[0].isdigit():
@@ -190,16 +315,17 @@ class SCTExtractor:
         if any(word in lower for word in skip_words):
             return None
 
-        # Split by common delimiters
-        parts = re.split(r"[\n\r]+", text)
+        # Split by common delimiters and filter out empty parts
+        parts = [p.strip() for p in re.split(r"[\n\r]+", text) if p.strip()]
+
         if len(parts) >= 2:
-            name = parts[0].strip()
-            title = parts[1].strip()
+            name = parts[0]
+            title = parts[1]
             if len(name) > 2 and not name[0].isdigit():
                 return {"name": name, "title": title}
         elif len(parts) == 1:
             # Single line - might be just name
-            name = parts[0].strip()
+            name = parts[0]
             if len(name) > 2 and not name[0].isdigit():
                 return {"name": name, "title": ""}
 
@@ -227,8 +353,20 @@ class SCTExtractor:
         # Standard order: Salary, Bonus, Stock, Options, Non-Equity, Pension, Other, Total
         values_after_year = values[year_idx + 1 :]
 
-        # Extract monetary values
-        monetary_values = [self._to_number(v) for v in values_after_year if v]
+        # Extract monetary values (filter out empty cells and footnote markers)
+        # Try to convert each value to number, keeping only valid numbers
+        monetary_values = []
+        for v in values_after_year:
+            # Skip truly empty values and whitespace-only cells
+            if not v or not v.strip():
+                continue
+            # Skip footnote markers like (1), (2), (3)(4)
+            if v.strip().startswith('(') and v.strip().endswith(')'):
+                continue
+            # Try to convert to number
+            num = self._to_number(v)
+            # Keep all valid numbers (including 0)
+            monetary_values.append(num)
 
         # Determine structure based on number of non-empty values
         # Filter to numeric values only (exclude empty strings and footnote markers)
