@@ -1,0 +1,92 @@
+{
+  "phase": "Phase 4: Extraction Execution",
+  "status": "PASSED",
+  "summary": {
+    "executives_extracted": 5,
+    "executives_expected": 5,
+    "overall_accuracy": 1.0,
+    "threshold": 0.95
+  },
+  "extracted_data": {
+    "company": "Apple Inc.",
+    "cik": "0000320193",
+    "total_compensation": 183325385.0,
+    "executives": [
+      {
+        "name": "Tim Cook",
+        "title": "Chief Executive Officer",
+        "total_2024": 74609802.0
+      },
+      {
+        "name": "Luca Maestri",
+        "title": "Former Senior Vice President,",
+        "total_2024": 27179257.0
+      },
+      {
+        "name": "Kate Adams",
+        "title": "Senior Vice President, General",
+        "total_2024": 27179257.0
+      },
+      {
+        "name": "Deirdre O\u2019Brien",
+        "title": "Senior Vice President,",
+        "total_2024": 27179257.0
+      },
+      {
+        "name": "Jeff Williams",
+        "title": "Chief Operating Officer",
+        "total_2024": 27177812.0
+      }
+    ]
+  },
+  "accuracy_details": {
+    "executives_found": 5,
+    "executives_expected": 5,
+    "fields_correct": 20,
+    "fields_total": 20,
+    "compensation_accuracy": [
+      {
+        "name": "Timothy D. Cook",
+        "accuracy": 1.0
+      },
+      {
+        "name": "Luca Maestri",
+        "accuracy": 1.0
+      },
+      {
+        "name": "Jeff Williams",
+        "accuracy": 1.0
+      },
+      {
+        "name": "Katherine L. Adams",
+        "accuracy": 1.0
+      },
+      {
+        "name": "Deirdre O'Brien",
+        "accuracy": 1.0
+      }
+    ],
+    "overall": 1.0
+  },
+  "validation_rules_used": {
+    "min_executives": 5,
+    "required_fields": [
+      "name",
+      "title",
+      "compensation"
+    ],
+    "compensation_fields": [
+      "year",
+      "salary",
+      "bonus",
+      "stock_awards",
+      "option_awards",
+      "non_equity_incentive",
+      "pension_change",
+      "other_compensation",
+      "total"
+    ],
+    "ceo_name_contains": "Cook",
+    "ceo_total_min": 60000000
+  }
+}

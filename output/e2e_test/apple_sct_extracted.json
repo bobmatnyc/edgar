@@ -1,0 +1,202 @@
+{
+  "company": "Apple Inc.",
+  "cik": "0000320193",
+  "filing_date": "",
+  "executives": [
+    {
+      "name": "Tim Cook",
+      "title": "Chief Executive Officer",
+      "compensation": [
+        {
+          "year": 2024,
+          "salary": 3000000.0,
+          "bonus": 0.0,
+          "stock_awards": 58088946.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 12000000.0,
+          "pension_change": 0.0,
+          "other_compensation": 1520856.0,
+          "total": 74609802.0
+        },
+        {
+          "year": 2023,
+          "salary": 3000000.0,
+          "bonus": 0.0,
+          "stock_awards": 46970283.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 10713450.0,
+          "pension_change": 0.0,
+          "other_compensation": 2526112.0,
+          "total": 63209845.0
+        },
+        {
+          "year": 2022,
+          "salary": 3000000.0,
+          "bonus": 0.0,
+          "stock_awards": 82994164.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 12000000.0,
+          "pension_change": 0.0,
+          "other_compensation": 1425933.0,
+          "total": 99420097.0
+        }
+      ]
+    },
+    {
+      "name": "Luca Maestri",
+      "title": "Former Senior Vice President,",
+      "compensation": [
+        {
+          "year": 2024,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22157075.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 4000000.0,
+          "pension_change": 0.0,
+          "other_compensation": 22182.0,
+          "total": 27179257.0
+        },
+        {
+          "year": 2023,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22323641.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 3571150.0,
+          "pension_change": 0.0,
+          "other_compensation": 41092.0,
+          "total": 26935883.0
+        },
+        {
+          "year": 2022,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22132015.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 4000000.0,
+          "pension_change": 0.0,
+          "other_compensation": 19783.0,
+          "total": 27151798.0
+        }
+      ]
+    },
+    {
+      "name": "Kate Adams",
+      "title": "Senior Vice President, General",
+      "compensation": [
+        {
+          "year": 2024,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22157075.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 4000000.0,
+          "pension_change": 0.0,
+          "other_compensation": 22182.0,
+          "total": 27179257.0
+        },
+        {
+          "year": 2023,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22323641.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 3571150.0,
+          "pension_change": 0.0,
+          "other_compensation": 46914.0,
+          "total": 26941705.0
+        },
+        {
+          "year": 2022,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22132015.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 4000000.0,
+          "pension_change": 0.0,
+          "other_compensation": 15208.0,
+          "total": 27147223.0
+        }
+      ]
+    },
+    {
+      "name": "Deirdre O\u2019Brien",
+      "title": "Senior Vice President,",
+      "compensation": [
+        {
+          "year": 2024,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22157075.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 4000000.0,
+          "pension_change": 0.0,
+          "other_compensation": 22182.0,
+          "total": 27179257.0
+        },
+        {
+          "year": 2023,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22323641.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 3571150.0,
+          "pension_change": 0.0,
+          "other_compensation": 42219.0,
+          "total": 26937010.0
+        },
+        {
+          "year": 2022,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22132015.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 4000000.0,
+          "pension_change": 0.0,
+          "other_compensation": 19783.0,
+          "total": 27151798.0
+        }
+      ]
+    },
+    {
+      "name": "Jeff Williams",
+      "title": "Chief Operating Officer",
+      "compensation": [
+        {
+          "year": 2024,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22157075.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 4000000.0,
+          "pension_change": 0.0,
+          "other_compensation": 20737.0,
+          "total": 27177812.0
+        },
+        {
+          "year": 2023,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22323641.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 3571150.0,
+          "pension_change": 0.0,
+          "other_compensation": 66435.0,
+          "total": 26961226.0
+        },
+        {
+          "year": 2022,
+          "salary": 1000000.0,
+          "bonus": 0.0,
+          "stock_awards": 22132015.0,
+          "option_awards": 0.0,
+          "non_equity_incentive": 4000000.0,
+          "pension_change": 0.0,
+          "other_compensation": 18337.0,
+          "total": 27150352.0
+        }
+      ]
+    }
+  ]
+}
