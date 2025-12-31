@@ -1,4 +1,4 @@
-deployed_at: '2025-12-30T22:58:46.193350+00:00'
+deployed_at: '2025-12-31T18:40:34.552890+00:00'
 skills:
 - checksum: 91d172cb94ffef4bf0e57a467b1957af5f15750588143e7d03ca4b9a67168950
   deployed_at: '2025-12-30T22:58:46.193350+00:00'
@@ -19,5 +19,9 @@ skills:
 - checksum: 6e798ef56ce87b401827bdb22813bf16ab71b1f8c89188541e5a2c3d1ad88133
   deployed_at: '2025-12-30T22:58:46.193350+00:00'
   name: pm-git-file-tracking
+  version: 1.0.0
+- checksum: 9c6cb2c459538b7a3e8b03d3a4dff9016357cc4f1edbbafe76b82a01ea9e2683
+  deployed_at: '2025-12-31T18:40:34.552890+00:00'
+  name: pm-teaching-mode
   version: 1.0.0
 version: 1.0.0

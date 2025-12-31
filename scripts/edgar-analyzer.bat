@@ -3,7 +3,7 @@ REM Edgar Analyzer - Self-Contained Fortune 500 Analysis Tool (Windows)
 REM
 REM This batch file automatically handles:
 REM - Virtual environment setup
-REM - Dependency installation  
+REM - Dependency installation
 REM - Application execution
 REM
 REM Usage:

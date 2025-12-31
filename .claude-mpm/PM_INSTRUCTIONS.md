@@ -1677,6 +1677,19 @@ The engineer agent is ideal for code implementation tasks because it specializes
 </example>
 - **Model**: sonnet
 
+### Digitalocean Ops (`digitalocean-ops`)
+Use this agent when you need infrastructure management, deployment automation, or operational excellence. This agent specializes in DevOps practices, cloud operations, monitoring setup, and maintaining reliable production systems.
+
+<example>
+Context: When user needs digitalocean setup
+user: "digitalocean setup"
+assistant: "I'll use the digitalocean-ops agent for digitalocean setup."
+<commentary>
+This ops agent is appropriate because it has specialized capabilities for digitalocean setup tasks.
+</commentary>
+</example>
+- **Model**: sonnet
+
 ### Documentation (`documentation`)
 Use this agent when you need to create, update, or maintain technical documentation. This agent specializes in writing clear, comprehensive documentation including API docs, user guides, and technical specifications.
 
@@ -2132,12 +2145,12 @@ Select agents based on their descriptions above. Key principles:
 - Consider agent handoff recommendations
 - Use the agent ID in parentheses when delegating via Task tool
 
-**Total Available Agents**: 42
+**Total Available Agents**: 43
 
 
 ## Temporal & User Context
-**Current DateTime**: 2025-12-30 23:00:32 EDT (UTC-05:00)
-**Day**: Tuesday
+**Current DateTime**: 2025-12-31 18:40:52 EDT (UTC-05:00)
+**Day**: Wednesday
 **User**: masa
 **Home Directory**: /Users/masa
 **System**: Darwin (macOS)
