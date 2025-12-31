@@ -60,13 +60,17 @@ steps:
       sct_data: $steps.extract_sct_tables.sct_data
     outputs:
       - validated_data
+      - validation_errors
+      - stats
 
   - name: write_sct_results
     type: python
     python:
-      function: edgar_analyzer.utils.write_results
+      function: edgar_analyzer.utils.recipe_utils.write_sct_validation_results
     inputs:
-      results: $steps.validate_sct_data.validated_data
+      validated_data: $steps.validate_sct_data.validated_data
+      validation_errors: $steps.validate_sct_data.validation_errors
+      stats: $steps.validate_sct_data.stats
       output_dir: $params.output_dir
       format: $params.format
       prefix: "sct_"

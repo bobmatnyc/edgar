@@ -11,7 +11,15 @@ Example:
 """
 
 from edgar_analyzer.recipes.loader import load_recipe, discover_recipes, validate_recipe
-from edgar_analyzer.recipes.schema import Recipe, Step, Parameter, StepType, ParameterType
+from edgar_analyzer.recipes.schema import (
+    Recipe,
+    Step,
+    Parameter,
+    StepType,
+    ParameterType,
+)
+from edgar_analyzer.recipes.runner import RecipeRunner, StepResult
+from edgar_analyzer.recipes.context import ExecutionContext
 
 __all__ = [
     "load_recipe",
@@ -22,4 +30,7 @@ __all__ = [
     "Parameter",
     "StepType",
     "ParameterType",
+    "RecipeRunner",
+    "StepResult",
+    "ExecutionContext",
 ]

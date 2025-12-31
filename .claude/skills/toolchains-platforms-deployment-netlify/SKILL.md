@@ -1,6 +1,6 @@
 ---
 name: netlify-deployment-platform
-description: Netlify JAMstack deployment platform with serverless functions, forms, and identity. Use when deploying static sites and SPAs, building JAMstack applications, or implementing serverless functions with built-in auth.
+description: "Netlify JAMstack deployment platform with serverless functions, forms, and identity"
 ---
 
 # Netlify Platform Skill
@@ -12,8 +12,8 @@ progressive_disclosure:
     when_to_use:
       - "When deploying static sites and SPAs"
       - "When building JAMstack applications"
-      - "When you need serverless functions"
-      - "When you want built-in forms and auth"
+      - "When needing serverless functions"
+      - "When requiring built-in forms and auth"
     quick_start:
       - "npm install -g netlify-cli"
       - "netlify login"

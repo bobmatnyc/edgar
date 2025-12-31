@@ -132,6 +132,7 @@ tests/output/temp/
 tests/results/
 test-results/
 coverage.xml
+coverage_*.json
 *.cover
 .hypothesis/
 .pytest_cache/

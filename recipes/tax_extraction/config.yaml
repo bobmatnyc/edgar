@@ -60,13 +60,17 @@ steps:
       tax_data: $steps.extract_tax_tables.tax_data
     outputs:
       - validated_data
+      - validation_errors
+      - stats
 
   - name: write_tax_results
     type: python
     python:
-      function: edgar_analyzer.utils.write_results
+      function: edgar_analyzer.utils.recipe_utils.write_tax_validation_results
     inputs:
-      results: $steps.validate_tax_data.validated_data
+      validated_data: $steps.validate_tax_data.validated_data
+      validation_errors: $steps.validate_tax_data.validation_errors
+      stats: $steps.validate_tax_data.stats
       output_dir: $params.output_dir
       format: $params.format
       prefix: "tax_"

@@ -89,8 +89,8 @@ steps:
     python:
       function: edgar_analyzer.utils.combine_company_results
     inputs:
-      sct_results: $steps.extract_sct_data.sct_results
-      tax_results: $steps.extract_tax_data.tax_results
+      sct_results: $steps.extract_sct_data.validate_sct_data.validated_data
+      tax_results: $steps.extract_tax_data.validate_tax_data.validated_data
     outputs:
       - combined_results
 

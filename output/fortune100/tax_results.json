@@ -1,0 +1,278 @@
+{
+  "validated_data": [
+    {
+      "company": "Walmart Inc.",
+      "cik": "0000104169",
+      "filing_date": "2023-03-17",
+      "fiscal_year_end": "",
+      "tax_years": [
+        {
+          "year": 2023,
+          "current_federal": 0.0,
+          "current_state": 0.0,
+          "current_foreign": 0.0,
+          "deferred_federal": 0.0,
+          "deferred_state": 0.0,
+          "deferred_foreign": 0.0,
+          "total_current": 0.0,
+          "total_deferred": 0.0,
+          "total_tax_expense": 5724.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.1,
+          "cash_taxes_paid": 0.0
+        },
+        {
+          "year": 2022,
+          "current_federal": 0.0,
+          "current_state": 0.0,
+          "current_foreign": 0.0,
+          "deferred_federal": 0.0,
+          "deferred_state": 0.0,
+          "deferred_foreign": 0.0,
+          "total_current": 0.0,
+          "total_deferred": 0.0,
+          "total_tax_expense": 4756.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        },
+        {
+          "year": 2021,
+          "current_federal": 0.0,
+          "current_state": 0.0,
+          "current_foreign": 0.0,
+          "deferred_federal": 0.0,
+          "deferred_state": 0.0,
+          "deferred_foreign": 0.0,
+          "total_current": 0.0,
+          "total_deferred": 0.0,
+          "total_tax_expense": 6858.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        }
+      ]
+    },
+    {
+      "company": "Amazon.com Inc.",
+      "cik": "0001018724",
+      "filing_date": "2023-02-03",
+      "fiscal_year_end": "",
+      "tax_years": [
+        {
+          "year": 2022,
+          "current_federal": 2175.0,
+          "current_state": 1074.0,
+          "current_foreign": 1682.0,
+          "deferred_federal": -6686.0,
+          "deferred_state": -1302.0,
+          "deferred_foreign": -160.0,
+          "total_current": 4931.0,
+          "total_deferred": -8148.0,
+          "total_tax_expense": -3217.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        },
+        {
+          "year": 2021,
+          "current_federal": 2129.0,
+          "current_state": 763.0,
+          "current_foreign": 2209.0,
+          "deferred_federal": 155.0,
+          "deferred_state": -178.0,
+          "deferred_foreign": -287.0,
+          "total_current": 5101.0,
+          "total_deferred": -310.0,
+          "total_tax_expense": 4791.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        },
+        {
+          "year": 2020,
+          "current_federal": 1835.0,
+          "current_state": 626.0,
+          "current_foreign": 956.0,
+          "deferred_federal": -151.0,
+          "deferred_state": -190.0,
+          "deferred_foreign": -213.0,
+          "total_current": 3417.0,
+          "total_deferred": -554.0,
+          "total_tax_expense": 2863.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        }
+      ]
+    },
+    {
+      "company": "Apple Inc.",
+      "cik": "0000320193",
+      "filing_date": "2023-11-03",
+      "fiscal_year_end": "",
+      "tax_years": [
+        {
+          "year": 2023,
+          "current_federal": 9445.0,
+          "current_state": 1570.0,
+          "current_foreign": 8750.0,
+          "deferred_federal": -3644.0,
+          "deferred_state": -49.0,
+          "deferred_foreign": 669.0,
+          "total_current": 19765.0,
+          "total_deferred": -3024.0,
+          "total_tax_expense": 16741.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        },
+        {
+          "year": 2022,
+          "current_federal": 7890.0,
+          "current_state": 1519.0,
+          "current_foreign": 8996.0,
+          "deferred_federal": -2265.0,
+          "deferred_state": 84.0,
+          "deferred_foreign": 3076.0,
+          "total_current": 18405.0,
+          "total_deferred": 895.0,
+          "total_tax_expense": 19300.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        },
+        {
+          "year": 2021,
+          "current_federal": 8257.0,
+          "current_state": 1620.0,
+          "current_foreign": 9424.0,
+          "deferred_federal": -7176.0,
+          "deferred_state": -338.0,
+          "deferred_foreign": 2740.0,
+          "total_current": 19301.0,
+          "total_deferred": -4774.0,
+          "total_tax_expense": 14527.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        }
+      ]
+    },
+    {
+      "company": "UnitedHealth Group Inc.",
+      "cik": "0000731766",
+      "filing_date": "2023-02-24",
+      "fiscal_year_end": "",
+      "tax_years": [
+        {
+          "year": 2022,
+          "current_federal": 0.0,
+          "current_state": 0.0,
+          "current_foreign": 0.0,
+          "deferred_federal": 0.0,
+          "deferred_state": 0.0,
+          "deferred_foreign": 0.0,
+          "total_current": 0.0,
+          "total_deferred": 0.0,
+          "total_tax_expense": 5704.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.21,
+          "cash_taxes_paid": 0.0
+        },
+        {
+          "year": 2021,
+          "current_federal": 0.0,
+          "current_state": 0.0,
+          "current_foreign": 0.0,
+          "deferred_federal": 0.0,
+          "deferred_state": 0.0,
+          "deferred_foreign": 0.0,
+          "total_current": 0.0,
+          "total_deferred": 0.0,
+          "total_tax_expense": 4578.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        },
+        {
+          "year": 2020,
+          "current_federal": 0.0,
+          "current_state": 0.0,
+          "current_foreign": 0.0,
+          "deferred_federal": 0.0,
+          "deferred_state": 0.0,
+          "deferred_foreign": 0.0,
+          "total_current": 0.0,
+          "total_deferred": 0.0,
+          "total_tax_expense": 4973.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        }
+      ]
+    },
+    {
+      "company": "Berkshire Hathaway Inc.",
+      "cik": "0001067983",
+      "filing_date": "2023-02-27",
+      "fiscal_year_end": "",
+      "tax_years": [
+        {
+          "year": 2022,
+          "current_federal": 0.0,
+          "current_state": 4815.0,
+          "current_foreign": 0.0,
+          "deferred_federal": 0.0,
+          "deferred_state": 13333.0,
+          "deferred_foreign": 0.0,
+          "total_current": 4815.0,
+          "total_deferred": 13333.0,
+          "total_tax_expense": 18148.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.27899999999999997,
+          "cash_taxes_paid": 0.0
+        },
+        {
+          "year": 2021,
+          "current_federal": 0.0,
+          "current_state": 5326.0,
+          "current_foreign": 0.0,
+          "deferred_federal": 0.0,
+          "deferred_state": 15553.0,
+          "deferred_foreign": 0.0,
+          "total_current": 5326.0,
+          "total_deferred": 15553.0,
+          "total_tax_expense": 20879.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        },
+        {
+          "year": 2020,
+          "current_federal": 0.0,
+          "current_state": 5052.0,
+          "current_foreign": 0.0,
+          "deferred_federal": 0.0,
+          "deferred_state": 7388.0,
+          "deferred_foreign": 0.0,
+          "total_current": 5052.0,
+          "total_deferred": 7388.0,
+          "total_tax_expense": 12440.0,
+          "pretax_income": 0.0,
+          "effective_tax_rate": 0.0,
+          "cash_taxes_paid": 0.0
+        }
+      ]
+    }
+  ],
+  "validation_errors": [],
+  "stats": {
+    "total_records": 5,
+    "valid_records": 5,
+    "partial_records": 0,
+    "invalid_records": 0,
+    "total_tax_years": 15,
+    "total_tax_expense_sum": 139065.0
+  }
+}

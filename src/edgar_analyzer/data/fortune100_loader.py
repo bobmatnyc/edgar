@@ -30,6 +30,7 @@ __all__ = [
     "Fortune100Registry",
     "load_fortune100_registry",
     "get_fortune100_companies_dict",
+    "load_fortune_100_companies",
 ]
 
 
@@ -118,3 +119,33 @@ def get_fortune100_companies_dict(
         }
         for c in companies
     ]
+
+
+def load_fortune_100_companies(
+    rank_start: int = 1,
+    rank_end: int = 100,
+    sector: str | None = None,
+) -> List[dict]:
+    """
+    Load Fortune 100 companies for recipe execution.
+
+    This is the entry point for recipe python steps.
+    Wraps get_fortune100_companies_dict for recipe compatibility.
+
+    Args:
+        rank_start: Starting rank (inclusive)
+        rank_end: Ending rank (inclusive)
+        sector: Optional sector filter
+
+    Returns:
+        List of company dicts with name, cik, rank, ticker, sector
+
+    Example:
+        >>> companies = load_fortune_100_companies(rank_start=1, rank_end=10)
+        >>> assert len(companies) == 10
+    """
+    return get_fortune100_companies_dict(
+        rank_start=rank_start,
+        rank_end=rank_end,
+        sector=sector,
+    )

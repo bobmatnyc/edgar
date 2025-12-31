@@ -26,8 +26,8 @@ src/edgar_analyzer/cli/__init__.py
 src/edgar_analyzer/cli/main.py
 src/edgar_analyzer/cli/commands/__init__.py
 src/edgar_analyzer/cli/commands/extractors.py
-src/edgar_analyzer/cli/commands/fortune100.py
 src/edgar_analyzer/cli/commands/project.py
+src/edgar_analyzer/cli/commands/recipes.py
 src/edgar_analyzer/cli/commands/setup.py
 src/edgar_analyzer/cli/prompts/__init__.py
 src/edgar_analyzer/cli/prompts/confidence_threshold.py
@@ -80,6 +80,15 @@ src/edgar_analyzer/models/project_config.py
 src/edgar_analyzer/models/sct_models.py
 src/edgar_analyzer/models/validation.py
 src/edgar_analyzer/patterns/self_improving_code.py
+src/edgar_analyzer/recipes/__init__.py
+src/edgar_analyzer/recipes/context.py
+src/edgar_analyzer/recipes/loader.py
+src/edgar_analyzer/recipes/runner.py
+src/edgar_analyzer/recipes/schema.py
+src/edgar_analyzer/recipes/handlers/__init__.py
+src/edgar_analyzer/recipes/handlers/extractor_handler.py
+src/edgar_analyzer/recipes/handlers/python.py
+src/edgar_analyzer/recipes/handlers/sub_recipe_handler.py
 src/edgar_analyzer/services/__init__.py
 src/edgar_analyzer/services/agentic_control_service.py
 src/edgar_analyzer/services/auto_resume_service.py
@@ -118,6 +127,7 @@ src/edgar_analyzer/services/xbrl_enhanced_extraction_service.py
 src/edgar_analyzer/utils/__init__.py
 src/edgar_analyzer/utils/fortune500_builder.py
 src/edgar_analyzer/utils/rate_limiter.py
+src/edgar_analyzer/utils/recipe_utils.py
 src/edgar_analyzer/validation/__init__.py
 src/edgar_analyzer/validation/data_validator.py
 src/edgar_analyzer/validation/quality_reporter.py

@@ -5,7 +5,11 @@
       "command": "kuzu-memory",
       "args": [
         "mcp"
-      ]
+      ],
+      "env": {
+        "KUZU_MEMORY_PROJECT_ROOT": "/Users/masa/Projects/edgar",
+        "KUZU_MEMORY_DB": "/Users/masa/Projects/edgar/kuzu-memories"
+      }
     }
   }
 }

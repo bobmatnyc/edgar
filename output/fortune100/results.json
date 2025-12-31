@@ -1,0 +1,1085 @@
+{
+  "companies": [
+    {
+      "cik": "0000104169",
+      "name": "Walmart Inc.",
+      "sct_data": {
+        "filing_date": "2023-04-20",
+        "executives": [
+          {
+            "name": "C. Douglas McMillonPresident and CEO",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2023,
+                "salary": 1471569.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 19411326.0,
+                "pension_change": 0.0,
+                "other_compensation": 3032667.0,
+                "total": 1191571.0
+              },
+              {
+                "year": 2022,
+                "salary": 1276892.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 19195007.0,
+                "pension_change": 0.0,
+                "other_compensation": 3816000.0,
+                "total": 1028364.0
+              },
+              {
+                "year": 2021,
+                "salary": 1272000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 15827794.0,
+                "pension_change": 0.0,
+                "other_compensation": 3816000.0,
+                "total": 1375580.0
+              }
+            ]
+          },
+          {
+            "name": "John David RaineyChief Financial Officer",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2023,
+                "salary": 700000.0,
+                "bonus": 0.0,
+                "stock_awards": 5000000.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 32651678.0,
+                "pension_change": 0.0,
+                "other_compensation": 899181.0,
+                "total": 0.0
+              }
+            ]
+          },
+          {
+            "name": "M. Brett BiggsChief Financial Officer",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2023,
+                "salary": 1003846.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 446050.0,
+                "total": 280769.0
+              },
+              {
+                "year": 2022,
+                "salary": 994345.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 1857868.0,
+                "total": 239164.0
+              },
+              {
+                "year": 2021,
+                "salary": 934721.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 5795779.0,
+                "pension_change": 0.0,
+                "other_compensation": 1752637.0,
+                "total": 333199.0
+              }
+            ]
+          },
+          {
+            "name": "Suresh KumarGlobal Chief Technology and Development Officer",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2023,
+                "salary": 1096825.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 13130922.0,
+                "pension_change": 0.0,
+                "other_compensation": 1694495.0,
+                "total": 10897.0
+              },
+              {
+                "year": 2022,
+                "salary": 1050724.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 13024864.0,
+                "pension_change": 0.0,
+                "other_compensation": 2355377.0,
+                "total": 2491.0
+              },
+              {
+                "year": 2021,
+                "salary": 1021154.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 8399795.0,
+                "pension_change": 0.0,
+                "other_compensation": 2297643.0,
+                "total": 0.0
+              }
+            ]
+          },
+          {
+            "name": "John FurnerPresident and CEO,Walmart U.S.",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2023,
+                "salary": 1223704.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 10692394.0,
+                "pension_change": 0.0,
+                "other_compensation": 1594915.0,
+                "total": 245766.0
+              },
+              {
+                "year": 2022,
+                "salary": 1088776.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 10573933.0,
+                "pension_change": 0.0,
+                "other_compensation": 2442285.0,
+                "total": 175020.0
+              },
+              {
+                "year": 2021,
+                "salary": 944567.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 7724121.0,
+                "pension_change": 0.0,
+                "other_compensation": 2125320.0,
+                "total": 191454.0
+              }
+            ]
+          },
+          {
+            "name": "Judith McKennaPresident and CEO, Walmart International",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2023,
+                "salary": 1148313.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 9716056.0,
+                "pension_change": 0.0,
+                "other_compensation": 2307449.0,
+                "total": 347682.0
+              },
+              {
+                "year": 2022,
+                "salary": 1111008.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 9608229.0,
+                "pension_change": 0.0,
+                "other_compensation": 2490385.0,
+                "total": 258949.0
+              },
+              {
+                "year": 2021,
+                "salary": 1088769.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 7241218.0,
+                "pension_change": 0.0,
+                "other_compensation": 2449781.0,
+                "total": 979174.0
+              }
+            ]
+          },
+          {
+            "name": "Kathryn McLayPresident and CEO, Sam’s Club",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2023,
+                "salary": 973771.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 8742164.0,
+                "pension_change": 0.0,
+                "other_compensation": 1882901.0,
+                "total": 11408.0
+              },
+              {
+                "year": 2022,
+                "salary": 799575.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 8644893.0,
+                "pension_change": 0.0,
+                "other_compensation": 1792384.0,
+                "total": 6911.0
+              },
+              {
+                "year": 2021,
+                "salary": 780000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 10225189.0,
+                "pension_change": 0.0,
+                "other_compensation": 1755000.0,
+                "total": 3415.0
+              }
+            ]
+          }
+        ]
+      },
+      "tax_data": {
+        "filing_date": "2023-03-17",
+        "fiscal_year_end": "",
+        "tax_years": [
+          {
+            "year": 2023,
+            "current_federal": 0.0,
+            "current_state": 0.0,
+            "current_foreign": 0.0,
+            "deferred_federal": 0.0,
+            "deferred_state": 0.0,
+            "deferred_foreign": 0.0,
+            "total_current": 0.0,
+            "total_deferred": 0.0,
+            "total_tax_expense": 5724.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.1,
+            "cash_taxes_paid": 0.0
+          },
+          {
+            "year": 2022,
+            "current_federal": 0.0,
+            "current_state": 0.0,
+            "current_foreign": 0.0,
+            "deferred_federal": 0.0,
+            "deferred_state": 0.0,
+            "deferred_foreign": 0.0,
+            "total_current": 0.0,
+            "total_deferred": 0.0,
+            "total_tax_expense": 4756.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          },
+          {
+            "year": 2021,
+            "current_federal": 0.0,
+            "current_state": 0.0,
+            "current_foreign": 0.0,
+            "deferred_federal": 0.0,
+            "deferred_state": 0.0,
+            "deferred_foreign": 0.0,
+            "total_current": 0.0,
+            "total_deferred": 0.0,
+            "total_tax_expense": 6858.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "cik": "0000320193",
+      "name": "Apple Inc.",
+      "sct_data": {
+        "filing_date": "2023-01-12",
+        "executives": [
+          {
+            "name": "Tim Cook",
+            "title": "Chief Executive Officer",
+            "compensation": []
+          },
+          {
+            "name": "Luca Maestri",
+            "title": "Senior Vice President,",
+            "compensation": []
+          },
+          {
+            "name": "Kate Adams",
+            "title": "Senior Vice President,",
+            "compensation": []
+          },
+          {
+            "name": "Deirdre O’Brien",
+            "title": "Senior Vice President,",
+            "compensation": []
+          },
+          {
+            "name": "Jeff Williams",
+            "title": "Chief Operating Officer",
+            "compensation": []
+          }
+        ]
+      },
+      "tax_data": {
+        "filing_date": "2023-11-03",
+        "fiscal_year_end": "",
+        "tax_years": [
+          {
+            "year": 2023,
+            "current_federal": 9445.0,
+            "current_state": 1570.0,
+            "current_foreign": 8750.0,
+            "deferred_federal": -3644.0,
+            "deferred_state": -49.0,
+            "deferred_foreign": 669.0,
+            "total_current": 19765.0,
+            "total_deferred": -3024.0,
+            "total_tax_expense": 16741.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          },
+          {
+            "year": 2022,
+            "current_federal": 7890.0,
+            "current_state": 1519.0,
+            "current_foreign": 8996.0,
+            "deferred_federal": -2265.0,
+            "deferred_state": 84.0,
+            "deferred_foreign": 3076.0,
+            "total_current": 18405.0,
+            "total_deferred": 895.0,
+            "total_tax_expense": 19300.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          },
+          {
+            "year": 2021,
+            "current_federal": 8257.0,
+            "current_state": 1620.0,
+            "current_foreign": 9424.0,
+            "deferred_federal": -7176.0,
+            "deferred_state": -338.0,
+            "deferred_foreign": 2740.0,
+            "total_current": 19301.0,
+            "total_deferred": -4774.0,
+            "total_tax_expense": 14527.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "cik": "0000731766",
+      "name": "UnitedHealth Group Inc.",
+      "sct_data": {
+        "filing_date": "2023-04-21",
+        "executives": [
+          {
+            "name": "Andrew Witty",
+            "title": "Chief Executive Officer",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 1450769.0,
+                "bonus": 0.0,
+                "stock_awards": 10781573.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 3593777.0,
+                "pension_change": 0.0,
+                "other_compensation": 2550000.0,
+                "total": 57024.0
+              },
+              {
+                "year": 2020,
+                "salary": 418846.0,
+                "bonus": 0.0,
+                "stock_awards": 550000.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 8025223.0,
+                "pension_change": 0.0,
+                "other_compensation": 2675007.0,
+                "total": 920000.0
+              }
+            ]
+          },
+          {
+            "name": "John Rex",
+            "title": "Executive Vice President",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 1161539.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 8550501.0,
+                "pension_change": 0.0,
+                "other_compensation": 2850024.0,
+                "total": 2050000.0
+              },
+              {
+                "year": 2020,
+                "salary": 1000000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 6750241.0,
+                "pension_change": 0.0,
+                "other_compensation": 2250044.0,
+                "total": 2500000.0
+              }
+            ]
+          },
+          {
+            "name": "Dirk McMahon",
+            "title": "President and Chief Operating Officer",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 1161539.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 8550501.0,
+                "pension_change": 0.0,
+                "other_compensation": 2850024.0,
+                "total": 2050000.0
+              },
+              {
+                "year": 2020,
+                "salary": 1000000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 6750241.0,
+                "pension_change": 0.0,
+                "other_compensation": 2250044.0,
+                "total": 2500000.0
+              }
+            ]
+          },
+          {
+            "name": "Brian Thompson",
+            "title": "Executive Vice President",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 951154.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 4813113.0,
+                "pension_change": 0.0,
+                "other_compensation": 2187555.0,
+                "total": 1700000.0
+              },
+              {
+                "year": 2020,
+                "salary": 0.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 0.0,
+                "total": 0.0
+              }
+            ]
+          },
+          {
+            "name": "Rupert Bondy",
+            "title": "Executive Vice President, Chief Legal Officer and Corporate Secretary",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 0.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 0.0,
+                "total": 0.0
+              },
+              {
+                "year": 2020,
+                "salary": 0.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 0.0,
+                "total": 0.0
+              }
+            ]
+          }
+        ]
+      },
+      "tax_data": {
+        "filing_date": "2023-02-24",
+        "fiscal_year_end": "",
+        "tax_years": [
+          {
+            "year": 2022,
+            "current_federal": 0.0,
+            "current_state": 0.0,
+            "current_foreign": 0.0,
+            "deferred_federal": 0.0,
+            "deferred_state": 0.0,
+            "deferred_foreign": 0.0,
+            "total_current": 0.0,
+            "total_deferred": 0.0,
+            "total_tax_expense": 5704.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.21,
+            "cash_taxes_paid": 0.0
+          },
+          {
+            "year": 2021,
+            "current_federal": 0.0,
+            "current_state": 0.0,
+            "current_foreign": 0.0,
+            "deferred_federal": 0.0,
+            "deferred_state": 0.0,
+            "deferred_foreign": 0.0,
+            "total_current": 0.0,
+            "total_deferred": 0.0,
+            "total_tax_expense": 4578.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          },
+          {
+            "year": 2020,
+            "current_federal": 0.0,
+            "current_state": 0.0,
+            "current_foreign": 0.0,
+            "deferred_federal": 0.0,
+            "deferred_state": 0.0,
+            "deferred_foreign": 0.0,
+            "total_current": 0.0,
+            "total_deferred": 0.0,
+            "total_tax_expense": 4973.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "cik": "0001018724",
+      "name": "Amazon.com Inc.",
+      "sct_data": {
+        "filing_date": "2023-04-13",
+        "executives": [
+          {
+            "name": "Andrew R. Jassy",
+            "title": "President and Chief Executive Officer",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 175000.0,
+                "bonus": 211933520.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 592649.0,
+                "total": 212701169.0
+              },
+              {
+                "year": 2020,
+                "salary": 175000.0,
+                "bonus": 35639068.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 34381.0,
+                "total": 35848449.0
+              }
+            ]
+          },
+          {
+            "name": "Jeffrey P. Bezos",
+            "title": "Founder and Executive Chair",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 81840.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 1600000.0,
+                "total": 1681840.0
+              },
+              {
+                "year": 2020,
+                "salary": 81840.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 1600000.0,
+                "total": 1681840.0
+              }
+            ]
+          },
+          {
+            "name": "Brian T. Olsavsky",
+            "title": "SVP and Chief Financial Officer",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 160000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 3200.0,
+                "total": 163200.0
+              },
+              {
+                "year": 2020,
+                "salary": 160000.0,
+                "bonus": 17010985.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 3200.0,
+                "total": 17174185.0
+              }
+            ]
+          },
+          {
+            "name": "Douglas J. Herrington",
+            "title": "CEO Worldwide Amazon Stores",
+            "compensation": []
+          },
+          {
+            "name": "Adam N. Selipsky",
+            "title": "CEO Amazon Web Services",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 109722.0,
+                "bonus": 81294756.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 49045.0,
+                "total": 81453523.0
+              }
+            ]
+          },
+          {
+            "name": "David A. Zapolsky",
+            "title": "SVP, General Counsel, and Secretary",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 160000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 3200.0,
+                "total": 163200.0
+              },
+              {
+                "year": 2020,
+                "salary": 160000.0,
+                "bonus": 17010985.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 3200.0,
+                "total": 17174185.0
+              }
+            ]
+          }
+        ]
+      },
+      "tax_data": {
+        "filing_date": "2023-02-03",
+        "fiscal_year_end": "",
+        "tax_years": [
+          {
+            "year": 2022,
+            "current_federal": 2175.0,
+            "current_state": 1074.0,
+            "current_foreign": 1682.0,
+            "deferred_federal": -6686.0,
+            "deferred_state": -1302.0,
+            "deferred_foreign": -160.0,
+            "total_current": 4931.0,
+            "total_deferred": -8148.0,
+            "total_tax_expense": -3217.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          },
+          {
+            "year": 2021,
+            "current_federal": 2129.0,
+            "current_state": 763.0,
+            "current_foreign": 2209.0,
+            "deferred_federal": 155.0,
+            "deferred_state": -178.0,
+            "deferred_foreign": -287.0,
+            "total_current": 5101.0,
+            "total_deferred": -310.0,
+            "total_tax_expense": 4791.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          },
+          {
+            "year": 2020,
+            "current_federal": 1835.0,
+            "current_state": 626.0,
+            "current_foreign": 956.0,
+            "deferred_federal": -151.0,
+            "deferred_state": -190.0,
+            "deferred_foreign": -213.0,
+            "total_current": 3417.0,
+            "total_deferred": -554.0,
+            "total_tax_expense": 2863.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "cik": "0001067983",
+      "name": "Berkshire Hathaway Inc.",
+      "sct_data": {
+        "filing_date": "2023-03-17",
+        "executives": [
+          {
+            "name": "Warren E. Buffett",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2022,
+                "salary": 0.0,
+                "bonus": 100000.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 301589.0,
+                "other_compensation": 0.0,
+                "total": 401589.0
+              }
+            ]
+          },
+          {
+            "name": "Chief Executive Officer/Chairman",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 100000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 273204.0,
+                "total": 373204.0
+              },
+              {
+                "year": 2020,
+                "salary": 100000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 280328.0,
+                "total": 380328.0
+              }
+            ]
+          },
+          {
+            "name": "Charles T. Munger",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2022,
+                "salary": 100000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 0.0,
+                "total": 100000.0
+              }
+            ]
+          },
+          {
+            "name": "Vice Chairman of the Board",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 100000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 0.0,
+                "total": 100000.0
+              },
+              {
+                "year": 2020,
+                "salary": 100000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 0.0,
+                "total": 100000.0
+              }
+            ]
+          },
+          {
+            "name": "Gregory E. Abel",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2022,
+                "salary": 16000000.0,
+                "bonus": 3000000.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 15250.0,
+                "total": 19015250.0
+              }
+            ]
+          },
+          {
+            "name": "Vice Chairman-Non Insurance Operations",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 16000000.0,
+                "bonus": 3000000.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 14500.0,
+                "total": 19014500.0
+              },
+              {
+                "year": 2020,
+                "salary": 16000000.0,
+                "bonus": 3000000.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 14250.0,
+                "total": 19014250.0
+              }
+            ]
+          },
+          {
+            "name": "Ajit Jain",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2022,
+                "salary": 16000000.0,
+                "bonus": 3000000.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 15250.0,
+                "total": 19015250.0
+              }
+            ]
+          },
+          {
+            "name": "Vice Chairman-Insurance Operations",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 16000000.0,
+                "bonus": 3000000.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 14500.0,
+                "total": 19014500.0
+              },
+              {
+                "year": 2020,
+                "salary": 16000000.0,
+                "bonus": 3000000.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 14250.0,
+                "total": 19014250.0
+              }
+            ]
+          },
+          {
+            "name": "Marc D. Hamburg",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2022,
+                "salary": 3567300.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 17330.0,
+                "total": 3584630.0
+              }
+            ]
+          },
+          {
+            "name": "Senior Vice President/CFO",
+            "title": "",
+            "compensation": [
+              {
+                "year": 2021,
+                "salary": 3312500.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 14500.0,
+                "total": 3327000.0
+              },
+              {
+                "year": 2020,
+                "salary": 3250000.0,
+                "bonus": 0.0,
+                "stock_awards": 0.0,
+                "option_awards": 0.0,
+                "non_equity_incentive": 0.0,
+                "pension_change": 0.0,
+                "other_compensation": 14250.0,
+                "total": 3264250.0
+              }
+            ]
+          }
+        ]
+      },
+      "tax_data": {
+        "filing_date": "2023-02-27",
+        "fiscal_year_end": "",
+        "tax_years": [
+          {
+            "year": 2022,
+            "current_federal": 0.0,
+            "current_state": 4815.0,
+            "current_foreign": 0.0,
+            "deferred_federal": 0.0,
+            "deferred_state": 13333.0,
+            "deferred_foreign": 0.0,
+            "total_current": 4815.0,
+            "total_deferred": 13333.0,
+            "total_tax_expense": 18148.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.27899999999999997,
+            "cash_taxes_paid": 0.0
+          },
+          {
+            "year": 2021,
+            "current_federal": 0.0,
+            "current_state": 5326.0,
+            "current_foreign": 0.0,
+            "deferred_federal": 0.0,
+            "deferred_state": 15553.0,
+            "deferred_foreign": 0.0,
+            "total_current": 5326.0,
+            "total_deferred": 15553.0,
+            "total_tax_expense": 20879.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          },
+          {
+            "year": 2020,
+            "current_federal": 0.0,
+            "current_state": 5052.0,
+            "current_foreign": 0.0,
+            "deferred_federal": 0.0,
+            "deferred_state": 7388.0,
+            "deferred_foreign": 0.0,
+            "total_current": 5052.0,
+            "total_deferred": 7388.0,
+            "total_tax_expense": 12440.0,
+            "pretax_income": 0.0,
+            "effective_tax_rate": 0.0,
+            "cash_taxes_paid": 0.0
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "total_companies": 5,
+    "sct_success": 5,
+    "tax_success": 5,
+    "both_success": 5
+  }
+}

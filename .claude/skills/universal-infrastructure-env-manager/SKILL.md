@@ -1,6 +1,6 @@
 ---
 name: env-manager
-description: Environment variable validation, security scanning, and management for Next.js, Vite, React, and Node.js applications. Use when validating environment configurations, preventing exposed secrets, or implementing framework-aware environment variable management.
+description: "Environment variable validation, security scanning, and management for Next.js, Vite, React, and Node.js applications"
 ---
 
 # Environment Variable Manager (env-manager)
@@ -61,7 +61,7 @@ python3 scripts/validate_env.py .env --generate-example .env.example
 python3 scripts/validate_env.py .env --json
 ```
 
-That's it! You're now validating environment variables like a pro.
+That's it! Environment variables are now validated professionally.
 
 ## Usage Examples
 

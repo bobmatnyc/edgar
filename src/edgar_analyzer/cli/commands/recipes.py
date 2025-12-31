@@ -5,19 +5,27 @@ Commands:
 - edgar recipes validate <recipe> - Validate a recipe directory
 - edgar recipes info <recipe> - Show recipe information
 - edgar recipes init <name> - Create new recipe directory structure
+- edgar recipes run <recipe> - Execute a recipe
 """
 
 from pathlib import Path
+import asyncio
 
 import click
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
+from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from pydantic import ValidationError
 import yaml
 
-from edgar_analyzer.recipes import load_recipe, discover_recipes, validate_recipe
-from edgar_analyzer.recipes.loader import get_recipe_info, ensure_recipe_dirs
+from edgar_analyzer.recipes import (
+    load_recipe,
+    discover_recipes,
+    validate_recipe,
+    RecipeRunner,
+)
+from edgar_analyzer.recipes.loader import get_recipe_info
 
 console = Console()
 
@@ -59,7 +67,9 @@ def list_recipes(directory: Path, verbose: bool):
 
         if not recipes:
             console.print(f"[yellow]No recipes found in {directory}[/yellow]")
-            console.print("[dim]Tip: Recipe directories must contain a config.yaml file[/dim]")
+            console.print(
+                "[dim]Tip: Recipe directories must contain a config.yaml file[/dim]"
+            )
             return
 
         # Create table
@@ -130,19 +140,19 @@ def validate_recipe_cmd(recipe_dir: Path, verbose: bool):
         # Load recipe (includes Pydantic validation)
         recipe = load_recipe(recipe_dir)
 
-        console.print(f"[green]✓ YAML syntax valid[/green]")
-        console.print(f"[green]✓ Schema validation passed[/green]")
+        console.print("[green]✓ YAML syntax valid[/green]")
+        console.print("[green]✓ Schema validation passed[/green]")
 
         # Semantic validation
         errors = validate_recipe(recipe)
 
         if errors:
-            console.print(f"\n[red]✗ Semantic validation failed:[/red]")
+            console.print("\n[red]✗ Semantic validation failed:[/red]")
             for error in errors:
                 console.print(f"  [red]• {error}[/red]")
             return
 
-        console.print(f"[green]✓ Semantic validation passed[/green]")
+        console.print("[green]✓ Semantic validation passed[/green]")
 
         # Show recipe info if verbose
         if verbose:
@@ -162,15 +172,15 @@ def validate_recipe_cmd(recipe_dir: Path, verbose: bool):
             )
             console.print(info_panel)
 
-        console.print(f"\n[bold green]Recipe is valid! ✓[/bold green]")
+        console.print("\n[bold green]Recipe is valid! ✓[/bold green]")
 
     except FileNotFoundError as e:
         console.print(f"[red]Error: {e}[/red]")
     except ValidationError as e:
-        console.print(f"[red]Schema validation failed:[/red]")
+        console.print("[red]Schema validation failed:[/red]")
         console.print(f"[red]{e}[/red]")
     except yaml.YAMLError as e:
-        console.print(f"[red]YAML syntax error:[/red]")
+        console.print("[red]YAML syntax error:[/red]")
         console.print(f"[red]{e}[/red]")
     except Exception as e:
         console.print(f"[red]Unexpected error: {e}[/red]")
@@ -257,19 +267,19 @@ def show_recipe_info(recipe_dir: Path, show_steps: bool):
         # Validation status
         errors = validate_recipe(recipe)
         if errors:
-            console.print(f"\n[yellow]⚠ Recipe has validation warnings:[/yellow]")
+            console.print("\n[yellow]⚠ Recipe has validation warnings:[/yellow]")
             for error in errors:
                 console.print(f"  [yellow]• {error}[/yellow]")
         else:
-            console.print(f"\n[green]✓ Recipe is valid[/green]")
+            console.print("\n[green]✓ Recipe is valid[/green]")
 
     except FileNotFoundError as e:
         console.print(f"[red]Error: {e}[/red]")
     except ValidationError as e:
-        console.print(f"[red]Schema validation failed:[/red]")
+        console.print("[red]Schema validation failed:[/red]")
         console.print(f"[red]{e}[/red]")
     except yaml.YAMLError as e:
-        console.print(f"[red]YAML syntax error:[/red]")
+        console.print("[red]YAML syntax error:[/red]")
         console.print(f"[red]{e}[/red]")
     except Exception as e:
         console.print(f"[red]Unexpected error: {e}[/red]")
@@ -309,15 +319,21 @@ def init_recipe(name: str, directory: Path, title: str | None, description: str 
     """
     # Validate recipe name
     if not name.isidentifier():
-        console.print(f"[red]Error: Recipe name must be a valid identifier: {name}[/red]")
-        console.print("[dim]Use only letters, numbers, and underscores (no spaces)[/dim]")
+        console.print(
+            f"[red]Error: Recipe name must be a valid identifier: {name}[/red]"
+        )
+        console.print(
+            "[dim]Use only letters, numbers, and underscores (no spaces)[/dim]"
+        )
         return
 
     recipe_dir = directory / name
 
     # Check if recipe directory already exists
     if recipe_dir.exists():
-        console.print(f"[red]Error: Recipe directory already exists: {recipe_dir}[/red]")
+        console.print(
+            f"[red]Error: Recipe directory already exists: {recipe_dir}[/red]"
+        )
         return
 
     try:
@@ -394,7 +410,7 @@ error_handling:
         with open(config_path, "w") as f:
             f.write(config_template)
 
-        console.print(f"[green]✓ Created config.yaml[/green]")
+        console.print("[green]✓ Created config.yaml[/green]")
 
         # Generate README.md
         readme_content = f"""# {recipe_title}
@@ -447,20 +463,181 @@ Add any development notes, requirements, or special instructions here.
         with open(readme_path, "w") as f:
             f.write(readme_content)
 
-        console.print(f"[green]✓ Created README.md[/green]")
+        console.print("[green]✓ Created README.md[/green]")
 
         # Summary
-        console.print(f"\n[bold green]Recipe '{name}' created successfully![/bold green]")
-        console.print(f"\n[cyan]Next steps:[/cyan]")
+        console.print(
+            f"\n[bold green]Recipe '{name}' created successfully![/bold green]"
+        )
+        console.print("\n[cyan]Next steps:[/cyan]")
         console.print(f"  1. Edit {config_path} to define your recipe")
         console.print(f"  2. Add input files to {recipe_dir / 'input'}/")
-        console.print(f"  3. Validate with: [bold]edgar recipes validate {recipe_dir}[/bold]")
-        console.print(f"  4. View info with: [bold]edgar recipes info {recipe_dir}[/bold]")
+        console.print(
+            f"  3. Validate with: [bold]edgar recipes validate {recipe_dir}[/bold]"
+        )
+        console.print(
+            f"  4. View info with: [bold]edgar recipes info {recipe_dir}[/bold]"
+        )
 
     except Exception as e:
         console.print(f"[red]Error creating recipe: {e}[/red]")
         # Clean up on error
         if recipe_dir.exists():
             import shutil
+
             shutil.rmtree(recipe_dir)
-            console.print(f"[yellow]Cleaned up partial recipe directory[/yellow]")
+            console.print("[yellow]Cleaned up partial recipe directory[/yellow]")
+
+
+@recipes_cli.command(name="run")
+@click.argument("recipe_dir", type=click.Path(exists=True, path_type=Path))
+@click.option("--param", "-p", multiple=True, help="Parameter in key=value format")
+@click.option("--dry-run", is_flag=True, help="Show execution plan without running")
+def run_recipe(recipe_dir: Path, param: tuple, dry_run: bool):
+    """Execute a recipe.
+
+    Runs all steps in sequence with variable substitution.
+
+    Examples:
+        edgar recipes run recipes/fortune100 -p rank_start=1 -p rank_end=10
+        edgar recipes run recipes/sct_extraction --dry-run
+    """
+    console.print(f"[cyan]Loading recipe: {recipe_dir}[/cyan]\n")
+
+    try:
+        # Load and validate recipe
+        recipe = load_recipe(recipe_dir)
+
+        # Parse parameters from --param options
+        params = {}
+        for p in param:
+            if "=" not in p:
+                console.print(
+                    f"[red]Error: Invalid parameter format '{p}'. Expected key=value[/red]"
+                )
+                return
+
+            key, value = p.split("=", 1)  # Split on first = only
+            params[key.strip()] = value.strip()
+
+        # Show recipe info
+        info = get_recipe_info(recipe)
+        console.print(
+            Panel(
+                f"[bold]{info['title']}[/bold]\n"
+                f"{info['description']}\n\n"
+                f"[cyan]Steps:[/cyan] {info['step_count']}\n"
+                f"[cyan]Parameters:[/cyan] {len(params)} provided, {info['parameter_count']} defined",
+                title="Recipe Execution Plan",
+            )
+        )
+
+        # Dry run: show execution plan
+        if dry_run:
+            console.print(
+                "\n[yellow]DRY RUN MODE - No steps will be executed[/yellow]\n"
+            )
+
+            # Show parameters
+            if params:
+                param_table = Table(title="Parameters")
+                param_table.add_column("Name", style="cyan")
+                param_table.add_column("Value", style="green")
+
+                for key, value in params.items():
+                    param_table.add_row(key, value)
+
+                console.print(param_table)
+
+            # Show step execution plan
+            steps_table = Table(title="Step Execution Plan")
+            steps_table.add_column("Order", style="blue", justify="right")
+            steps_table.add_column("Step Name", style="cyan")
+            steps_table.add_column("Type", style="magenta")
+            steps_table.add_column("Condition", style="yellow")
+
+            for i, step in enumerate(recipe.steps, 1):
+                condition = step.condition if step.condition else "-"
+                steps_table.add_row(str(i), step.name, step.type.value, condition)
+
+            console.print(steps_table)
+
+            console.print(
+                "\n[green]Dry run complete. Use without --dry-run to execute.[/green]"
+            )
+            return
+
+        # Execute recipe with progress tracking
+        console.print("\n[green]Starting recipe execution...[/green]\n")
+
+        # Create progress display
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[bold blue]{task.description}"),
+            TimeElapsedColumn(),
+            console=console,
+        ) as progress:
+            # Track current step
+            current_task = None
+
+            def on_step_start(step_name: str):
+                nonlocal current_task
+                if current_task is not None:
+                    progress.remove_task(current_task)
+                current_task = progress.add_task(f"Executing: {step_name}", total=None)
+
+            def on_step_complete(result):
+                nonlocal current_task
+                if current_task is not None:
+                    progress.remove_task(current_task)
+                    current_task = None
+
+                # Show result
+                if result.success:
+                    console.print(
+                        f"[green]✓ {result.step_name}[/green] ({result.duration:.2f}s)"
+                    )
+                else:
+                    console.print(f"[red]✗ {result.step_name}[/red] - {result.error}")
+
+            # Create runner with callbacks
+            runner = RecipeRunner(
+                on_step_start=on_step_start, on_step_complete=on_step_complete
+            )
+
+            # Run the recipe
+            try:
+                results = asyncio.run(runner.run(recipe, params))
+
+                # Show summary
+                console.print("\n[bold green]Recipe execution complete! ✓[/bold green]")
+                console.print(f"[cyan]Steps completed:[/cyan] {len(results)}")
+
+                # Show output summary
+                if results:
+                    console.print("\n[cyan]Step Outputs:[/cyan]")
+                    for step_name, outputs in results.items():
+                        if outputs:
+                            console.print(
+                                f"  [green]• {step_name}:[/green] {len(outputs)} outputs"
+                            )
+
+            except ValueError as e:
+                console.print(f"\n[red]Parameter error: {e}[/red]")
+            except RuntimeError as e:
+                console.print(f"\n[red]Execution failed: {e}[/red]")
+            except Exception as e:
+                console.print(f"\n[red]Unexpected error: {e}[/red]")
+                raise
+
+    except FileNotFoundError as e:
+        console.print(f"[red]Error: Recipe not found - {e}[/red]")
+    except ValidationError as e:
+        console.print("[red]Recipe validation failed:[/red]")
+        console.print(f"[red]{e}[/red]")
+    except yaml.YAMLError as e:
+        console.print("[red]YAML syntax error:[/red]")
+        console.print(f"[red]{e}[/red]")
+    except Exception as e:
+        console.print(f"[red]Unexpected error: {e}[/red]")
+        raise

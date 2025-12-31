@@ -186,3 +186,51 @@ updates:
   check_frequency: daily
 use_ai_trackdown_tools: false
 verbose: false
+skills:
+  agent_referenced:
+  - api-documentation
+  - git-workflow
+  - security-scanning
+  - systematic-debugging
+  - test-driven-development
+  - test-quality-inspector
+  - toolchains-ai-sdks-anthropic
+  - toolchains-javascript-build-vite
+  - toolchains-javascript-frameworks-svelte
+  - toolchains-javascript-frameworks-svelte5-runes-static
+  - toolchains-javascript-frameworks-sveltekit
+  - toolchains-php-frameworks-espocrm
+  - toolchains-php-frameworks-wordpress-advanced-architecture
+  - toolchains-php-frameworks-wordpress-block-editor
+  - toolchains-php-frameworks-wordpress-plugin-fundamentals
+  - toolchains-php-frameworks-wordpress-security-validation
+  - toolchains-php-frameworks-wordpress-testing-qa
+  - toolchains-platforms-deployment-netlify
+  - toolchains-platforms-deployment-vercel
+  - toolchains-ui-components-daisyui
+  - toolchains-ui-styling-tailwind
+  - toolchains-universal-dependency-audit
+  - toolchains-universal-emergency-release
+  - toolchains-universal-infrastructure-docker
+  - toolchains-universal-infrastructure-github-actions
+  - universal-architecture-software-patterns
+  - universal-collaboration-brainstorming
+  - universal-collaboration-dispatching-parallel-agents
+  - universal-collaboration-git-workflow
+  - universal-collaboration-git-worktrees
+  - universal-collaboration-requesting-code-review
+  - universal-collaboration-stacked-prs
+  - universal-collaboration-writing-plans
+  - universal-data-database-migration
+  - universal-data-json-data-handling
+  - universal-debugging-root-cause-tracing
+  - universal-debugging-systematic-debugging
+  - universal-debugging-verification-before-completion
+  - universal-infrastructure-env-manager
+  - universal-main-artifacts-builder
+  - universal-main-internal-comms
+  - universal-security-security-scanning
+  - universal-testing-test-driven-development
+  - universal-verification-bug-fix
+  - universal-web-web-performance-optimization
+  user_defined: []

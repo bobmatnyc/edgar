@@ -1,6 +1,6 @@
 ---
 name: vercel-deployment-platform
-description: Vercel serverless deployment platform optimized for Next.js with edge functions, automatic previews, and global CDN. Use when deploying Next.js applications, implementing edge middleware, or setting up CI/CD with automatic preview deployments.
+description: "Vercel serverless deployment platform optimized for Next.js with edge functions, automatic previews, and global CDN"
 ---
 
 # Vercel Deployment Platform Skill
@@ -11,8 +11,8 @@ progressive_disclosure:
     summary: "Serverless deployment platform for Next.js, React, and frontend apps with edge functions"
     when_to_use:
       - "When deploying Next.js applications"
-      - "When you need edge functions and middleware"
-      - "When you want automatic previews and CI/CD"
+      - "When needing edge functions and middleware"
+      - "When requiring automatic previews and CI/CD"
       - "When using serverless functions"
     quick_start:
       - "npm install -g vercel"

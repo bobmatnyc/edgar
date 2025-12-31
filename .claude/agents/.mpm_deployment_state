@@ -1,16 +1,204 @@
 {
-  "deployment_hash": "57c8f53a5a5abe9b0774ac69740b18821aaac51cb1dd92d7e967da20a5033c8f",
-  "last_check_time": 1765125368.020274,
+  "deployment_hash": "d229ed147a6bafaecfb3ab2337407a3a2383f6a13a95252df525797431410ae6",
+  "last_check_time": 1767135618.529346,
   "last_check_results": {
-    "agents": {},
+    "agents": {
+      "qa": {
+        "python": {
+          "satisfied": [],
+          "missing": [
+            "pytest>=7.4.0",
+            "pytest-cov>=4.1.0",
+            "hypothesis>=6.92.0",
+            "mutmut>=2.4.0",
+            "pytest-benchmark>=4.0.0",
+            "faker>=20.0.0"
+          ],
+          "outdated": []
+        },
+        "system": {
+          "satisfied": [
+            "python3",
+            "git"
+          ],
+          "missing": []
+        }
+      },
+      "research": {
+        "python": {
+          "satisfied": [
+            "tree-sitter>=0.21.0",
+            "pygments>=2.17.0"
+          ],
+          "missing": [
+            "radon>=6.0.0",
+            "semgrep>=1.45.0",
+            "lizard>=1.17.0",
+            "pydriller>=2.5.0",
+            "astroid>=3.0.0",
+            "rope>=1.11.0",
+            "libcst>=1.1.0"
+          ],
+          "outdated": []
+        },
+        "system": {
+          "satisfied": [
+            "python3",
+            "git"
+          ],
+          "missing": []
+        }
+      },
+      "python-engineer": {
+        "python": {
+          "satisfied": [
+            "pydantic>=2.6.0"
+          ],
+          "missing": [
+            "black>=24.0.0",
+            "isort>=5.13.0",
+            "mypy>=1.8.0",
+            "pytest>=8.0.0",
+            "pytest-cov>=4.1.0",
+            "pytest-asyncio>=0.23.0",
+            "hypothesis>=6.98.0",
+            "flake8>=7.0.0"
+          ],
+          "outdated": []
+        },
+        "system": {
+          "satisfied": [],
+          "missing": [
+            "python3.12+"
+          ]
+        }
+      },
+      "documentation": {
+        "python": {
+          "satisfied": [],
+          "missing": [
+            "sphinx>=7.2.0",
+            "mkdocs>=1.5.0",
+            "pydoc-markdown>=4.8.0",
+            "diagrams>=0.23.0",
+            "mermaid-py>=0.2.0",
+            "docstring-parser>=0.15.0"
+          ],
+          "outdated": []
+        },
+        "system": {
+          "satisfied": [
+            "python3",
+            "git"
+          ],
+          "missing": []
+        }
+      },
+      "api-qa": {
+        "python": {
+          "satisfied": [
+            "requests>=2.25.0",
+            "jsonschema>=4.17.0"
+          ],
+          "missing": [
+            "pytest>=7.4.0",
+            "pyjwt>=2.8.0"
+          ],
+          "outdated": []
+        },
+        "system": {
+          "satisfied": [
+            "curl",
+            "jq"
+          ],
+          "missing": [
+            "python3>=3.8"
+          ]
+        }
+      },
+      "security": {
+        "python": {
+          "satisfied": [
+            "pyyaml>=6.0",
+            "jsonschema>=4.0.0"
+          ],
+          "missing": [
+            "bandit>=1.7.5",
+            "detect-secrets>=1.4.0",
+            "sqlparse>=0.4.4",
+            "safety>=2.3.0",
+            "semgrep>=1.0.0",
+            "validators>=0.20.0"
+          ],
+          "outdated": []
+        },
+        "system": {
+          "satisfied": [
+            "python3",
+            "git"
+          ],
+          "missing": []
+        }
+      }
+    },
     "summary": {
-      "total_agents": 39,
-      "agents_with_deps": 0,
-      "missing_python": [],
-      "missing_system": [],
-      "satisfied_python": [],
-      "satisfied_system": []
+      "total_agents": 42,
+      "agents_with_deps": 6,
+      "missing_python": [
+        "pytest>=7.4.0",
+        "pytest-cov>=4.1.0",
+        "hypothesis>=6.92.0",
+        "mutmut>=2.4.0",
+        "pytest-benchmark>=4.0.0",
+        "faker>=20.0.0",
+        "radon>=6.0.0",
+        "semgrep>=1.45.0",
+        "lizard>=1.17.0",
+        "pydriller>=2.5.0",
+        "astroid>=3.0.0",
+        "rope>=1.11.0",
+        "libcst>=1.1.0",
+        "black>=24.0.0",
+        "isort>=5.13.0",
+        "mypy>=1.8.0",
+        "pytest>=8.0.0",
+        "pytest-asyncio>=0.23.0",
+        "hypothesis>=6.98.0",
+        "flake8>=7.0.0",
+        "sphinx>=7.2.0",
+        "mkdocs>=1.5.0",
+        "pydoc-markdown>=4.8.0",
+        "diagrams>=0.23.0",
+        "mermaid-py>=0.2.0",
+        "docstring-parser>=0.15.0",
+        "pyjwt>=2.8.0",
+        "bandit>=1.7.5",
+        "detect-secrets>=1.4.0",
+        "sqlparse>=0.4.4",
+        "safety>=2.3.0",
+        "semgrep>=1.0.0",
+        "validators>=0.20.0"
+      ],
+      "missing_system": [
+        "python3.12+",
+        "python3>=3.8"
+      ],
+      "satisfied_python": [
+        "tree-sitter>=0.21.0",
+        "pygments>=2.17.0",
+        "pydantic>=2.6.0",
+        "requests>=2.25.0",
+        "jsonschema>=4.17.0",
+        "pyyaml>=6.0",
+        "jsonschema>=4.0.0"
+      ],
+      "satisfied_system": [
+        "python3",
+        "git",
+        "curl",
+        "jq"
+      ]
     }
   },
-  "agent_count": 39
+  "agent_count": 42
 }

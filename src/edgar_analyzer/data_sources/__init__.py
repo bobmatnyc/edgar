@@ -17,6 +17,7 @@ All sources implement common interface with built-in:
 
 from .api_source import APIDataSource
 from .base import BaseDataSource, IDataSource
+from .edgar_api import fetch_company_filings
 from .excel_source import ExcelDataSource
 from .file_source import FileDataSource
 from .jina_source import JinaDataSource
@@ -32,4 +33,5 @@ __all__ = [
     "ExcelDataSource",
     "PDFDataSource",
     "URLDataSource",
+    "fetch_company_filings",
 ]
